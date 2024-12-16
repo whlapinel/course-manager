@@ -1,0 +1,63 @@
+package templates
+
+import (
+	"gh_static_portfolio/cmd/domain"
+	"strconv"
+	"time"
+)
+
+templ ManagerMainMenu() {
+	@Layout() {
+		<div class="grid grid-cols-3 gap-2">
+			<button>Build Site</button>
+			<button>Manage Course Instance</button> // only should be able to change dates
+			<a hx-get="/courses" hx-swap="outerHtml" hx-target="#page" hx-push-url="true">
+				<button>Manage Course</button> // change anything
+			</a>
+			<button>Generate Course Instance</button> // must select term
+			<button>Create New Course</button>
+			<a hx-get="/courses/csv" hx-swap="outerHtml" hx-target="#page" hx-push-url="true">
+				<button>Load Course From CSV</button>
+			</a>
+			<button>Create New Term</button>
+			<button>Load Term From CSV</button>
+		</div>
+	}
+}
+
+templ ManageCourseOOPComponent(courses []*domain.Course) {
+	for _, course := range courses {
+		<table>
+			<caption>{ course.Name }</caption>
+			<thead>
+				<tr>
+					<th>Day</th>
+					<th>Unit #</th>
+					<th>Unit Name</th>
+					<th>Lesson #</th>
+					<th>Lesson Name</th>
+				</tr>
+			</thead>
+			for _, unit := range course.Units {
+				<tr>
+					<td>{ strconv.Itoa(unit.Number) }</td>
+					<td>{ unit.Name }</td>
+					<td>{ unit.Description }</td>
+					<td><button></button></td>
+				</tr>
+				for _, lesson := range unit.Lessons {
+					<tr>
+						<td>{ strconv.Itoa(lesson.Number) }</td>
+						<td>{ lesson.Name }</td>
+						<td>{ lesson.Description }</td>
+						<td>{ lesson.Date.Format(time.DateOnly) }</td>
+						<td><button></button></td>
+					</tr>
+				}
+			}
+			<tfoot></tfoot>
+		</table>
+	}
+}
+
+

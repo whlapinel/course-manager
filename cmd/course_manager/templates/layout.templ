@@ -1,0 +1,51 @@
+package templates
+
+templ Layout() {
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Course Manager</title>
+			<link rel="stylesheet" href="/static/styles/styles.css"/>
+			<script src="/static/js/htmx.js" defer></script>
+		</head>
+		<body class="bg-slate-800 text-white" hx-boost="true">
+			<header>
+				<div class="flex justify-between">
+					<a
+						href={ templ.SafeURL("/") }
+						hx-select="#page"
+						hx-target="#page"
+						hx-swap="outerHTML"
+					>
+						<svg width="500" height="80" xmlns="http://www.w3.org/2000/svg">
+							<!-- Background -->
+							<rect width="500" height="100" fill="#1e293b"></rect>
+							<!-- Text: Initials -->
+							<text x="10" y="60" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#4ade80">
+								Course Manager
+							</text>
+							<!-- Decorative Line -->
+							<line x1="10" y1="70" x2="290" y2="70" stroke="#3b82f6" stroke-width="2"></line>
+						</svg>
+					</a>
+					<div class="sm:hidden" id="hamburger">
+						<svg width="64" height="64" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#a3a3a3">
+							<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+							<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+							<g id="SVGRepo_iconCarrier">
+								<path d="M4 18L20 18" stroke="#ffffff" stroke-width="1.968" stroke-linecap="round"></path>
+								<path d="M4 12L20 12" stroke="#ffffff" stroke-width="1.968" stroke-linecap="round"></path>
+								<path d="M4 6L20 6" stroke="#ffffff" stroke-width="1.968" stroke-linecap="round"></path>
+							</g>
+						</svg>
+					</div>
+				</div>
+				<nav class="flex gap-2 text-white font-bold p-1 mb-5"></nav>
+			</header>
+			<main id="page">
+				{ children... }
+			</main>
+		</body>
+	</html>
+}

@@ -1,0 +1,39 @@
+version: "3"
+
+tasks:
+  hello:
+    cmds:
+      - echo 'Hello World from Task!'
+    silent: true
+
+  sync:
+    cmds:
+      - git add .
+      - git commit -m "auto-sync"
+      - git push
+      - git switch main
+      - git merge dev
+      - git push
+      - git switch dev
+
+  run-manager:
+    - echo 'Starting Course Manager'
+    - templ generate
+    - npx tailwindcss -i ./cmd/course_manager/styles.css -o ./cmd/course_manager/assets/styles/styles.css
+    - go run ./cmd/course_manager
+
+  gen-schedule:
+    cmds:
+      - echo 'Generating schedule'
+      - go run ./cmd/gen_schedule
+
+  build:
+    cmds:
+      - echo 'running templ generate...'
+      - templ generate
+      - echo 'running tsc build...'
+      - tsc --build
+      - echo 'running npx tailwindcss...'
+      - npx tailwindcss -i ./input.css -o ./docs/styles/styles.css
+      - echo 'running go run...'
+      - go run ./cmd/gen_site

@@ -1,0 +1,179 @@
+course_name,day_num,unit_num,unit_descr,lesson_num,lesson_descr,std_num,std_descr,date,term_id,term_name
+Python I Programming Honors,1,0,Setup and intros,1,,,,2025-01-27,,Spring 2025
+Python I Programming Honors,2,0,Setup and intros,2,,,,2025-01-28,,Spring 2025
+Python I Programming Honors,3,0,Setup and intros,3,,,,2025-01-29,,Spring 2025
+Python I Programming Honors,4,1,"Ethics, Security and History of Computer Programming",1,,,,2025-01-30,,Spring 2025
+Python I Programming Honors,5,1,"Ethics, Security and History of Computer Programming",2,,,,2025-01-31,,Spring 2025
+Python I Programming Honors,6,1,"Ethics, Security and History of Computer Programming",4,,,,2025-02-03,,Spring 2025
+Python I Programming Honors,7,2,Problem Solving With Computers,1,,,,2025-02-04,,Spring 2025
+Python I Programming Honors,8,2,Problem Solving With Computers,3,,,,2025-02-05,,Spring 2025
+Python I Programming Honors,9,2,Problem Solving With Computers,4,,,,2025-02-06,,Spring 2025
+Python I Programming Honors,10,3,Basic Python and Console Interaction,1,,,,2025-02-07,,Spring 2025
+Python I Programming Honors,11,3,Basic Python and Console Interaction,2,,,,2025-02-10,,Spring 2025
+Python I Programming Honors,12,3,Basic Python and Console Interaction,3,,,,2025-02-11,,Spring 2025
+Python I Programming Honors,13,3,Basic Python and Console Interaction,4,,,,2025-02-12,,Spring 2025
+Python I Programming Honors,14,3,Basic Python and Console Interaction,6,,,,2025-02-13,,Spring 2025
+Python I Programming Honors,15,3,Basic Python and Console Interaction,7,,,,2025-02-14,,Spring 2025
+Python I Programming Honors,16,3,Basic Python and Console Interaction,8,,,,2025-02-18,,Spring 2025
+Python I Programming Honors,17,3,Basic Python and Console Interaction,9,,,,2025-02-19,,Spring 2025
+Python I Programming Honors,18,4,Conditionals,2,,,,2025-02-20,,Spring 2025
+Python I Programming Honors,19,4,Conditionals,3,,,,2025-02-21,,Spring 2025
+Python I Programming Honors,20,4,Conditionals,4,,,,2025-02-24,,Spring 2025
+Python I Programming Honors,21,4,Conditionals,5,,,,2025-02-25,,Spring 2025
+Python I Programming Honors,22,4,Conditionals,6,,,,2025-02-26,,Spring 2025
+Python I Programming Honors,23,4,Conditionals,7,,,,2025-02-27,,Spring 2025
+Python I Programming Honors,24,4,Conditionals,8,,,,2025-02-28,,Spring 2025
+Python I Programming Honors,25,5,Looping,1,,,,2025-03-03,,Spring 2025
+Python I Programming Honors,26,5,Looping,2,,,,2025-03-04,,Spring 2025
+Python I Programming Honors,27,5,Looping,3,,,,2025-03-05,,Spring 2025
+Python I Programming Honors,28,5,Looping,4,,,,2025-03-06,,Spring 2025
+Python I Programming Honors,29,5,Looping,5,,,,2025-03-07,,Spring 2025
+Python I Programming Honors,30,5,Looping,6,,,,2025-03-10,,Spring 2025
+Python I Programming Honors,31,5,Looping,7,,,,2025-03-11,,Spring 2025
+Python I Programming Honors,32,6,Functions and Exceptions,1,,,,2025-03-12,,Spring 2025
+Python I Programming Honors,33,6,Functions and Exceptions,2,,,,2025-03-13,,Spring 2025
+Python I Programming Honors,34,6,Functions and Exceptions,3,,,,2025-03-14,,Spring 2025
+Python I Programming Honors,35,6,Functions and Exceptions,4,,,,2025-03-17,,Spring 2025
+Python I Programming Honors,36,6,Functions and Exceptions,5,,,,2025-03-18,,Spring 2025
+Python I Programming Honors,37,6,Functions and Exceptions,6,,,,2025-03-19,,Spring 2025
+Python I Programming Honors,38,6,Functions and Exceptions,7,,,,2025-03-20,,Spring 2025
+Python I Programming Honors,39,6,Functions and Exceptions,8,,,,2025-03-21,,Spring 2025
+Python I Programming Honors,40,-1,Midterm Review & Exam,1,Review 1,,,2025-03-24,,Spring 2025
+Python I Programming Honors,41,-1,Midterm Review & Exam,2,Review 2,,,2025-03-25,,Spring 2025
+Python I Programming Honors,42,-1,Midterm Review & Exam,3,Review 3,,,2025-03-26,,Spring 2025
+Python I Programming Honors,43,-1,Midterm Review & Exam,4,1st & 3rd Block Exam,,,2025-03-27,,Spring 2025
+Python I Programming Honors,44,-1,Midterm Review & Exam,5,2nd & 4th Block Exam,,,2025-03-28,,Spring 2025
+Python I Programming Honors,45,-1,Midterm Review & Exam,6,Makeup and Remediation,,,2025-04-01,,Spring 2025
+Python I Programming Honors,46,-1,Midterm Review & Exam,7,Makeup and Remediation,,,2025-04-02,,Spring 2025
+Python I Programming Honors,47,-1,Midterm Review & Exam,8,Makeup and Remediation,,,2025-04-03,,Spring 2025
+Python I Programming Honors,48,7,Strings,1,,,,2025-04-04,,Spring 2025
+Python I Programming Honors,49,7,Strings,2,,,,2025-04-07,,Spring 2025
+Python I Programming Honors,50,7,Strings,3,,,,2025-04-08,,Spring 2025
+Python I Programming Honors,51,7,Strings,4,,,,2025-04-09,,Spring 2025
+Python I Programming Honors,52,7,Strings,5,,,,2025-04-10,,Spring 2025
+Python I Programming Honors,53,7,Strings,6,,,,2025-04-11,,Spring 2025
+Python I Programming Honors,54,7,Strings,7,,,,2025-04-22,,Spring 2025
+Python I Programming Honors,55,8,Data Structures,1,,,,2025-04-23,,Spring 2025
+Python I Programming Honors,56,8,Data Structures,2,,,,2025-04-24,,Spring 2025
+Python I Programming Honors,57,8,Data Structures,3,,,,2025-04-25,,Spring 2025
+Python I Programming Honors,58,8,Data Structures,4,,,,2025-04-28,,Spring 2025
+Python I Programming Honors,59,8,Data Structures,5,,,,2025-04-29,,Spring 2025
+Python I Programming Honors,60,8,Data Structures,6,,,,2025-04-30,,Spring 2025
+Python I Programming Honors,61,8,Data Structures,7,,,,2025-05-01,,Spring 2025
+Python I Programming Honors,62,8,Data Structures,8,,,,2025-05-02,,Spring 2025
+Python I Programming Honors,63,8,Data Structures,9,,,,2025-05-05,,Spring 2025
+Python I Programming Honors,64,9,Text Files,1,CodeHS 15.1,,,2025-05-06,,Spring 2025
+Python I Programming Honors,65,9,Text Files,2,CodeHS 15.2,,,2025-05-07,,Spring 2025
+Python I Programming Honors,66,9,Text Files,3,CodeHS 15.3,,,2025-05-08,,Spring 2025
+Python I Programming Honors,67,9,Text Files,4,CodeHS 15.4,,,2025-05-09,,Spring 2025
+Python I Programming Honors,68,9,Text Files,5,CodeHS 15.5,,,2025-05-12,,Spring 2025
+Python I Programming Honors,69,9,Text Files,6,CodeHS 15.6,,,2025-05-13,,Spring 2025
+Python I Programming Honors,70,9,Text Files,7,CodeHS 15.7,,,2025-05-14,,Spring 2025
+Python I Programming Honors,71,9,Text Files,8,Unit 9 Test,,,2025-05-15,,Spring 2025
+Python I Programming Honors,72,10,PCEP Preparation and Exam,1,Practice with Dictionaries,,,2025-05-16,,Spring 2025
+Python I Programming Honors,73,10,PCEP Preparation and Exam,2,Practice with List Comprehensions,,,2025-05-19,,Spring 2025
+Python I Programming Honors,74,10,PCEP Preparation and Exam,3,Practice with Loops Functions and Error Handling,,,2025-05-20,,Spring 2025
+Python I Programming Honors,75,10,PCEP Preparation and Exam,4,PCEP Attempt #1,,,2025-05-21,,Spring 2025
+Python I Programming Honors,76,10,PCEP Preparation and Exam,5,PCEP Attempt #1 Debrief,,,2025-05-22,,Spring 2025
+Python I Programming Honors,77,10,PCEP Preparation and Exam,6,,,,2025-05-23,,Spring 2025
+Python I Programming Honors,78,10,PCEP Preparation and Exam,7,,,,2025-05-27,,Spring 2025
+Python I Programming Honors,79,10,PCEP Preparation and Exam,8,,,,2025-05-28,,Spring 2025
+Python I Programming Honors,80,10,PCEP Preparation and Exam,9,,,,2025-05-29,,Spring 2025
+Python I Programming Honors,81,10,PCEP Preparation and Exam,10,,,,2025-05-30,,Spring 2025
+Python I Programming Honors,82,10,PCEP Preparation and Exam,11,,,,2025-06-02,,Spring 2025
+Python I Programming Honors,83,10,PCEP Preparation and Exam,12,,,,2025-06-03,,Spring 2025
+Python I Programming Honors,84,10,PCEP Preparation and Exam,13,,,,2025-06-04,,Spring 2025
+Python I Programming Honors,85,10,PCEP Preparation and Exam,14,,,,2025-06-05,,Spring 2025
+Python I Programming Honors,86,10,PCEP Preparation and Exam,15,,,,2025-06-06,,Spring 2025
+Python I Programming Honors,87,10,PCEP Preparation and Exam,16,,,,2025-06-09,,Spring 2025
+Python I Programming Honors,88,10,PCEP Preparation and Exam,17,,,,2025-06-10,,Spring 2025
+Python I Programming Honors,89,10,PCEP Preparation and Exam,18,,,,,,Spring 2025
+Python II Programming Honors,1,0,Setup and intros,1,,,,2025-01-27,,Spring 2025
+Python II Programming Honors,2,0,Setup and intros,2,,,,2025-01-28,,Spring 2025
+Python II Programming Honors,3,0,Setup and intros,3,,,,2025-01-29,,Spring 2025
+Python II Programming Honors,4,1,Python Fundamentals Review,1,,,,2025-01-30,,Spring 2025
+Python II Programming Honors,5,1,Python Fundamentals Review,2,,,,2025-01-31,,Spring 2025
+Python II Programming Honors,6,1,Python Fundamentals Review,3,,,,2025-02-03,,Spring 2025
+Python II Programming Honors,7,1,Python Fundamentals Review,4,,,,2025-02-04,,Spring 2025
+Python II Programming Honors,8,1,Python Fundamentals Review,5,,,,2025-02-05,,Spring 2025
+Python II Programming Honors,9,2,More advanced Python,1,,,,2025-02-06,,Spring 2025
+Python II Programming Honors,10,2,More advanced Python,2,,,,2025-02-07,,Spring 2025
+Python II Programming Honors,11,2,More advanced Python,3,,,,2025-02-10,,Spring 2025
+Python II Programming Honors,12,2,More advanced Python,4,,,,2025-02-11,,Spring 2025
+Python II Programming Honors,13,2,More advanced Python,5,,,,2025-02-12,,Spring 2025
+Python II Programming Honors,14,2,More advanced Python,6,,,,2025-02-13,,Spring 2025
+Python II Programming Honors,15,2,More advanced Python,7,,,,2025-02-14,,Spring 2025
+Python II Programming Honors,16,2,More advanced Python,8,,,,2025-02-18,,Spring 2025
+Python II Programming Honors,17,3,Python CLI,1,,,,2025-02-19,,Spring 2025
+Python II Programming Honors,18,3,Python CLI,2,,,,2025-02-20,,Spring 2025
+Python II Programming Honors,19,3,Python CLI,3,,,,2025-02-21,,Spring 2025
+Python II Programming Honors,20,3,Python CLI,4,,,,2025-02-24,,Spring 2025
+Python II Programming Honors,21,4,File I/O and SQL,1,,,,2025-02-25,,Spring 2025
+Python II Programming Honors,22,4,File I/O and SQL,2,,,,2025-02-26,,Spring 2025
+Python II Programming Honors,23,4,File I/O and SQL,3,,,,2025-02-27,,Spring 2025
+Python II Programming Honors,24,4,File I/O and SQL,4,,,,2025-02-28,,Spring 2025
+Python II Programming Honors,25,4,File I/O and SQL,5,,,,2025-03-03,,Spring 2025
+Python II Programming Honors,26,4,File I/O and SQL,6,,,,2025-03-04,,Spring 2025
+Python II Programming Honors,27,4,File I/O and SQL,7,,,,2025-03-05,,Spring 2025
+Python II Programming Honors,28,4,File I/O and SQL,8,,,,2025-03-06,,Spring 2025
+Python II Programming Honors,29,4,File I/O and SQL,9,,,,2025-03-07,,Spring 2025
+Python II Programming Honors,30,4,File I/O and SQL,10,,,,2025-03-10,,Spring 2025
+Python II Programming Honors,31,5,"OOP, closures and generators",1,,,,2025-03-11,,Spring 2025
+Python II Programming Honors,32,5,"OOP, closures and generators",2,,,,2025-03-12,,Spring 2025
+Python II Programming Honors,33,5,"OOP, closures and generators",3,,,,2025-03-13,,Spring 2025
+Python II Programming Honors,34,5,"OOP, closures and generators",4,,,,2025-03-14,,Spring 2025
+Python II Programming Honors,35,5,"OOP, closures and generators",5,,,,2025-03-17,,Spring 2025
+Python II Programming Honors,36,5,"OOP, closures and generators",6,,,,2025-03-18,,Spring 2025
+Python II Programming Honors,37,5,"OOP, closures and generators",7,,,,2025-03-19,,Spring 2025
+Python II Programming Honors,38,5,"OOP, closures and generators",8,,,,2025-03-20,,Spring 2025
+Python II Programming Honors,39,-1,Midterm Review and exam,1,,,,2025-03-21,,Spring 2025
+Python II Programming Honors,40,-1,Midterm Review and exam,2,,,,2025-03-24,,Spring 2025
+Python II Programming Honors,41,-1,Midterm Review and exam,3,,,,2025-03-25,,Spring 2025
+Python II Programming Honors,42,-1,Midterm Review and exam,4,,,,2025-03-26,,Spring 2025
+Python II Programming Honors,43,-1,Midterm Review and exam,5,1st & 3rd Block Exams,,,2025-03-27,,Spring 2025
+Python II Programming Honors,44,-1,Midterm Review and exam,6,2nd & 4th Block Exams,,,2025-03-28,,Spring 2025
+Python II Programming Honors,45,-1,Midterm Review and exam,7,Makeup and remediation,,,2025-04-01,,Spring 2025
+Python II Programming Honors,46,-1,Midterm Review and exam,8,Makeup and remediation,,,2025-04-02,,Spring 2025
+Python II Programming Honors,47,-1,Midterm Review and exam,9,Makeup and remediation,,,2025-04-03,,Spring 2025
+Python II Programming Honors,48,6,Data Science,1,,,,2025-04-04,,Spring 2025
+Python II Programming Honors,49,6,Data Science,2,,,,2025-04-07,,Spring 2025
+Python II Programming Honors,50,6,Data Science,3,,,,2025-04-08,,Spring 2025
+Python II Programming Honors,51,6,Data Science,4,,,,2025-04-09,,Spring 2025
+Python II Programming Honors,52,6,Data Science,5,,,,2025-04-10,,Spring 2025
+Python II Programming Honors,53,6,Data Science,6,,,,2025-04-11,,Spring 2025
+Python II Programming Honors,54,6,Data Science,7,,,,2025-04-22,,Spring 2025
+Python II Programming Honors,55,6,Data Science,8,,,,2025-04-23,,Spring 2025
+Python II Programming Honors,56,6,Data Science,9,,,,2025-04-24,,Spring 2025
+Python II Programming Honors,57,6,Data Science,10,Unit Project,,,2025-04-25,,Spring 2025
+Python II Programming Honors,58,6,Data Science,11,Unit Project,,,2025-04-28,,Spring 2025
+Python II Programming Honors,59,6,Data Science,12,Unit Project,,,2025-04-29,,Spring 2025
+Python II Programming Honors,60,7,IoT Programming,1,Finches: Setup and Lesson 1 from Finch curriculum,,,2025-04-30,,Spring 2025
+Python II Programming Honors,61,7,IoT Programming,2,Finches: Resume and Complete Lesson 1 from Finch curriculum,,,2025-05-01,,Spring 2025
+Python II Programming Honors,62,7,IoT Programming,3,Finches: Lessons 2 and 3 from Finch curriculum,,,2025-05-02,,Spring 2025
+Python II Programming Honors,63,7,IoT Programming,4,Finches: Lessons 4 and 5 from Finch curriculum,,,2025-05-05,,Spring 2025
+Python II Programming Honors,64,7,IoT Programming,5,Finches: Continue Lessons 4 and 5 from Finch curriculum,,,2025-05-06,,Spring 2025
+Python II Programming Honors,65,7,IoT Programming,6,Catch Up/PE2 Module 4 Quiz,,,2025-05-07,,Spring 2025
+Python II Programming Honors,66,7,IoT Programming,7,Unit Project/PE2 Module 4 Test,,,2025-05-08,,Spring 2025
+Python II Programming Honors,67,7,IoT Programming,8,Unit Project/PE2 Module 4 Test Day 2,,,2025-05-09,,Spring 2025
+Python II Programming Honors,68,8,Web Development,1,Web 101: Server and HTML,,,2025-05-12,,Spring 2025
+Python II Programming Honors,69,8,Web Development,2,Adding CSS,,,2025-05-13,,Spring 2025
+Python II Programming Honors,70,8,Web Development,3,More HTML + CSS,,,2025-05-14,,Spring 2025
+Python II Programming Honors,71,8,Web Development,4,Django,,,2025-05-15,,Spring 2025
+Python II Programming Honors,72,8,Web Development,5,Templating,,,2025-05-16,,Spring 2025
+Python II Programming Honors,73,8,Web Development,6,Static Sites,,,2025-05-19,,Spring 2025
+Python II Programming Honors,74,8,Web Development,7,SSR Sites 1,,,2025-05-20,,Spring 2025
+Python II Programming Honors,75,8,Web Development,8,Work on Project,,,2025-05-21,,Spring 2025
+Python II Programming Honors,76,8,Web Development,9,Work on Project,,,2025-05-22,,Spring 2025
+Python II Programming Honors,77,8,Web Development,10,Present Projects,,,2025-05-23,,Spring 2025
+Python II Programming Honors,78,9,Certification testing and extension,1,Practice with Dictionaries,,,2025-05-27,,Spring 2025
+Python II Programming Honors,79,9,Certification testing and extension,2,Practice with List Comprehensions,,,2025-05-28,,Spring 2025
+Python II Programming Honors,80,9,Certification testing and extension,3,Practice with Loops Functions and Error Handling,,,2025-05-29,,Spring 2025
+Python II Programming Honors,81,9,Certification testing and extension,4,Practice with Loops Functions and Error Handling,,,2025-05-30,,Spring 2025
+Python II Programming Honors,82,9,Certification testing and extension,5,PCEP Attempt #1,,,2025-06-02,,Spring 2025
+Python II Programming Honors,83,9,Certification testing and extension,6,PCEP Attempt #1 Debrief,,,2025-06-03,,Spring 2025
+Python II Programming Honors,84,10,Final Project,1,Work on final project,,,2025-06-04,,Spring 2025
+Python II Programming Honors,85,10,Final Project,2,Work on final project,,,2025-06-05,,Spring 2025
+Python II Programming Honors,86,10,Final Project,3,Work on final project,,,2025-06-06,,Spring 2025
+Python II Programming Honors,87,10,Final Project,4,Work on final project,,,2025-06-09,,Spring 2025
+Python II Programming Honors,88,10,Final Project,5,Final Project Presentations,,,2025-06-10,,Spring 2025
+Python II Programming Honors,89,10,Final Project,6,Final Project Presentations,,,,,Spring 2025

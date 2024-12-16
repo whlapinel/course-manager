@@ -1,0 +1,77 @@
+package templates
+
+import (
+	"gh_static_portfolio/cmd/domain"
+	"time"
+)
+
+var firstLesson domain.Unit
+var todaysUnit domain.Unit
+var todaysLesson domain.Lesson
+var previousMonday time.Time
+
+func PreviousMonday(date time.Time) time.Time {
+	days := time.Duration(date.Weekday() - 1)
+	previousMonday = date.Add(-1 * 24 * time.Hour * days) // side effect alert! seems bad form but I want to "cache" result
+	return date.Add(-1 * 24 * time.Hour * days)
+}
+
+func SameDate(date1 time.Time, date2 time.Time) bool {
+	var d1, m1, y1 = date1.Date()
+	var d2, m2, y2 = date2.Date()
+	return y1 == y2 && m1 == m2 && d1 == d2
+}
+func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
+	for _, unit := range course.Units {
+		for _, lesson := range unit.Lessons {
+			if SameDate(lesson.Date, date) {
+				todaysLesson = lesson // side effect alert! bad form maybe but I want to "cache" result
+				todaysUnit = unit     // side effect alert! bad form maybe but I want to "cache" result
+				return lesson
+			}
+		}
+	}
+	return domain.Lesson{}
+
+}
+
+func UnitDateRange(unit domain.Unit) []time.Time {
+	lessonCount := len(unit.Lessons)
+	return []time.Time{
+		unit.Lessons[0].Date,
+		unit.Lessons[lessonCount-1].Date,
+	}
+}
+
+templ CourseCalendarComponent(course domain.Course) {
+	@Layout(&page{title: course.GetTitle()}) {
+		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
+			@CourseUnorderedList() {
+				for _, unit := range course.Units {
+					<details class="cursor-pointer bg-blue-900 rounded p-2 m-1 text-lg hover:bg-blue-800">
+						<summary>
+							{ unit.GetTitle() }: { UnitDateRange(unit)[0].Format(time.RFC1123)[:16] } to { UnitDateRange(unit)[1].Format(time.RFC1123)[:16] }
+						</summary>
+						for _, lesson := range unit.Lessons {
+							@ListedLinkItem(RemoveDocsFromPath(lessonRoutePath(lesson, unit, course)+FileName(lesson)), false) {
+								<p>{ lesson.GetTitle() } { lesson.Date.Format(time.RFC1123)[:16] }</p>
+							}
+						}
+					</details>
+				}
+			}
+			@TitleDiv("Course Calendar", course.GetTitle()+", "+course.TermName, courseRoutePath(course))
+			// <div class="grid grid-cols-7 gap-2">
+			// 	for day := range time.Duration(7) {
+			// 		<div>
+			// 			<h2>{ PreviousMonday(time.Now()).Add(24*time.Hour*day).String()[:10] }</h2>
+			// 			<h3>{ TodaysLesson(previousMonday.Add(24*time.Hour*day), course).Title() }</h3>
+			// 			@ListedLinkItem(RemoveDocsFromPath(lessonRoutePath(todaysLesson, todaysUnit, course)+FileName(todaysLesson)), false) {
+			// 				Link
+			// 			}
+			// 		</div>
+			// 	}
+			// </div>
+		}
+	}
+}

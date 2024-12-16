@@ -1,0 +1,74 @@
+﻿objective_no,weight,description,course
+1.0,,"Understand ethics, security and history of computer programming.",Python Programming I Honors
+1.1,,"Explain the ethics, security, and history of computer science.",Python Programming I Honors
+1.2,,Summarize the history and development of Python and its place among other programming languages.,Python Programming I Honors
+2.0,,Apply problem solving tools to design programming solutions.,Python Programming I Honors
+2.1,,"Utilize algorithms and pseudo code in terms of their efficiency, correctness, and clarity.",Python Programming I Honors
+2.2,,Build code segments that use algorithms.,Python Programming I Honors
+3.0,,"Apply basic data types and operators,",Python Programming I Honors
+3.1,,"Develop to cast basic data types (string, integer, float, and Boolean).",Python Programming I Honors
+3.2,,"Develop descriptive, correctly named variables that represent multiple types of data.",Python Programming I Honors
+3.3,,Choose the appropriate operator to achieve the intended result.,Python Programming I Honors
+3.4,,Organize the sequence of execution based on operator precedence.,Python Programming I Honors
+3.5,,Construct comments and docstrings to clarify code segments.,Python Programming I Honors
+4.0,,Apply input and output operations.,Python Programming I Honors
+4.1,,Identify code segments that perform input and output operations.,Python Programming I Honors
+4.2,,Modify output of strings using escape sequences and commas with print() statements.,Python Programming I Honors
+4.3,,Modify output of numbers using fstring and string format function.,Python Programming I Honors
+5.0,,Analyze code segment functionality by performing troubleshooting and handling errors.,Python Programming I Honors
+5.1,,Inspect code segments to correct code segments that have errors.,Python Programming I Honors
+5.2,,Develop code segments that handle exceptions.,Python Programming I Honors
+5.3,,Analyze troubleshooting techniques.,Python Programming I Honors
+6.0,,Apply user-defined functions.,Python Programming I Honors
+6.1,,Apply functions to reduce code complexity and reuse code segments.,Python Programming I Honors
+6.2,,Apply functions with and without parameters that do or do not return values.,Python Programming I Honors
+6.3,,Apply default parameter values in functions effectively.,Python Programming I Honors
+6.4,,Choose between local and global scope.,Python Programming I Honors
+7.0,,Apply decision making and loop statements.,Python Programming I Honors
+7.1,,Build code segments that use decision and branching statements to control flow and logic.,Python Programming I Honors
+7.2,,Build loops control flow and/or perform iteration.,Python Programming I Honors
+8.0,,Apply advanced data types to store and manipulate data.,Python Programming I Honors
+8.1,,Modify strings using indexing and string methods to compare.,Python Programming I Honors
+8.2,,Develop lists and tuples to store data.,Python Programming I Honors
+8.3,,"Build lists and tuples with conditionals and loops to sort, filter, transform, and manipulate data.",Python Programming I Honors
+9.0,,Apply operations using modules and tools,Python Programming I Honors
+9.1,,Select appropriate built-in modules to design and perform basic operations.,Python Programming I Honors
+9.2,,Select appropriate built-in modules to design and perform complex computing problems.,Python Programming I Honors
+1.0,,Apply advanced Python concepts.,Python Programming II Honors
+1.1,0.01,Construct programs using nested loops.,Python Programming II Honors
+1.2,0.02,Develop complex conditionals to provide advanced logic/decision making.,Python Programming II Honors
+1.3,0.01,Build programs using recursion.,Python Programming II Honors
+1.4,0.01,Choose appropriate data types and operators.,Python Programming II Honors
+1.5,0.01,Formulate code using bitwise operators.,Python Programming II Honors
+1.6,0.01,Build programs using error handling.,Python Programming II Honors
+1.7,0.01,Construct programs using libraries/modules.,Python Programming II Honors
+1.8,0.01,Apply code using the datetime module and its objects.,Python Programming II Honors
+1.9,0.01,Test code using Python formatting.,Python Programming II Honors
+2.0,,Apply command line interface and operation.,Python Programming II Honors
+2.1,0.02,Develop programs using the command line interface.,Python Programming II Honors
+2.2,0.01,Identify whether code is running as a script or being imported as a module.,Python Programming II Honors
+2.3,0.01,Apply the basic structure of a UNIX command line.,Python Programming II Honors
+2.4,0.01,Utilize parsed command-line arguments in practical applications.,Python Programming II Honors
+3.0,,Apply input/ouput operations with files and databases.,Python Programming II Honors
+3.1,0.04,Build programs that perform file input and output operations.,Python Programming II Honors
+3.2,0.04,Develop programs using built-in functions to open/close files.,Python Programming II Honors
+3.3,0.03,Construct programs using appropriate Python libraries.,Python Programming II Honors
+3.4,0.04,Build programs using the sqlite3 and/or the sqlalchemy libraries.,Python Programming II Honors
+4.0,,Apply object oriented programming in Python.,Python Programming II Honors
+4.1,0.13,Develop objects using standard objective features.,Python Programming II Honors
+4.2,0.05,Apply generators and closures.,Python Programming II Honors
+4.3,0.02,Examine use cases in the light of procedural versus object-oriented approaches.,Python Programming II Honors
+5.0,,Apply data visualizations.,Python Programming II Honors
+5.1,0.05,Build clean data sets and structures.,Python Programming II Honors
+5.2,0.05,Develop data visualizations using Python libraries such as NumPy and pandas.,Python Programming II Honors
+5.3,0.1,Develop a story using Python.,Python Programming II Honors
+6.0,,Apply Internet of Things (IoT) programs.,Python Programming II Honors
+6.1,0.03,Develop a configuration for an IoT device to connect to the network.,Python Programming II Honors
+6.2,0.03,Apply basic programming to support IoT devices.,Python Programming II Honors
+6.3,0.03,Develop Python programs that accept user input and read and write to external files.,Python Programming II Honors
+6.4,0.03,Test Python program-based data from an IoT device.,Python Programming II Honors
+6.5,0.03,Develop an automated process using Python programming with an IoT device.,Python Programming II Honors
+7.0,,Create web applications using Python web frameworks.,Python Programming II Honors
+7.1,0.05,"Create basic web applications with HTML, CSS, and Python.",Python Programming II Honors
+7.2,0.05,Create basic web components with Bootstrap.,Python Programming II Honors
+7.3,0.05,Create a basic web application with persistent data using a Python web framework.,Python Programming II Honors
