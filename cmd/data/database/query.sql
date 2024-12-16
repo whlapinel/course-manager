@@ -21,17 +21,20 @@ FROM
   courses c
 WHERE 
   c.template_id IS NULL;
-
+  
 -- name: GetUnits :many
 SELECT
   u.id,
   u.number,
+  u.sequence,
   u.name,
   u.description
 FROM
   units u
 WHERE
-  u.course_id = ?;
+  u.course_id = ?
+ORDER BY
+  u.sequence;
 
 -- name: GetLessons :many
 SELECT

@@ -77,3 +77,20 @@ func TestSaveInstance(t *testing.T) {
 
 	}
 }
+
+func TestGetTemplates(t *testing.T) {
+	templates, err := cr.GetTemplates()
+	if err != nil {
+		t.Errorf("error getting templates: %s", err)
+	}
+	for _, template := range templates {
+		log.Println(template.Name)
+		for _, unit := range template.Units {
+			log.Println(unit.Name)
+			for _, lesson := range unit.Lessons {
+				log.Println(lesson.Name)
+			}
+		}
+	}
+
+}

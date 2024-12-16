@@ -317,17 +317,21 @@ const getUnits = `-- name: GetUnits :many
 SELECT
   u.id,
   u.number,
+  u.sequence,
   u.name,
   u.description
 FROM
   units u
 WHERE
   u.course_id = ?
+ORDER BY
+  u.sequence
 `
 
 type GetUnitsRow struct {
 	ID          int64
 	Number      int64
+	Sequence    int64
 	Name        string
 	Description sql.NullString
 }
@@ -344,6 +348,7 @@ func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]GetUnitsRow, 
 		if err := rows.Scan(
 			&i.ID,
 			&i.Number,
+			&i.Sequence,
 			&i.Name,
 			&i.Description,
 		); err != nil {
