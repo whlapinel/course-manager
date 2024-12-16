@@ -44,6 +44,17 @@ FROM
 WHERE
   l.unit_id = ?;
 
+-- name: GetLessonDates :many
+SELECT
+  d.date
+FROM
+  lesson_dates ld
+JOIN
+  dates d ON d.id = ld.date_id
+WHERE
+  lesson_id = ?;
+
+
 -- name: GetDate :one
 SELECT * FROM dates WHERE date = ?;
 

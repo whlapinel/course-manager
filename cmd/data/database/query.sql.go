@@ -192,6 +192,40 @@ func (q *Queries) GetInstances(ctx context.Context) ([]GetInstancesRow, error) {
 	return items, nil
 }
 
+const getLessonDates = `-- name: GetLessonDates :many
+SELECT
+  d.date
+FROM
+  lesson_dates ld
+JOIN
+  dates d ON d.id = ld.date_id
+WHERE
+  lesson_id = ?
+`
+
+func (q *Queries) GetLessonDates(ctx context.Context, lessonID int64) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getLessonDates, lessonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var date string
+		if err := rows.Scan(&date); err != nil {
+			return nil, err
+		}
+		items = append(items, date)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLessons = `-- name: GetLessons :many
 SELECT
   l.id,

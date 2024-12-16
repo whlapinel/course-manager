@@ -8,6 +8,7 @@ tasks:
 
   sync:
     cmds:
+      - cd whlapinel.github.io
       - git add .
       - git commit -m "auto-sync"
       - git push
@@ -15,6 +16,7 @@ tasks:
       - git merge dev
       - git push
       - git switch dev
+      - cd ..
 
   run-manager:
     - echo 'Starting Course Manager'
@@ -34,6 +36,6 @@ tasks:
       - echo 'running tsc build...'
       - tsc --build
       - echo 'running npx tailwindcss...'
-      - npx tailwindcss -i ./input.css -o ./docs/styles/styles.css
+      - npx tailwindcss -i ./input.css -o ./whlapinel.github.io/docs/styles/styles.css
       - echo 'running go run...'
       - go run ./cmd/gen_site

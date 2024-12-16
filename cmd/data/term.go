@@ -65,8 +65,8 @@ func NewTermRepo(queries *database.Queries) TermRepo {
 	return termRepo{queries: queries}
 }
 
-const termsPath = "/home/whlapinel/personal_projects/github_portfolio_site/whlapinel.github.io/cmd/data/csv_files/terms.csv"
-const nonIDaysPath = "/home/whlapinel/personal_projects/github_portfolio_site/whlapinel.github.io/cmd/data/csv_files/non_instruct_days.csv"
+const termsPath = "/home/whlapinel/personal_projects/github_portfolio_site/cmd/data/csv_files/terms.csv"
+const nonIDaysPath = "/home/whlapinel/personal_projects/github_portfolio_site/cmd/data/csv_files/non_instruct_days.csv"
 
 const (
 	termIDCol = iota

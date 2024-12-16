@@ -255,7 +255,7 @@ func (c *courseRepo) SaveLessonInstance(lesson domain.Lesson) (*domain.Lesson, e
 	}
 	return &lesson, nil
 }
-
+// fetches the date id for a 
 func (c *courseRepo) SaveLessonDate(lesson domain.Lesson) error {
 	dbDate, err := c.queries.GetDate(context.Background(), lesson.Date.Format(time.DateOnly))
 	if err != nil {
