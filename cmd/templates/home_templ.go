@@ -38,7 +38,20 @@ func HomeComponent() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bg-gray-900 py-24 sm:py-32\"><div class=\"mx-auto max-w-7xl px-6 lg:px-8\"><div class=\"flex flex-col mx-auto max-w-2xl lg:mx-0 gap-4\"><h2 class=\"text-4xl font-bold tracking-tight text-white sm:text-6xl flex items-center\">Welcome!</h2><div class=\"flex gap-2\"><img src=\"/images/profile.jpg\" class=\" rounded-full size-32\"><p class=\"text-lg bg-purple-800 rounded p-4\">Hi, I'm Will Lapinel, and I am honored and privileged to teach Python to students at Phillip O. Berry Academy of Technology in Charlotte, North Carolina.  </p></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bg-gray-900 py-24 sm:py-32\"><div class=\"mx-auto max-w-7xl px-6 lg:px-8\"><div class=\"flex flex-col mx-auto max-w-2xl lg:mx-0 gap-4\"><h2 class=\"text-4xl font-bold tracking-tight text-white sm:text-6xl flex items-center\">Welcome!</h2><div class=\"flex gap-2\"><img src=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL("/images/profile.jpg")))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/home.templ`, Line: 12, Col: 61}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\" rounded-full size-32\"><p class=\"text-lg bg-purple-800 rounded p-4\">Hi, I'm Will Lapinel. I am honored to teach Python to students at Phillip O. Berry Academy of Technology in Charlotte, North Carolina.  </p></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

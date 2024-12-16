@@ -25,12 +25,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to render pages: %v", err)
 	}
-	// Generate about page
-	aboutPage := templates.NewAboutPage()
-	err = RenderPage(aboutPage)
-	if err != nil {
-		log.Fatalf("failed to render pages: %v", err)
-	}
 	// Generate contact page
 	contactPage := templates.NewContactPage()
 	err = RenderPage(contactPage)

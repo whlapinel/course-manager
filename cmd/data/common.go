@@ -9,8 +9,8 @@ import (
 	_ "embed"
 )
 
-const scheduleCsvDir = "/home/whlapinel/personal_projects/github_portfolio_site/cmd/data/csv_files/schedules.csv"
-const newScheduleDir = "/home/whlapinel/personal_projects/github_portfolio_site/cmd/data/csv_files/schedules_new.csv"
+const scheduleCsvDir = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/schedules.csv"
+const newScheduleDir = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/schedules_new.csv"
 
 //go:embed database/schema.sql
 var DDL string

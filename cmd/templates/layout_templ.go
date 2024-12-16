@@ -36,11 +36,11 @@ func Layout(selectedPage Templifier) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Will Lapinel</title><link rel=\"stylesheet\" href=\"/styles/styles.css\"><link rel=\"icon\" href=\"/images/favicon.png\"><script src=\"/js/htmx.js\" defer></script><script src=\"/js/index.js\" defer></script></head><body class=\"bg-slate-800 text-white\" hx-boost=\"true\"><header><div class=\"flex justify-between\"><a href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Will Lapinel</title><link rel=\"stylesheet\" href=\"/python/styles/styles.css\"><link rel=\"icon\" href=\"/python/images/favicon.png\"><script src=\"/python/js/htmx.js\" defer></script><script src=\"/python/js/index.js\" defer></script></head><body class=\"bg-slate-800 text-white\" hx-boost=\"true\"><header><div class=\"flex justify-between\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL("/index.html")
+		var templ_7745c5c3_Var2 templ.SafeURL = FilePathToURL("/index.html")
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -59,7 +59,7 @@ func Layout(selectedPage Templifier) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(RemoveDocsFromPath(page.Directory() + FileName(page)))
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(FilePathToURL(page.Directory() + FileName(page)))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -123,17 +123,7 @@ func Layout(selectedPage Templifier) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a> ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if page.GetTitle() == "About" {
-				templ_7745c5c3_Err = AboutSideNav().Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

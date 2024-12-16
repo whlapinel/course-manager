@@ -11,27 +11,27 @@ import (
 )
 
 const (
-	rootDir      = "./whlapinel.github.io/docs/"
-	aboutDir     = "./whlapinel.github.io/docs/about/"
-	educationDir = "./whlapinel.github.io/docs/about/education/"
-	blogDir      = "./whlapinel.github.io/docs/blog/"
-	coursesDir   = "./whlapinel.github.io/docs/courses/"
+	rootDir      = "./python/docs/"
+	aboutDir     = "./python/docs/about/"
+	educationDir = "./python/docs/about/education/"
+	blogDir      = "./python/docs/blog/"
+	coursesDir   = "./python/docs/courses/"
 )
 
-func courseRoutePath(course domain.Course) string {
+func courseFilePath(course domain.Course) string {
 	return fmt.Sprintf("%s%s", coursesDir, DirName(course))
 }
 
-func unitRoutePath(unit domain.Unit, course domain.Course) string {
+func unitFilePath(unit domain.Unit, course domain.Course) string {
 	return fmt.Sprintf("%s%s%s", coursesDir, DirName(course), DirName(unit))
 }
 
-func lessonRoutePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func lessonFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return fmt.Sprintf("%s%s%s%s", coursesDir, DirName(course), DirName(unit), DirName(lesson))
 }
 
-func filesRoutePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
-	return fmt.Sprintf("https://github.com/whlapinel/whlapinel.github.io/tree/main/docs/courses/%s%s%sfiles", DirName(course), DirName(unit), DirName(lesson))
+func filesFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	return fmt.Sprintf("https://github.com/whlapinel/python/tree/main/docs/courses/%s%s%sfiles", DirName(course), DirName(unit), DirName(lesson))
 }
 
 func hasImage(path string) bool {
@@ -131,83 +131,6 @@ func NewContactPage() Templifier {
 	}
 }
 
-func NewAboutPage() Templifier {
-	return &page{
-		title:     "About",
-		directory: rootDir,
-		component: AboutComponent(),
-	}
-}
-
-func NewEducationPage(items []*domain.EducationItem) Templifier {
-	return &page{
-		title:     "Education",
-		directory: aboutDir,
-		component: EducationListComponent(items),
-	}
-}
-
-func NewClassesPage(item *domain.EducationItem) Templifier {
-	return &page{
-		title:     item.School,
-		directory: educationDir,
-		component: ClassListComponent(item),
-	}
-}
-
-func NewWorkHistoryPage(items []*domain.WorkHistoryItem) Templifier {
-	return &page{
-		title:     "Work History",
-		directory: aboutDir,
-		component: WorkHistoryComponent(items),
-	}
-}
-
-func NewProjectsPage(items []*domain.ProjectItem) Templifier {
-	return &page{
-		title:     "Projects",
-		directory: aboutDir,
-		component: ProjectListComponent(items),
-	}
-}
-
-func NewSkillsPage(items []*domain.SkillItem) Templifier {
-	return &page{
-		title:     "Skills",
-		directory: aboutDir,
-		component: SkillsListComponent(items),
-	}
-}
-
-func NewBlogsListPage(items []*domain.Blog) Templifier {
-	return &page{
-		title:     "Blog",
-		directory: blogDir,
-		component: BlogsListComponent(items),
-	}
-}
-
-func NewBlogPage(item *domain.Blog) Templifier {
-	if item == nil {
-		return &page{
-			directory: blogDir,
-			component: BlogComponent(nil),
-		}
-	}
-	return &page{
-		title:     item.GetTitle(),
-		directory: blogDir,
-		component: BlogComponent(item),
-	}
-}
-
-func NewPersonalPage() Templifier {
-	return &page{
-		title:     "Personal",
-		directory: aboutDir,
-		component: PersonalComponent(),
-	}
-}
 
 func NewCoursesListPage(courses []*domain.Course) Templifier {
 	return &page{
@@ -221,7 +144,7 @@ func NewCoursesListPage(courses []*domain.Course) Templifier {
 func NewCoursePage(course *domain.Course) Templifier {
 	return &page{
 		title:     course.GetTitle(),
-		directory: courseRoutePath(*course),
+		directory: courseFilePath(*course),
 		component: CourseComponent(*course),
 	}
 }
@@ -229,7 +152,7 @@ func NewCoursePage(course *domain.Course) Templifier {
 func NewCourseCalendarPage(course domain.Course) Templifier {
 	return &page{
 		title:     course.GetTitle() + " Calendar",
-		directory: courseRoutePath(course),
+		directory: courseFilePath(course),
 		component: CourseCalendarComponent(course),
 	}
 }
@@ -237,7 +160,7 @@ func NewCourseCalendarPage(course domain.Course) Templifier {
 func NewUnitPage(unit domain.Unit, course domain.Course) Templifier {
 	return &page{
 		title:     unit.GetTitle(),
-		directory: unitRoutePath(unit, course),
+		directory: unitFilePath(unit, course),
 		component: UnitComponent(unit, course),
 	}
 }
@@ -245,7 +168,7 @@ func NewUnitPage(unit domain.Unit, course domain.Course) Templifier {
 func NewLessonPage(lesson domain.Lesson, unit domain.Unit, course domain.Course) Templifier {
 	return &page{
 		title:     lesson.GetTitle(),
-		directory: lessonRoutePath(lesson, unit, course),
+		directory: lessonFilePath(lesson, unit, course),
 		component: LessonComponent(lesson, unit, course),
 	}
 }
@@ -263,8 +186,26 @@ func FileName(t Titler) string {
 	return strings.ReplaceAll(strings.ToLower(t.GetTitle()), " ", "-") + ".html"
 }
 
+func FilePathToURL(directory string) templ.SafeURL {
+	route := RemoveDocsFromPath(directory)
+	route = MakeAbsolute(route)
+	route = PrefixWithRoot(route)
+	return Sanitize(route)
+}
+
+func Sanitize(route string) templ.SafeURL {
+	return templ.SafeURL(route)
+}
 func RemoveDocsFromPath(directory string) string {
-	return strings.ReplaceAll(directory, "./whlapinel.github.io/docs", "")
+	return strings.ReplaceAll(directory, "/python/docs", "")
+}
+
+func MakeAbsolute(route string) string {
+	return strings.ReplaceAll(route, "./", "/")
+}
+
+func PrefixWithRoot(route string) string {
+	return "/python" + route
 }
 
 func rootPages() []Templifier {

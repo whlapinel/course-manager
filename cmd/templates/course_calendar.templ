@@ -53,20 +53,20 @@ templ CourseCalendarComponent(course domain.Course) {
 							{ unit.GetTitle() }: { UnitDateRange(unit)[0].Format(time.RFC1123)[:16] } to { UnitDateRange(unit)[1].Format(time.RFC1123)[:16] }
 						</summary>
 						for _, lesson := range unit.Lessons {
-							@ListedLinkItem(RemoveDocsFromPath(lessonRoutePath(lesson, unit, course)+FileName(lesson)), false) {
+							@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, unit, course)+FileName(lesson)), false) {
 								<p>{ lesson.GetTitle() } { lesson.Date.Format(time.RFC1123)[:16] }</p>
 							}
 						}
 					</details>
 				}
 			}
-			@TitleDiv("Course Calendar", course.GetTitle()+", "+course.TermName, courseRoutePath(course))
+			@TitleDiv("Course Calendar", course.GetTitle()+", "+course.TermName, courseFilePath(course))
 			// <div class="grid grid-cols-7 gap-2">
 			// 	for day := range time.Duration(7) {
 			// 		<div>
 			// 			<h2>{ PreviousMonday(time.Now()).Add(24*time.Hour*day).String()[:10] }</h2>
 			// 			<h3>{ TodaysLesson(previousMonday.Add(24*time.Hour*day), course).Title() }</h3>
-			// 			@ListedLinkItem(RemoveDocsFromPath(lessonRoutePath(todaysLesson, todaysUnit, course)+FileName(todaysLesson)), false) {
+			// 			@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(todaysLesson, todaysUnit, course)+FileName(todaysLesson)), false) {
 			// 				Link
 			// 			}
 			// 		</div>

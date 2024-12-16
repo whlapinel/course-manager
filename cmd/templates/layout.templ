@@ -16,16 +16,16 @@ templ Layout(selectedPage Templifier) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Will Lapinel</title>
-			<link rel="stylesheet" href="/styles/styles.css"/>
-			<link rel="icon" href="/images/favicon.png"/>
-			<script src="/js/htmx.js" defer></script>
-			<script src="/js/index.js" defer></script>
+			<link rel="stylesheet" href="/python/styles/styles.css"/>
+			<link rel="icon" href="/python/images/favicon.png"/>
+			<script src="/python/js/htmx.js" defer></script>
+			<script src="/python/js/index.js" defer></script>
 		</head>
 		<body class="bg-slate-800 text-white" hx-boost="true">
 			<header>
 				<div class="flex justify-between">
 					<a
-						href={ templ.SafeURL("/index.html") }
+						href={ FilePathToURL("/index.html") }
 						hx-select="#page"
 						hx-target="#page"
 						hx-swap="outerHTML"
@@ -60,7 +60,7 @@ templ Layout(selectedPage Templifier) {
 						>
 							<a
 								if page.GetTitle() != "About" {
-									href={ templ.SafeURL(RemoveDocsFromPath(page.Directory() + FileName(page))) }
+									href={ templ.SafeURL(FilePathToURL(page.Directory() + FileName(page))) }
 									hx-target="#page"
 									hx-select="#page"
 								}
@@ -73,9 +73,6 @@ templ Layout(selectedPage Templifier) {
 							>
 								{ page.GetTitle() }
 							</a>
-							if page.GetTitle() == "About" {
-								@AboutSideNav()
-							}
 						</div>
 					}
 				</nav>
