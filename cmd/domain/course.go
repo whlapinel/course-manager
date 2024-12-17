@@ -7,7 +7,7 @@ func NewCourseTemplate(title string, descr string, units []Unit) Course {
 type CourseRepo interface {
 	ReadFromCSV() ([]*Course, error)
 	GetTemplates() ([]*Course, error)
-	GetInstances() ([]*Course, error)
+	GetInstances() ([]*CourseInstance, error)
 	SaveTemplate(*Course) (*Course, error)
 	SaveInstance(*CourseInstance) error
 }

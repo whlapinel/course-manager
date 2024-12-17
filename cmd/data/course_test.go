@@ -94,3 +94,19 @@ func TestGetTemplates(t *testing.T) {
 	}
 
 }
+
+func TestGetInstances(t *testing.T) {
+	instances, err := cr.GetInstances()
+	if err != nil {
+		t.Errorf("error geting instances: %s", err)
+	}
+	for _, instance := range instances {
+		log.Println(instance.Name)
+		for _, unit := range instance.Units {
+			log.Println(unit.Name)
+			for _, lesson := range unit.Lessons {
+				log.Println(lesson.Name, lesson.Date)
+			}
+		}
+	}
+}

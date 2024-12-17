@@ -25,6 +25,8 @@ WHERE
 -- name: GetUnits :many
 SELECT
   u.id,
+  u.course_id,
+  u.template_id,
   u.number,
   u.sequence,
   u.name,
@@ -39,6 +41,7 @@ ORDER BY
 -- name: GetLessons :many
 SELECT
   l.id,
+  l.template_id,
   l.number,
   l.name,
   l.description

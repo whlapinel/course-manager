@@ -229,6 +229,7 @@ func (q *Queries) GetLessonDates(ctx context.Context, lessonID int64) ([]string,
 const getLessons = `-- name: GetLessons :many
 SELECT
   l.id,
+  l.template_id,
   l.number,
   l.name,
   l.description
@@ -240,6 +241,7 @@ WHERE
 
 type GetLessonsRow struct {
 	ID          int64
+	TemplateID  sql.NullInt64
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
@@ -256,6 +258,7 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 		var i GetLessonsRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.TemplateID,
 			&i.Number,
 			&i.Name,
 			&i.Description,
@@ -316,6 +319,8 @@ func (q *Queries) GetTemplates(ctx context.Context) ([]GetTemplatesRow, error) {
 const getUnits = `-- name: GetUnits :many
 SELECT
   u.id,
+  u.course_id,
+  u.template_id,
   u.number,
   u.sequence,
   u.name,
@@ -328,25 +333,19 @@ ORDER BY
   u.sequence
 `
 
-type GetUnitsRow struct {
-	ID          int64
-	Number      int64
-	Sequence    int64
-	Name        string
-	Description sql.NullString
-}
-
-func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]GetUnitsRow, error) {
+func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]Unit, error) {
 	rows, err := q.db.QueryContext(ctx, getUnits, courseID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetUnitsRow
+	var items []Unit
 	for rows.Next() {
-		var i GetUnitsRow
+		var i Unit
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.TemplateID,
 			&i.Number,
 			&i.Sequence,
 			&i.Name,
