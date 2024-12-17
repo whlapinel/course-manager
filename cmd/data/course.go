@@ -71,6 +71,69 @@ func (c *courseRepo) SaveInstance(course *domain.CourseInstance) error {
 
 }
 
+// GetInstance
+func (c *courseRepo) GetInstance(id int) (*domain.CourseInstance, error) {
+	dbInstance, err := c.queries.GetInstance(context.Background(), int64(id))
+	if err != nil {
+		return nil, err
+	}
+	instance := &domain.CourseInstance{
+		Course: domain.Course{
+			ID:          int(dbInstance.CourseID),
+			Name:        dbInstance.CourseName,
+			Description: dbInstance.CourseDescr.String,
+		},
+		TemplateID: int(dbInstance.TemplateID.Int64),
+	}
+	dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.ID))
+	if err != nil {
+		return nil, err
+	}
+	var units []domain.Unit
+	for _, dbUnit := range dbUnits {
+		unit := domain.Unit{
+			ID:          int(dbUnit.ID),
+			CourseID:    int(dbUnit.CourseID),
+			Number:      int(dbUnit.Number),
+			Name:        dbUnit.Name,
+			TemplateID:  int(dbUnit.TemplateID.Int64),
+			Description: dbUnit.Description.String,
+		}
+		dbLessons, err := c.queries.GetLessons(context.Background(), int64(unit.ID))
+		if err != nil {
+			return nil, err
+		}
+		var lessons []domain.Lesson
+		for _, dbLesson := range dbLessons {
+			lesson := domain.Lesson{
+				ID:          int(dbLesson.ID),
+				TemplateID:  int(dbLesson.TemplateID.Int64),
+				Number:      int(dbLesson.Number),
+				Name:        dbLesson.Name.String,
+				Description: dbLesson.Description.String,
+			}
+			dbLessonDates, err := c.queries.GetLessonDates(context.Background(), int64(lesson.ID))
+			if err != nil {
+				return nil, err
+			}
+			var lessonDates []time.Time
+			for _, dbLessonDate := range dbLessonDates {
+				lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)
+				if err != nil {
+					return nil, err
+				}
+				lessonDates = append(lessonDates, lessonDate)
+			}
+			lesson.Dates = lessonDates
+			lessons = append(lessons, lesson)
+		}
+		unit.Lessons = lessons
+		units = append(units, unit)
+	}
+	instance.Units = units
+	return instance, nil
+}
+
 // GetInstances implements domain.CourseRepository.
 func (c *courseRepo) GetInstances() ([]*domain.CourseInstance, error) {
 	dbInstances, err := c.queries.GetInstances(context.Background())
@@ -87,50 +150,56 @@ func (c *courseRepo) GetInstances() ([]*domain.CourseInstance, error) {
 			},
 			TemplateID: int(dbInstance.TermID.Int64),
 		}
-		dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.ID))
-		if err != nil {
-			return nil, err
-		}
-		var units []domain.Unit
-		for _, dbUnit := range dbUnits {
-			unit := domain.Unit{
-				ID:          int(dbUnit.ID),
-				CourseID:    int(dbUnit.CourseID),
-				Number:      int(dbUnit.Number),
-				Name:        dbUnit.Name,
-				TemplateID:  int(dbUnit.TemplateID.Int64),
-				Description: dbUnit.Description.String,
-			}
-			dbLessons, err := c.queries.GetLessons(context.Background(), int64(unit.ID))
-			if err != nil {
-				return nil, err
-			}
-			var lessons []domain.Lesson
-			for _, dbLesson := range dbLessons {
-				lesson := domain.Lesson{
-					ID:          int(dbLesson.ID),
-					TemplateID:  int(dbLesson.TemplateID.Int64),
-					Number:      int(dbLesson.Number),
-					Name:        dbLesson.Name.String,
-					Description: dbLesson.Description.String,
-				}
-				dbLessonDate, err := c.queries.GetLessonDates(context.Background(), int64(lesson.ID))
-				if err != nil {
-					return nil, err
-				}
-				lesson.Date, err = time.Parse(time.DateOnly, dbLessonDate[0])
-				if err != nil {
-					return nil, err
-				}
-				lessons = append(lessons, lesson)
-			}
-			unit.Lessons = lessons
-			units = append(units, unit)
-		}
-		instance.Units = units
 		instances = append(instances, instance)
 	}
 	return instances, nil
+}
+
+func (c *courseRepo) GetTemplate(id int) (*domain.Course, error) {
+	dbCourse, err := c.queries.GetTemplate(context.Background(), int64(id))
+	if err != nil {
+		return nil, err
+	}
+	course := &domain.Course{
+		ID:          int(dbCourse.CourseID),
+		Name:        dbCourse.CourseName,
+		Description: dbCourse.CourseDescr.String,
+	}
+	dbUnits, err := c.queries.GetUnits(context.Background(), dbCourse.CourseID)
+	if err != nil {
+		return nil, err
+	}
+	var units []domain.Unit
+	for _, dbUnit := range dbUnits {
+		unit := domain.Unit{
+			ID:          int(dbUnit.ID),
+			CourseID:    int(dbUnit.CourseID),
+			Number:      int(dbUnit.Number),
+			Name:        dbUnit.Name,
+			Description: dbUnit.Description.String,
+		}
+		dbLessons, err := c.queries.GetLessons(context.Background(), dbUnit.ID)
+		if err != nil {
+			return nil, err
+		}
+		var lessons []domain.Lesson
+		for _, dbLesson := range dbLessons {
+			lesson := domain.Lesson{
+				ID:          int(dbLesson.ID),
+				TemplateID:  int(dbLesson.TemplateID.Int64),
+				Number:      int(dbLesson.Number),
+				Name:        dbLesson.Name.String,
+				Description: dbLesson.Description.String,
+			}
+			lessons = append(lessons, lesson)
+		}
+		unit.Lessons = lessons
+		units = append(units, unit)
+	}
+	course.Units = units
+
+	return course, nil
+
 }
 
 // GetTemplates implements domain.CourseRepository.
@@ -284,19 +353,21 @@ func (c *courseRepo) SaveLessonInstance(lesson domain.Lesson) (*domain.Lesson, e
 
 // fetches the date id for a
 func (c *courseRepo) SaveLessonDate(lesson domain.Lesson) error {
-	dbDate, err := c.queries.GetDate(context.Background(), lesson.Date.Format(time.DateOnly))
-	if err != nil {
-		return fmt.Errorf("courseRepo.SaveInstance(), c.queries.GetDate(): %s", err)
+	for _, date := range lesson.Dates {
+		dbDate, err := c.queries.GetDate(context.Background(), date.Format(time.DateOnly))
+		if err != nil {
+			return fmt.Errorf("courseRepo.SaveInstance(), c.queries.GetDate(): %s", err)
+		}
+		log.Println("Saved date: ID:", dbDate.ID, "\nDay Number:", dbDate.DayNumber, "\nTerm ID:", dbDate.TermID)
+		lessonDate, err := c.queries.SaveLessonDate(context.Background(), database.SaveLessonDateParams{
+			LessonID: int64(lesson.ID),
+			DateID:   dbDate.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("courseRepo.SaveInstance(), c.queries.SaveLessonDate: %s", err)
+		}
+		log.Println("saved lessonDate: \nDate ID:", lessonDate.DateID, "\nLesson ID:", lessonDate.LessonID)
 	}
-	log.Println("Saved date: ID:", dbDate.ID, "\nDay Number:", dbDate.DayNumber, "\nTerm ID:", dbDate.TermID)
-	lessonDate, err := c.queries.SaveLessonDate(context.Background(), database.SaveLessonDateParams{
-		LessonID: int64(lesson.ID),
-		DateID:   dbDate.ID,
-	})
-	if err != nil {
-		return fmt.Errorf("courseRepo.SaveInstance(), c.queries.SaveLessonDate: %s", err)
-	}
-	log.Println("saved lessonDate: \nDate ID:", lessonDate.DateID, "\nLesson ID:", lessonDate.LessonID)
 	return nil
 }
 

@@ -209,7 +209,7 @@ func GenerateCourseInstancesFromCSV2(date time.Time) ([]*domain.Course, error) {
 		for j, unit := range course.Units {
 			for k, lesson := range unit.Lessons {
 				log.Printf("Assigning %v to lesson %v", currDate, lesson.Name) // Log assignment
-				courses[i].Units[j].Lessons[k].Date = currDate
+				courses[i].Units[j].Lessons[k].Dates[0] = currDate
 				if dateNum != len(currentTerm.InstructionalDays)-1 {
 					dateNum++
 					currDate = currentTerm.InstructionalDays[dateNum]
@@ -241,26 +241,28 @@ func WriteCourseInstancesToCSV(instances []*domain.Course) error {
 				lessonNum := lesson.Number
 				stdNum := ""
 				stdDescr := ""
-				date := lesson.Date.Format(time.DateOnly)
-				if lesson.Date.IsZero() {
-					date = ""
+				for _, date := range lesson.Dates {
+					dateString := date.Format(time.DateOnly)
+					if date.IsZero() {
+						dateString = ""
+					}
+					termID := ""
+					termName := instance.TermName
+					row := []string{
+						courseName,
+						strconv.Itoa(dayNum),
+						strconv.Itoa(unitNum),
+						unitDescr,
+						strconv.Itoa(lessonNum),
+						lesson.Description,
+						stdNum,
+						stdDescr,
+						dateString,
+						termID,
+						termName,
+					}
+					rows = append(rows, row)
 				}
-				termID := ""
-				termName := instance.TermName
-				row := []string{
-					courseName,
-					strconv.Itoa(dayNum),
-					strconv.Itoa(unitNum),
-					unitDescr,
-					strconv.Itoa(lessonNum),
-					lesson.Description,
-					stdNum,
-					stdDescr,
-					date,
-					termID,
-					termName,
-				}
-				rows = append(rows, row)
 
 			}
 

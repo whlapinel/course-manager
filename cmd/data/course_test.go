@@ -18,7 +18,10 @@ func TestImportCoursesFromCSV(t *testing.T) {
 			log.Println(unit.Name)
 			log.Println("num lessons: ", len(unit.Lessons))
 			for _, lesson := range unit.Lessons {
-				log.Println(lesson.Name, lesson.Description, lesson.Date.Format(time.DateOnly))
+				for _, date := range lesson.Dates {
+
+					log.Println(lesson.Name, lesson.Description, date.Format(time.DateOnly))
+				}
 			}
 		}
 	}
@@ -38,7 +41,9 @@ func TestGenerateInstances(t *testing.T) {
 			log.Println(unit.Name)
 			log.Println("num lessons: ", len(unit.Lessons))
 			for _, lesson := range unit.Lessons {
-				log.Println(lesson.Name, lesson.Description, lesson.Date.Format(time.DateOnly))
+				for _, date := range lesson.Dates {
+					log.Println(lesson.Name, lesson.Description, date.Format(time.DateOnly))
+				}
 			}
 		}
 	}
@@ -105,7 +110,7 @@ func TestGetInstances(t *testing.T) {
 		for _, unit := range instance.Units {
 			log.Println(unit.Name)
 			for _, lesson := range unit.Lessons {
-				log.Println(lesson.Name, lesson.Date)
+				log.Println(lesson.Name, lesson.Dates)
 			}
 		}
 	}

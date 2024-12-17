@@ -145,6 +145,40 @@ func (q *Queries) GetDate(ctx context.Context, date string) (Date, error) {
 	return i, err
 }
 
+const getInstance = `-- name: GetInstance :one
+SELECT
+  c.id as course_id,
+  c.template_id as template_id,
+  c.name as course_name,
+  c.description as course_descr,
+  c.term_id
+FROM
+  courses c
+WHERE
+  c.id = ?
+`
+
+type GetInstanceRow struct {
+	CourseID    int64
+	TemplateID  sql.NullInt64
+	CourseName  string
+	CourseDescr sql.NullString
+	TermID      sql.NullInt64
+}
+
+func (q *Queries) GetInstance(ctx context.Context, id int64) (GetInstanceRow, error) {
+	row := q.db.QueryRowContext(ctx, getInstance, id)
+	var i GetInstanceRow
+	err := row.Scan(
+		&i.CourseID,
+		&i.TemplateID,
+		&i.CourseName,
+		&i.CourseDescr,
+		&i.TermID,
+	)
+	return i, err
+}
+
 const getInstances = `-- name: GetInstances :many
 SELECT
   c.id as course_id,
@@ -274,6 +308,30 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 		return nil, err
 	}
 	return items, nil
+}
+
+const getTemplate = `-- name: GetTemplate :one
+SELECT
+  c.id as course_id,
+  c.name as course_name,
+  c.description as course_descr
+FROM 
+  courses c
+WHERE 
+  c.id = ?
+`
+
+type GetTemplateRow struct {
+	CourseID    int64
+	CourseName  string
+	CourseDescr sql.NullString
+}
+
+func (q *Queries) GetTemplate(ctx context.Context, id int64) (GetTemplateRow, error) {
+	row := q.db.QueryRowContext(ctx, getTemplate, id)
+	var i GetTemplateRow
+	err := row.Scan(&i.CourseID, &i.CourseName, &i.CourseDescr)
+	return i, err
 }
 
 const getTemplates = `-- name: GetTemplates :many
