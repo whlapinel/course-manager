@@ -131,7 +131,6 @@ func NewContactPage() Templifier {
 	}
 }
 
-
 func NewCoursesListPage(courses []*domain.Course) Templifier {
 	return &page{
 		title:     "Courses",
@@ -149,11 +148,14 @@ func NewCoursePage(course *domain.Course) Templifier {
 	}
 }
 
-func NewCourseCalendarPage(course domain.Course) Templifier {
+func NewCourseCalendarPage(schedule domain.CourseSchedule) Templifier {
+	if schedule.Course.Name == "" {
+		log.Fatal("schedule.Course.Name is empty string")
+	}
 	return &page{
-		title:     course.GetTitle() + " Calendar",
-		directory: courseFilePath(course),
-		component: CourseCalendarComponent(course),
+		title:     schedule.Course.Name + " Calendar",
+		directory: courseFilePath(schedule.Course),
+		component: CourseCalendarComponent(schedule),
 	}
 }
 

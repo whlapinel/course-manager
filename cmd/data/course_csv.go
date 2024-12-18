@@ -139,7 +139,7 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 		unitDescr := record[unitDescrCol]
 		unit, exists := courseHolder.Units[unitSequence]
 		if !exists {
-			courseHolder.Units[unitSequence] = UnitHolder{
+			unit = UnitHolder{
 				Unit: domain.Unit{
 					Number:      unitNum,
 					SequenceNum: unitSequence,
@@ -148,7 +148,6 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 				},
 				Lessons: LessonMap{},
 			}
-			unit = courseHolder.Units[unitSequence]
 		}
 		lessonNum := 0
 		if record[lessonNumCol] != "" {

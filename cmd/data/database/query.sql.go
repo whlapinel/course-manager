@@ -134,6 +134,7 @@ SELECT
   d.date,
   d.day_number,
   l.name as lesson_name,
+  u.name as unit_name,
   l.description as lesson_description
 FROM
   dates d
@@ -155,6 +156,7 @@ type GetDailySchedulesRow struct {
 	Date              string
 	DayNumber         int64
 	LessonName        sql.NullString
+	UnitName          string
 	LessonDescription sql.NullString
 }
 
@@ -171,6 +173,7 @@ func (q *Queries) GetDailySchedules(ctx context.Context, id int64) ([]GetDailySc
 			&i.Date,
 			&i.DayNumber,
 			&i.LessonName,
+			&i.UnitName,
 			&i.LessonDescription,
 		); err != nil {
 			return nil, err

@@ -296,7 +296,7 @@ func (c *courseRepo) SaveTemplate(course *domain.Course) (*domain.Course, error)
 
 func (c *courseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
 	log.Println("SaveUnit(): ", "templateID", unit.TemplateID, "ID", unit.ID)
-	var hasDescr = unit.Description == ""
+	var hasDescr = unit.Description != ""
 	currUnit := database.Unit{
 		CourseID: int64(unit.CourseID),
 		TemplateID: sql.NullInt64{

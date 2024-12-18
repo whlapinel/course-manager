@@ -39,7 +39,7 @@ func main() {
 	}
 	// Generate "courses I teach" list page
 	courseRepo := data.NewCourseRepo(queries)
-	courses, err := courseRepo.ReadFromCSV()
+	courses, err := courseRepo.GetTemplates()
 	if err != nil {
 		log.Fatalf("Error getting courses: %v", err)
 	}
@@ -48,18 +48,28 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to render pages: %v", err)
 	}
+	instances, err := courseRepo.GetInstances()
+	if err != nil {
+		log.Fatalf("error getting instances: %v", err)
+	}
 	scheduleRepo := data.NewDailyScheduleRepo(queries)
+	for _, instance := range instances {
+		schedule, err := scheduleRepo.GetSchedule(*instance)
+		if err != nil {
+			log.Fatalf("failed to render schedule: %v", err)
+		}
+		// Generate calendar page for each course
+		calendarPage := templates.NewCourseCalendarPage(schedule)
+		err = RenderPage(calendarPage)
+		if err != nil {
+			log.Fatalf("failed to render pages: %v", err)
+		}
+	}
 	// Generate page for each course
 	for _, course := range courses {
 		log.Println("Site generator main() course: Name: ", course.Name)
 		coursePage := templates.NewCoursePage(course)
 		err = RenderPage(coursePage)
-		if err != nil {
-			log.Fatalf("failed to render pages: %v", err)
-		}
-		// Generate calendar page for each course
-		calendarPage := templates.NewCourseCalendarPage(*course)
-		err = RenderPage(calendarPage)
 		if err != nil {
 			log.Fatalf("failed to render pages: %v", err)
 		}

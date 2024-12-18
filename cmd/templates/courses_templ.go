@@ -40,7 +40,7 @@ func CourseDivContainer(course domain.Course, upPath, text string) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = FilePathToURL(courseFilePath(course) + FileName(NewCourseCalendarPage(course)))
+			var templ_7745c5c3_Var2 templ.SafeURL = FilePathToURL(courseFilePath(course) + FileName(NewCourseCalendarPage(domain.CourseSchedule{Course: course})))
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

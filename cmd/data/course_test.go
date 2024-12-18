@@ -92,6 +92,7 @@ func TestGetTemplates(t *testing.T) {
 		log.Println(template.Name)
 		for _, unit := range template.Units {
 			log.Println(unit.Name)
+			log.Println(unit.Description)
 			for _, lesson := range unit.Lessons {
 				log.Println(lesson.Name)
 			}

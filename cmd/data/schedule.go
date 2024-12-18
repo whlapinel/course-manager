@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
 	"log"
@@ -20,30 +19,41 @@ func NewDailyScheduleRepo(queries *database.Queries) domain.DailyScheduleRepo {
 }
 
 // GetSchedule implements domain.DailyScheduleRepo.
-func (d dailyScheduleRepo) GetSchedule(instanceID int) ([]domain.DailySchedule, error) {
-	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instanceID))
+func (d dailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
+	var schedule = domain.CourseSchedule{
+		Course: instance.Course,
+	}
+	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.ID))
 	if err != nil {
-		return nil, err
+		return schedule, err
 	}
-	if len(dbSchedules) == 0 {
-		return nil, fmt.Errorf("dbSchedules is empty")
+	type ScheduleHolder struct {
+		Lesson domain.Lesson
+		Unit   domain.Unit
 	}
-	dateMap := make(map[string][]domain.Lesson)
+	dateMap := make(map[string][]ScheduleHolder)
 	for _, dbSchedule := range dbSchedules {
 		log.Println("dbSchedule: ", dbSchedule.Date, dbSchedule.LessonName)
 		lesson := domain.Lesson{
 			Name:        dbSchedule.LessonName.String,
 			Description: dbSchedule.LessonDescription.String,
 		}
-		lessons, exists := dateMap[dbSchedule.Date]
+		unit := domain.Unit{
+			Name: dbSchedule.UnitName,
+		}
+		holder := ScheduleHolder{
+			Lesson: lesson,
+			Unit:   unit,
+		}
+		holders, exists := dateMap[dbSchedule.Date]
 		if !exists {
-			lessons = []domain.Lesson{
-				lesson,
+			holders = []ScheduleHolder{
+				holder,
 			}
 		} else {
-			lessons = append(lessons, lesson)
+			holders = append(holders, holder)
 		}
-		dateMap[dbSchedule.Date] = lessons
+		dateMap[dbSchedule.Date] = holders
 	}
 	var keys []string
 	for dateString := range dateMap {
@@ -51,18 +61,27 @@ func (d dailyScheduleRepo) GetSchedule(instanceID int) ([]domain.DailySchedule, 
 	}
 	dates, err := parseDates(keys)
 	if err != nil {
-		return nil, err
+		return schedule, err
 	}
 	sorted := sortDates(dates)
 	var schedules []domain.DailySchedule
 	for _, date := range sorted {
+		holders := dateMap[date.Format(time.DateOnly)]
+		var lessons []domain.Lesson
+		var units []domain.Unit
+		for _, holder := range holders {
+			lessons = append(lessons, holder.Lesson)
+			units = append(units, holder.Unit)
+		}
 		dailySchedule := domain.DailySchedule{
 			Date:    date,
-			Lessons: dateMap[date.Format(time.DateOnly)],
+			Lessons: lessons,
+			Units:   units,
 		}
 		schedules = append(schedules, dailySchedule)
 	}
-	return schedules, nil
+	schedule.Schedule = schedules
+	return schedule, nil
 }
 
 func parseDates(dateStrings []string) ([]time.Time, error) {

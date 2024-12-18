@@ -29,6 +29,7 @@ SELECT
   d.date,
   d.day_number,
   l.name as lesson_name,
+  u.name as unit_name,
   l.description as lesson_description
 FROM
   dates d
