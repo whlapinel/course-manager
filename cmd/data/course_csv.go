@@ -76,6 +76,18 @@ func (c *courseRepo) ReadFromCSV() ([]*domain.Course, error) {
 
 }
 
+type LessonMap map[int]domain.Lesson
+type UnitHolder struct {
+	Unit    domain.Unit
+	Lessons LessonMap
+}
+type UnitMap map[int]UnitHolder
+type CourseHolder struct {
+	Course domain.Course
+	Units  UnitMap
+}
+type CourseMap map[string]CourseHolder
+
 func importCoursesFromCSV() ([]*domain.Course, error) {
 	file, err := os.Open(scheduleCsvDir)
 	if err != nil {
@@ -90,16 +102,11 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 	if len(records) == 0 {
 		log.Fatalf("file is empty")
 	}
-	type UnitMap map[int]domain.Unit
-	type CourseHolder struct {
-		Course domain.Course
-		Units  UnitMap
-	}
-	courseMap := make(map[string]CourseHolder)
+	courseMap := CourseMap{}
 	for _, record := range records[1:] {
 		courseName := record[courseNameCol]
-		courseHolder, exists := courseMap[courseName]
 		termName := record[scheduleTermNameCol]
+		courseHolder, exists := courseMap[courseName]
 		if !exists {
 			course := domain.Course{
 				Name:     courseName,
@@ -132,11 +139,14 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 		unitDescr := record[unitDescrCol]
 		unit, exists := courseHolder.Units[unitSequence]
 		if !exists {
-			courseHolder.Units[unitSequence] = domain.Unit{
-				Number:      unitNum,
-				SequenceNum: unitSequence,
-				Name:        unitName,
-				Description: unitDescr,
+			courseHolder.Units[unitSequence] = UnitHolder{
+				Unit: domain.Unit{
+					Number:      unitNum,
+					SequenceNum: unitSequence,
+					Name:        unitName,
+					Description: unitDescr,
+				},
+				Lessons: LessonMap{},
 			}
 			unit = courseHolder.Units[unitSequence]
 		}
@@ -157,17 +167,29 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error parsing date: %s", err)
 		}
-		lesson := domain.NewLesson(lessonNum, unit.ID, lessonName, lessonDescr, lessonDate)
-		unit.Lessons = append(unit.Lessons, lesson)
+		lesson, exists := unit.Lessons[lessonNum]
+		if !exists {
+			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, lessonName, lessonDescr, []time.Time{lessonDate})
+		} else {
+			lesson.Dates = append(lesson.Dates, lessonDate)
+		}
+		unit.Lessons[lessonNum] = lesson
 		courseHolder.Units[unitSequence] = unit
 		courseMap[courseName] = courseHolder
 	}
 	var courses []*domain.Course
-	for _, holder := range courseMap {
-		course := holder.Course
-		nums := sortedBySequence(holder.Units)
-		for _, num := range nums {
-			course.Units = append(course.Units, holder.Units[num])
+	for _, courseHolder := range courseMap {
+		course := courseHolder.Course
+		unitNums := sortedBySequence(courseHolder.Units)
+		for _, unitNum := range unitNums {
+			unit := courseHolder.Units[unitNum].Unit
+			unitHolder := courseHolder.Units[unitNum]
+			lessonNums := sortLessonNumsBySequence(unitHolder.Lessons)
+			for _, lessonNum := range lessonNums {
+				lesson := unitHolder.Lessons[lessonNum]
+				unit.Lessons = append(unit.Lessons, lesson)
+			}
+			course.Units = append(course.Units, unit)
 		}
 		courses = append(courses, &course)
 
@@ -175,9 +197,19 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 	return courses, nil
 }
 
-func sortedBySequence(unitMap map[int]domain.Unit) []int {
+func sortedBySequence(unitMap UnitMap) []int {
 	keys := make([]int, 0, len(unitMap))
 	for sequence := range unitMap {
+		keys = append(keys, sequence)
+	}
+
+	slices.Sort(keys)
+	return keys
+
+}
+func sortLessonNumsBySequence(lessonMap LessonMap) []int {
+	keys := make([]int, 0, len(lessonMap))
+	for sequence := range lessonMap {
 		keys = append(keys, sequence)
 	}
 
