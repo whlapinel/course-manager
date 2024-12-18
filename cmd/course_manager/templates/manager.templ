@@ -25,7 +25,7 @@ templ ManagerMainMenu() {
 	}
 }
 
-templ ManageCourseOOPComponent(courses []*domain.Course) {
+templ ManageCourseInstanceComponent(courses []*domain.CourseInstance) {
 	for _, course := range courses {
 		<table>
 			<caption>{ course.Name }</caption>
@@ -50,7 +50,9 @@ templ ManageCourseOOPComponent(courses []*domain.Course) {
 						<td>{ strconv.Itoa(lesson.Number) }</td>
 						<td>{ lesson.Name }</td>
 						<td>{ lesson.Description }</td>
-						<td>{ lesson.Date.Format(time.DateOnly) }</td>
+						for _, date := range lesson.Dates {
+							<td>{ date.Format(time.DateOnly) }</td>
+						}
 						<td><button></button></td>
 					</tr>
 				}
@@ -60,4 +62,36 @@ templ ManageCourseOOPComponent(courses []*domain.Course) {
 	}
 }
 
-
+templ ManageCourseComponent(courses []*domain.Course) {
+	for _, course := range courses {
+		<table>
+			<caption>{ course.Name }</caption>
+			<thead>
+				<tr>
+					<th>Day</th>
+					<th>Unit #</th>
+					<th>Unit Name</th>
+					<th>Lesson #</th>
+					<th>Lesson Name</th>
+				</tr>
+			</thead>
+			for _, unit := range course.Units {
+				<tr>
+					<td>{ strconv.Itoa(unit.Number) }</td>
+					<td>{ unit.Name }</td>
+					<td>{ unit.Description }</td>
+					<td><button></button></td>
+				</tr>
+				for _, lesson := range unit.Lessons {
+					<tr>
+						<td>{ strconv.Itoa(lesson.Number) }</td>
+						<td>{ lesson.Name }</td>
+						<td>{ lesson.Description }</td>
+						<td><button></button></td>
+					</tr>
+				}
+			}
+			<tfoot></tfoot>
+		</table>
+	}
+}

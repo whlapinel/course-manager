@@ -24,10 +24,13 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
-			if SameDate(lesson.Date, date) {
-				todaysLesson = lesson // side effect alert! bad form maybe but I want to "cache" result
-				todaysUnit = unit     // side effect alert! bad form maybe but I want to "cache" result
-				return lesson
+			for _, lessonDate := range lesson.Dates {
+				if SameDate(lessonDate, date) {
+					todaysLesson = lesson // side effect alert! bad form maybe but I want to "cache" result
+					todaysUnit = unit     // side effect alert! bad form maybe but I want to "cache" result
+					return lesson
+				}
+
 			}
 		}
 	}
@@ -35,12 +38,15 @@ func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 
 }
 
+// this assumes the lessons are in ascending chronological order, and that lesson dates are also sorted in ascending chronological order
 func UnitDateRange(unit domain.Unit) []time.Time {
+	var dates []time.Time
 	lessonCount := len(unit.Lessons)
-	return []time.Time{
-		unit.Lessons[0].Date,
-		unit.Lessons[lessonCount-1].Date,
-	}
+	lastLesson := unit.Lessons[lessonCount-1]
+	dateCountLastLesson := len(lastLesson.Dates)
+	dates = append(dates, unit.Lessons[0].Dates[0])
+	dates = append(dates, lastLesson.Dates[dateCountLastLesson-1])
+	return dates
 }
 
 templ CourseCalendarComponent(course domain.Course) {
@@ -54,7 +60,9 @@ templ CourseCalendarComponent(course domain.Course) {
 						</summary>
 						for _, lesson := range unit.Lessons {
 							@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, unit, course)+FileName(lesson)), false) {
-								<p>{ lesson.GetTitle() } { lesson.Date.Format(time.RFC1123)[:16] }</p>
+								for _, date := range lesson.Dates {
+									<p>{ lesson.GetTitle() } { date.Format(time.RFC1123)[:16] }</p>
+								}
 							}
 						}
 					</details>

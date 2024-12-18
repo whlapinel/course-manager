@@ -32,10 +32,13 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
-			if SameDate(lesson.Date, date) {
-				todaysLesson = lesson // side effect alert! bad form maybe but I want to "cache" result
-				todaysUnit = unit     // side effect alert! bad form maybe but I want to "cache" result
-				return lesson
+			for _, lessonDate := range lesson.Dates {
+				if SameDate(lessonDate, date) {
+					todaysLesson = lesson // side effect alert! bad form maybe but I want to "cache" result
+					todaysUnit = unit     // side effect alert! bad form maybe but I want to "cache" result
+					return lesson
+				}
+
 			}
 		}
 	}
@@ -43,12 +46,15 @@ func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 
 }
 
+// this assumes the lessons are in ascending chronological order, and that lesson dates are also sorted in ascending chronological order
 func UnitDateRange(unit domain.Unit) []time.Time {
+	var dates []time.Time
 	lessonCount := len(unit.Lessons)
-	return []time.Time{
-		unit.Lessons[0].Date,
-		unit.Lessons[lessonCount-1].Date,
-	}
+	lastLesson := unit.Lessons[lessonCount-1]
+	dateCountLastLesson := len(lastLesson.Dates)
+	dates = append(dates, unit.Lessons[0].Dates[0])
+	dates = append(dates, lastLesson.Dates[dateCountLastLesson-1])
+	return dates
 }
 
 func CourseCalendarComponent(course domain.Course) templ.Component {
@@ -113,7 +119,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 						var templ_7745c5c3_Var5 string
 						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(unit.GetTitle())
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 53, Col: 24}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 24}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 						if templ_7745c5c3_Err != nil {
@@ -126,7 +132,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 						var templ_7745c5c3_Var6 string
 						templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(UnitDateRange(unit)[0].Format(time.RFC1123)[:16])
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 53, Col: 78}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 78}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 						if templ_7745c5c3_Err != nil {
@@ -139,7 +145,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 						var templ_7745c5c3_Var7 string
 						templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(UnitDateRange(unit)[1].Format(time.RFC1123)[:16])
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 53, Col: 134}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 134}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 						if templ_7745c5c3_Err != nil {
@@ -162,35 +168,37 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 									}()
 								}
 								ctx = templ.InitializeContext(ctx)
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								var templ_7745c5c3_Var9 string
-								templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.GetTitle())
-								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 57, Col: 30}
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								var templ_7745c5c3_Var10 string
-								templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Date.Format(time.RFC1123)[:16])
-								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 57, Col: 72}
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
+								for _, date := range lesson.Dates {
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									var templ_7745c5c3_Var9 string
+									templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.GetTitle())
+									if templ_7745c5c3_Err != nil {
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 64, Col: 31}
+									}
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									var templ_7745c5c3_Var10 string
+									templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.RFC1123)[:16])
+									if templ_7745c5c3_Err != nil {
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 64, Col: 66}
+									}
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
 								}
 								return templ_7745c5c3_Err
 							})

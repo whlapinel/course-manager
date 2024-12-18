@@ -52,7 +52,7 @@ func (h courseHandler) ListInstances(c echo.Context) error {
 		log.Println("courseHandler List():", err)
 		return err
 	}
-	component := templates.ManageCourseOOPComponent(courses)
+	component := templates.ManageCourseInstanceComponent(courses)
 	return RenderTempl(component, c, 200)
 }
 
@@ -62,7 +62,7 @@ func (h courseHandler) ListTemplates(c echo.Context) error {
 		log.Println("courseHandler List():", err)
 		return err
 	}
-	component := templates.ManageCourseOOPComponent(courses)
+	component := templates.ManageCourseComponent(courses)
 	return RenderTempl(component, c, 200)
 }
 
@@ -78,7 +78,7 @@ func (h courseHandler) ReadFromCSV(c echo.Context) error {
 			return err
 		}
 	}
-	component := templates.ManageCourseOOPComponent(courses)
+	component := templates.ManageCourseInstanceComponent(courses)
 	return RenderTempl(component, c, 200)
 
 }

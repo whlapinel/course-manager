@@ -145,6 +145,40 @@ func (q *Queries) GetDate(ctx context.Context, date string) (Date, error) {
 	return i, err
 }
 
+const getInstance = `-- name: GetInstance :one
+SELECT
+  c.id as course_id,
+  c.template_id as template_id,
+  c.name as course_name,
+  c.description as course_descr,
+  c.term_id
+FROM
+  courses c
+WHERE
+  c.id = ?
+`
+
+type GetInstanceRow struct {
+	CourseID    int64
+	TemplateID  sql.NullInt64
+	CourseName  string
+	CourseDescr sql.NullString
+	TermID      sql.NullInt64
+}
+
+func (q *Queries) GetInstance(ctx context.Context, id int64) (GetInstanceRow, error) {
+	row := q.db.QueryRowContext(ctx, getInstance, id)
+	var i GetInstanceRow
+	err := row.Scan(
+		&i.CourseID,
+		&i.TemplateID,
+		&i.CourseName,
+		&i.CourseDescr,
+		&i.TermID,
+	)
+	return i, err
+}
+
 const getInstances = `-- name: GetInstances :many
 SELECT
   c.id as course_id,
@@ -229,6 +263,7 @@ func (q *Queries) GetLessonDates(ctx context.Context, lessonID int64) ([]string,
 const getLessons = `-- name: GetLessons :many
 SELECT
   l.id,
+  l.template_id,
   l.number,
   l.name,
   l.description
@@ -240,6 +275,7 @@ WHERE
 
 type GetLessonsRow struct {
 	ID          int64
+	TemplateID  sql.NullInt64
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
@@ -256,6 +292,7 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 		var i GetLessonsRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.TemplateID,
 			&i.Number,
 			&i.Name,
 			&i.Description,
@@ -271,6 +308,30 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 		return nil, err
 	}
 	return items, nil
+}
+
+const getTemplate = `-- name: GetTemplate :one
+SELECT
+  c.id as course_id,
+  c.name as course_name,
+  c.description as course_descr
+FROM 
+  courses c
+WHERE 
+  c.id = ?
+`
+
+type GetTemplateRow struct {
+	CourseID    int64
+	CourseName  string
+	CourseDescr sql.NullString
+}
+
+func (q *Queries) GetTemplate(ctx context.Context, id int64) (GetTemplateRow, error) {
+	row := q.db.QueryRowContext(ctx, getTemplate, id)
+	var i GetTemplateRow
+	err := row.Scan(&i.CourseID, &i.CourseName, &i.CourseDescr)
+	return i, err
 }
 
 const getTemplates = `-- name: GetTemplates :many
@@ -316,34 +377,35 @@ func (q *Queries) GetTemplates(ctx context.Context) ([]GetTemplatesRow, error) {
 const getUnits = `-- name: GetUnits :many
 SELECT
   u.id,
+  u.course_id,
+  u.template_id,
   u.number,
+  u.sequence,
   u.name,
   u.description
 FROM
   units u
 WHERE
   u.course_id = ?
+ORDER BY
+  u.sequence
 `
 
-type GetUnitsRow struct {
-	ID          int64
-	Number      int64
-	Name        string
-	Description sql.NullString
-}
-
-func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]GetUnitsRow, error) {
+func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]Unit, error) {
 	rows, err := q.db.QueryContext(ctx, getUnits, courseID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetUnitsRow
+	var items []Unit
 	for rows.Next() {
-		var i GetUnitsRow
+		var i Unit
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.TemplateID,
 			&i.Number,
+			&i.Sequence,
 			&i.Name,
 			&i.Description,
 		); err != nil {

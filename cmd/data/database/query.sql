@@ -12,6 +12,29 @@ FROM
 WHERE 
   c.template_id IS NOT NULL;
 
+-- name: GetInstance :one
+SELECT
+  c.id as course_id,
+  c.template_id as template_id,
+  c.name as course_name,
+  c.description as course_descr,
+  c.term_id
+FROM
+  courses c
+WHERE
+  c.id = ?;
+
+-- name: GetTemplate :one
+SELECT
+  c.id as course_id,
+  c.name as course_name,
+  c.description as course_descr
+FROM 
+  courses c
+WHERE 
+  c.id = ?;
+
+
 -- name: GetTemplates :many
 SELECT
   c.id as course_id,
@@ -21,21 +44,27 @@ FROM
   courses c
 WHERE 
   c.template_id IS NULL;
-
+  
 -- name: GetUnits :many
 SELECT
   u.id,
+  u.course_id,
+  u.template_id,
   u.number,
+  u.sequence,
   u.name,
   u.description
 FROM
   units u
 WHERE
-  u.course_id = ?;
+  u.course_id = ?
+ORDER BY
+  u.sequence;
 
 -- name: GetLessons :many
 SELECT
   l.id,
+  l.template_id,
   l.number,
   l.name,
   l.description

@@ -7,10 +7,10 @@ import (
 
 type CourseService interface {
 	CreateTemplate(template *domain.Course) error
-	CreateInstance(course *domain.Course) error
+	CreateInstance(course *domain.CourseInstance) error
 	GetTemplates() ([]*domain.Course, error)
-	GetInstances() ([]*domain.Course, error)
-	ReadFromCSV() ([]*domain.Course, error)
+	GetInstances() ([]*domain.CourseInstance, error)
+	ReadFromCSV() ([]*domain.CourseInstance, error)
 }
 
 type courseService struct {
@@ -18,7 +18,7 @@ type courseService struct {
 }
 
 // ReadFromCSV implements CourseService.
-func (svc courseService) ReadFromCSV() ([]*domain.Course, error) {
+func (svc courseService) ReadFromCSV() ([]*domain.CourseInstance, error) {
 	panic("unimplemented")
 }
 
@@ -31,7 +31,7 @@ func (svc courseService) CreateTemplate(course *domain.Course) error {
 	_, err := svc.repo.SaveTemplate(course)
 	return err
 }
-func (svc courseService) CreateInstance(course *domain.Course) error {
+func (svc courseService) CreateInstance(course *domain.CourseInstance) error {
 	instance := course.CreateInstance()
 	return svc.repo.SaveInstance(instance)
 }
@@ -39,7 +39,7 @@ func (svc courseService) CreateInstance(course *domain.Course) error {
 func (svc courseService) GetTemplates() ([]*domain.Course, error) {
 	return svc.repo.GetTemplates()
 }
-func (svc courseService) GetInstances() ([]*domain.Course, error) {
+func (svc courseService) GetInstances() ([]*domain.CourseInstance, error) {
 	return svc.repo.GetInstances()
 }
 

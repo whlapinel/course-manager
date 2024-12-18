@@ -18,7 +18,10 @@ func TestImportCoursesFromCSV(t *testing.T) {
 			log.Println(unit.Name)
 			log.Println("num lessons: ", len(unit.Lessons))
 			for _, lesson := range unit.Lessons {
-				log.Println(lesson.Name, lesson.Description, lesson.Date.Format(time.DateOnly))
+				for _, date := range lesson.Dates {
+
+					log.Println(lesson.Name, lesson.Description, date.Format(time.DateOnly))
+				}
 			}
 		}
 	}
@@ -38,7 +41,9 @@ func TestGenerateInstances(t *testing.T) {
 			log.Println(unit.Name)
 			log.Println("num lessons: ", len(unit.Lessons))
 			for _, lesson := range unit.Lessons {
-				log.Println(lesson.Name, lesson.Description, lesson.Date.Format(time.DateOnly))
+				for _, date := range lesson.Dates {
+					log.Println(lesson.Name, lesson.Description, date.Format(time.DateOnly))
+				}
 			}
 		}
 	}
@@ -75,5 +80,38 @@ func TestSaveInstance(t *testing.T) {
 		}
 		log.Println("course ID: ", template.ID)
 
+	}
+}
+
+func TestGetTemplates(t *testing.T) {
+	templates, err := cr.GetTemplates()
+	if err != nil {
+		t.Errorf("error getting templates: %s", err)
+	}
+	for _, template := range templates {
+		log.Println(template.Name)
+		for _, unit := range template.Units {
+			log.Println(unit.Name)
+			for _, lesson := range unit.Lessons {
+				log.Println(lesson.Name)
+			}
+		}
+	}
+
+}
+
+func TestGetInstances(t *testing.T) {
+	instances, err := cr.GetInstances()
+	if err != nil {
+		t.Errorf("error geting instances: %s", err)
+	}
+	for _, instance := range instances {
+		log.Println(instance.Name)
+		for _, unit := range instance.Units {
+			log.Println(unit.Name)
+			for _, lesson := range unit.Lessons {
+				log.Println(lesson.Name, lesson.Dates)
+			}
+		}
 	}
 }
