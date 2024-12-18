@@ -38,12 +38,15 @@ func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 
 }
 
+// this assumes the lessons are in ascending chronological order, and that lesson dates are also sorted in ascending chronological order
 func UnitDateRange(unit domain.Unit) []time.Time {
+	var dates []time.Time
 	lessonCount := len(unit.Lessons)
-	return []time.Time{
-		unit.Lessons[0].Dates[0],
-		unit.Lessons[lessonCount-1].Dates[len(unit.Lessons[lessonCount-1].Dates)],
-	}
+	lastLesson := unit.Lessons[lessonCount-1]
+	dateCountLastLesson := len(lastLesson.Dates)
+	dates = append(dates, unit.Lessons[0].Dates[0])
+	dates = append(dates, lastLesson.Dates[dateCountLastLesson-1])
+	return dates
 }
 
 templ CourseCalendarComponent(course domain.Course) {
