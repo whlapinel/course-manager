@@ -21,7 +21,7 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 	var d2, m2, y2 = date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
-func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
+func TodaysLesson(date time.Time, course domain.CourseTemplate) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
 			for _, lessonDate := range lesson.Dates {
@@ -49,37 +49,24 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 	return dates
 }
 
-templ CourseCalendarComponent(course domain.Course) {
-	@Layout(&page{title: course.GetTitle()}) {
-		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
+templ CourseCalendarComponent(schedule domain.CourseSchedule) {
+	@Layout(&page{title: schedule.Course.GetTitle()}) {
+		@CourseDivContainer(domain.CourseInstance{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
-				for _, unit := range course.Units {
+				for _, day := range schedule.Schedule {
 					<details class="cursor-pointer bg-blue-900 rounded p-2 m-1 text-lg hover:bg-blue-800">
 						<summary>
-							{ unit.GetTitle() }: { UnitDateRange(unit)[0].Format(time.RFC1123)[:16] } to { UnitDateRange(unit)[1].Format(time.RFC1123)[:16] }
+							{ day.Date.Format(time.DateOnly) }
 						</summary>
-						for _, lesson := range unit.Lessons {
-							@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, unit, course)+FileName(lesson)), false) {
-								for _, date := range lesson.Dates {
-									<p>{ lesson.GetTitle() } { date.Format(time.RFC1123)[:16] }</p>
-								}
+						for i, lesson := range day.Lessons {
+							@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, day.Units[i], schedule.Course)+FileName(lesson)), false) {
+								<p>{ lesson.GetTitle() } </p>
 							}
 						}
 					</details>
 				}
 			}
-			@TitleDiv("Course Calendar", course.GetTitle()+", "+course.TermName, courseFilePath(course))
-			// <div class="grid grid-cols-7 gap-2">
-			// 	for day := range time.Duration(7) {
-			// 		<div>
-			// 			<h2>{ PreviousMonday(time.Now()).Add(24*time.Hour*day).String()[:10] }</h2>
-			// 			<h3>{ TodaysLesson(previousMonday.Add(24*time.Hour*day), course).Title() }</h3>
-			// 			@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(todaysLesson, todaysUnit, course)+FileName(todaysLesson)), false) {
-			// 				Link
-			// 			}
-			// 		</div>
-			// 	}
-			// </div>
+			@TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course))
 		}
 	}
 }

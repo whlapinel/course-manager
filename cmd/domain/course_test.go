@@ -3,6 +3,7 @@ package domain
 import (
 	"log"
 	"testing"
+	"time"
 )
 
 func TestCreateInstance(t *testing.T) {
@@ -23,8 +24,12 @@ func TestCreateInstance(t *testing.T) {
 		},
 	}
 	template := NewCourseTemplate("Test Course Name", "Test Course Description", units)
-	instance := template.CreateInstance()
-	log.Println("instance.TemplateID:", instance.TemplateID, "instance.ID: ", instance.ID)
+	term, err := NewTerm(time.Now(), time.Now().AddDate(0, 3, 0), []time.Time{}, Semester, 1, "Fall 2024")
+	if err != nil {
+		t.Error(err)
+	}
+	instance := template.CreateInstance(*term)
+	log.Println("instance.TemplateID:", instance.TemplateID, "instance.ID: ", instance.CourseTemplate.ID)
 	for _, unit := range instance.Units {
 		log.Println("unit.TemplateID:", unit.TemplateID, "unit.ID: ", unit.ID)
 		for _, lesson := range unit.Lessons {

@@ -1,35 +1,34 @@
 package domain
 
-func NewCourseTemplate(title string, descr string, units []Unit) Course {
-	return Course{Name: title, Description: descr, Units: units}
+func NewCourseTemplate(title string, descr string, units []Unit) CourseTemplate {
+	return CourseTemplate{Name: title, Description: descr, Units: units}
 }
 
 type CourseRepo interface {
-	ReadFromCSV() ([]*Course, error)
-	GetTemplates() ([]*Course, error)
-	GetInstances() ([]*CourseInstance, error)
-	SaveTemplate(*Course) (*Course, error)
+	ReadFromCSV() ([]*CourseInstance, error)
+	GetTemplates() ([]*CourseTemplate, error)
+	GetInstances(term Term) ([]*CourseInstance, error)
+	SaveTemplate(*CourseTemplate) (*CourseTemplate, error)
 	SaveInstance(*CourseInstance) error
 }
 
 // Courses I teach. this is the OOP version of CourseInstance. Bad wording I know.
-type Course struct {
+type CourseTemplate struct {
 	ID          int
 	Name        string
 	Description string
 	Units       []Unit
-	TermID      int
-	TermName    string
 }
 
 type CourseType int
 
 type CourseInstance struct {
-	Course
+	CourseTemplate
 	TemplateID int
+	Term
 }
 
-func (c Course) CreateInstance() *CourseInstance {
+func (c CourseTemplate) CreateInstance(term Term) *CourseInstance {
 	var units []Unit
 	for _, unit := range c.Units {
 		unit.TemplateID = unit.ID
@@ -45,16 +44,17 @@ func (c Course) CreateInstance() *CourseInstance {
 	}
 	c.Units = units
 	return &CourseInstance{
-		Course:     c,
-		TemplateID: c.ID,
+		CourseTemplate: c,
+		TemplateID:     c.ID,
+		Term:           term,
 	}
 
 }
 
-func (c Course) GetTitle() string {
+func (c CourseTemplate) GetTitle() string {
 	return c.Name
 }
 
-func (c *Course) AddUnit(unit Unit) {
+func (c *CourseTemplate) AddUnit(unit Unit) {
 	c.Units = append(c.Units, unit)
 }

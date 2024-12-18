@@ -29,3 +29,12 @@ func TestSaveTerm(t *testing.T) {
 	}
 
 }
+
+func TestGetTerm(t *testing.T) {
+	term, err := tr.GetTerm(time.Now())
+	if err != nil {
+		t.Errorf("error fetching term: %s", err)
+	}
+	log.Println(term.Name)
+	log.Println(term.ID)
+}

@@ -7,14 +7,14 @@ import (
 )
 
 func TestImportCoursesFromCSV(t *testing.T) {
-	courses, err := importCoursesFromCSV()
+	instances, err := importInstancesFromCSV()
 	if err != nil {
 		t.Errorf("error importing courses: %s", err)
 	}
-	for _, course := range courses {
-		log.Println(course.Name)
-		log.Println("num units: ", len(course.Units))
-		for _, unit := range course.Units {
+	for _, instance := range instances {
+		log.Println(instance.CourseTemplate.Name)
+		log.Println("num units: ", len(instance.Units))
+		for _, unit := range instance.Units {
 			log.Println(unit.Name)
 			log.Println("num lessons: ", len(unit.Lessons))
 			for _, lesson := range unit.Lessons {
@@ -35,7 +35,7 @@ func TestGenerateInstances(t *testing.T) {
 		t.Errorf("error generating instances from csv: %s", err)
 	}
 	for _, instance := range courseInstances {
-		log.Println(instance.Name)
+		log.Println(instance.CourseTemplate.Name)
 		log.Println("num units: ", len(instance.Units))
 		for _, unit := range instance.Units {
 			log.Println(unit.Name)
@@ -58,13 +58,13 @@ func TestSaveInstance(t *testing.T) {
 	if err != nil {
 		t.Errorf("TermsLoader(): %s", err)
 	}
-	for _, term := range terms {
-		_, err := tr.Save(term)
+	for i, term := range terms {
+		terms[i].ID, err = tr.Save(term)
 		if err != nil {
 			t.Errorf("tr.Save(): %s", err)
 		}
 	}
-	templates, err := importCoursesFromCSV()
+	templates, err := importTemplatesFromCSV()
 	if err != nil {
 		t.Errorf("importCoursesFromCSV: %s", err)
 	}
@@ -73,11 +73,15 @@ func TestSaveInstance(t *testing.T) {
 		if err != nil {
 			t.Errorf("cr.SaveTemplate(): %s", err)
 		}
-		instance := savedTemplate.CreateInstance()
-		err = cr.SaveInstance(instance)
-		if err != nil {
-			t.Errorf("cr.SaveInstance(): %s", err)
+		for _, term := range terms {
+
+			instance := savedTemplate.CreateInstance(*term)
+			err = cr.SaveInstance(instance)
+			if err != nil {
+				t.Errorf("cr.SaveInstance(): %s", err)
+			}
 		}
+
 		log.Println("course ID: ", template.ID)
 
 	}
@@ -92,6 +96,7 @@ func TestGetTemplates(t *testing.T) {
 		log.Println(template.Name)
 		for _, unit := range template.Units {
 			log.Println(unit.Name)
+			log.Println(unit.Description)
 			for _, lesson := range unit.Lessons {
 				log.Println(lesson.Name)
 			}
@@ -101,12 +106,16 @@ func TestGetTemplates(t *testing.T) {
 }
 
 func TestGetInstances(t *testing.T) {
-	instances, err := cr.GetInstances()
+	term, err := tr.GetTerm(time.Now())
+	if err != nil {
+		t.Errorf("error fetching term: %s", err)
+	}
+	instances, err := cr.GetInstances(*term)
 	if err != nil {
 		t.Errorf("error geting instances: %s", err)
 	}
 	for _, instance := range instances {
-		log.Println(instance.Name)
+		log.Println(instance.CourseTemplate.Name)
 		for _, unit := range instance.Units {
 			log.Println(unit.Name)
 			for _, lesson := range unit.Lessons {

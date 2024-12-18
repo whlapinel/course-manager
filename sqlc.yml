@@ -1,7 +1,15 @@
 version: "2"
 sql:
   - engine: "sqlite"
-    queries: "cmd/data/database/query.sql"
+    queries:
+      - "cmd/data/database/instances.sql"
+      - "cmd/data/database/templates.sql"
+      - "cmd/data/database/units.sql"
+      - "cmd/data/database/lessons.sql"
+      - "cmd/data/database/dates.sql"
+      - "cmd/data/database/terms.sql"
+      - "cmd/data/database/schedules.sql"
+
     schema: "cmd/data/database/schema.sql"
     gen:
       go:
