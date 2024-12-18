@@ -29,7 +29,7 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 	var d2, m2, y2 = date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
-func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
+func TodaysLesson(date time.Time, course domain.CourseTemplate) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
 			for _, lessonDate := range lesson.Dates {
@@ -181,13 +181,13 @@ func CourseCalendarComponent(schedule domain.CourseSchedule) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Course.TermName, courseFilePath(schedule.Course)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List").Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CourseDivContainer(domain.CourseInstance{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List").Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

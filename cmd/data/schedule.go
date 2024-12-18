@@ -21,9 +21,9 @@ func NewDailyScheduleRepo(queries *database.Queries) domain.DailyScheduleRepo {
 // GetSchedule implements domain.DailyScheduleRepo.
 func (d dailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
 	var schedule = domain.CourseSchedule{
-		Course: instance.Course,
+		Course: instance.CourseTemplate,
 	}
-	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.ID))
+	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.CourseTemplate.ID))
 	if err != nil {
 		return schedule, err
 	}

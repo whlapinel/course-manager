@@ -1,6 +1,8 @@
 
 # Action tree
 
+## Course Manager
+
 ```yml
 Main Menu:
 
@@ -25,6 +27,14 @@ Main Menu:
                 Shift right: Change date of current lesson to subsequent day of instruction
 
                 Shift left: Change date of current lesson to previous day of instruction
+    
+```
+
+## Course Website
+
+```yml
+
+Courses:
     
 ```
 

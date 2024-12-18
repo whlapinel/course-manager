@@ -13,6 +13,7 @@ type DailySchedule struct {
 }
 
 type CourseSchedule struct {
-	Course   Course
+	Course   CourseTemplate
+	Term     Term
 	Schedule []DailySchedule
 }

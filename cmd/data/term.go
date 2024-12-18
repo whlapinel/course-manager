@@ -14,10 +14,24 @@ import (
 type TermRepo interface {
 	Save(term *domain.Term) (int, error)
 	ReadFromCSV() ([]*domain.Term, error)
+	GetTerm(date time.Time) (*domain.Term, error)
 }
 
 type termRepo struct {
 	queries *database.Queries
+}
+
+// GetTerm implements TermRepo.
+func (t termRepo) GetTerm(date time.Time) (*domain.Term, error) {
+	dbTerm, err := t.queries.GetTerm(context.Background(), date.Format(time.DateOnly))
+	if err != nil {
+		return nil, err
+	}
+	term := &domain.Term{
+		ID:   int(dbTerm.ID),
+		Name: dbTerm.Name,
+	}
+	return term, nil
 }
 
 // All implements TermRepo.

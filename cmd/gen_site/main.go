@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -37,20 +38,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Generate "courses I teach" list page
-	courseRepo := data.NewCourseRepo(queries)
-	courses, err := courseRepo.GetTemplates()
+	termRepo := data.NewTermRepo(queries)
+	term, err := termRepo.GetTerm(time.Now())
 	if err != nil {
-		log.Fatalf("Error getting courses: %v", err)
+		log.Fatalf("error fetching term: %s", err)
 	}
-	coursesPage := templates.NewCoursesListPage(courses)
+	courseRepo := data.NewCourseRepo(queries)
+	// Generate "courses I teach" list page
+	instances, err := courseRepo.GetInstances(*term)
+	if err != nil {
+		log.Fatalf("error getting instances: %v", err)
+	}
+	coursesPage := templates.NewCoursesListPage(instances)
 	err = RenderPage(coursesPage)
 	if err != nil {
 		log.Fatalf("failed to render pages: %v", err)
-	}
-	instances, err := courseRepo.GetInstances()
-	if err != nil {
-		log.Fatalf("error getting instances: %v", err)
 	}
 	scheduleRepo := data.NewDailyScheduleRepo(queries)
 	for _, instance := range instances {
@@ -64,26 +66,23 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed to render pages: %v", err)
 		}
-	}
-	// Generate page for each course
-	for _, course := range courses {
-		log.Println("Site generator main() course: Name: ", course.Name)
-		coursePage := templates.NewCoursePage(course)
+		log.Println("Site generator main() course: Name: ", instance.CourseTemplate.Name)
+		coursePage := templates.NewCoursePage(instance)
 		err = RenderPage(coursePage)
 		if err != nil {
 			log.Fatalf("failed to render pages: %v", err)
 		}
 		// Generate page for each unit
-		for _, unit := range course.Units {
+		for _, unit := range instance.Units {
 			log.Println("looping through units in main():", unit.Name)
-			unitPage := templates.NewUnitPage(unit, *course)
+			unitPage := templates.NewUnitPage(unit, *instance)
 			err = RenderPage(unitPage)
 			if err != nil {
 				log.Fatalf("failed to render pages: %v", err)
 			}
 			// Generate page for each lesson
 			for _, lesson := range unit.Lessons {
-				lessonPage := templates.NewLessonPage(lesson, unit, *course)
+				lessonPage := templates.NewLessonPage(lesson, unit, *instance)
 				GenerateSlides(lessonPage.Directory())
 				err = RenderPage(lessonPage)
 				if err != nil {

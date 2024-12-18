@@ -21,7 +21,7 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 	var d2, m2, y2 = date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
-func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
+func TodaysLesson(date time.Time, course domain.CourseTemplate) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
 			for _, lessonDate := range lesson.Dates {
@@ -51,7 +51,7 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 
 templ CourseCalendarComponent(schedule domain.CourseSchedule) {
 	@Layout(&page{title: schedule.Course.GetTitle()}) {
-		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
+		@CourseDivContainer(domain.CourseInstance{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
 				for _, day := range schedule.Schedule {
 					<details class="cursor-pointer bg-blue-900 rounded p-2 m-1 text-lg hover:bg-blue-800">
@@ -66,7 +66,7 @@ templ CourseCalendarComponent(schedule domain.CourseSchedule) {
 					</details>
 				}
 			}
-			@TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Course.TermName, courseFilePath(schedule.Course))
+			@TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course))
 		}
 	}
 }

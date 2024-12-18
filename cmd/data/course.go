@@ -20,28 +20,28 @@ func NewCourseRepo(db *database.Queries) domain.CourseRepo {
 }
 
 // SaveInstance implements domain.CourseRepo.
-func (c *courseRepo) SaveInstance(course *domain.CourseInstance) error {
+func (c *courseRepo) SaveInstance(instance *domain.CourseInstance) error {
 	ctx := context.Background()
-	savedCourse, err := c.queries.SaveCourse(ctx, database.SaveCourseParams{
+	savedCourse, err := c.queries.SaveInstance(ctx, database.SaveInstanceParams{
 		TemplateID: sql.NullInt64{
-			Int64: int64(course.TemplateID),
+			Int64: int64(instance.TemplateID),
 			Valid: true,
 		},
 		TermID: sql.NullInt64{
-			Int64: int64(course.TermID),
-			Valid: false,
+			Int64: int64(instance.Term.ID),
+			Valid: instance.Term.ID != 0,
 		},
-		Name: course.Name,
+		Name: instance.CourseTemplate.Name,
 		Description: sql.NullString{
-			String: course.Description,
-			Valid:  course.Description != "",
+			String: instance.Description,
+			Valid:  instance.Description != "",
 		},
 	})
 	if err != nil {
 		return fmt.Errorf("courseRepo.SaveCourse(): %s", err)
 	}
-	course.ID = int(savedCourse.ID)
-	for _, unit := range course.Units {
+	instance.CourseTemplate.ID = int(savedCourse.ID)
+	for _, unit := range instance.Units {
 		unit.CourseID = int(savedCourse.ID)
 		log.Println("unit template ID: ", unit.TemplateID)
 		log.Println("unit ID: ", unit.ID)
@@ -53,10 +53,10 @@ func (c *courseRepo) SaveInstance(course *domain.CourseInstance) error {
 				"\nNumber:", unit.Number,
 				"\nName:", unit.Name,
 				"\nTemplateID:", unit.TemplateID,
-				"\nCourseID:", course.ID,
-				"\nCourse TemplateID:", course.TemplateID,
-				"\nCourse Name:", course.Name,
-				"\nTerm Name:", course.TermName,
+				"\nCourseID:", instance.CourseTemplate.ID,
+				"\nCourse TemplateID:", instance.TemplateID,
+				"\nCourse Name:", instance.CourseTemplate.Name,
+				"\nTerm Name:", instance.Term.Name,
 			)
 			return fmt.Errorf("error in c.SaveUnit(): %s", err)
 		}
@@ -76,20 +76,23 @@ func (c *courseRepo) SaveInstance(course *domain.CourseInstance) error {
 }
 
 // GetInstance
-func (c *courseRepo) GetInstance(id int) (*domain.CourseInstance, error) {
-	dbInstance, err := c.queries.GetInstance(context.Background(), int64(id))
+func (c *courseRepo) GetInstance(termID int) (*domain.CourseInstance, error) {
+	dbInstance, err := c.queries.GetInstance(context.Background(), sql.NullInt64{
+		Valid: true,
+		Int64: int64(termID),
+	})
 	if err != nil {
 		return nil, err
 	}
 	instance := &domain.CourseInstance{
-		Course: domain.Course{
+		CourseTemplate: domain.CourseTemplate{
 			ID:          int(dbInstance.CourseID),
 			Name:        dbInstance.CourseName,
 			Description: dbInstance.CourseDescr.String,
 		},
 		TemplateID: int(dbInstance.TemplateID.Int64),
 	}
-	dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.ID))
+	dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.CourseTemplate.ID))
 	if err != nil {
 		return nil, err
 	}
@@ -139,32 +142,80 @@ func (c *courseRepo) GetInstance(id int) (*domain.CourseInstance, error) {
 }
 
 // GetInstances implements domain.CourseRepository.
-func (c *courseRepo) GetInstances() ([]*domain.CourseInstance, error) {
-	dbInstances, err := c.queries.GetInstances(context.Background())
+func (c *courseRepo) GetInstances(term domain.Term) ([]*domain.CourseInstance, error) {
+	dbInstances, err := c.queries.GetInstances(context.Background(), sql.NullInt64{Valid: true, Int64: int64(term.ID)})
 	if err != nil {
 		return nil, err
 	}
 	var instances []*domain.CourseInstance
 	for _, dbInstance := range dbInstances {
 		instance := &domain.CourseInstance{
-			Course: domain.Course{
+			CourseTemplate: domain.CourseTemplate{
 				ID:          int(dbInstance.CourseID),
 				Name:        dbInstance.CourseName,
 				Description: dbInstance.CourseDescr.String,
 			},
-			TemplateID: int(dbInstance.TermID.Int64),
+			Term: term,
 		}
+		dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.CourseTemplate.ID))
+		if err != nil {
+			return nil, err
+		}
+		var units []domain.Unit
+		for _, dbUnit := range dbUnits {
+			unit := domain.Unit{
+				ID:          int(dbUnit.ID),
+				CourseID:    int(dbUnit.CourseID),
+				TemplateID:  int(dbUnit.TemplateID.Int64),
+				Number:      int(dbUnit.Number),
+				SequenceNum: int(dbUnit.Sequence),
+				Name:        dbUnit.Name,
+				Description: dbUnit.Description.String,
+			}
+			dbLessons, err := c.queries.GetLessons(context.Background(), int64(unit.ID))
+			if err != nil {
+				return nil, err
+			}
+			var lessons []domain.Lesson
+			for _, dbLesson := range dbLessons {
+				lesson := domain.Lesson{
+					ID:          int(dbLesson.ID),
+					UnitID:      unit.ID,
+					TemplateID:  int(dbLesson.TemplateID.Int64),
+					Number:      int(dbLesson.Number),
+					Name:        dbLesson.Name.String,
+					Description: dbLesson.Description.String,
+				}
+				dbLessonDates, err := c.queries.GetLessonDates(context.Background(), int64(lesson.ID))
+				if err != nil {
+					return nil, err
+				}
+				var lessonDates []time.Time
+				for _, dbLessonDate := range dbLessonDates {
+					lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)
+					if err != nil {
+						return nil, err
+					}
+					lessonDates = append(lessonDates, lessonDate)
+				}
+				lesson.Dates = lessonDates
+				lessons = append(lessons, lesson)
+			}
+			unit.Lessons = lessons
+			units = append(units, unit)
+		}
+		instance.Units = units
 		instances = append(instances, instance)
 	}
 	return instances, nil
 }
 
-func (c *courseRepo) GetTemplate(id int) (*domain.Course, error) {
+func (c *courseRepo) GetTemplate(id int) (*domain.CourseTemplate, error) {
 	dbCourse, err := c.queries.GetTemplate(context.Background(), int64(id))
 	if err != nil {
 		return nil, err
 	}
-	course := &domain.Course{
+	course := &domain.CourseTemplate{
 		ID:          int(dbCourse.CourseID),
 		Name:        dbCourse.CourseName,
 		Description: dbCourse.CourseDescr.String,
@@ -207,14 +258,14 @@ func (c *courseRepo) GetTemplate(id int) (*domain.Course, error) {
 }
 
 // GetTemplates implements domain.CourseRepository.
-func (c *courseRepo) GetTemplates() ([]*domain.Course, error) {
+func (c *courseRepo) GetTemplates() ([]*domain.CourseTemplate, error) {
 	dbCourses, err := c.queries.GetTemplates(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	var courses []*domain.Course
+	var courses []*domain.CourseTemplate
 	for _, dbCourse := range dbCourses {
-		course := &domain.Course{
+		course := &domain.CourseTemplate{
 			ID:          int(dbCourse.CourseID),
 			Name:        dbCourse.CourseName,
 			Description: dbCourse.CourseDescr.String,
@@ -256,17 +307,19 @@ func (c *courseRepo) GetTemplates() ([]*domain.Course, error) {
 	return courses, nil
 }
 
-func (c *courseRepo) All() ([]*domain.Course, error) {
+func (c *courseRepo) All() ([]*domain.CourseTemplate, error) {
 	panic("not implemented")
 }
 
 // Save updates the ID for Course, Units, and Lessons
-func (c *courseRepo) SaveTemplate(course *domain.Course) (*domain.Course, error) {
+func (c *courseRepo) SaveTemplate(course *domain.CourseTemplate) (*domain.CourseTemplate, error) {
 	ctx := context.Background()
-	dbCourse, err := c.queries.SaveCourse(ctx, database.SaveCourseParams{
-		TemplateID: sql.NullInt64{Valid: false},
-		TermID:     sql.NullInt64{Valid: false},
-		Name:       course.Name,
+	dbCourse, err := c.queries.SaveTemplate(ctx, database.SaveTemplateParams{
+		Name: course.Name,
+		Description: sql.NullString{
+			Valid:  course.Description != "",
+			String: course.Description,
+		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("c.queries.SaveCourse(): %s", err)

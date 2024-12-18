@@ -18,19 +18,19 @@ const (
 	coursesDir   = "./python/docs/courses/"
 )
 
-func courseFilePath(course domain.Course) string {
+func courseFilePath(course domain.CourseTemplate) string {
 	return fmt.Sprintf("%s%s", coursesDir, DirName(course))
 }
 
-func unitFilePath(unit domain.Unit, course domain.Course) string {
+func unitFilePath(unit domain.Unit, course domain.CourseTemplate) string {
 	return fmt.Sprintf("%s%s%s", coursesDir, DirName(course), DirName(unit))
 }
 
-func lessonFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func lessonFilePath(lesson domain.Lesson, unit domain.Unit, course domain.CourseTemplate) string {
 	return fmt.Sprintf("%s%s%s%s", coursesDir, DirName(course), DirName(unit), DirName(lesson))
 }
 
-func filesFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func filesFilePath(lesson domain.Lesson, unit domain.Unit, course domain.CourseTemplate) string {
 	return fmt.Sprintf("https://github.com/whlapinel/python/tree/main/docs/courses/%s%s%sfiles", DirName(course), DirName(unit), DirName(lesson))
 }
 
@@ -131,20 +131,20 @@ func NewContactPage() Templifier {
 	}
 }
 
-func NewCoursesListPage(courses []*domain.Course) Templifier {
+func NewCoursesListPage(instances []*domain.CourseInstance) Templifier {
 	return &page{
 		title:     "Courses",
 		directory: coursesDir,
-		component: CoursesListComponent(courses),
+		component: CoursesListComponent(instances),
 	}
 
 }
 
-func NewCoursePage(course *domain.Course) Templifier {
+func NewCoursePage(instance *domain.CourseInstance) Templifier {
 	return &page{
-		title:     course.GetTitle(),
-		directory: courseFilePath(*course),
-		component: CourseComponent(*course),
+		title:     instance.GetTitle(),
+		directory: courseFilePath(*&instance.CourseTemplate),
+		component: CourseComponent(*instance),
 	}
 }
 
@@ -159,19 +159,19 @@ func NewCourseCalendarPage(schedule domain.CourseSchedule) Templifier {
 	}
 }
 
-func NewUnitPage(unit domain.Unit, course domain.Course) Templifier {
+func NewUnitPage(unit domain.Unit, instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     unit.GetTitle(),
-		directory: unitFilePath(unit, course),
-		component: UnitComponent(unit, course),
+		directory: unitFilePath(unit, instance.CourseTemplate),
+		component: UnitComponent(unit, instance),
 	}
 }
 
-func NewLessonPage(lesson domain.Lesson, unit domain.Unit, course domain.Course) Templifier {
+func NewLessonPage(lesson domain.Lesson, unit domain.Unit, instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     lesson.GetTitle(),
-		directory: lessonFilePath(lesson, unit, course),
-		component: LessonComponent(lesson, unit, course),
+		directory: lessonFilePath(lesson, unit, instance.CourseTemplate),
+		component: LessonComponent(lesson, unit, instance),
 	}
 }
 

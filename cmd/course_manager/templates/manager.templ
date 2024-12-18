@@ -25,10 +25,10 @@ templ ManagerMainMenu() {
 	}
 }
 
-templ ManageCourseInstanceComponent(courses []*domain.CourseInstance) {
-	for _, course := range courses {
+templ ManageCourseInstanceComponent(instances []*domain.CourseInstance) {
+	for _, instance := range instances {
 		<table>
-			<caption>{ course.Name }</caption>
+			<caption>{ instance.CourseTemplate.Name }</caption>
 			<thead>
 				<tr>
 					<th>Day</th>
@@ -38,7 +38,7 @@ templ ManageCourseInstanceComponent(courses []*domain.CourseInstance) {
 					<th>Lesson Name</th>
 				</tr>
 			</thead>
-			for _, unit := range course.Units {
+			for _, unit := range instance.Units {
 				<tr>
 					<td>{ strconv.Itoa(unit.Number) }</td>
 					<td>{ unit.Name }</td>
@@ -62,7 +62,7 @@ templ ManageCourseInstanceComponent(courses []*domain.CourseInstance) {
 	}
 }
 
-templ ManageCourseComponent(courses []*domain.Course) {
+templ ManageCourseComponent(courses []*domain.CourseTemplate) {
 	for _, course := range courses {
 		<table>
 			<caption>{ course.Name }</caption>
