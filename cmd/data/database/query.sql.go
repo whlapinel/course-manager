@@ -129,6 +129,63 @@ func (q *Queries) GetCourses(ctx context.Context) ([]Course, error) {
 	return items, nil
 }
 
+const getDailySchedules = `-- name: GetDailySchedules :many
+SELECT
+  d.date,
+  d.day_number,
+  l.name as lesson_name,
+  l.description as lesson_description
+FROM
+  dates d
+JOIN
+  lesson_dates ld ON ld.date_id = d.id
+JOIN
+  lessons l ON l.id = ld.lesson_id
+JOIN
+  units u ON u.id = l.unit_id
+JOIN
+  courses c ON c.id = u.course_id
+WHERE
+  c.id = ?
+ORDER BY
+  d.day_number
+`
+
+type GetDailySchedulesRow struct {
+	Date              string
+	DayNumber         int64
+	LessonName        sql.NullString
+	LessonDescription sql.NullString
+}
+
+func (q *Queries) GetDailySchedules(ctx context.Context, id int64) ([]GetDailySchedulesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getDailySchedules, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDailySchedulesRow
+	for rows.Next() {
+		var i GetDailySchedulesRow
+		if err := rows.Scan(
+			&i.Date,
+			&i.DayNumber,
+			&i.LessonName,
+			&i.LessonDescription,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getDate = `-- name: GetDate :one
 SELECT id, term_id, day_number, date FROM dates WHERE date = ?
 `

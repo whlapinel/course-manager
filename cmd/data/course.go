@@ -15,6 +15,10 @@ type courseRepo struct {
 	queries *database.Queries
 }
 
+func NewCourseRepo(db *database.Queries) domain.CourseRepo {
+	return &courseRepo{queries: db}
+}
+
 // SaveInstance implements domain.CourseRepo.
 func (c *courseRepo) SaveInstance(course *domain.CourseInstance) error {
 	ctx := context.Background()
@@ -250,10 +254,6 @@ func (c *courseRepo) GetTemplates() ([]*domain.Course, error) {
 		courses = append(courses, course)
 	}
 	return courses, nil
-}
-
-func NewCourseRepo(db *database.Queries) domain.CourseRepo {
-	return &courseRepo{queries: db}
 }
 
 func (c *courseRepo) All() ([]*domain.Course, error) {

@@ -48,6 +48,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to render pages: %v", err)
 	}
+	scheduleRepo := data.NewDailyScheduleRepo(queries)
 	// Generate page for each course
 	for _, course := range courses {
 		log.Println("Site generator main() course: Name: ", course.Name)

@@ -180,11 +180,11 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 	var courses []*domain.Course
 	for _, courseHolder := range courseMap {
 		course := courseHolder.Course
-		unitNums := sortedBySequence(courseHolder.Units)
+		unitNums := sortUnitMapKeys(courseHolder.Units)
 		for _, unitNum := range unitNums {
 			unit := courseHolder.Units[unitNum].Unit
 			unitHolder := courseHolder.Units[unitNum]
-			lessonNums := sortLessonNumsBySequence(unitHolder.Lessons)
+			lessonNums := sortLessonMapKeys(unitHolder.Lessons)
 			for _, lessonNum := range lessonNums {
 				lesson := unitHolder.Lessons[lessonNum]
 				unit.Lessons = append(unit.Lessons, lesson)
@@ -197,7 +197,7 @@ func importCoursesFromCSV() ([]*domain.Course, error) {
 	return courses, nil
 }
 
-func sortedBySequence(unitMap UnitMap) []int {
+func sortUnitMapKeys(unitMap UnitMap) []int {
 	keys := make([]int, 0, len(unitMap))
 	for sequence := range unitMap {
 		keys = append(keys, sequence)
@@ -207,7 +207,7 @@ func sortedBySequence(unitMap UnitMap) []int {
 	return keys
 
 }
-func sortLessonNumsBySequence(lessonMap LessonMap) []int {
+func sortLessonMapKeys(lessonMap LessonMap) []int {
 	keys := make([]int, 0, len(lessonMap))
 	for sequence := range lessonMap {
 		keys = append(keys, sequence)
