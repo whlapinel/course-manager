@@ -10,23 +10,23 @@ import (
 	"database/sql"
 )
 
-const deleteLesson = `-- name: DeleteLesson :one
+const deleteLesson = `-- name: DeleteLesson :exec
 DELETE FROM lessons WHERE id = ?
-RETURNING id, unit_id, template_id, number, name, description
 `
 
-func (q *Queries) DeleteLesson(ctx context.Context, id int64) (Lesson, error) {
-	row := q.db.QueryRowContext(ctx, deleteLesson, id)
-	var i Lesson
-	err := row.Scan(
-		&i.ID,
-		&i.UnitID,
-		&i.TemplateID,
-		&i.Number,
-		&i.Name,
-		&i.Description,
-	)
-	return i, err
+func (q *Queries) DeleteLesson(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteLesson, id)
+	return err
+}
+
+const deleteLessonDates = `-- name: DeleteLessonDates :exec
+DELETE FROM lesson_dates
+WHERE lesson_id = ?
+`
+
+func (q *Queries) DeleteLessonDates(ctx context.Context, lessonID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteLessonDates, lessonID)
+	return err
 }
 
 const getLessonDates = `-- name: GetLessonDates :many
@@ -169,4 +169,27 @@ func (q *Queries) SaveLessonDate(ctx context.Context, arg SaveLessonDateParams) 
 	var i LessonDate
 	err := row.Scan(&i.LessonID, &i.DateID)
 	return i, err
+}
+
+const updateLesson = `-- name: UpdateLesson :exec
+UPDATE lessons
+set name = ?, number = ?, description = ?
+WHERE id = ?
+`
+
+type UpdateLessonParams struct {
+	Name        sql.NullString
+	Number      int64
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateLesson(ctx context.Context, arg UpdateLessonParams) error {
+	_, err := q.db.ExecContext(ctx, updateLesson,
+		arg.Name,
+		arg.Number,
+		arg.Description,
+		arg.ID,
+	)
+	return err
 }

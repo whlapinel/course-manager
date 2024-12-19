@@ -1,8 +1,7 @@
 
 
--- name: DeleteLesson :one
-DELETE FROM lessons WHERE id = ?
-RETURNING *;
+-- name: DeleteLesson :exec
+DELETE FROM lessons WHERE id = ?;
 
 -- name: SaveLesson :one
 INSERT INTO lessons (
@@ -11,6 +10,7 @@ INSERT INTO lessons (
   ?, ?, ?, ?, ?
 )
 RETURNING *;
+
 
 -- name: GetLessons :many
 SELECT
@@ -42,3 +42,12 @@ INSERT INTO lesson_dates (
   ?, ?
 )
 RETURNING *;
+
+-- name: UpdateLesson :exec
+UPDATE lessons
+set name = ?, number = ?, description = ?
+WHERE id = ?;
+
+-- name: DeleteLessonDates :exec
+DELETE FROM lesson_dates
+WHERE lesson_id = ?;

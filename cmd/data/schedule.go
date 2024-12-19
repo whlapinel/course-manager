@@ -10,17 +10,17 @@ import (
 	"time"
 )
 
-type dailyScheduleRepo struct {
+type DailyScheduleRepo struct {
 	queries *database.Queries
 }
 
-func NewDailyScheduleRepo(queries *database.Queries) domain.DailyScheduleRepo {
-	return dailyScheduleRepo{queries: queries}
+func NewDailyScheduleRepo(queries *database.Queries) DailyScheduleRepo {
+	return DailyScheduleRepo{queries: queries}
 
 }
 
 // GetSchedule implements domain.DailyScheduleRepo.
-func (d dailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
+func (d DailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
 	if instance.Term.Start.IsZero() {
 		log.Fatal("GetSchedule(): term not initialized")
 	}

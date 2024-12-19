@@ -131,7 +131,7 @@ func NewContactPage() Templifier {
 	}
 }
 
-func NewCoursesListPage(instances []*domain.CourseInstance) Templifier {
+func NewCoursesListPage(instances []domain.CourseInstance) Templifier {
 	return &page{
 		title:     "Courses",
 		directory: coursesDir,
@@ -140,11 +140,11 @@ func NewCoursesListPage(instances []*domain.CourseInstance) Templifier {
 
 }
 
-func NewCoursePage(instance *domain.CourseInstance) Templifier {
+func NewCoursePage(instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     instance.GetTitle(),
 		directory: courseFilePath(instance.CourseTemplate),
-		component: CourseComponent(*instance),
+		component: CourseComponent(instance),
 	}
 }
 

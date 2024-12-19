@@ -4,14 +4,6 @@ func NewCourseTemplate(title string, descr string, units []Unit) CourseTemplate 
 	return CourseTemplate{Name: title, Description: descr, Units: units}
 }
 
-type CourseRepo interface {
-	ReadFromCSV() ([]*CourseInstance, error)
-	GetTemplates() ([]*CourseTemplate, error)
-	GetInstances(term Term) ([]*CourseInstance, error)
-	SaveTemplate(*CourseTemplate) (*CourseTemplate, error)
-	SaveInstance(*CourseInstance) error
-}
-
 // Courses I teach. this is the OOP version of CourseInstance. Bad wording I know.
 type CourseTemplate struct {
 	ID          int

@@ -40,4 +40,8 @@ func TestGetTerm(t *testing.T) {
 	}
 	log.Println(term.Name)
 	log.Println(term.ID)
+	monthDates := term.TermMonths()
+	for _, date := range monthDates {
+		log.Println(date.Format(time.DateOnly))
+	}
 }

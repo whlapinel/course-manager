@@ -73,7 +73,7 @@ templ TitleDiv(title, description, path string, showImg bool) {
 	</div>
 }
 
-templ CoursesListComponent(instances []*domain.CourseInstance) {
+templ CoursesListComponent(instances []domain.CourseInstance) {
 	@Layout(NewCoursesListPage(nil)) {
 		@CourseDivContainer(domain.CourseInstance{}, "", "") {
 			@CourseUnorderedList() {

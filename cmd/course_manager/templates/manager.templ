@@ -25,7 +25,7 @@ templ ManagerMainMenu() {
 	}
 }
 
-templ ManageCourseInstanceComponent(instances []*domain.CourseInstance) {
+templ ManageCourseInstanceComponent(instances []domain.CourseInstance) {
 	for _, instance := range instances {
 		<table>
 			<caption>{ instance.CourseTemplate.Name }</caption>
@@ -62,7 +62,7 @@ templ ManageCourseInstanceComponent(instances []*domain.CourseInstance) {
 	}
 }
 
-templ ManageCourseComponent(courses []*domain.CourseTemplate) {
+templ ManageCourseComponent(courses []domain.CourseTemplate) {
 	for _, course := range courses {
 		<table>
 			<caption>{ course.Name }</caption>

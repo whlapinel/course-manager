@@ -2,62 +2,49 @@ package services
 
 import (
 	"fmt"
+	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/domain"
 )
 
-type CourseService interface {
-	CreateTemplate(template *domain.CourseTemplate) error
-	CreateInstance(course *domain.CourseInstance) error
-	GetTemplates() ([]*domain.CourseTemplate, error)
-	GetInstances() ([]*domain.CourseInstance, error)
-	ReadFromCSV() ([]*domain.CourseInstance, error)
+type CourseService struct {
+	courses data.CourseRepo
+	units   data.UnitRepo
+	lessons data.LessonRepo
 }
 
-type courseService struct {
-	repo domain.CourseRepo
-}
-
-// ReadFromCSV implements CourseService.
-func (svc courseService) ReadFromCSV() ([]*domain.CourseInstance, error) {
-	panic("unimplemented")
-}
-
-func NewCourseService(courseRepo domain.CourseRepo) CourseService {
-	return courseService{repo: courseRepo}
+func NewCourseService(courseRepo data.CourseRepo) CourseService {
+	return CourseService{courses: courseRepo}
 
 }
 
-func (svc courseService) CreateTemplate(course *domain.CourseTemplate) error {
-	_, err := svc.repo.SaveTemplate(course)
+func (svc CourseService) CreateTemplate(course domain.CourseTemplate) error {
+	_, err := svc.courses.SaveTemplate(course)
 	return err
 }
-func (svc courseService) CreateInstance(course *domain.CourseInstance) error {
-	instance := course.CreateInstance()
-	return svc.repo.SaveInstance(instance)
+func (svc CourseService) CreateInstance(course domain.CourseTemplate, term domain.Term) error {
+	instance := course.CreateInstance(term)
+	return svc.courses.SaveInstance(instance)
 }
 
-func (svc courseService) GetTemplates() ([]*domain.CourseTemplate, error) {
-	return svc.repo.GetTemplates()
-}
-func (svc courseService) GetInstances() ([]*domain.CourseInstance, error) {
-	return svc.repo.GetInstances()
-}
-
-func (svc courseService) ReadInstancesFromCSV() ([]*domain.CourseTemplate, error) {
-	courses, err := svc.repo.ReadFromCSV()
+func (svc CourseService) ImportTemplate(filename string) ([]domain.CourseTemplate, error) {
+	templates, err := svc.courses.ImportTemplatesFromCSV()
 	if err != nil {
-		return nil, err
+		return []domain.CourseTemplate{}, err
 	}
-	for _, course := range courses {
-		svc.repo.SaveTemplate(course)
-	}
-	return courses, nil
+	return templates, nil
 }
 
-func (svc courseService) Update(course *domain.CourseTemplate) error {
+func (svc CourseService) GetTemplates() ([]domain.CourseTemplate, error) {
+	return svc.courses.GetTemplates()
+}
+func (svc CourseService) GetInstances(term domain.Term) ([]domain.CourseInstance, error) {
+	return svc.courses.GetInstances(term)
+}
+
+func (svc CourseService) Update(course domain.CourseTemplate) error {
 	return fmt.Errorf("not implemented")
 }
 
-func (svc courseService) Delete(course *domain.CourseTemplate) error {
+func (svc CourseService) Delete(course domain.CourseTemplate) error {
 	return fmt.Errorf("not implemented")
 }

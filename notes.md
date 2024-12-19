@@ -7,6 +7,18 @@
 ```yml
 Main Menu:
 
+    Create term:
+
+        Import term (csv): user provides filename and term is created and saved to db
+
+    Create course template:
+
+        Import course template (csv): User provides filename and course template is created and saved to database
+
+        Create course via form inputs: User completes fields and course template is created and saved to db
+
+    Create instance: user selects existing course and existing term from database to create a course instance
+
     View courses: lists all course templates without details (id, name, etc.)
 
         View Details: lists all units and Lessons for a given course
@@ -47,6 +59,7 @@ until the user marks sync?
 
 ## COMPLETE
 
+- 12/19/24 calendar looks better now
 - 12/17/24 lesson struct should have Date field be Dates []time.Time instead of
 Date time.Time so that a lesson can span multiple dates if necessary (not ideal
 but sometimes necessary) (completed 12/17/24)

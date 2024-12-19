@@ -62,18 +62,8 @@ func CSVHeaders() []string {
 
 }
 
-func (c *courseRepo) WriteToCSV(course *domain.CourseTemplate) error {
+func (c CourseRepo) WriteToCSV(course domain.CourseTemplate) error {
 	return fmt.Errorf("not implemented")
-}
-
-// TODO: Convert this to import directly from CSV rather than using instance import
-func (c *courseRepo) ReadFromCSV() ([]*domain.CourseInstance, error) {
-	courses, err := importInstancesFromCSV()
-	if err != nil {
-		return nil, err
-	}
-	return courses, nil
-
 }
 
 type LessonMap map[int]domain.Lesson
@@ -93,7 +83,11 @@ type CourseTemplateHolder struct {
 type InstanceMap map[string]CourseInstanceHolder
 type TemplateMap map[string]CourseTemplateHolder
 
-func importTemplatesFromCSV() ([]*domain.CourseTemplate, error) {
+func (c CourseRepo) ImportTemplatesFromCSV() ([]domain.CourseTemplate, error) {
+	return importTemplatesFromCSV()
+}
+
+func importTemplatesFromCSV() ([]domain.CourseTemplate, error) {
 	file, err := os.Open(scheduleCsvDir)
 	if err != nil {
 		return nil, err
@@ -180,7 +174,7 @@ func importTemplatesFromCSV() ([]*domain.CourseTemplate, error) {
 		courseHolder.Units[unitSequence] = unit
 		courseMap[courseName] = courseHolder
 	}
-	var courses []*domain.CourseTemplate
+	var courses []domain.CourseTemplate
 	for _, courseHolder := range courseMap {
 		course := courseHolder.Template
 		unitNums := sortUnitMapKeys(courseHolder.Units)
@@ -194,12 +188,12 @@ func importTemplatesFromCSV() ([]*domain.CourseTemplate, error) {
 			}
 			course.Units = append(course.Units, unit)
 		}
-		courses = append(courses, &course)
+		courses = append(courses, course)
 
 	}
 	return courses, nil
 }
-func importInstancesFromCSV() ([]*domain.CourseInstance, error) {
+func importInstancesFromCSV() ([]domain.CourseInstance, error) {
 	file, err := os.Open(scheduleCsvDir)
 	if err != nil {
 		return nil, err
@@ -291,7 +285,7 @@ func importInstancesFromCSV() ([]*domain.CourseInstance, error) {
 		courseHolder.Units[unitSequence] = unit
 		courseMap[courseName] = courseHolder
 	}
-	var courses []*domain.CourseInstance
+	var courses []domain.CourseInstance
 	for _, courseHolder := range courseMap {
 		course := courseHolder.Instance
 		unitNums := sortUnitMapKeys(courseHolder.Units)
@@ -305,7 +299,7 @@ func importInstancesFromCSV() ([]*domain.CourseInstance, error) {
 			}
 			course.Units = append(course.Units, unit)
 		}
-		courses = append(courses, &course)
+		courses = append(courses, course)
 
 	}
 	return courses, nil
@@ -333,7 +327,7 @@ func sortLessonMapKeys(lessonMap LessonMap) []int {
 }
 
 // This imports a course template and a term and generates a course instance
-func GenerateCourseInstancesFromCSV2(date time.Time) ([]*domain.CourseInstance, error) {
+func GenerateCourseInstancesFromCSV2(date time.Time) ([]domain.CourseInstance, error) {
 	instances, err := importInstancesFromCSV()
 	if err != nil {
 		return nil, err
@@ -368,7 +362,7 @@ func GenerateCourseInstancesFromCSV2(date time.Time) ([]*domain.CourseInstance, 
 	return instances, nil
 }
 
-func WriteCourseInstancesToCSV(instances []*domain.CourseInstance) error {
+func WriteCourseInstancesToCSV(instances []domain.CourseInstance) error {
 	file, err := os.Create(newScheduleDir)
 	if err != nil {
 		return err

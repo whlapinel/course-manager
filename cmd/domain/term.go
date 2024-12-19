@@ -86,7 +86,7 @@ func (t Term) TermMonths() []time.Time {
 	var dates []time.Time
 
 	currDate := t.Start
-	for !currDate.After(t.End) {
+	for !currDate.After(t.End.AddDate(0, 1, 0)) {
 		first := time.Date(currDate.Year(), currDate.Month(), 1, 0, 0, 0, 0, time.Local)
 		dates = append(dates, first)
 		currDate = currDate.AddDate(0, 1, 0)

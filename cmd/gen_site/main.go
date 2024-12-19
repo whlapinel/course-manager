@@ -62,7 +62,7 @@ func main() {
 		if instance.Term.Start.IsZero() {
 			log.Fatal("main(): instance.Term.Start is zero")
 		}
-		schedule, err := scheduleRepo.GetSchedule(*instance)
+		schedule, err := scheduleRepo.GetSchedule(instance)
 		if err != nil {
 			log.Fatalf("failed to render schedule: %v", err)
 		}
@@ -85,14 +85,14 @@ func main() {
 		// Generate page for each unit
 		for _, unit := range instance.Units {
 			log.Println("looping through units in main():", unit.Name)
-			unitPage := templates.NewUnitPage(unit, *instance)
+			unitPage := templates.NewUnitPage(unit, instance)
 			err = RenderPage(unitPage)
 			if err != nil {
 				log.Fatalf("failed to render pages: %v", err)
 			}
 			// Generate page for each lesson
 			for _, lesson := range unit.Lessons {
-				lessonPage := templates.NewLessonPage(lesson, unit, *instance)
+				lessonPage := templates.NewLessonPage(lesson, unit, instance)
 				GenerateSlides(lessonPage.Directory())
 				err = RenderPage(lessonPage)
 				if err != nil {
