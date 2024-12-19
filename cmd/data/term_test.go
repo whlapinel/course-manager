@@ -35,6 +35,9 @@ func TestGetTerm(t *testing.T) {
 	if err != nil {
 		t.Errorf("error fetching term: %s", err)
 	}
+	if term.Start.IsZero() {
+		t.Error("term Start is zero")
+	}
 	log.Println(term.Name)
 	log.Println(term.ID)
 }

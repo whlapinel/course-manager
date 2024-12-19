@@ -143,7 +143,7 @@ func NewCoursesListPage(instances []*domain.CourseInstance) Templifier {
 func NewCoursePage(instance *domain.CourseInstance) Templifier {
 	return &page{
 		title:     instance.GetTitle(),
-		directory: courseFilePath(*&instance.CourseTemplate),
+		directory: courseFilePath(instance.CourseTemplate),
 		component: CourseComponent(*instance),
 	}
 }

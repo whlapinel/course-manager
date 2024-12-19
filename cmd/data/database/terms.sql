@@ -18,7 +18,9 @@ RETURNING *;
 -- name: GetTerm :one
 SELECT
   t.id,
-  t.name
+  t.name,
+  t.start,
+  t.end
 FROM
   terms t
 JOIN

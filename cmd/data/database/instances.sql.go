@@ -31,30 +31,32 @@ func (q *Queries) DeleteInstance(ctx context.Context, id int64) (Course, error) 
 const getInstance = `-- name: GetInstance :one
 SELECT
   c.id as course_id,
-  c.template_id as template_id,
   c.name as course_name,
   c.description as course_descr,
   c.term_id
 FROM
   courses c
 WHERE
-  c.term_id = ?
+  c.term_id = ? AND c.template_id = ?
 `
+
+type GetInstanceParams struct {
+	TermID     sql.NullInt64
+	TemplateID sql.NullInt64
+}
 
 type GetInstanceRow struct {
 	CourseID    int64
-	TemplateID  sql.NullInt64
 	CourseName  string
 	CourseDescr sql.NullString
 	TermID      sql.NullInt64
 }
 
-func (q *Queries) GetInstance(ctx context.Context, termID sql.NullInt64) (GetInstanceRow, error) {
-	row := q.db.QueryRowContext(ctx, getInstance, termID)
+func (q *Queries) GetInstance(ctx context.Context, arg GetInstanceParams) (GetInstanceRow, error) {
+	row := q.db.QueryRowContext(ctx, getInstance, arg.TermID, arg.TemplateID)
 	var i GetInstanceRow
 	err := row.Scan(
 		&i.CourseID,
-		&i.TemplateID,
 		&i.CourseName,
 		&i.CourseDescr,
 		&i.TermID,
@@ -66,8 +68,7 @@ const getInstances = `-- name: GetInstances :many
 SELECT
   c.id as course_id,
   c.name as course_name,
-  c.description as course_descr,
-  c.term_id
+  c.description as course_descr
 FROM 
   courses c
 WHERE 
@@ -78,7 +79,6 @@ type GetInstancesRow struct {
 	CourseID    int64
 	CourseName  string
 	CourseDescr sql.NullString
-	TermID      sql.NullInt64
 }
 
 func (q *Queries) GetInstances(ctx context.Context, termID sql.NullInt64) ([]GetInstancesRow, error) {
@@ -90,12 +90,7 @@ func (q *Queries) GetInstances(ctx context.Context, termID sql.NullInt64) ([]Get
 	var items []GetInstancesRow
 	for rows.Next() {
 		var i GetInstancesRow
-		if err := rows.Scan(
-			&i.CourseID,
-			&i.CourseName,
-			&i.CourseDescr,
-			&i.TermID,
-		); err != nil {
+		if err := rows.Scan(&i.CourseID, &i.CourseName, &i.CourseDescr); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"strconv"
 	"time"
 )
 
@@ -111,65 +112,131 @@ func CourseCalendarComponent(schedule domain.CourseSchedule) templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					for _, day := range schedule.Schedule {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<details class=\"cursor-pointer bg-blue-900 rounded p-2 m-1 text-lg hover:bg-blue-800\"><summary>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"calendar\" class=\"flex flex-col gap-4\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					for _, day := range schedule.Term.TermMonths() {
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-2xl text-center\">Month of ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var5 string
-						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(day.Date.Format(time.DateOnly))
+						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(day.Month().String())
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 39}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 70}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</summary> ")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						for i, lesson := range day.Lessons {
-							templ_7745c5c3_Var6 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-								templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-								templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-								if !templ_7745c5c3_IsBuffer {
-									defer func() {
-										templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-										if templ_7745c5c3_Err == nil {
-											templ_7745c5c3_Err = templ_7745c5c3_BufErr
-										}
-									}()
-								}
-								ctx = templ.InitializeContext(ctx)
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								var templ_7745c5c3_Var7 string
-								templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.GetTitle())
-								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 63, Col: 30}
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
+						var templ_7745c5c3_Var6 string
+						templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(day.Year()))
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 59, Col: 99}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1><div id=\"month-container\" class=\"flex flex-col border border-solid\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						for _, week := range GetMonthDates(day) {
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"week-container\" class=\"grid grid-cols-5\">")
+							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
-							})
-							templ_7745c5c3_Err = ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, day.Units[i], schedule.Course)+FileName(lesson)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
+							}
+							for _, date := range week[1:6] {
+								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"date-container\">")
+								if templ_7745c5c3_Err != nil {
+									return templ_7745c5c3_Err
+								}
+								if !date.IsZero() {
+									var templ_7745c5c3_Var7 string
+									templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("Mon 1/02/06"))
+									if templ_7745c5c3_Err != nil {
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 66, Col: 40}
+									}
+									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+								}
+								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul>")
+								if templ_7745c5c3_Err != nil {
+									return templ_7745c5c3_Err
+								}
+								if schedule.GetSchedule(date) != nil {
+									for i, lesson := range schedule.GetSchedule(date).Lessons {
+										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li>")
+										if templ_7745c5c3_Err != nil {
+											return templ_7745c5c3_Err
+										}
+										templ_7745c5c3_Var8 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+											templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+											templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+											if !templ_7745c5c3_IsBuffer {
+												defer func() {
+													templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+													if templ_7745c5c3_Err == nil {
+														templ_7745c5c3_Err = templ_7745c5c3_BufErr
+													}
+												}()
+											}
+											ctx = templ.InitializeContext(ctx)
+											_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>")
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											var templ_7745c5c3_Var9 string
+											templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.GetTitle())
+											if templ_7745c5c3_Err != nil {
+												return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/course_calendar.templ`, Line: 73, Col: 38}
+											}
+											_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											return templ_7745c5c3_Err
+										})
+										templ_7745c5c3_Err = ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, schedule.GetSchedule(date).Units[i], schedule.Course)+FileName(lesson)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
+										if templ_7745c5c3_Err != nil {
+											return templ_7745c5c3_Err
+										}
+										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+										if templ_7745c5c3_Err != nil {
+											return templ_7745c5c3_Err
+										}
+									}
+								}
+								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div>")
+								if templ_7745c5c3_Err != nil {
+									return templ_7745c5c3_Err
+								}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</details>")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
 					}
 					return templ_7745c5c3_Err
 				})
@@ -181,7 +248,7 @@ func CourseCalendarComponent(schedule domain.CourseSchedule) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course), false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

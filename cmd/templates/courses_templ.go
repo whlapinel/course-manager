@@ -287,7 +287,7 @@ func BackButton(path, text string) templ.Component {
 }
 
 // Title for page. Path allows checking for image
-func TitleDiv(title, description, path string) templ.Component {
+func TitleDiv(title, description, path string, showImg bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -335,7 +335,7 @@ func TitleDiv(title, description, path string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if hasImage(path) {
+		if showImg == true && hasImage(path) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -463,7 +463,7 @@ func CoursesListComponent(instances []*domain.CourseInstance) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", coursesDir).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", coursesDir, true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -605,7 +605,7 @@ func CourseComponent(instance domain.CourseInstance) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(instance.GetTitle(), instance.Description, courseFilePath(instance.CourseTemplate)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(instance.GetTitle(), instance.Description, courseFilePath(instance.CourseTemplate), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -764,7 +764,7 @@ func UnitComponent(unit domain.Unit, instance domain.CourseInstance) templ.Compo
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(unit.GetTitle(), unit.Description, unitFilePath(unit, instance.CourseTemplate)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(unit.GetTitle(), unit.Description, unitFilePath(unit, instance.CourseTemplate), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -905,7 +905,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, instance domain.Cou
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(lesson.GetTitle(), lesson.Description, lessonFilePath(lesson, unit, instance.CourseTemplate)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(lesson.GetTitle(), lesson.Description, lessonFilePath(lesson, unit, instance.CourseTemplate), true).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

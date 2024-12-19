@@ -2,6 +2,7 @@ package templates
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"strconv"
 	"time"
 )
 
@@ -53,20 +54,37 @@ templ CourseCalendarComponent(schedule domain.CourseSchedule) {
 	@Layout(&page{title: schedule.Course.GetTitle()}) {
 		@CourseDivContainer(domain.CourseInstance{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
-				for _, day := range schedule.Schedule {
-					<details class="cursor-pointer bg-blue-900 rounded p-2 m-1 text-lg hover:bg-blue-800">
-						<summary>
-							{ day.Date.Format(time.DateOnly) }
-						</summary>
-						for i, lesson := range day.Lessons {
-							@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, day.Units[i], schedule.Course)+FileName(lesson)), false) {
-								<p>{ lesson.GetTitle() } </p>
+				<div id="calendar" class="flex flex-col gap-4">
+					for _, day := range schedule.Term.TermMonths() {
+						<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
+						<div id="month-container" class="flex flex-col border border-solid">
+							for _, week := range GetMonthDates(day) {
+								<div id="week-container" class="grid grid-cols-5">
+									for _, date := range week[1:6] {
+										<div id="date-container">
+											if !date.IsZero() {
+												{ date.Format("Mon 1/02/06") }
+											}
+											<ul>
+												if schedule.GetSchedule(date) != nil {
+													for i, lesson := range schedule.GetSchedule(date).Lessons {
+														<li>
+															@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, schedule.GetSchedule(date).Units[i], schedule.Course)+FileName(lesson)), false) {
+																<p>{ lesson.GetTitle() } </p>
+															}
+														</li>
+													}
+												}
+											</ul>
+										</div>
+									}
+								</div>
 							}
-						}
-					</details>
-				}
+						</div>
+					}
+				</div>
 			}
-			@TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course))
+			@TitleDiv("Course Calendar", schedule.Course.Name+", "+schedule.Term.Name, courseFilePath(schedule.Course), false)
 		}
 	}
 }

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -75,4 +76,20 @@ func IsSameDate(t1 time.Time, t2 time.Time) bool {
 		return true
 	}
 	return false
+}
+
+// returns a slice consisting of the first of each month that is included in the term
+func (t Term) TermMonths() []time.Time {
+	if t.Start.IsZero() || t.End.IsZero() {
+		log.Fatal("term not initialized")
+	}
+	var dates []time.Time
+
+	currDate := t.Start
+	for !currDate.After(t.End) {
+		first := time.Date(currDate.Year(), currDate.Month(), 1, 0, 0, 0, 0, time.Local)
+		dates = append(dates, first)
+		currDate = currDate.AddDate(0, 1, 0)
+	}
+	return dates
 }

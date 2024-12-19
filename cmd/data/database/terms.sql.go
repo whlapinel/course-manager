@@ -41,7 +41,9 @@ func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
 const getTerm = `-- name: GetTerm :one
 SELECT
   t.id,
-  t.name
+  t.name,
+  t.start,
+  t.end
 FROM
   terms t
 JOIN
@@ -50,15 +52,15 @@ WHERE
   d.date = ?
 `
 
-type GetTermRow struct {
-	ID   int64
-	Name string
-}
-
-func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) {
+func (q *Queries) GetTerm(ctx context.Context, date string) (Term, error) {
 	row := q.db.QueryRowContext(ctx, getTerm, date)
-	var i GetTermRow
-	err := row.Scan(&i.ID, &i.Name)
+	var i Term
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Start,
+		&i.End,
+	)
 	return i, err
 }
 

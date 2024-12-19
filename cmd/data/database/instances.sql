@@ -2,7 +2,7 @@
 SELECT
   c.id as course_id,
   c.name as course_name,
-  c.description as course_descr,
+  c.description as course_descr
 FROM 
   courses c
 WHERE 

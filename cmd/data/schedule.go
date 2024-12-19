@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
 	"log"
@@ -20,8 +21,12 @@ func NewDailyScheduleRepo(queries *database.Queries) domain.DailyScheduleRepo {
 
 // GetSchedule implements domain.DailyScheduleRepo.
 func (d dailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
+	if instance.Term.Start.IsZero() {
+		log.Fatal("GetSchedule(): term not initialized")
+	}
 	var schedule = domain.CourseSchedule{
 		Course: instance.CourseTemplate,
+		Term:   instance.Term,
 	}
 	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.CourseTemplate.ID))
 	if err != nil {
@@ -81,6 +86,9 @@ func (d dailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.C
 		schedules = append(schedules, dailySchedule)
 	}
 	schedule.Schedule = schedules
+	if schedule.Term.Start.IsZero() {
+		return domain.CourseSchedule{}, fmt.Errorf("GetSchedule(): term not initialized")
+	}
 	return schedule, nil
 }
 

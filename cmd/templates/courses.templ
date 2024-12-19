@@ -63,11 +63,11 @@ templ BackButton(path, text string) {
 }
 
 // Title for page. Path allows checking for image
-templ TitleDiv(title, description, path string) {
+templ TitleDiv(title, description, path string, showImg bool) {
 	<div class="flex flex-col gap-6 max-w-3xl">
 		<h1 class=" text-4xl">{ title }</h1>
 		<p class="text-2xl">{ description }</p>
-		if hasImage(path) {
+		if showImg == true && hasImage(path) {
 			<img src={ "./image.png" } class="max-w-full h-auto rounded border border-solid border-purple-400"/>
 		}
 	</div>
@@ -83,7 +83,7 @@ templ CoursesListComponent(instances []*domain.CourseInstance) {
 					}
 				}
 			}
-			@TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", coursesDir)
+			@TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", coursesDir, true)
 		}
 	}
 }
@@ -102,7 +102,7 @@ templ CourseComponent(instance domain.CourseInstance) {
 					}
 				}
 			}
-			@TitleDiv(instance.GetTitle(), instance.Description, courseFilePath(instance.CourseTemplate))
+			@TitleDiv(instance.GetTitle(), instance.Description, courseFilePath(instance.CourseTemplate), true)
 		}
 	}
 }
@@ -121,7 +121,7 @@ templ UnitComponent(unit domain.Unit, instance domain.CourseInstance) {
 					}
 				}
 			}
-			@TitleDiv(unit.GetTitle(), unit.Description, unitFilePath(unit, instance.CourseTemplate))
+			@TitleDiv(unit.GetTitle(), unit.Description, unitFilePath(unit, instance.CourseTemplate), true)
 		}
 	}
 }
@@ -143,7 +143,7 @@ templ LessonComponent(lesson domain.Lesson, unit domain.Unit, instance domain.Co
 					}
 				}
 			}
-			@TitleDiv(lesson.GetTitle(), lesson.Description, lessonFilePath(lesson, unit, instance.CourseTemplate))
+			@TitleDiv(lesson.GetTitle(), lesson.Description, lessonFilePath(lesson, unit, instance.CourseTemplate), true)
 		}
 	}
 }

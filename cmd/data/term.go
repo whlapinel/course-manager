@@ -27,9 +27,22 @@ func (t termRepo) GetTerm(date time.Time) (*domain.Term, error) {
 	if err != nil {
 		return nil, err
 	}
+	start, err := time.Parse(time.DateOnly, dbTerm.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := time.Parse(time.DateOnly, dbTerm.End)
+	if err != nil {
+		return nil, err
+	}
 	term := &domain.Term{
-		ID:   int(dbTerm.ID),
-		Name: dbTerm.Name,
+		ID:    int(dbTerm.ID),
+		Name:  dbTerm.Name,
+		Start: start,
+		End:   end,
+	}
+	if term.Start.IsZero() {
+		return nil, fmt.Errorf("term.Start not initialized")
 	}
 	return term, nil
 }

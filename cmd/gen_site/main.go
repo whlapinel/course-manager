@@ -43,6 +43,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("error fetching term: %s", err)
 	}
+	if term.Start.IsZero() {
+		log.Fatal("main(): term not initialized")
+	}
 	courseRepo := data.NewCourseRepo(queries)
 	// Generate "courses I teach" list page
 	instances, err := courseRepo.GetInstances(*term)
@@ -56,10 +59,17 @@ func main() {
 	}
 	scheduleRepo := data.NewDailyScheduleRepo(queries)
 	for _, instance := range instances {
+		if instance.Term.Start.IsZero() {
+			log.Fatal("main(): instance.Term.Start is zero")
+		}
 		schedule, err := scheduleRepo.GetSchedule(*instance)
 		if err != nil {
 			log.Fatalf("failed to render schedule: %v", err)
 		}
+		if schedule.Term.Start.IsZero() {
+			log.Fatal("main(): term.Start is zero")
+		}
+		log.Println("schedule.Term.Start: ", schedule.Term.Start.Format(time.DateOnly))
 		// Generate calendar page for each course
 		calendarPage := templates.NewCourseCalendarPage(schedule)
 		err = RenderPage(calendarPage)
