@@ -3,24 +3,14 @@ package data
 import (
 	"context"
 	"fmt"
-	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
 	"log"
 	"slices"
 	"time"
 )
 
-type DailyScheduleRepo struct {
-	queries *database.Queries
-}
-
-func NewDailyScheduleRepo(queries *database.Queries) DailyScheduleRepo {
-	return DailyScheduleRepo{queries: queries}
-
-}
-
 // GetSchedule implements domain.DailyScheduleRepo.
-func (d DailyScheduleRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
+func (d CourseRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSchedule, error) {
 	if instance.Term.Start.IsZero() {
 		log.Fatal("GetSchedule(): term not initialized")
 	}

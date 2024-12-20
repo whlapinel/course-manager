@@ -62,10 +62,6 @@ func CSVHeaders() []string {
 
 }
 
-func (c CourseRepo) WriteToCSV(course domain.CourseTemplate) error {
-	return fmt.Errorf("not implemented")
-}
-
 type LessonMap map[int]domain.Lesson
 type UnitHolder struct {
 	Unit    domain.Unit

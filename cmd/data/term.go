@@ -11,19 +11,9 @@ import (
 	"time"
 )
 
-type TermRepo interface {
-	Save(term *domain.Term) (int, error)
-	ReadFromCSV() ([]*domain.Term, error)
-	GetTerm(date time.Time) (*domain.Term, error)
-}
-
-type termRepo struct {
-	queries *database.Queries
-}
-
 // GetTerm implements TermRepo.
-func (t termRepo) GetTerm(date time.Time) (*domain.Term, error) {
-	dbTerm, err := t.queries.GetTerm(context.Background(), date.Format(time.DateOnly))
+func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
+	dbTerm, err := cr.queries.GetTerm(context.Background(), date.Format(time.DateOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -47,13 +37,8 @@ func (t termRepo) GetTerm(date time.Time) (*domain.Term, error) {
 	return term, nil
 }
 
-// All implements TermRepo.
-func (t termRepo) All() ([]*domain.Term, error) {
-	panic("unimplemented")
-}
-
 // ReadFromCSV implements TermRepo.
-func (t termRepo) ReadFromCSV() ([]*domain.Term, error) {
+func (t CourseRepo) ReadFromCSV() ([]*domain.Term, error) {
 	terms, err := TermsLoader()
 	if err != nil {
 		return nil, err
@@ -61,8 +46,7 @@ func (t termRepo) ReadFromCSV() ([]*domain.Term, error) {
 	return terms, nil
 }
 
-// Save implements TermRepo.
-func (t termRepo) Save(term *domain.Term) (int, error) {
+func (t CourseRepo) SaveTerm(term *domain.Term) (int, error) {
 	termParams := database.SaveTermParams{
 		Name:  term.Name,
 		Start: term.Start.Format(time.DateOnly),
@@ -81,15 +65,6 @@ func (t termRepo) Save(term *domain.Term) (int, error) {
 		t.queries.SaveDate(context.Background(), dateParams)
 	}
 	return int(dbTerm.ID), nil
-}
-
-// WriteToCSV implements TermRepo.
-func (t termRepo) WriteToCSV(*domain.Term) error {
-	panic("unimplemented")
-}
-
-func NewTermRepo(queries *database.Queries) TermRepo {
-	return termRepo{queries: queries}
 }
 
 const termsPath = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/terms.csv"

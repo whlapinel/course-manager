@@ -9,6 +9,14 @@ import (
 	_ "embed"
 )
 
+type CourseRepo struct {
+	queries *database.Queries
+}
+
+func NewCourseRepo(db *database.Queries) CourseRepo {
+	return CourseRepo{queries: db}
+}
+
 const scheduleCsvDir = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/schedules.csv"
 const newScheduleDir = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/schedules_new.csv"
 

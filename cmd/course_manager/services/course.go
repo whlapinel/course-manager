@@ -8,8 +8,6 @@ import (
 
 type CourseService struct {
 	courses data.CourseRepo
-	units   data.UnitRepo
-	lessons data.LessonRepo
 }
 
 func NewCourseService(courseRepo data.CourseRepo) CourseService {

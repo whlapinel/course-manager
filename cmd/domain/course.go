@@ -20,7 +20,7 @@ type CourseInstance struct {
 	Term
 }
 
-func (c CourseTemplate) CreateInstance(term Term) *CourseInstance {
+func (c CourseTemplate) CreateInstance(term Term) CourseInstance {
 	var units []Unit
 	for _, unit := range c.Units {
 		unit.TemplateID = unit.ID
@@ -35,7 +35,7 @@ func (c CourseTemplate) CreateInstance(term Term) *CourseInstance {
 		units = append(units, unit)
 	}
 	c.Units = units
-	return &CourseInstance{
+	return CourseInstance{
 		CourseTemplate: c,
 		TemplateID:     c.ID,
 		Term:           term,

@@ -59,7 +59,7 @@ func TestSaveInstance(t *testing.T) {
 		t.Errorf("TermsLoader(): %s", err)
 	}
 	for i, term := range terms {
-		terms[i].ID, err = tr.Save(term)
+		terms[i].ID, err = cr.SaveTerm(term)
 		if err != nil {
 			t.Errorf("tr.Save(): %s", err)
 		}
@@ -106,7 +106,7 @@ func TestGetTemplates(t *testing.T) {
 }
 
 func TestGetInstances(t *testing.T) {
-	term, err := tr.GetTerm(time.Now())
+	term, err := cr.GetTerm(time.Now())
 	if err != nil {
 		t.Errorf("error fetching term: %s", err)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestCancelAndRescheduleLesson(t *testing.T) {
-	lessons, err := lr.All(13)
+	lessons, err := cr.GetLessons(13)
 	if err != nil {
 		t.Error()
 	}
@@ -17,14 +17,14 @@ func TestCancelAndRescheduleLesson(t *testing.T) {
 	lesson := lessons[0]
 	log.Println("dates before canceling:", lesson.Dates)
 	date := lesson.Dates[0]
-	lr.Cancel(lesson, date)
-	lessons, err = lr.All(13)
+	cr.Cancel(lesson, date)
+	lessons, err = cr.GetLessons(13)
 	if err != nil {
 		t.Error(err)
 	}
 	lesson = lessons[0]
 	log.Println("dates after canceling:", lesson.Dates)
-	lessons, err = lr.All(13)
+	lessons, err = cr.GetLessons(13)
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,8 +32,8 @@ func TestCancelAndRescheduleLesson(t *testing.T) {
 	log.Println("lesson:", lesson.Name)
 	log.Println("dates before scheduling:", lesson.Dates)
 	date = time.Date(2024, 8, 26, 0, 0, 0, 0, time.Local)
-	lr.Schedule(lesson, date)
-	lessons, err = lr.All(13)
+	cr.Schedule(lesson, date)
+	lessons, err = cr.GetLessons(13)
 	if err != nil {
 		t.Error(err)
 	}

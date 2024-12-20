@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetUnits(t *testing.T) {
-	units, err := ur.All(1)
+	units, err := cr.GetUnits(1)
 	if err != nil {
 		t.Error()
 	}

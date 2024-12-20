@@ -9,12 +9,12 @@ import (
 )
 
 func TestSaveTerm(t *testing.T) {
-	terms, err := tr.ReadFromCSV()
+	terms, err := cr.ReadFromCSV()
 	if err != nil {
 		t.Errorf("error reading from CSV: %s", err)
 	}
 	for _, term := range terms {
-		termID, err := tr.Save(term)
+		termID, err := cr.SaveTerm(term)
 		if err != nil {
 			t.Errorf("error saving term: %s", err)
 		}
@@ -31,7 +31,7 @@ func TestSaveTerm(t *testing.T) {
 }
 
 func TestGetTerm(t *testing.T) {
-	term, err := tr.GetTerm(time.Now())
+	term, err := cr.GetTerm(time.Now())
 	if err != nil {
 		t.Errorf("error fetching term: %s", err)
 	}
