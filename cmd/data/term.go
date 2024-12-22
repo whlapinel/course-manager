@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -37,16 +38,81 @@ func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
 	return term, nil
 }
 
+func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
+	dbTerm, err := cr.queries.GetTermByID(context.Background(), int64(termID))
+	if err != nil {
+		return domain.Term{}, nil
+	}
+	dates, err := parseDates([]string{dbTerm.Start, dbTerm.End})
+	if err != nil {
+		return domain.Term{}, nil
+	}
+	return domain.Term{
+		ID:    int(dbTerm.ID),
+		Name:  dbTerm.Name,
+		Start: dates[0],
+		End:   dates[1],
+	}, nil
+
+}
+
+func (cr CourseRepo) GetTerms() ([]domain.Term, error) {
+	dbTerms, err := cr.queries.GetTerms(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	var terms []domain.Term
+	for _, dbTerm := range dbTerms {
+		parsedStart, err := time.Parse(time.DateOnly, dbTerm.Start)
+		if err != nil {
+			return nil, err
+		}
+		parsedEnd, err := time.Parse(time.DateOnly, dbTerm.End)
+		if err != nil {
+			return nil, err
+		}
+		term := domain.Term{
+			ID:    int(dbTerm.ID),
+			Start: parsedStart,
+			End:   parsedEnd,
+			Name:  dbTerm.Name,
+		}
+		terms = append(terms, term)
+
+	}
+	return terms, nil
+
+}
+
+func (cr CourseRepo) GetTermDates(termID int) (domain.Term, error) {
+	var term domain.Term
+	dbDates, err := cr.queries.GetTermDates(context.Background(), int64(termID))
+	if len(dbDates) == 0 {
+		log.Println("dates returned: 0. CourseRepo.GetTermDates")
+	}
+	if err != nil {
+		return term, nil
+	}
+	for _, dbDate := range dbDates {
+		date, err := time.Parse(time.DateOnly, dbDate.Date)
+		if err != nil {
+			return term, err
+		}
+		term.InstructionalDays = append(term.InstructionalDays, date)
+	}
+	return term, nil
+}
+
 // ReadFromCSV implements TermRepo.
-func (t CourseRepo) ReadFromCSV() ([]*domain.Term, error) {
-	terms, err := TermsLoader()
+func (t CourseRepo) ReadFromCSV() ([]domain.Term, error) {
+	terms, err := t.ImportTermsFromCSV()
 	if err != nil {
 		return nil, err
 	}
 	return terms, nil
 }
 
-func (t CourseRepo) SaveTerm(term *domain.Term) (int, error) {
+func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	termParams := database.SaveTermParams{
 		Name:  term.Name,
 		Start: term.Start.Format(time.DateOnly),
@@ -122,7 +188,7 @@ func filterNonInstructionalDates(termID int, dates *domain.NonInstructionalDays)
 	return filtered
 }
 
-func TermsLoader() ([]*domain.Term, error) {
+func (t CourseRepo) ImportTermsFromCSV() ([]domain.Term, error) {
 	file, err := os.Open(termsPath)
 	if err != nil {
 		return nil, err
@@ -137,7 +203,7 @@ func TermsLoader() ([]*domain.Term, error) {
 	if err != nil {
 		return nil, err
 	}
-	terms := []*domain.Term{}
+	terms := []domain.Term{}
 	for i, record := range records {
 		if i == 0 {
 			continue

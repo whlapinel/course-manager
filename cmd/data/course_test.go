@@ -28,33 +28,8 @@ func TestImportCoursesFromCSV(t *testing.T) {
 
 }
 
-func TestGenerateInstances(t *testing.T) {
-	date := time.Now().AddDate(0, 2, 0)
-	courseInstances, err := GenerateCourseInstancesFromCSV2(date)
-	if err != nil {
-		t.Errorf("error generating instances from csv: %s", err)
-	}
-	for _, instance := range courseInstances {
-		log.Println(instance.CourseTemplate.Name)
-		log.Println("num units: ", len(instance.Units))
-		for _, unit := range instance.Units {
-			log.Println(unit.Name)
-			log.Println("num lessons: ", len(unit.Lessons))
-			for _, lesson := range unit.Lessons {
-				for _, date := range lesson.Dates {
-					log.Println(lesson.Name, lesson.Description, date.Format(time.DateOnly))
-				}
-			}
-		}
-	}
-	err = WriteCourseInstancesToCSV(courseInstances)
-	if err != nil {
-		t.Errorf("error writing to csv: %s", err)
-	}
-}
-
 func TestSaveInstance(t *testing.T) {
-	terms, err := TermsLoader()
+	terms, err := cr.ImportTermsFromCSV()
 	if err != nil {
 		t.Errorf("TermsLoader(): %s", err)
 	}
@@ -75,7 +50,7 @@ func TestSaveInstance(t *testing.T) {
 		}
 		for _, term := range terms {
 
-			instance := savedTemplate.CreateInstance(*term)
+			instance := savedTemplate.CreateInstance(term)
 			err = cr.SaveInstance(instance)
 			if err != nil {
 				t.Errorf("cr.SaveInstance(): %s", err)
@@ -110,7 +85,7 @@ func TestGetInstances(t *testing.T) {
 	if err != nil {
 		t.Errorf("error fetching term: %s", err)
 	}
-	instances, err := cr.GetInstances(*term)
+	instances, err := cr.GetInstances(term.ID)
 	if err != nil {
 		t.Errorf("error geting instances: %s", err)
 	}

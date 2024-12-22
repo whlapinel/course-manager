@@ -100,3 +100,20 @@ func (q *Queries) SaveTemplate(ctx context.Context, arg SaveTemplateParams) (Cou
 	)
 	return i, err
 }
+
+const updateTemplate = `-- name: UpdateTemplate :exec
+UPDATE courses 
+SET name = ?, description = ?
+WHERE id = ?
+`
+
+type UpdateTemplateParams struct {
+	Name        string
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) error {
+	_, err := q.db.ExecContext(ctx, updateTemplate, arg.Name, arg.Description, arg.ID)
+	return err
+}

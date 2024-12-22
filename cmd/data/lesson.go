@@ -44,12 +44,19 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 	return lessons, nil
 }
 
-func (lr CourseRepo) Cancel(lesson domain.Lesson, date time.Time) error {
-	err := lr.queries.DeleteLessonDates(context.Background(), int64(lesson.ID))
+func (lr CourseRepo) DeleteLessonDate(lesson domain.Lesson, date time.Time) error {
+	dateID, err := lr.queries.GetDateID(context.Background(), date.Format(time.DateOnly))
+	if err != nil {
+		return err
+	}
+	err = lr.queries.DeleteLessonDates(context.Background(), database.DeleteLessonDatesParams{
+		LessonID: int64(lesson.ID),
+		DateID:   dateID,
+	})
 	return err
 }
 
-func (lr CourseRepo) Schedule(lesson domain.Lesson, date time.Time) error {
+func (lr CourseRepo) AddLessonDate(lesson domain.Lesson, date time.Time) error {
 	dbDate, err := lr.queries.GetDate(context.Background(), date.Format(time.DateOnly))
 	if err != nil {
 		return err
@@ -144,7 +151,7 @@ func (c CourseRepo) SaveLessonTemplate(lesson domain.Lesson) (*domain.Lesson, er
 	return savedLesson, nil
 }
 
-func (lr CourseRepo) Update(lesson domain.Lesson) error {
+func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 	err := lr.queries.UpdateLesson(context.Background(), database.UpdateLessonParams{
 		Name: sql.NullString{
 			Valid:  lesson.Name != "",
@@ -159,7 +166,7 @@ func (lr CourseRepo) Update(lesson domain.Lesson) error {
 	return err
 }
 
-func (lr CourseRepo) Delete(lesson domain.Lesson) error {
+func (lr CourseRepo) DeleteLesson(lesson domain.Lesson) error {
 	err := lr.queries.DeleteLesson(context.Background(), int64(lesson.ID))
 	return err
 }

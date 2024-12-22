@@ -43,7 +43,8 @@ SELECT
   t.id,
   t.name,
   t.start,
-  t.end
+  t.end,
+  d.date
 FROM
   terms t
 JOIN
@@ -52,8 +53,33 @@ WHERE
   d.date = ?
 `
 
-func (q *Queries) GetTerm(ctx context.Context, date string) (Term, error) {
+type GetTermRow struct {
+	ID    int64
+	Name  string
+	Start string
+	End   string
+	Date  string
+}
+
+func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) {
 	row := q.db.QueryRowContext(ctx, getTerm, date)
+	var i GetTermRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Start,
+		&i.End,
+		&i.Date,
+	)
+	return i, err
+}
+
+const getTermByID = `-- name: GetTermByID :one
+SELECT id, name, start, "end" FROM terms WHERE id = ?
+`
+
+func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
+	row := q.db.QueryRowContext(ctx, getTermByID, id)
 	var i Term
 	err := row.Scan(
 		&i.ID,
@@ -62,6 +88,71 @@ func (q *Queries) GetTerm(ctx context.Context, date string) (Term, error) {
 		&i.End,
 	)
 	return i, err
+}
+
+const getTermDates = `-- name: GetTermDates :many
+SELECT id, term_id, day_number, date FROM dates d
+WHERE d.term_id = ?
+`
+
+func (q *Queries) GetTermDates(ctx context.Context, termID int64) ([]Date, error) {
+	rows, err := q.db.QueryContext(ctx, getTermDates, termID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Date
+	for rows.Next() {
+		var i Date
+		if err := rows.Scan(
+			&i.ID,
+			&i.TermID,
+			&i.DayNumber,
+			&i.Date,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTerms = `-- name: GetTerms :many
+SELECT id, name, start, "end" FROM terms
+`
+
+func (q *Queries) GetTerms(ctx context.Context) ([]Term, error) {
+	rows, err := q.db.QueryContext(ctx, getTerms)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Term
+	for rows.Next() {
+		var i Term
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Start,
+			&i.End,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const saveTerm = `-- name: SaveTerm :one

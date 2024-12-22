@@ -11,7 +11,7 @@ func TestGetDailySchedules(t *testing.T) {
 	if err != nil {
 		t.Errorf("error getting term: %s", err)
 	}
-	instances, err := cr.GetInstances(*currentTerm)
+	instances, err := cr.GetInstances(currentTerm.ID)
 	if err != nil {
 		t.Errorf("error getting instances: %s", err)
 	}

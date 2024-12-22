@@ -6,14 +6,15 @@ import (
 	"time"
 )
 
-func NewTerm(start, end time.Time, nonInstructionalDays []time.Time, termType TermType, termID int, name string) (*Term, error) {
+func NewTerm(start, end time.Time, nonInstructionalDays []time.Time, termType TermType, termID int, name string) (Term, error) {
+	var term Term
 	if start.After(end) {
-		return nil, fmt.Errorf("start must come before end: %s is after %s", start.String(), end.String())
+		return term, fmt.Errorf("start must come before end: %s is after %s", start.String(), end.String())
 	}
-	term := Term{Start: start, End: end, NonInstructionalDays: nonInstructionalDays, TermType: termType, ID: termID, Name: name}
+	term = Term{Start: start, End: end, NonInstructionalDays: nonInstructionalDays, TermType: termType, ID: termID, Name: name}
 	instructionDates := InstructionDays(term)
 	term.InstructionalDays = instructionDates
-	return &term, nil
+	return term, nil
 }
 
 type TermType string

@@ -7,20 +7,17 @@ INSERT INTO terms (
 )
 RETURNING *;
 
-
-
 -- name: DeleteTerm :one
 DELETE FROM terms WHERE id = ?
 RETURNING *;
-
-
 
 -- name: GetTerm :one
 SELECT
   t.id,
   t.name,
   t.start,
-  t.end
+  t.end,
+  d.date
 FROM
   terms t
 JOIN
@@ -28,6 +25,15 @@ JOIN
 WHERE
   d.date = ?;
 
+-- name: GetTermByID :one
+SELECT * FROM terms WHERE id = ?;
+
+-- name: GetTerms :many
+SELECT * FROM terms;
+
+-- name: GetTermDates :many
+SELECT * FROM dates d
+WHERE d.term_id = ?;
 
 -- name: DeleteNonInstructDays :one
 DELETE FROM non_instruct_days WHERE id = ?

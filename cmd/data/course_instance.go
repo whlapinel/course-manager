@@ -52,11 +52,21 @@ func (c CourseRepo) SaveInstance(instance domain.CourseInstance) error {
 
 }
 
-func (c CourseRepo) GetInstances(term domain.Term) ([]domain.CourseInstance, error) {
-	dbInstances, err := c.queries.GetInstances(context.Background(), sql.NullInt64{Valid: true, Int64: int64(term.ID)})
+func (c CourseRepo) GetInstances(termID int) ([]domain.CourseInstance, error) {
+	dbInstances, err := c.queries.GetInstances(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
 	if err != nil {
 		return nil, err
 	}
+	term, err := c.GetTermByID(termID)
+	if err != nil {
+		return nil, err
+	}
+	termWithDates, err := c.GetTermDates(termID)
+	if err != nil {
+		return nil, err
+	}
+	// THIS IS KINDA JACKED UP
+	term.InstructionalDays = termWithDates.InstructionalDays
 	var instances []domain.CourseInstance
 	for _, dbInstance := range dbInstances {
 		instance := domain.CourseInstance{
@@ -196,4 +206,20 @@ func (c CourseRepo) GetInstance(templateID int, termID int) (domain.CourseInstan
 	}
 	instance.Units = units
 	return instance, nil
+}
+
+func (c CourseRepo) UpdateInstance(instance domain.CourseInstance) error {
+	err := c.queries.UpdateInstance(context.Background(), database.UpdateInstanceParams{
+		ID:   int64(instance.CourseTemplate.ID),
+		Name: instance.CourseTemplate.Name,
+		Description: sql.NullString{
+			Valid:  instance.Description != "",
+			String: instance.Description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

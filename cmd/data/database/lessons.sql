@@ -34,6 +34,13 @@ JOIN
 WHERE
   lesson_id = ?;
 
+-- name: GetDateID :one
+SELECT
+    d.id
+FROM
+    dates d
+WHERE
+    d.date = ?;
 
 -- name: SaveLessonDate :one
 INSERT INTO lesson_dates (
@@ -50,4 +57,4 @@ WHERE id = ?;
 
 -- name: DeleteLessonDates :exec
 DELETE FROM lesson_dates
-WHERE lesson_id = ?;
+WHERE lesson_id = ? and date_id = ?;

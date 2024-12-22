@@ -27,6 +27,11 @@ INSERT INTO courses (
 )
 RETURNING *;
 
+-- name: UpdateInstance :exec
+UPDATE courses 
+SET name = ?, description = ?
+WHERE id = ?;
+
 -- name: DeleteInstance :one
 DELETE FROM courses WHERE id = ?
 RETURNING *;

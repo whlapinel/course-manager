@@ -27,3 +27,8 @@ INSERT INTO courses (
   ?, ?
 )
 RETURNING *;
+
+-- name: UpdateTemplate :exec
+UPDATE courses 
+SET name = ?, description = ?
+WHERE id = ?;

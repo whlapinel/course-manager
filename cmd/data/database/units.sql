@@ -22,6 +22,11 @@ INSERT INTO units (
 )
 RETURNING *;
 
+-- name: UpdateUnit :exec
+UPDATE units
+SET number = ?, sequence = ?, name = ?, description = ?
+WHERE id = ?;
+
 -- name: DeleteUnit :one
 DELETE FROM units WHERE id = ?
 RETURNING *;

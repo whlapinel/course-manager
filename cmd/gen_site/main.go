@@ -47,7 +47,7 @@ func main() {
 		log.Fatal("main(): term not initialized")
 	}
 	// Generate "courses I teach" list page
-	instances, err := courseRepo.GetInstances(*term)
+	instances, err := courseRepo.GetInstances(term.ID)
 	if err != nil {
 		log.Fatalf("error getting instances: %v", err)
 	}

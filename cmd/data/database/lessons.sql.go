@@ -21,12 +21,33 @@ func (q *Queries) DeleteLesson(ctx context.Context, id int64) error {
 
 const deleteLessonDates = `-- name: DeleteLessonDates :exec
 DELETE FROM lesson_dates
-WHERE lesson_id = ?
+WHERE lesson_id = ? and date_id = ?
 `
 
-func (q *Queries) DeleteLessonDates(ctx context.Context, lessonID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteLessonDates, lessonID)
+type DeleteLessonDatesParams struct {
+	LessonID int64
+	DateID   int64
+}
+
+func (q *Queries) DeleteLessonDates(ctx context.Context, arg DeleteLessonDatesParams) error {
+	_, err := q.db.ExecContext(ctx, deleteLessonDates, arg.LessonID, arg.DateID)
 	return err
+}
+
+const getDateID = `-- name: GetDateID :one
+SELECT
+    d.id
+FROM
+    dates d
+WHERE
+    d.date = ?
+`
+
+func (q *Queries) GetDateID(ctx context.Context, date string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getDateID, date)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getLessonDates = `-- name: GetLessonDates :many

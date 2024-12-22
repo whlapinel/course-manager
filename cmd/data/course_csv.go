@@ -72,11 +72,11 @@ type CourseInstanceHolder struct {
 	Instance domain.CourseInstance
 	Units    UnitMap
 }
+type InstanceMap map[string]CourseInstanceHolder
 type CourseTemplateHolder struct {
 	Template domain.CourseTemplate
 	Units    UnitMap
 }
-type InstanceMap map[string]CourseInstanceHolder
 type TemplateMap map[string]CourseTemplateHolder
 
 func (c CourseRepo) ImportTemplatesFromCSV() ([]domain.CourseTemplate, error) {
@@ -322,41 +322,7 @@ func sortLessonMapKeys(lessonMap LessonMap) []int {
 
 }
 
-// This imports a course template and a term and generates a course instance
-func GenerateCourseInstancesFromCSV2(date time.Time) ([]domain.CourseInstance, error) {
-	instances, err := importInstancesFromCSV()
-	if err != nil {
-		return nil, err
-	}
-	terms, err := TermsLoader()
-	if err != nil {
-		return nil, err
-	}
-	var currentTerm *domain.Term
-	for _, term := range terms {
-		if date.After(term.Start) && date.Before(term.End) {
-			currentTerm = term
-		}
-	}
-	for i, course := range instances {
-		dateNum := 0
-		currDate := currentTerm.InstructionalDays[dateNum]
-		instances[i].Term.Name = currentTerm.Name
-		for j, unit := range course.Units {
-			for k, lesson := range unit.Lessons {
-				log.Printf("Assigning %v to lesson %v", currDate, lesson.Name) // Log assignment
-				instances[i].Units[j].Lessons[k].Dates[0] = currDate
-				if dateNum != len(currentTerm.InstructionalDays)-1 {
-					dateNum++
-					currDate = currentTerm.InstructionalDays[dateNum]
-				} else {
-					currDate = time.Time{}
-				}
-			}
-		}
-	}
-	return instances, nil
-}
+
 
 func WriteCourseInstancesToCSV(instances []domain.CourseInstance) error {
 	file, err := os.Create(newScheduleDir)

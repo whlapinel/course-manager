@@ -117,3 +117,28 @@ func (q *Queries) SaveUnit(ctx context.Context, arg SaveUnitParams) (Unit, error
 	)
 	return i, err
 }
+
+const updateUnit = `-- name: UpdateUnit :exec
+UPDATE units
+SET number = ?, sequence = ?, name = ?, description = ?
+WHERE id = ?
+`
+
+type UpdateUnitParams struct {
+	Number      int64
+	Sequence    int64
+	Name        string
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) error {
+	_, err := q.db.ExecContext(ctx, updateUnit,
+		arg.Number,
+		arg.Sequence,
+		arg.Name,
+		arg.Description,
+		arg.ID,
+	)
+	return err
+}

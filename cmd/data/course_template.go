@@ -138,3 +138,19 @@ func (c CourseRepo) SaveTemplate(course domain.CourseTemplate) (domain.CourseTem
 	return course, nil
 
 }
+
+// This is only for updating the course template, not units or lessons
+func (c CourseRepo) UpdateTemplate(tpl domain.CourseTemplate) error {
+	err := c.queries.UpdateTemplate(context.Background(), database.UpdateTemplateParams{
+		ID:   int64(tpl.ID),
+		Name: tpl.Name,
+		Description: sql.NullString{
+			Valid:  tpl.Description != "",
+			String: tpl.Description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}

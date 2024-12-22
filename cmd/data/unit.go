@@ -69,3 +69,20 @@ func (ur CourseRepo) GetUnits(courseID int) ([]domain.Unit, error) {
 	}
 	return units, nil
 }
+
+func (c CourseRepo) UpdateUnit(u domain.Unit) error {
+	err := c.queries.UpdateUnit(context.Background(), database.UpdateUnitParams{
+		ID:       int64(u.ID),
+		Number:   int64(u.Number),
+		Sequence: int64(u.SequenceNum),
+		Name:     u.Name,
+		Description: sql.NullString{
+			Valid:  u.Description != "",
+			String: u.Description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}

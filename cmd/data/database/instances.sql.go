@@ -137,3 +137,20 @@ func (q *Queries) SaveInstance(ctx context.Context, arg SaveInstanceParams) (Cou
 	)
 	return i, err
 }
+
+const updateInstance = `-- name: UpdateInstance :exec
+UPDATE courses 
+SET name = ?, description = ?
+WHERE id = ?
+`
+
+type UpdateInstanceParams struct {
+	Name        string
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateInstance(ctx context.Context, arg UpdateInstanceParams) error {
+	_, err := q.db.ExecContext(ctx, updateInstance, arg.Name, arg.Description, arg.ID)
+	return err
+}
