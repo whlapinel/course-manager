@@ -21,7 +21,7 @@ func (c CourseRepo) SaveInstance(instance domain.CourseInstance) error {
 			Int64: int64(instance.Term.ID),
 			Valid: instance.Term.ID != 0,
 		},
-		Name: instance.CourseTemplate.Name,
+		Name: instance.Course.Name,
 		Description: sql.NullString{
 			String: instance.Description,
 			Valid:  instance.Description != "",
@@ -30,7 +30,7 @@ func (c CourseRepo) SaveInstance(instance domain.CourseInstance) error {
 	if err != nil {
 		return fmt.Errorf("courseRepo.SaveCourse(): %s", err)
 	}
-	instance.CourseTemplate.ID = int(savedCourse.ID)
+	instance.Course.ID = int(savedCourse.ID)
 	for _, unit := range instance.Units {
 		unit.CourseID = int(savedCourse.ID)
 		savedUnit, err := c.SaveUnit(unit)
@@ -70,14 +70,14 @@ func (c CourseRepo) GetInstances(termID int) ([]domain.CourseInstance, error) {
 	var instances []domain.CourseInstance
 	for _, dbInstance := range dbInstances {
 		instance := domain.CourseInstance{
-			CourseTemplate: domain.CourseTemplate{
+			Course: domain.Course{
 				ID:          int(dbInstance.CourseID),
 				Name:        dbInstance.CourseName,
 				Description: dbInstance.CourseDescr.String,
 			},
 			Term: term,
 		}
-		dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.CourseTemplate.ID))
+		dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.Course.ID))
 		if err != nil {
 			return nil, err
 		}
@@ -150,14 +150,14 @@ func (c CourseRepo) GetInstance(templateID int, termID int) (domain.CourseInstan
 		return instance, nil
 	}
 	instance = domain.CourseInstance{
-		CourseTemplate: domain.CourseTemplate{
+		Course: domain.Course{
 			ID:          int(dbInstance.CourseID),
 			Name:        dbInstance.CourseName,
 			Description: dbInstance.CourseDescr.String,
 		},
 		TemplateID: templateID,
 	}
-	dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.CourseTemplate.ID))
+	dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.Course.ID))
 	if err != nil {
 		return instance, err
 	}
@@ -208,10 +208,11 @@ func (c CourseRepo) GetInstance(templateID int, termID int) (domain.CourseInstan
 	return instance, nil
 }
 
+
 func (c CourseRepo) UpdateInstance(instance domain.CourseInstance) error {
 	err := c.queries.UpdateInstance(context.Background(), database.UpdateInstanceParams{
-		ID:   int64(instance.CourseTemplate.ID),
-		Name: instance.CourseTemplate.Name,
+		ID:   int64(instance.Course.ID),
+		Name: instance.Course.Name,
 		Description: sql.NullString{
 			Valid:  instance.Description != "",
 			String: instance.Description,

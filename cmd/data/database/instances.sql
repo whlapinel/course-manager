@@ -19,6 +19,9 @@ FROM
 WHERE
   c.term_id = ? AND c.template_id = ?;
 
+-- name: GetInstanceByID :one
+SELECT * from courses WHERE id = ?;
+
 -- name: SaveInstance :one
 INSERT INTO courses (
   template_id, term_id, name, description

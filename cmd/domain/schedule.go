@@ -2,7 +2,6 @@ package domain
 
 import "time"
 
-
 type DailySchedule struct {
 	Date    time.Time
 	Lessons []Lesson
@@ -10,7 +9,7 @@ type DailySchedule struct {
 }
 
 type CourseSchedule struct {
-	Course   CourseTemplate
+	Course   Course
 	Term     Term
 	Schedule []DailySchedule
 }

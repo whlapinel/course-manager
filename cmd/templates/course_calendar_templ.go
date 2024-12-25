@@ -30,7 +30,7 @@ func SameDate(date1 time.Time, date2 time.Time) bool {
 	var d2, m2, y2 = date2.Date()
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
-func TodaysLesson(date time.Time, course domain.CourseTemplate) domain.Lesson {
+func TodaysLesson(date time.Time, course domain.Course) domain.Lesson {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
 			for _, lessonDate := range lesson.Dates {

@@ -1,61 +1,14 @@
-
-
-# Action tree
-
-## Course Manager
-
-```yml
-Main Menu:
-
-    Create term:
-
-        Import term (csv): user provides filename and term is created and saved to db
-
-    Create course template:
-
-        Import course template (csv): User provides filename and course template is created and saved to database
-
-        Create course via form inputs: User completes fields and course template is created and saved to db
-
-    Create instance: user selects existing course and existing term from database to create a course instance
-
-    View courses: lists all course templates without details (id, name, etc.)
-
-        View Details: lists all units and Lessons for a given course
-    
-            Edit Course Unit: turns all editable unit properties into form fields
-
-    Select course instance: lists terms for a given template
-    
-        Select Term: list course instance for the given course and term
-
-        View Instance Details: lists all units and Lessons for a given course instance
-
-            Edit Instance Unit: turns all editable unit properties into form fields
-        
-            Edit Instance Lesson: turns all editable lesson properties into form fields
-
-            Quick Actions:
-
-                Shift right: Change date of current lesson to subsequent day of instruction
-
-                Shift left: Change date of current lesson to previous day of instruction
-    
-```
-
-## Course Website
-
-```yml
-
-Courses:
-    
-```
+# Course Manager
 
 ## PENDING
 
 - 12/18/24 figure out how to relate templates to instances. should the template
-id only be present for a row if they are marked by user as synchronized? i.e. 
-until the user marks sync?
+id only be present for a row if they are marked by user as synchronized? i.e. until the user marks sync?
+  - Proposed solution 1: whenever a user edits a course, unit or lesson that is an instance, i.e. where template is NOT NULL, the change should be also be made to the template row (and vice versa). If the user has elected to de-link the course, unit or lesson instance from the template, the change will not be reflected in the template object.
+  - Proposed solution 2: completely eliminate the entire concept and all implementations of course template as opposed to course instance.
+    - There would only be a course, which will always be associated with a term. The fact that the dates table has a day number column will facilitate copying a course from one term to another.  This would be a very big change but the impact would be to dramatically simplify the code.
+    - Would probably add the fields currently exclusively found in CourseInstance and move them to Course. Need to identify all parts of the code that depend on a distinction between the two, for example any use of templateID, and alter essential parts and eliminate non-essential ones.
+    - Make sure the Database tables reflect this change completely.
 
 ## COMPLETE
 

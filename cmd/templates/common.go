@@ -18,19 +18,19 @@ const (
 	coursesDir   = "./python/docs/courses/"
 )
 
-func courseFilePath(course domain.CourseTemplate) string {
+func courseFilePath(course domain.Course) string {
 	return fmt.Sprintf("%s%s", coursesDir, DirName(course))
 }
 
-func unitFilePath(unit domain.Unit, course domain.CourseTemplate) string {
+func unitFilePath(unit domain.Unit, course domain.Course) string {
 	return fmt.Sprintf("%s%s%s", coursesDir, DirName(course), DirName(unit))
 }
 
-func lessonFilePath(lesson domain.Lesson, unit domain.Unit, course domain.CourseTemplate) string {
+func lessonFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return fmt.Sprintf("%s%s%s%s", coursesDir, DirName(course), DirName(unit), DirName(lesson))
 }
 
-func filesFilePath(lesson domain.Lesson, unit domain.Unit, course domain.CourseTemplate) string {
+func filesFilePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return fmt.Sprintf("https://github.com/whlapinel/python/tree/main/docs/courses/%s%s%sfiles", DirName(course), DirName(unit), DirName(lesson))
 }
 
@@ -143,7 +143,7 @@ func NewCoursesListPage(instances []domain.CourseInstance) Templifier {
 func NewCoursePage(instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     instance.GetTitle(),
-		directory: courseFilePath(instance.CourseTemplate),
+		directory: courseFilePath(instance.Course),
 		component: CourseComponent(instance),
 	}
 }
@@ -162,7 +162,7 @@ func NewCourseCalendarPage(schedule domain.CourseSchedule) Templifier {
 func NewUnitPage(unit domain.Unit, instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     unit.GetTitle(),
-		directory: unitFilePath(unit, instance.CourseTemplate),
+		directory: unitFilePath(unit, instance.Course),
 		component: UnitComponent(unit, instance),
 	}
 }
@@ -170,7 +170,7 @@ func NewUnitPage(unit domain.Unit, instance domain.CourseInstance) Templifier {
 func NewLessonPage(lesson domain.Lesson, unit domain.Unit, instance domain.CourseInstance) Templifier {
 	return &page{
 		title:     lesson.GetTitle(),
-		directory: lessonFilePath(lesson, unit, instance.CourseTemplate),
+		directory: lessonFilePath(lesson, unit, instance.Course),
 		component: LessonComponent(lesson, unit, instance),
 	}
 }

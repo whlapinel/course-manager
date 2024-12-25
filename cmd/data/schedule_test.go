@@ -16,7 +16,7 @@ func TestGetDailySchedules(t *testing.T) {
 		t.Errorf("error getting instances: %s", err)
 	}
 	for _, instance := range instances {
-		log.Println("instance name: ", instance.CourseTemplate.Name)
+		log.Println("instance name: ", instance.Course.Name)
 		schedule, err := cr.GetSchedule(instance)
 		if err != nil {
 			t.Errorf("error getting schedules: %s", err)

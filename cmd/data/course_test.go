@@ -12,7 +12,7 @@ func TestImportCoursesFromCSV(t *testing.T) {
 		t.Errorf("error importing courses: %s", err)
 	}
 	for _, instance := range instances {
-		log.Println(instance.CourseTemplate.Name)
+		log.Println(instance.Course.Name)
 		log.Println("num units: ", len(instance.Units))
 		for _, unit := range instance.Units {
 			log.Println(unit.Name)
@@ -90,7 +90,7 @@ func TestGetInstances(t *testing.T) {
 		t.Errorf("error geting instances: %s", err)
 	}
 	for _, instance := range instances {
-		log.Println(instance.CourseTemplate.Name)
+		log.Println(instance.Course.Name)
 		for _, unit := range instance.Units {
 			log.Println(unit.Name)
 			for _, lesson := range unit.Lessons {

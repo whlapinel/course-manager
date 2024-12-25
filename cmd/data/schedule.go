@@ -15,10 +15,10 @@ func (d CourseRepo) GetSchedule(instance domain.CourseInstance) (domain.CourseSc
 		log.Fatal("GetSchedule(): term not initialized")
 	}
 	var schedule = domain.CourseSchedule{
-		Course: instance.CourseTemplate,
+		Course: instance.Course,
 		Term:   instance.Term,
 	}
-	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.CourseTemplate.ID))
+	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.Course.ID))
 	if err != nil {
 		return schedule, err
 	}

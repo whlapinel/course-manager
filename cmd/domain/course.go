@@ -1,11 +1,11 @@
 package domain
 
-func NewCourseTemplate(title string, descr string, units []Unit) CourseTemplate {
-	return CourseTemplate{Name: title, Description: descr, Units: units}
+func NewCourseTemplate(title string, descr string, units []Unit) Course {
+	return Course{Name: title, Description: descr, Units: units}
 }
 
 // Courses I teach. this is the OOP version of CourseInstance. Bad wording I know.
-type CourseTemplate struct {
+type Course struct {
 	ID          int
 	Name        string
 	Description string
@@ -15,12 +15,22 @@ type CourseTemplate struct {
 type CourseType int
 
 type CourseInstance struct {
-	CourseTemplate
+	Course
 	TemplateID int
 	Term
 }
 
-func (c CourseTemplate) CreateInstance(term Term) CourseInstance {
+type Instances []CourseInstance
+
+func (i Instances) Courses() []Course {
+	var courses []Course
+	for _, instance := range i {
+		courses = append(courses, instance.Course)
+	}
+	return courses
+}
+
+func (c Course) CreateInstance(term Term) CourseInstance {
 	var units []Unit
 	for _, unit := range c.Units {
 		unit.TemplateID = unit.ID
@@ -36,17 +46,17 @@ func (c CourseTemplate) CreateInstance(term Term) CourseInstance {
 	}
 	c.Units = units
 	return CourseInstance{
-		CourseTemplate: c,
-		TemplateID:     c.ID,
-		Term:           term,
+		Course:     c,
+		TemplateID: c.ID,
+		Term:       term,
 	}
 
 }
 
-func (c CourseTemplate) GetTitle() string {
+func (c Course) GetTitle() string {
 	return c.Name
 }
 
-func (c *CourseTemplate) AddUnit(unit Unit) {
+func (c *Course) AddUnit(unit Unit) {
 	c.Units = append(c.Units, unit)
 }

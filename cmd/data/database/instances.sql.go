@@ -64,6 +64,23 @@ func (q *Queries) GetInstance(ctx context.Context, arg GetInstanceParams) (GetIn
 	return i, err
 }
 
+const getInstanceByID = `-- name: GetInstanceByID :one
+SELECT id, template_id, term_id, name, description from courses WHERE id = ?
+`
+
+func (q *Queries) GetInstanceByID(ctx context.Context, id int64) (Course, error) {
+	row := q.db.QueryRowContext(ctx, getInstanceByID, id)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.TemplateID,
+		&i.TermID,
+		&i.Name,
+		&i.Description,
+	)
+	return i, err
+}
+
 const getInstances = `-- name: GetInstances :many
 SELECT
   c.id as course_id,

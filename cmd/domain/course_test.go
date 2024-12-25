@@ -29,7 +29,7 @@ func TestCreateInstance(t *testing.T) {
 		t.Error(err)
 	}
 	instance := template.CreateInstance(term)
-	log.Println("instance.TemplateID:", instance.TemplateID, "instance.ID: ", instance.CourseTemplate.ID)
+	log.Println("instance.TemplateID:", instance.TemplateID, "instance.ID: ", instance.Course.ID)
 	for _, unit := range instance.Units {
 		log.Println("unit.TemplateID:", unit.TemplateID, "unit.ID: ", unit.ID)
 		for _, lesson := range unit.Lessons {

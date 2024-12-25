@@ -74,16 +74,16 @@ type CourseInstanceHolder struct {
 }
 type InstanceMap map[string]CourseInstanceHolder
 type CourseTemplateHolder struct {
-	Template domain.CourseTemplate
+	Template domain.Course
 	Units    UnitMap
 }
 type TemplateMap map[string]CourseTemplateHolder
 
-func (c CourseRepo) ImportTemplatesFromCSV() ([]domain.CourseTemplate, error) {
+func (c CourseRepo) ImportTemplatesFromCSV() ([]domain.Course, error) {
 	return importTemplatesFromCSV()
 }
 
-func importTemplatesFromCSV() ([]domain.CourseTemplate, error) {
+func importTemplatesFromCSV() ([]domain.Course, error) {
 	file, err := os.Open(scheduleCsvDir)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func importTemplatesFromCSV() ([]domain.CourseTemplate, error) {
 		courseName := record[courseNameCol]
 		courseHolder, exists := courseMap[courseName]
 		if !exists {
-			template := domain.CourseTemplate{
+			template := domain.Course{
 				Name: courseName,
 			}
 			holder := CourseTemplateHolder{
@@ -170,7 +170,7 @@ func importTemplatesFromCSV() ([]domain.CourseTemplate, error) {
 		courseHolder.Units[unitSequence] = unit
 		courseMap[courseName] = courseHolder
 	}
-	var courses []domain.CourseTemplate
+	var courses []domain.Course
 	for _, courseHolder := range courseMap {
 		course := courseHolder.Template
 		unitNums := sortUnitMapKeys(courseHolder.Units)
@@ -210,7 +210,7 @@ func importInstancesFromCSV() ([]domain.CourseInstance, error) {
 		courseHolder, exists := courseMap[courseName]
 		if !exists {
 			instance := domain.CourseInstance{
-				CourseTemplate: domain.CourseTemplate{
+				Course: domain.Course{
 					Name: courseName,
 				},
 				Term: domain.Term{
@@ -322,8 +322,6 @@ func sortLessonMapKeys(lessonMap LessonMap) []int {
 
 }
 
-
-
 func WriteCourseInstancesToCSV(instances []domain.CourseInstance) error {
 	file, err := os.Create(newScheduleDir)
 	if err != nil {
@@ -337,7 +335,7 @@ func WriteCourseInstancesToCSV(instances []domain.CourseInstance) error {
 		for _, unit := range instance.Units {
 			for _, lesson := range unit.Lessons {
 				dayNum++
-				courseName := instance.CourseTemplate.Name
+				courseName := instance.Course.Name
 				unitNum := unit.Number
 				unitDescr := unit.Description
 				lessonNum := lesson.Number

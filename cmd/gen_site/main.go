@@ -74,7 +74,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed to render pages: %v", err)
 		}
-		log.Println("Site generator main() course: Name: ", instance.CourseTemplate.Name)
+		log.Println("Site generator main() course: Name: ", instance.Course.Name)
 		coursePage := templates.NewCoursePage(instance)
 		err = RenderPage(coursePage)
 		if err != nil {
