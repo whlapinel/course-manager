@@ -2,8 +2,7 @@ version: "2"
 sql:
   - engine: "sqlite"
     queries:
-      - "cmd/data/database/instances.sql"
-      - "cmd/data/database/templates.sql"
+      - "cmd/data/database/courses.sql"
       - "cmd/data/database/units.sql"
       - "cmd/data/database/lessons.sql"
       - "cmd/data/database/dates.sql"

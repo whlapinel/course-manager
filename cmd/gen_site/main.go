@@ -47,7 +47,7 @@ func main() {
 		log.Fatal("main(): term not initialized")
 	}
 	// Generate "courses I teach" list page
-	instances, err := courseRepo.GetInstances(term.ID)
+	instances, err := courseRepo.GetCourses(term.ID)
 	if err != nil {
 		log.Fatalf("error getting instances: %v", err)
 	}
@@ -74,7 +74,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed to render pages: %v", err)
 		}
-		log.Println("Site generator main() course: Name: ", instance.Course.Name)
+		log.Println("Site generator main() course: Name: ", instance.Name)
 		coursePage := templates.NewCoursePage(instance)
 		err = RenderPage(coursePage)
 		if err != nil {

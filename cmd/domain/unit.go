@@ -13,7 +13,6 @@ func (u Unit) GetTitle() string {
 type Unit struct {
 	ID          int
 	CourseID    int
-	TemplateID  int
 	Number      int
 	SequenceNum int
 	Name        string

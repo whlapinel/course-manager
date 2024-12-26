@@ -1,13 +1,11 @@
-
-
 -- name: DeleteLesson :exec
 DELETE FROM lessons WHERE id = ?;
 
 -- name: SaveLesson :one
 INSERT INTO lessons (
-  number, name, description, unit_id, template_id
+  number, name, description, unit_id
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?
 )
 RETURNING *;
 
@@ -15,7 +13,6 @@ RETURNING *;
 -- name: GetLessons :many
 SELECT
   l.id,
-  l.template_id,
   l.number,
   l.name,
   l.description

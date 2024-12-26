@@ -1,4 +1,4 @@
-package templates
+package util
 
 import (
 	"log"
@@ -8,7 +8,6 @@ import (
 // This gives all weekdates beginning on the 1st the current month and ending on the last day.
 // It's a 2D slice with each sub-slice being for a week, index number is the weekday and the value is the date.
 // The week starts with Sunday.
-// Note: this is a duplication of the same code from templates package. Should probably change that.
 func GetMonthDates(date time.Time) [][]time.Time {
 	year, month, _ := date.Date()
 	first := time.Date(year, month, 1, 0, 0, 0, 0, time.Local)

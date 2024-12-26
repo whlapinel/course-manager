@@ -2,7 +2,6 @@
 SELECT
   u.id,
   u.course_id,
-  u.template_id,
   u.number,
   u.sequence,
   u.name,
@@ -16,9 +15,9 @@ ORDER BY
 
 -- name: SaveUnit :one
 INSERT INTO units (
-  number, sequence, name, description, course_id, template_id
+  number, sequence, name, description, course_id
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 RETURNING *;
 

@@ -131,7 +131,7 @@ func NewContactPage() Templifier {
 	}
 }
 
-func NewCoursesListPage(instances []domain.CourseInstance) Templifier {
+func NewCoursesListPage(instances []domain.Course) Templifier {
 	return &page{
 		title:     "Courses",
 		directory: coursesDir,
@@ -140,10 +140,10 @@ func NewCoursesListPage(instances []domain.CourseInstance) Templifier {
 
 }
 
-func NewCoursePage(instance domain.CourseInstance) Templifier {
+func NewCoursePage(instance domain.Course) Templifier {
 	return &page{
 		title:     instance.GetTitle(),
-		directory: courseFilePath(instance.Course),
+		directory: courseFilePath(instance),
 		component: CourseComponent(instance),
 	}
 }
@@ -159,18 +159,18 @@ func NewCourseCalendarPage(schedule domain.CourseSchedule) Templifier {
 	}
 }
 
-func NewUnitPage(unit domain.Unit, instance domain.CourseInstance) Templifier {
+func NewUnitPage(unit domain.Unit, instance domain.Course) Templifier {
 	return &page{
 		title:     unit.GetTitle(),
-		directory: unitFilePath(unit, instance.Course),
+		directory: unitFilePath(unit, instance),
 		component: UnitComponent(unit, instance),
 	}
 }
 
-func NewLessonPage(lesson domain.Lesson, unit domain.Unit, instance domain.CourseInstance) Templifier {
+func NewLessonPage(lesson domain.Lesson, unit domain.Unit, instance domain.Course) Templifier {
 	return &page{
 		title:     lesson.GetTitle(),
-		directory: lessonFilePath(lesson, unit, instance.Course),
+		directory: lessonFilePath(lesson, unit, instance),
 		component: LessonComponent(lesson, unit, instance),
 	}
 }

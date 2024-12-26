@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/service"
+	"gh_static_portfolio/cmd/util"
 	"log"
 	"strconv"
 	"strings"
@@ -16,29 +17,30 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func NewCourseHandler(w fyne.Window, svc service.CourseService) *CourseHandler {
-	return &CourseHandler{w, svc}
+func NewInstanceHandler(w fyne.Window, svc service.CourseService) *InstanceHandler {
+	return &InstanceHandler{w, svc}
 }
 
-type CourseHandler struct {
+type InstanceHandler struct {
 	w   fyne.Window
 	svc service.CourseService
 }
 
-func (ch *CourseHandler) ShowCourseTree() {
-	templates, err := ch.svc.GetTemplates()
+func (ih *InstanceHandler) ShowCourseTree(termID int) {
+	instances, err := ih.svc.GetCourses(termID)
 	if err != nil {
-		ch.w.SetContent(ErrorMsg(err))
+		ih.w.SetContent(ErrorMsg(err))
 	}
-	tree := ch.NewCourseTree(templates, ch.svc)
-	ch.w.SetContent(tree.Tree)
+	tree := ih.NewCourseTree(instances, ih.svc)
+	ih.w.SetContent(tree.Tree)
 }
 
-func (ch *CourseHandler) NewCourseTree(courses []domain.Course, svc service.CourseService) CourseTree {
-
+func (ih *InstanceHandler) NewCourseTree(instances domain.Courses, svc service.CourseService) CourseTree {
+	courses := instances.Courses()
 	var ct CourseTree
 	ct.Courses = courses
 	ct.service = svc
+	ct.Courses = instances
 	var courseMap = make(map[int]CourseHolder)
 	var unitMap = make(map[int]UnitHolder)
 	var lessonMap = make(map[int]LessonHolder)
@@ -54,6 +56,7 @@ func (ch *CourseHandler) NewCourseTree(courses []domain.Course, svc service.Cour
 	ct.CourseMap = courseMap
 	ct.UnitMap = unitMap
 	ct.LessonMap = lessonMap
+	ct.ShowCourseCalendar = ih.ShowTermMonthsList
 	ct.Tree = widget.NewTree(
 		ct.childFunc,
 		ct.isBranchFunc,
@@ -63,13 +66,88 @@ func (ch *CourseHandler) NewCourseTree(courses []domain.Course, svc service.Cour
 	return ct
 }
 
+func (ch *InstanceHandler) ShowTermMonthsList(instance domain.Course) {
+	schedule, err := ch.svc.GetSchedule(instance)
+	if err != nil {
+		ch.w.SetContent(ErrorMsg(err))
+	}
+	cal := ch.NewTermMonthsList(schedule)
+	ch.w.SetContent(cal)
+
+}
+
+func (ch *InstanceHandler) NewTermMonthsList(schedule domain.CourseSchedule) *widget.List {
+	list := widget.NewList(
+		func() int {
+			return len(schedule.Term.TermMonths())
+		},
+		func() fyne.CanvasObject {
+			return container.NewVBox(widget.NewLabel("month header"), container.NewVBox())
+		},
+		func(lii widget.ListItemID, co fyne.CanvasObject) {
+			monthBox := co.(*fyne.Container)
+			day := schedule.Term.TermMonths()[lii]
+			monthLabel := monthBox.Objects[0].(*widget.Label)
+			monthLabel.SetText(day.Month().String() + strconv.Itoa(day.Year()))
+		},
+	)
+	list.OnSelected = func(id widget.ListItemID) {
+		monthDate := schedule.Term.TermMonths()[id]
+		ch.ShowMonthCalendar(schedule, monthDate)
+	}
+	return list
+}
+
+func (ch *InstanceHandler) ShowMonthCalendar(schedule domain.CourseSchedule, month time.Time) {
+	dateGrid := container.NewGridWithColumns(5)
+	for _, week := range util.GetMonthDates(month) {
+		for _, date := range week[1:6] {
+			dailySchedule := schedule.GetSchedule(date)
+			dateContainer := container.NewVBox()
+			if !date.IsZero() {
+				dateHeader := widget.NewLabel(date.Format("Mon 1/02/06"))
+				addLessonButton := widget.NewButton("Add Lesson", func() {
+					log.Println("this will open a dialog to add an existing lesson to the current day")
+				})
+				dateContainer.Add(dateHeader)
+				dateContainer.Add(addLessonButton)
+			}
+			if dailySchedule != nil {
+				lessonList := container.NewVBox()
+				for _, lesson := range dailySchedule.Lessons {
+					lessonContainer := container.NewHBox()
+					lessonRemoveButton := widget.NewButton("Remove", func() {
+						log.Println("this will remove the current lesson from the current date")
+					})
+					lessonEdit := widget.NewButton("Edit", func() {
+						nameLabel := widget.NewLabel(lesson.Name)
+						nameEdit := widget.NewEntry()
+						lessonEditForm := container.New(layout.NewFormLayout(), nameLabel, nameEdit)
+						newWindow := fyne.CurrentApp().NewWindow("Edit Lesson")
+						newWindow.SetContent(lessonEditForm)
+						newWindow.Show()
+					})
+					lessonLabel := widget.NewLabel(lesson.GetTitle())
+					lessonContainer.Add(lessonRemoveButton)
+					lessonContainer.Add(lessonEdit)
+					lessonContainer.Add(lessonLabel)
+					lessonList.Add(lessonContainer)
+				}
+				dateContainer.Add(lessonList)
+			}
+			dateGrid.Add(dateContainer)
+		}
+	}
+	cal := container.NewBorder(widget.NewLabel(month.Format(time.DateOnly)), nil, nil, nil, dateGrid)
+	ch.w.SetContent(cal)
+}
+
 type CourseTree struct {
 	Tree               *widget.Tree
-	Instances          domain.Instances
+	Courses            domain.Courses
 	service            service.CourseService
 	ShowLessonDates    func(domain.Lesson)
-	ShowCourseCalendar func(instance domain.CourseInstance)
-	Courses            []domain.Course
+	ShowCourseCalendar func(course domain.Course)
 	CourseMap          map[int]CourseHolder
 	UnitMap            map[int]UnitHolder
 	LessonMap          map[int]LessonHolder
@@ -126,7 +204,7 @@ func (ct *CourseTree) NewLessonHolder(l domain.Lesson) LessonHolder {
 }
 
 func (ct *CourseTree) courseNodeID(courseID int) string {
-	return fmt.Sprintf("T:%d", courseID)
+	return fmt.Sprintf("C:%d", courseID)
 }
 
 func (ct *CourseTree) unitNodeID(unitID int) string {
@@ -137,18 +215,16 @@ func (ct *CourseTree) lessonNodeID(lessonID int) string {
 	return fmt.Sprintf("L:%d", lessonID)
 }
 
-// Parse back from node ID string to (type, intID)
 func (ct *CourseTree) parseNodeID(nodeID string) (typ string, id int) {
 	parts := strings.Split(nodeID, ":")
 	if len(parts) != 2 {
 		return "", 0
 	}
-	typ = parts[0] // "T" or "U" or "L"
+	typ = parts[0] // "C" or "U" or "L"
 	id, _ = strconv.Atoi(parts[1])
 	return
 }
 
-// ChildUIDs function
 func (ct *CourseTree) childFunc(nodeID string) []string {
 	// If nodeID = "", return all top-level templates
 	if nodeID == "" {
@@ -162,8 +238,7 @@ func (ct *CourseTree) childFunc(nodeID string) []string {
 	// Otherwise, parse the nodeID to see if it is a Template or a Unit
 	typ, id := ct.parseNodeID(nodeID)
 
-	if typ == "T" {
-		// It's a template node; return the unit IDs
+	if typ == "C" {
 		units := ct.CourseMap[id].course.Units
 		var unitIDs []string
 		for _, u := range units {
@@ -184,7 +259,6 @@ func (ct *CourseTree) childFunc(nodeID string) []string {
 	return nil
 }
 
-// IsBranch function
 func (ct *CourseTree) isBranchFunc(nodeID string) bool {
 	// A template node is a branch (if it has units).
 	// A unit node is a leaf (no children).
@@ -193,7 +267,7 @@ func (ct *CourseTree) isBranchFunc(nodeID string) bool {
 	if nodeID == "" {
 		return true // the invisible root
 	}
-	if typ == "T" {
+	if typ == "C" {
 		// Check if this template has any units
 		units := ct.CourseMap[id].course.Units
 		if len(units) > 0 {
@@ -211,97 +285,104 @@ func (ct *CourseTree) isBranchFunc(nodeID string) bool {
 	return false
 }
 
-// CreateNode (factory for node widgets)
-func (ct *CourseTree) createNode(_ bool) fyne.CanvasObject {
-	// Just return a label. If you need different widgets for branch vs. leaf, check `branch` here.
-	nameLabel := widget.NewLabel("name")
-	descrLabel := widget.NewLabel("description")
-	editBtn := widget.NewButton("Edit", nil)
-	var hbox *fyne.Container
-	if len(ct.Instances) != 0 {
-		calendarButton := widget.NewButton("Course Calendar", nil)
-		hbox = container.NewHBox(calendarButton, editBtn, nameLabel, descrLabel)
-	} else {
-		hbox = container.NewHBox(editBtn, nameLabel, descrLabel)
-	}
-	return hbox
+type courseTreeRow struct {
+	box         *fyne.Container
+	calendarBtn *widget.Button
+	editBtn     *widget.Button
+	nameLabel   *widget.Label
+	descrLabel  *widget.Label
+	datesBox    *fyne.Container
 }
 
-// UpdateNode (sets the label text based on nodeID)
-func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
-	hbox := obj.(*fyne.Container)
-	var calButton *widget.Button
-	var editBtn *widget.Button
-	var nameLabel *widget.Label
-	var descrLabel *widget.Label
-	if len(ct.Instances) != 0 {
-		calButton = hbox.Objects[0].(*widget.Button)
-		editBtn = hbox.Objects[1].(*widget.Button)
-		nameLabel = hbox.Objects[2].(*widget.Label)
-		descrLabel = hbox.Objects[3].(*widget.Label)
-	} else {
-		editBtn = hbox.Objects[0].(*widget.Button)
-		nameLabel = hbox.Objects[1].(*widget.Label)
-		descrLabel = hbox.Objects[2].(*widget.Label)
-	}
+func (ct *CourseTree) createNode(_ bool) fyne.CanvasObject {
+	// Just return a label. If you need different widgets for branch vs. leaf, check `branch` here.
+	row := &courseTreeRow{}
+	row.calendarBtn = widget.NewButton("Calendar", nil)
+	row.editBtn = widget.NewButton("Edit", nil)
+	row.nameLabel = widget.NewLabel("")
+	row.descrLabel = widget.NewLabel("")
+	row.datesBox = container.NewHBox()
+	row.box = container.NewHBox(
+		row.calendarBtn,
+		row.editBtn,
+		row.nameLabel,
+		row.descrLabel,
+		row.datesBox,
+	)
+	// hide or show as needed
+	return row.box
+}
 
-	// Root node "" will never be rendered, but let's be safe:
+func (ct *CourseTree) getCourseRowFromContainer(container *fyne.Container) courseTreeRow {
+	var row courseTreeRow
+	row.box = container
+	row.calendarBtn = container.Objects[0].(*widget.Button)
+	row.editBtn = container.Objects[1].(*widget.Button)
+	row.nameLabel = container.Objects[2].(*widget.Label)
+	row.descrLabel = container.Objects[3].(*widget.Label)
+	row.datesBox = container.Objects[4].(*fyne.Container)
+	return row
+
+}
+
+func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
+	row := ct.getCourseRowFromContainer(obj.(*fyne.Container))
+
 	if nodeID == "" {
-		nameLabel.SetText("ROOT")  // or something else
-		descrLabel.SetText("ROOT") // or something else
+		row.nameLabel.SetText("ROOT")  // or something else
+		row.descrLabel.SetText("ROOT") // or something else
 
 		return
 	}
 
 	typ, id := ct.parseNodeID(nodeID)
 	switch typ {
-	case "T": // Template node
-
+	case "C": // Template node
 		holder := ct.CourseMap[id]
-		nameLabel.Bind(holder.NameBinding)
-		descrLabel.Bind(holder.DescrBinding)
-		if calButton != nil {
-			calButton.OnTapped = func() {
-				log.Println("this will show the course calendar!")
-				ct.ShowCourseCalendar(ct.Instances[0]) // should only be one instance if it's an instance tree!
-			}
+		row.datesBox.Hide()
+		row.nameLabel.Bind(holder.NameBinding)
+		row.descrLabel.Bind(holder.DescrBinding)
+		row.calendarBtn.OnTapped = func() {
+			ct.ShowCourseCalendar(ct.Courses[0]) // should only be one instance if it's an instance tree!
 		}
-		editBtn.OnTapped = func() {
-			w := fyne.CurrentApp().NewWindow("Edit Template")
-			formLayout := layout.NewFormLayout()
-			nameEditLabel := widget.NewLabel("Enter new name:")
-			name, err := holder.NameBinding.Get()
-			if err != nil {
-				log.Fatalf("error retrieving name from binding: %s", err)
-			}
-			nameEdit := widget.NewEntry()
-			nameEdit.SetText(name)
-			submitBtn := widget.NewButton("Submit", func() {
-				log.Println("value of submitted text:", nameEdit.Text)
-				// Need to do some sort of input validation here
-				holder.course.Name = nameEdit.Text
-				err = ct.service.UpdateCourseTemplate(holder.course)
+		if row.editBtn.OnTapped == nil {
+			row.editBtn.OnTapped = func() {
+				w := fyne.CurrentApp().NewWindow("Edit Template")
+				formLayout := layout.NewFormLayout()
+				nameEditLabel := widget.NewLabel("Enter new name:")
+				name, err := holder.NameBinding.Get()
 				if err != nil {
-					log.Fatalf("error updating template: %s", err)
+					log.Fatalf("error retrieving name from binding: %s", err)
 				}
-				holder.NameBinding.Set(holder.course.Name)
-				ct.Tree.Refresh()
-				w.Close()
-			})
-			formContainer := container.New(formLayout, nameEditLabel, nameEdit)
-			vBox := container.NewVBox(formContainer, submitBtn)
-			w.Resize(fyne.Size{Width: 500, Height: 500})
-			w.SetContent(vBox)
-			w.Show()
+				nameEdit := widget.NewEntry()
+				nameEdit.SetText(name)
+				submitBtn := widget.NewButton("Submit", func() {
+					log.Println("value of submitted text:", nameEdit.Text)
+					// Need to do some sort of input validation here
+					holder.course.Name = nameEdit.Text
+					err = ct.service.UpdateCourse(holder.course)
+					if err != nil {
+						log.Fatalf("error updating template: %s", err)
+					}
+					holder.NameBinding.Set(holder.course.Name)
+					ct.Tree.Refresh()
+					w.Close()
+				})
+				formContainer := container.New(formLayout, nameEditLabel, nameEdit)
+				vBox := container.NewVBox(formContainer, submitBtn)
+				w.Resize(fyne.Size{Width: 500, Height: 500})
+				w.SetContent(vBox)
+				w.Show()
+			}
+			return
 		}
-
-		return
 	case "U": // Unit node
 		// you can store units in a map as well for quick lookup
 		holder := ct.UnitMap[id]
-		nameLabel.Bind(holder.NameBinding)
-		descrLabel.Bind(holder.DescrBinding)
-		editBtn.OnTapped = func() {
+		row.calendarBtn.Hide()
+		row.nameLabel.Bind(holder.NameBinding)
+		row.descrLabel.Bind(holder.DescrBinding)
+		row.editBtn.OnTapped = func() {
 			w := fyne.CurrentApp().NewWindow("Edit Unit")
 			formLayout := layout.NewFormLayout()
 			nameEditLabel := widget.NewLabel("Enter new name:")
@@ -332,23 +413,25 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 
 		return
 	case "L": // Lesson node
-		// you can store lessons in a map as well for quick lookup
+		row.calendarBtn.Hide()
 		holder := ct.LessonMap[id]
 		if len(holder.Lesson.Dates) > 0 {
-			datesBox := container.NewHBox()
+			newDatesBox := container.NewHBox()
 			for _, date := range holder.Lesson.Dates {
+				log.Println(date.Format(time.DateOnly))
 				dateLabel := widget.NewLabel(date.Format(time.DateOnly))
-				datesBox.Add(dateLabel)
+				newDatesBox.Add(dateLabel)
 			}
-			if len(hbox.Objects) > 3 {
-				hbox.Objects[3] = datesBox
-			} else {
-				hbox.Add(datesBox)
+			for i, child := range row.box.Objects {
+				if child == row.datesBox {
+					row.box.Objects[i] = newDatesBox
+					break
+				}
 			}
 		}
-		nameLabel.Bind(holder.NameBinding)
-		descrLabel.Bind(holder.DescrBinding)
-		editBtn.OnTapped = func() {
+		row.nameLabel.Bind(holder.NameBinding)
+		row.descrLabel.Bind(holder.DescrBinding)
+		row.editBtn.OnTapped = func() {
 			w := fyne.CurrentApp().NewWindow("Edit Unit")
 			formLayout := layout.NewFormLayout()
 			nameEditLabel := widget.NewLabel("Enter new name:")
@@ -378,8 +461,8 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 		}
 		return
 	default:
-		nameLabel.SetText("Unknown")
-		descrLabel.SetText("Unknown")
+		row.nameLabel.SetText("Unknown")
+		row.descrLabel.SetText("Unknown")
 	}
 
 }

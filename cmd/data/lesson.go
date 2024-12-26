@@ -21,7 +21,6 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 		lesson := domain.Lesson{
 			ID:          int(dbLesson.ID),
 			UnitID:      unitID,
-			TemplateID:  int(dbLesson.TemplateID.Int64),
 			Number:      int(dbLesson.Number),
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
@@ -69,9 +68,6 @@ func (lr CourseRepo) AddLessonDate(lesson domain.Lesson, date time.Time) error {
 }
 
 func (c CourseRepo) SaveLessonInstance(lesson domain.Lesson) (*domain.Lesson, error) {
-	if lesson.TemplateID == 0 {
-		return nil, fmt.Errorf("lesson instance template ID is 0")
-	}
 	savedLesson, err := c.SaveLesson(lesson)
 	if err != nil {
 		return nil, fmt.Errorf("c.SaveLesson():%s", err)
@@ -107,10 +103,6 @@ func (c CourseRepo) SaveLesson(lesson domain.Lesson) (*domain.Lesson, error) {
 	log.Println("lesson name:", lesson.Name, "lesson number: ", lesson.Number)
 	dbLesson := database.Lesson{
 		UnitID: int64(lesson.UnitID),
-		TemplateID: sql.NullInt64{
-			Int64: int64(lesson.TemplateID),
-			Valid: lesson.TemplateID != 0,
-		},
 		Number: int64(lesson.Number),
 		Name: sql.NullString{
 			String: lesson.Name,
@@ -124,17 +116,11 @@ func (c CourseRepo) SaveLesson(lesson domain.Lesson) (*domain.Lesson, error) {
 	savedLesson, err := c.queries.SaveLesson(context.Background(), database.SaveLessonParams{
 		Number:      dbLesson.Number,
 		Name:        dbLesson.Name,
-		TemplateID:  dbLesson.TemplateID,
 		Description: dbLesson.Description,
 		UnitID:      dbLesson.UnitID,
 	})
 	lesson.ID = int(savedLesson.ID)
 	if err != nil {
-		log.Println(
-			"Lesson Unit ID:", lesson.UnitID,
-			"\nLesson Template ID:", lesson.TemplateID,
-			"\nLesson ID:", lesson.ID,
-		)
 		return nil, fmt.Errorf("c.queries.SaveLesson(): %v, unit id: %s, lesson #: %s",
 			err, strconv.Itoa(int(savedLesson.UnitID)), strconv.Itoa(int(dbLesson.Number)),
 		)

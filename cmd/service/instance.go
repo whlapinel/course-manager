@@ -2,10 +2,10 @@ package service
 
 import "gh_static_portfolio/cmd/domain"
 
-func (svc CourseService) GetInstances(termID int) ([]domain.CourseInstance, error) {
-	return svc.repo.GetInstances(termID)
+func (svc CourseService) GetCourses(termID int) (domain.Courses, error) {
+	return svc.repo.GetCourses(termID)
 }
 
-func (svc CourseService) UpdateCourseInstance(instance domain.CourseInstance) error {
+func (svc CourseService) UpdateCourse(instance domain.Course) error {
 	return svc.repo.UpdateInstance(instance)
 }

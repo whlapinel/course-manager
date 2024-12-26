@@ -12,7 +12,7 @@ import (
 
 const deleteUnit = `-- name: DeleteUnit :one
 DELETE FROM units WHERE id = ?
-RETURNING id, course_id, template_id, number, sequence, name, description
+RETURNING id, course_id, number, sequence, name, description
 `
 
 func (q *Queries) DeleteUnit(ctx context.Context, id int64) (Unit, error) {
@@ -21,7 +21,6 @@ func (q *Queries) DeleteUnit(ctx context.Context, id int64) (Unit, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.CourseID,
-		&i.TemplateID,
 		&i.Number,
 		&i.Sequence,
 		&i.Name,
@@ -34,7 +33,6 @@ const getUnits = `-- name: GetUnits :many
 SELECT
   u.id,
   u.course_id,
-  u.template_id,
   u.number,
   u.sequence,
   u.name,
@@ -59,7 +57,6 @@ func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]Unit, error) 
 		if err := rows.Scan(
 			&i.ID,
 			&i.CourseID,
-			&i.TemplateID,
 			&i.Number,
 			&i.Sequence,
 			&i.Name,
@@ -80,11 +77,11 @@ func (q *Queries) GetUnits(ctx context.Context, courseID int64) ([]Unit, error) 
 
 const saveUnit = `-- name: SaveUnit :one
 INSERT INTO units (
-  number, sequence, name, description, course_id, template_id
+  number, sequence, name, description, course_id
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?
 )
-RETURNING id, course_id, template_id, number, sequence, name, description
+RETURNING id, course_id, number, sequence, name, description
 `
 
 type SaveUnitParams struct {
@@ -93,7 +90,6 @@ type SaveUnitParams struct {
 	Name        string
 	Description sql.NullString
 	CourseID    int64
-	TemplateID  sql.NullInt64
 }
 
 func (q *Queries) SaveUnit(ctx context.Context, arg SaveUnitParams) (Unit, error) {
@@ -103,13 +99,11 @@ func (q *Queries) SaveUnit(ctx context.Context, arg SaveUnitParams) (Unit, error
 		arg.Name,
 		arg.Description,
 		arg.CourseID,
-		arg.TemplateID,
 	)
 	var i Unit
 	err := row.Scan(
 		&i.ID,
 		&i.CourseID,
-		&i.TemplateID,
 		&i.Number,
 		&i.Sequence,
 		&i.Name,

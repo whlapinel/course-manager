@@ -52,7 +52,7 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 
 templ CourseCalendarComponent(schedule domain.CourseSchedule) {
 	@Layout(&page{title: schedule.Course.GetTitle()}) {
-		@CourseDivContainer(domain.CourseInstance{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
+		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
 				<div id="calendar" class="flex flex-col gap-4">
 					for _, day := range schedule.Term.TermMonths() {

@@ -1,4 +1,4 @@
--- name: GetInstances :many
+-- name: GetCourses :many
 SELECT
   c.id as course_id,
   c.name as course_name,
@@ -8,7 +8,7 @@ FROM
 WHERE 
   c.term_id = ?;
 
--- name: GetInstance :one
+-- name: GetCourse :one
 SELECT
   c.id as course_id,
   c.name as course_name,
@@ -17,25 +17,25 @@ SELECT
 FROM
   courses c
 WHERE
-  c.term_id = ? AND c.template_id = ?;
+  c.term_id = ?;
 
--- name: GetInstanceByID :one
+-- name: GetCourseByID :one
 SELECT * from courses WHERE id = ?;
 
--- name: SaveInstance :one
+-- name: SaveCourse :one
 INSERT INTO courses (
-  template_id, term_id, name, description
+  term_id, name, description
 ) VALUES (
-  ?, ?, ?, ?
+  ?, ?, ?
 )
 RETURNING *;
 
--- name: UpdateInstance :exec
+-- name: UpdateCourse :exec
 UPDATE courses 
 SET name = ?, description = ?
 WHERE id = ?;
 
--- name: DeleteInstance :one
+-- name: DeleteCourse :one
 DELETE FROM courses WHERE id = ?
 RETURNING *;
 

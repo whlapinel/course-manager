@@ -87,7 +87,6 @@ func (q *Queries) GetLessonDates(ctx context.Context, lessonID int64) ([]string,
 const getLessons = `-- name: GetLessons :many
 SELECT
   l.id,
-  l.template_id,
   l.number,
   l.name,
   l.description
@@ -99,7 +98,6 @@ WHERE
 
 type GetLessonsRow struct {
 	ID          int64
-	TemplateID  sql.NullInt64
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
@@ -116,7 +114,6 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 		var i GetLessonsRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.TemplateID,
 			&i.Number,
 			&i.Name,
 			&i.Description,
@@ -136,11 +133,11 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 
 const saveLesson = `-- name: SaveLesson :one
 INSERT INTO lessons (
-  number, name, description, unit_id, template_id
+  number, name, description, unit_id
 ) VALUES (
-  ?, ?, ?, ?, ?
+  ?, ?, ?, ?
 )
-RETURNING id, unit_id, template_id, number, name, description
+RETURNING id, unit_id, number, name, description
 `
 
 type SaveLessonParams struct {
@@ -148,7 +145,6 @@ type SaveLessonParams struct {
 	Name        sql.NullString
 	Description sql.NullString
 	UnitID      int64
-	TemplateID  sql.NullInt64
 }
 
 func (q *Queries) SaveLesson(ctx context.Context, arg SaveLessonParams) (Lesson, error) {
@@ -157,13 +153,11 @@ func (q *Queries) SaveLesson(ctx context.Context, arg SaveLessonParams) (Lesson,
 		arg.Name,
 		arg.Description,
 		arg.UnitID,
-		arg.TemplateID,
 	)
 	var i Lesson
 	err := row.Scan(
 		&i.ID,
 		&i.UnitID,
-		&i.TemplateID,
 		&i.Number,
 		&i.Name,
 		&i.Description,

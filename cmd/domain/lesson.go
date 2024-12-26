@@ -9,7 +9,6 @@ func NewLesson(number, unitID int, name string, descr string, dates []time.Time)
 type Lesson struct {
 	ID          int
 	UnitID      int
-	TemplateID  int
 	Number      int
 	Name        string
 	Description string

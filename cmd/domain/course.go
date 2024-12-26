@@ -10,47 +10,19 @@ type Course struct {
 	Name        string
 	Description string
 	Units       []Unit
+	Term
 }
 
 type CourseType int
 
-type CourseInstance struct {
-	Course
-	TemplateID int
-	Term
-}
+type Courses []Course
 
-type Instances []CourseInstance
-
-func (i Instances) Courses() []Course {
+func (i Courses) Courses() []Course {
 	var courses []Course
-	for _, instance := range i {
-		courses = append(courses, instance.Course)
+	for _, course := range i {
+		courses = append(courses, course)
 	}
 	return courses
-}
-
-func (c Course) CreateInstance(term Term) CourseInstance {
-	var units []Unit
-	for _, unit := range c.Units {
-		unit.TemplateID = unit.ID
-		unit.ID = 0
-		var lessons []Lesson
-		for _, lesson := range unit.Lessons {
-			lesson.TemplateID = lesson.ID
-			lesson.ID = 0
-			lessons = append(lessons, lesson)
-		}
-		unit.Lessons = lessons
-		units = append(units, unit)
-	}
-	c.Units = units
-	return CourseInstance{
-		Course:     c,
-		TemplateID: c.ID,
-		Term:       term,
-	}
-
 }
 
 func (c Course) GetTitle() string {
