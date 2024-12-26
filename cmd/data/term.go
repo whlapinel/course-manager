@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-// GetTerm implements TermRepo.
 func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
+	// This won't work because the date will only match on a schoolday!
 	dbTerm, err := cr.queries.GetTerm(context.Background(), date.Format(time.DateOnly))
 	if err != nil {
 		return nil, err

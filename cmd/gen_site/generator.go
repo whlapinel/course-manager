@@ -1,9 +1,10 @@
-package main
+package sitegenerator
 
 import (
 	"context"
 	"fmt"
 	"gh_static_portfolio/cmd/data"
+	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/templates"
 	"log"
 	"os"
@@ -15,7 +16,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
+func Generate() {
 	directories := templates.DirectoriesClearList()
 	for _, directory := range directories {
 		ClearHTMLFiles(directory)
@@ -39,15 +40,21 @@ func main() {
 		log.Fatal(err)
 	}
 	courseRepo := data.NewCourseRepo(queries)
-	term, err := courseRepo.GetTerm(time.Now())
+	terms, err := courseRepo.GetTerms()
 	if err != nil {
 		log.Fatalf("error fetching term: %s", err)
 	}
-	if term.Start.IsZero() {
+	var currentTerm domain.Term
+	for _, term := range terms {
+		if term.Start.Before(time.Now()) && term.End.After(time.Now()) {
+			currentTerm = term
+		}
+	}
+	if currentTerm.Start.IsZero() {
 		log.Fatal("main(): term not initialized")
 	}
 	// Generate "courses I teach" list page
-	instances, err := courseRepo.GetCourses(term.ID)
+	instances, err := courseRepo.GetCourses(currentTerm.ID)
 	if err != nil {
 		log.Fatalf("error getting instances: %v", err)
 	}

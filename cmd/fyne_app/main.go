@@ -2,6 +2,7 @@ package main
 
 import (
 	"gh_static_portfolio/cmd/data"
+	sitegenerator "gh_static_portfolio/cmd/gen_site"
 	"gh_static_portfolio/cmd/service"
 	"log"
 
@@ -27,7 +28,10 @@ func main() {
 	showTermsItem := fyne.NewMenuItem("Show Terms", termsHandler.ShowTermsList)
 	termsMenu := fyne.NewMenu("Terms", showTermsItem)
 	fileMenu := fyne.NewMenu("File", fyne.NewMenuItem("Import Course From CSV", func() {}))
-	mainMenu := fyne.NewMainMenu(fileMenu, termsMenu)
+	generateMenu := fyne.NewMenu("Generate", fyne.NewMenuItem("Generate Site", func() {
+		sitegenerator.Generate()
+	}))
+	mainMenu := fyne.NewMainMenu(fileMenu, termsMenu, generateMenu)
 	w.SetMainMenu(mainMenu)
 	w.SetContent(widget.NewLabel("here's something to look at"))
 	w.Resize(fyne.Size{Width: 1000, Height: 1000})
