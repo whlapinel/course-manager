@@ -124,23 +124,41 @@ func (q *Queries) GetTermDates(ctx context.Context, termID int64) ([]Date, error
 }
 
 const getTerms = `-- name: GetTerms :many
-SELECT id, name, start, "end" FROM terms
+SELECT   
+  t.id,
+  t.name,
+  t.start,
+  t.end,
+  d.date 
+FROM terms t
+JOIN dates d 
+ON d.term_id = t.id
+ORDER BY t.id, d.day_number
 `
 
-func (q *Queries) GetTerms(ctx context.Context) ([]Term, error) {
+type GetTermsRow struct {
+	ID    int64
+	Name  string
+	Start string
+	End   string
+	Date  string
+}
+
+func (q *Queries) GetTerms(ctx context.Context) ([]GetTermsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTerms)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Term
+	var items []GetTermsRow
 	for rows.Next() {
-		var i Term
+		var i GetTermsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Start,
 			&i.End,
+			&i.Date,
 		); err != nil {
 			return nil, err
 		}

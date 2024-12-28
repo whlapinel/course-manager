@@ -43,18 +43,22 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 	return lessons, nil
 }
 
-func (lr CourseRepo) DeleteLessonDate(lesson domain.Lesson, date time.Time) error {
-	dateID, err := lr.queries.GetDateID(context.Background(), date.Format(time.DateOnly))
+func (lr CourseRepo) GetLessonDates(lessonID int) ([]time.Time, error) {
+	dbDates, err := lr.queries.GetLessonDates(context.Background(), int64(lessonID))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = lr.queries.DeleteLessonDates(context.Background(), database.DeleteLessonDatesParams{
-		LessonID: int64(lesson.ID),
-		DateID:   dateID,
-	})
-	return err
-}
+	var dates []time.Time
+	for _, dbDate := range dbDates {
+		date, err := time.Parse(time.DateOnly, dbDate)
+		if err != nil {
+			return nil, err
+		}
+		dates = append(dates, date)
 
+	}
+	return dates, nil
+}
 func (lr CourseRepo) AddLessonDate(lesson domain.Lesson, date time.Time) error {
 	dbDate, err := lr.queries.GetDate(context.Background(), date.Format(time.DateOnly))
 	if err != nil {
@@ -65,6 +69,18 @@ func (lr CourseRepo) AddLessonDate(lesson domain.Lesson, date time.Time) error {
 		DateID:   dbDate.ID,
 	})
 	return nil
+}
+
+func (lr CourseRepo) DeleteLessonDate(lesson domain.Lesson, date time.Time) error {
+	id, err := lr.queries.GetDateID(context.Background(), date.Format(time.DateOnly))
+	if err != nil {
+		return err
+	}
+	err = lr.queries.DeleteLessonDate(context.Background(), database.DeleteLessonDateParams{
+		LessonID: int64(lesson.ID),
+		DateID:   id,
+	})
+	return err
 }
 
 func (c CourseRepo) SaveLessonInstance(lesson domain.Lesson) (*domain.Lesson, error) {
@@ -149,7 +165,27 @@ func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 			String: lesson.Description,
 		},
 	})
-	return err
+	if err != nil {
+		return err
+	}
+	err = lr.queries.DeleteAllLessonDates(context.Background(), int64(lesson.ID))
+	if err != nil {
+		return err
+	}
+	for _, date := range lesson.Dates {
+		id, err := lr.queries.GetDateID(context.Background(), date.Format(time.DateOnly))
+		if err != nil {
+			return err
+		}
+		_, err = lr.queries.SaveLessonDate(context.Background(), database.SaveLessonDateParams{
+			LessonID: int64(lesson.ID),
+			DateID:   id,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (lr CourseRepo) DeleteLesson(lesson domain.Lesson) error {

@@ -2,6 +2,7 @@
 SELECT
   d.date,
   d.day_number,
+  l.id as lesson_id,
   l.name as lesson_name,
   u.name as unit_name,
   l.description as lesson_description

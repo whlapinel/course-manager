@@ -13,29 +13,30 @@ import (
 )
 
 func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
-	// This won't work because the date will only match on a schoolday!
-	dbTerm, err := cr.queries.GetTerm(context.Background(), date.Format(time.DateOnly))
+	dbTerms, err := cr.queries.GetTerms(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	start, err := time.Parse(time.DateOnly, dbTerm.Start)
-	if err != nil {
-		return nil, err
+	for _, dbTerm := range dbTerms {
+		start, err := time.Parse(time.DateOnly, dbTerm.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := time.Parse(time.DateOnly, dbTerm.End)
+		if err != nil {
+			return nil, err
+		}
+		currentTerm := &domain.Term{
+			ID:    int(dbTerm.ID),
+			Name:  dbTerm.Name,
+			Start: start,
+			End:   end,
+		}
+		if currentTerm.Start.Before(date) && currentTerm.End.After(date) {
+			return currentTerm, nil
+		}
 	}
-	end, err := time.Parse(time.DateOnly, dbTerm.End)
-	if err != nil {
-		return nil, err
-	}
-	term := &domain.Term{
-		ID:    int(dbTerm.ID),
-		Name:  dbTerm.Name,
-		Start: start,
-		End:   end,
-	}
-	if term.Start.IsZero() {
-		return nil, fmt.Errorf("term.Start not initialized")
-	}
-	return term, nil
+	return nil, nil
 }
 
 func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
@@ -57,29 +58,48 @@ func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
 }
 
 func (cr CourseRepo) GetTerms() ([]domain.Term, error) {
-	dbTerms, err := cr.queries.GetTerms(context.Background())
+	dbGetTermRows, err := cr.queries.GetTerms(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	var terms []domain.Term
-	for _, dbTerm := range dbTerms {
-		parsedStart, err := time.Parse(time.DateOnly, dbTerm.Start)
+	var term domain.Term
+	for i, dbGetTermRow := range dbGetTermRows {
+		parsedStart, err := time.Parse(time.DateOnly, dbGetTermRow.Start)
 		if err != nil {
 			return nil, err
 		}
-		parsedEnd, err := time.Parse(time.DateOnly, dbTerm.End)
+		parsedEnd, err := time.Parse(time.DateOnly, dbGetTermRow.End)
 		if err != nil {
 			return nil, err
 		}
-		term := domain.Term{
-			ID:    int(dbTerm.ID),
-			Start: parsedStart,
-			End:   parsedEnd,
-			Name:  dbTerm.Name,
+		if i == 0 {
+			term = domain.Term{
+				ID:    int(dbGetTermRow.ID),
+				Start: parsedStart,
+				End:   parsedEnd,
+				Name:  dbGetTermRow.Name,
+			}
 		}
-		terms = append(terms, term)
+		// if we've hit a new term, append the current term and create a new one
+		if dbGetTermRow.ID != int64(term.ID) {
+			log.Println("new term encountered: appending current term and creating new.", dbGetTermRow.Name, term.Name)
+			terms = append(terms, term)
+			term = domain.Term{
+				ID:    int(dbGetTermRow.ID),
+				Start: parsedStart,
+				End:   parsedEnd,
+				Name:  dbGetTermRow.Name,
+			}
+		}
+		parsedInstructDate, err := time.Parse(time.DateOnly, dbGetTermRow.Date)
+		if err != nil {
+			return nil, err
+		}
+		term.InstructionalDays = append(term.InstructionalDays, parsedInstructDate)
 
 	}
+	terms = append(terms, term)
 	return terms, nil
 
 }

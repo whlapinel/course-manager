@@ -14,6 +14,7 @@ const getDailySchedules = `-- name: GetDailySchedules :many
 SELECT
   d.date,
   d.day_number,
+  l.id as lesson_id,
   l.name as lesson_name,
   u.name as unit_name,
   l.description as lesson_description
@@ -36,6 +37,7 @@ ORDER BY
 type GetDailySchedulesRow struct {
 	Date              string
 	DayNumber         int64
+	LessonID          int64
 	LessonName        sql.NullString
 	UnitName          string
 	LessonDescription sql.NullString
@@ -53,6 +55,7 @@ func (q *Queries) GetDailySchedules(ctx context.Context, id int64) ([]GetDailySc
 		if err := rows.Scan(
 			&i.Date,
 			&i.DayNumber,
+			&i.LessonID,
 			&i.LessonName,
 			&i.UnitName,
 			&i.LessonDescription,

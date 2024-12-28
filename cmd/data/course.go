@@ -49,7 +49,7 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 }
 
 func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
-	dbInstances, err := c.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
+	dbCourses, err := c.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
 	if err != nil {
 		return nil, err
 	}
@@ -63,15 +63,15 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 	}
 	// THIS IS KINDA JACKED UP
 	term.InstructionalDays = termWithDates.InstructionalDays
-	var instances []domain.Course
-	for _, dbInstance := range dbInstances {
-		instance := domain.Course{
-			ID:          int(dbInstance.CourseID),
-			Name:        dbInstance.CourseName,
-			Description: dbInstance.CourseDescr.String,
+	var courses []domain.Course
+	for _, dbCourse := range dbCourses {
+		course := domain.Course{
+			ID:          int(dbCourse.CourseID),
+			Name:        dbCourse.CourseName,
+			Description: dbCourse.CourseDescr.String,
 			Term:        term,
 		}
-		dbUnits, err := c.queries.GetUnits(context.Background(), int64(instance.ID))
+		dbUnits, err := c.queries.GetUnits(context.Background(), int64(course.ID))
 		if err != nil {
 			return nil, err
 		}
@@ -116,17 +116,17 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 			unit.Lessons = lessons
 			units = append(units, unit)
 		}
-		instance.Units = units
-		if instance.Term.Start.IsZero() {
+		course.Units = units
+		if course.Term.Start.IsZero() {
 			log.Fatal("term not initialized")
 		}
-		instances = append(instances, instance)
+		courses = append(courses, course)
 
 	}
-	return instances, nil
+	return courses, nil
 }
 
-func (c CourseRepo) UpdateInstance(instance domain.Course) error {
+func (c CourseRepo) UpdateCourse(instance domain.Course) error {
 	err := c.queries.UpdateCourse(context.Background(), database.UpdateCourseParams{
 		ID:   int64(instance.ID),
 		Name: instance.Name,

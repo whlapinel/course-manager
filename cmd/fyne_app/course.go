@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/service"
-	"gh_static_portfolio/cmd/util"
 	"log"
 	"strconv"
 	"strings"
@@ -17,30 +16,28 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func NewInstanceHandler(w fyne.Window, svc service.CourseService) *InstanceHandler {
-	return &InstanceHandler{w, svc}
+func NewInstanceHandler(w fyne.Window, svc service.CourseService) *CourseHandler {
+	return &CourseHandler{w, svc}
 }
 
-type InstanceHandler struct {
+type CourseHandler struct {
 	w   fyne.Window
 	svc service.CourseService
 }
 
-func (ih *InstanceHandler) ShowCourseTree(termID int) {
-	instances, err := ih.svc.GetCourses(termID)
+func (ih *CourseHandler) ShowCourseTree(termID int) {
+	courses, err := ih.svc.GetCourses(termID)
 	if err != nil {
 		ih.w.SetContent(ErrorMsg(err))
 	}
-	tree := ih.NewCourseTree(instances, ih.svc)
+	tree := ih.NewCourseTree(courses, ih.svc)
 	ih.w.SetContent(tree.Tree)
 }
 
-func (ih *InstanceHandler) NewCourseTree(instances domain.Courses, svc service.CourseService) CourseTree {
-	courses := instances.Courses()
+func (ih *CourseHandler) NewCourseTree(courses domain.Courses, svc service.CourseService) CourseTree {
 	var ct CourseTree
+	ct.Service = svc
 	ct.Courses = courses
-	ct.service = svc
-	ct.Courses = instances
 	var courseMap = make(map[int]CourseHolder)
 	var unitMap = make(map[int]UnitHolder)
 	var lessonMap = make(map[int]LessonHolder)
@@ -56,7 +53,7 @@ func (ih *InstanceHandler) NewCourseTree(instances domain.Courses, svc service.C
 	ct.CourseMap = courseMap
 	ct.UnitMap = unitMap
 	ct.LessonMap = lessonMap
-	ct.ShowCourseCalendar = ih.ShowTermMonthsList
+	ct.ShowCourseCalendar = ih.ShowCourseCalendar
 	ct.Tree = widget.NewTree(
 		ct.childFunc,
 		ct.isBranchFunc,
@@ -66,86 +63,10 @@ func (ih *InstanceHandler) NewCourseTree(instances domain.Courses, svc service.C
 	return ct
 }
 
-func (ch *InstanceHandler) ShowTermMonthsList(instance domain.Course) {
-	schedule, err := ch.svc.GetSchedule(instance)
-	if err != nil {
-		ch.w.SetContent(ErrorMsg(err))
-	}
-	cal := ch.NewTermMonthsList(schedule)
-	ch.w.SetContent(cal)
-
-}
-
-func (ch *InstanceHandler) NewTermMonthsList(schedule domain.CourseSchedule) *widget.List {
-	list := widget.NewList(
-		func() int {
-			return len(schedule.Term.TermMonths())
-		},
-		func() fyne.CanvasObject {
-			return container.NewVBox(widget.NewLabel("month header"), container.NewVBox())
-		},
-		func(lii widget.ListItemID, co fyne.CanvasObject) {
-			monthBox := co.(*fyne.Container)
-			day := schedule.Term.TermMonths()[lii]
-			monthLabel := monthBox.Objects[0].(*widget.Label)
-			monthLabel.SetText(day.Month().String() + strconv.Itoa(day.Year()))
-		},
-	)
-	list.OnSelected = func(id widget.ListItemID) {
-		monthDate := schedule.Term.TermMonths()[id]
-		ch.ShowMonthCalendar(schedule, monthDate)
-	}
-	return list
-}
-
-func (ch *InstanceHandler) ShowMonthCalendar(schedule domain.CourseSchedule, month time.Time) {
-	dateGrid := container.NewGridWithColumns(5)
-	for _, week := range util.GetMonthDates(month) {
-		for _, date := range week[1:6] {
-			dailySchedule := schedule.GetSchedule(date)
-			dateContainer := container.NewVBox()
-			if !date.IsZero() {
-				dateHeader := widget.NewLabel(date.Format("Mon 1/02/06"))
-				addLessonButton := widget.NewButton("Add Lesson", func() {
-					log.Println("this will open a dialog to add an existing lesson to the current day")
-				})
-				dateContainer.Add(dateHeader)
-				dateContainer.Add(addLessonButton)
-			}
-			if dailySchedule != nil {
-				lessonList := container.NewVBox()
-				for _, lesson := range dailySchedule.Lessons {
-					lessonContainer := container.NewHBox()
-					lessonRemoveButton := widget.NewButton("Remove", func() {
-						log.Println("this will remove the current lesson from the current date")
-					})
-					lessonEdit := widget.NewButton("Edit", func() {
-						nameLabel := widget.NewLabel(lesson.Name)
-						nameEdit := widget.NewEntry()
-						lessonEditForm := container.New(layout.NewFormLayout(), nameLabel, nameEdit)
-						newWindow := fyne.CurrentApp().NewWindow("Edit Lesson")
-						newWindow.SetContent(lessonEditForm)
-						newWindow.Show()
-					})
-					lessonLabel := widget.NewLabel(lesson.GetTitle())
-					lessonContainer.Add(lessonRemoveButton)
-					lessonContainer.Add(lessonEdit)
-					lessonContainer.Add(lessonLabel)
-					lessonList.Add(lessonContainer)
-				}
-				dateContainer.Add(lessonList)
-			}
-			dateGrid.Add(dateContainer)
-		}
-	}
-	cal := container.NewBorder(widget.NewLabel(month.Format(time.DateOnly)), nil, nil, nil, dateGrid)
-	ch.w.SetContent(cal)
-}
-
 type CourseTree struct {
 	Tree               *widget.Tree
 	Courses            domain.Courses
-	service            service.CourseService
+	Service            service.CourseService
 	ShowLessonDates    func(domain.Lesson)
 	ShowCourseCalendar func(course domain.Course)
 	CourseMap          map[int]CourseHolder
@@ -360,7 +281,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 					log.Println("value of submitted text:", nameEdit.Text)
 					// Need to do some sort of input validation here
 					holder.course.Name = nameEdit.Text
-					err = ct.service.UpdateCourse(holder.course)
+					err = ct.Service.UpdateCourse(holder.course)
 					if err != nil {
 						log.Fatalf("error updating template: %s", err)
 					}
@@ -396,7 +317,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 				log.Println("value of submitted text:", nameEdit.Text)
 				// Need to do some sort of input validation here
 				holder.Unit.Name = nameEdit.Text
-				err = ct.service.UpdateUnit(holder.Unit)
+				err = ct.Service.UpdateUnit(holder.Unit)
 				if err != nil {
 					log.Fatalf("error updating unit: %s", err)
 				}
@@ -445,7 +366,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 				log.Println("value of submitted text:", nameEdit.Text)
 				// Need to do some sort of input validation here
 				holder.Lesson.Name = nameEdit.Text
-				err = ct.service.UpdateLesson(holder.Lesson)
+				err = ct.Service.UpdateLesson(holder.Lesson)
 				if err != nil {
 					log.Fatalf("error updating unit: %s", err)
 				}

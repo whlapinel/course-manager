@@ -172,7 +172,7 @@ func CourseCalendarComponent(schedule domain.CourseSchedule) templ.Component {
 								if templ_7745c5c3_Err != nil {
 									return templ_7745c5c3_Err
 								}
-								if schedule.GetSchedule(date) != nil {
+								if !schedule.GetSchedule(date).Date.IsZero() {
 									for i, lesson := range schedule.GetSchedule(date).Lessons {
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li>")
 										if templ_7745c5c3_Err != nil {

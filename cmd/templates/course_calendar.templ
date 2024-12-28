@@ -66,7 +66,7 @@ templ CourseCalendarComponent(schedule domain.CourseSchedule) {
 												{ date.Format("Mon 1/02/06") }
 											}
 											<ul>
-												if schedule.GetSchedule(date) != nil {
+												if !schedule.GetSchedule(date).Date.IsZero() {
 													for i, lesson := range schedule.GetSchedule(date).Lessons {
 														<li>
 															@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(lesson, schedule.GetSchedule(date).Units[i], schedule.Course)+FileName(lesson)), false) {

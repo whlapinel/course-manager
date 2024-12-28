@@ -10,6 +10,16 @@ import (
 	"database/sql"
 )
 
+const deleteAllLessonDates = `-- name: DeleteAllLessonDates :exec
+DELETE FROM lesson_dates
+WHERE lesson_id = ?
+`
+
+func (q *Queries) DeleteAllLessonDates(ctx context.Context, lessonID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAllLessonDates, lessonID)
+	return err
+}
+
 const deleteLesson = `-- name: DeleteLesson :exec
 DELETE FROM lessons WHERE id = ?
 `
@@ -19,18 +29,18 @@ func (q *Queries) DeleteLesson(ctx context.Context, id int64) error {
 	return err
 }
 
-const deleteLessonDates = `-- name: DeleteLessonDates :exec
+const deleteLessonDate = `-- name: DeleteLessonDate :exec
 DELETE FROM lesson_dates
-WHERE lesson_id = ? and date_id = ?
+WHERE lesson_id = ? AND date_id = ?
 `
 
-type DeleteLessonDatesParams struct {
+type DeleteLessonDateParams struct {
 	LessonID int64
 	DateID   int64
 }
 
-func (q *Queries) DeleteLessonDates(ctx context.Context, arg DeleteLessonDatesParams) error {
-	_, err := q.db.ExecContext(ctx, deleteLessonDates, arg.LessonID, arg.DateID)
+func (q *Queries) DeleteLessonDate(ctx context.Context, arg DeleteLessonDateParams) error {
+	_, err := q.db.ExecContext(ctx, deleteLessonDate, arg.LessonID, arg.DateID)
 	return err
 }
 

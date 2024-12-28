@@ -52,6 +52,10 @@ UPDATE lessons
 set name = ?, number = ?, description = ?
 WHERE id = ?;
 
--- name: DeleteLessonDates :exec
+-- name: DeleteLessonDate :exec
 DELETE FROM lesson_dates
-WHERE lesson_id = ? and date_id = ?;
+WHERE lesson_id = ? AND date_id = ?;
+
+-- name: DeleteAllLessonDates :exec
+DELETE FROM lesson_dates
+WHERE lesson_id = ?;

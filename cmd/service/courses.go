@@ -7,5 +7,5 @@ func (svc CourseService) GetCourses(termID int) (domain.Courses, error) {
 }
 
 func (svc CourseService) UpdateCourse(instance domain.Course) error {
-	return svc.repo.UpdateInstance(instance)
+	return svc.repo.UpdateCourse(instance)
 }

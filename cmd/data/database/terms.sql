@@ -29,7 +29,16 @@ WHERE
 SELECT * FROM terms WHERE id = ?;
 
 -- name: GetTerms :many
-SELECT * FROM terms;
+SELECT   
+  t.id,
+  t.name,
+  t.start,
+  t.end,
+  d.date 
+FROM terms t
+JOIN dates d 
+ON d.term_id = t.id
+ORDER BY t.id, d.day_number;
 
 -- name: GetTermDates :many
 SELECT * FROM dates d

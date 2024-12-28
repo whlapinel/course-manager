@@ -35,13 +35,32 @@ func TestGetTerm(t *testing.T) {
 	if err != nil {
 		t.Errorf("error fetching term: %s", err)
 	}
-	if term.Start.IsZero() {
-		t.Error("term Start is zero")
+	if term != nil {
+		if term.Start.IsZero() {
+			t.Error("term Start is zero")
+		}
+		log.Println(term.Name)
+		log.Println(term.ID)
+		monthDates := term.TermMonths()
+		for _, date := range monthDates {
+			log.Println(date.Format(time.DateOnly))
+		}
+	} else {
+		log.Println("term was nil")
 	}
-	log.Println(term.Name)
-	log.Println(term.ID)
-	monthDates := term.TermMonths()
-	for _, date := range monthDates {
-		log.Println(date.Format(time.DateOnly))
+}
+
+func TestGetTerms(t *testing.T) {
+	terms, err := cr.GetTerms()
+	if err != nil {
+		t.Error("error fetching terms: ", err)
 	}
+	log.Println("term count: ", len(terms))
+	for _, term := range terms {
+		log.Println(term.Name)
+		for _, date := range term.InstructionalDays {
+			log.Println(date)
+		}
+	}
+
 }

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"log"
 	"time"
 )
 
@@ -12,7 +11,6 @@ func GetMonthDates(date time.Time) [][]time.Time {
 	year, month, _ := date.Date()
 	first := time.Date(year, month, 1, 0, 0, 0, 0, time.Local)
 	last := first.AddDate(0, 1, 0).AddDate(0, 0, -1)
-	log.Println("last:", last.Format(time.DateOnly))
 	monthSlice := [][]time.Time{}
 	currDate := first
 	currWeekIndex := 0

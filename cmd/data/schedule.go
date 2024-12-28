@@ -10,15 +10,15 @@ import (
 )
 
 // GetSchedule implements domain.DailyScheduleRepo.
-func (d CourseRepo) GetSchedule(instance domain.Course) (domain.CourseSchedule, error) {
-	if instance.Term.Start.IsZero() {
+func (d CourseRepo) GetSchedule(course domain.Course) (domain.CourseSchedule, error) {
+	if course.Term.Start.IsZero() {
 		log.Fatal("GetSchedule(): term not initialized")
 	}
 	var schedule = domain.CourseSchedule{
-		Course: instance,
-		Term:   instance.Term,
+		Course: course,
+		Term:   course.Term,
 	}
-	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(instance.ID))
+	dbSchedules, err := d.queries.GetDailySchedules(context.Background(), int64(course.ID))
 	if err != nil {
 		return schedule, err
 	}
@@ -30,6 +30,7 @@ func (d CourseRepo) GetSchedule(instance domain.Course) (domain.CourseSchedule, 
 	for _, dbSchedule := range dbSchedules {
 		log.Println("dbSchedule: ", dbSchedule.Date, dbSchedule.LessonName)
 		lesson := domain.Lesson{
+			ID:          int(dbSchedule.LessonID),
 			Name:        dbSchedule.LessonName.String,
 			Description: dbSchedule.LessonDescription.String,
 		}
