@@ -46,6 +46,8 @@ func (svc CourseService) Shift(lesson domain.Lesson, term domain.Term, direction
 	}
 
 	for _, date := range shiftedLesson.Dates {
+		log.Println("Service: After shifting:")
+
 		log.Println(date.Format(time.DateOnly))
 	}
 	return shiftedLesson, newTime, nil

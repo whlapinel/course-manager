@@ -18,21 +18,17 @@ import (
 
 type CourseCalendar struct {
 	Service         service.CourseService
-	Schedule        domain.CourseSchedule
+	Course          domain.Course
 	CurrentMonthCal *MonthCalendar
 	w               fyne.Window
 }
 
-func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course domain.Course, w fyne.Window) (CourseCalendar, error) {
+func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course domain.Course, w fyne.Window) (*CourseCalendar, error) {
 	var cc CourseCalendar
-	schedule, err := svc.GetSchedule(course)
-	if err != nil {
-		return CourseCalendar{}, err
-	}
 	cc.Service = svc
-	cc.Schedule = schedule
+	cc.Course = course
 	cc.w = w
-	return cc, nil
+	return &cc, nil
 }
 
 type MonthCalendar struct {
@@ -49,7 +45,9 @@ type CalLessonHolder struct {
 }
 
 func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesson) *CalLessonHolder {
-	var onClickShiftLesson = cc.OnClickShiftLesson(date, lesson)
+	var lh CalLessonHolder
+	lh.Date = date
+	var onClickShiftLesson = cc.OnClickShiftLesson(&lh)
 	var file, err = os.ReadFile("./cmd/fyne_app/images/arrow_right.png")
 	if err != nil {
 		log.Println("error reading file: ", err)
@@ -86,47 +84,57 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesso
 	shiftLeftBtn := widget.NewButton("", onClickShiftLesson(domain.Left))
 	shiftRightBtn.SetIcon(arrowRight)
 	shiftLeftBtn.SetIcon(arrowLeft)
-	lessonLabel := widget.NewLabel(lesson.GetTitle())
+	var labelText string
+	if len(lesson.Name) > 10 {
+		labelText = lesson.Name[:10] + "..."
+	} else {
+		labelText = lesson.Name
+	}
+	lessonLabel := widget.NewLabel(labelText)
 	lessonContainer.Add(lessonRemoveButton)
 	lessonContainer.Add(lessonEdit)
 	lessonContainer.Add(shiftLeftBtn)
 	lessonContainer.Add(lessonLabel)
 	lessonContainer.Add(shiftRightBtn)
-
-	return &CalLessonHolder{
-		Lesson:    lesson,
-		Container: lessonContainer,
-	}
-
+	lh.Lesson = lesson
+	lh.Container = lessonContainer
+	return &lh
 }
 
-func (cc *CourseCalendar) OnClickShiftLesson(date time.Time, lesson domain.Lesson) func(domain.CalendarDirection) func() {
+func (cc *CourseCalendar) OnClickShiftLesson(holder *CalLessonHolder) func(domain.CalendarDirection) func() {
 	return func(cd domain.CalendarDirection) func() {
 		return func() {
 			log.Println(cd)
-			l, newDate, err := cc.Service.Shift(lesson, cc.Schedule.Term, cd)
+			l, newDate, err := cc.Service.Shift(holder.Lesson, cc.Course.Term, cd)
 			if err != nil {
 				log.Println("error in OnClickShiftLesson", err)
-			}
-			if newDate.Month() != date.Month() {
 				return
 			}
 			log.Println("cc.CurrentMonthCal is", cc.CurrentMonthCal)
 			if cc.CurrentMonthCal != nil {
 				log.Println("cc.CurrentMonthCal.DateMap is", cc.CurrentMonthCal.DateMap)
 			}
-			currList := cc.CurrentMonthCal.DateMap[date.Day()]
+			currList := cc.CurrentMonthCal.DateMap[holder.Date.Day()]
 			if currList == nil {
 				log.Fatal("currList is nil")
 			}
-			holder, err := currList.RemoveLesson(lesson.ID)
+			err = currList.RemoveLesson(holder.Lesson.ID)
 			if err != nil {
 				log.Println("error in OnClickShiftLesson", err)
 			}
-			holder.Lesson = l
-			newList := cc.CurrentMonthCal.DateMap[newDate.Day()]
-			newList.AddLesson(holder)
-			cc.CurrentMonthCal.Calendar.Refresh()
+			if holder == nil {
+				log.Println(("error: holder is nil after RemoveLesson(); unable to add to new LessonList"))
+			} else {
+				// if it's another month we don't need to update the UI
+				if newDate.Month() != holder.Date.Month() {
+					return
+				}
+				holder.Date = newDate
+				holder.Lesson = l
+				newList := cc.CurrentMonthCal.DateMap[newDate.Day()]
+				newList.AddLesson(holder)
+				cc.CurrentMonthCal.Calendar.Refresh()
+			}
 		}
 	}
 
@@ -146,20 +154,20 @@ func (cc *MonthCalendar) NewLessonList(date time.Time) *LessonList {
 	}
 }
 
-func (ll *LessonList) RemoveLesson(id int) (*CalLessonHolder, error) {
+func (ll *LessonList) RemoveLesson(id int) error {
 	log.Println("length of ll.LessonHolders: ", len(ll.LessonHolders))
 	if len(ll.LessonHolders) == 0 {
-		return nil, fmt.Errorf("LessonHolders empty")
+		return fmt.Errorf("LessonHolders empty")
 	}
 	for i, lessonHolder := range ll.LessonHolders {
 		if lessonHolder.Lesson.ID == id {
 			ll.LessonHolders = append(ll.LessonHolders[:i], ll.LessonHolders[i+1:]...)
 			ll.ListContainer.Remove(lessonHolder.Container)
 			ll.ListContainer.Refresh()
-			return lessonHolder, nil
+			return nil
 		}
 	}
-	return nil, fmt.Errorf("lesson holder not found in this lesson list")
+	return fmt.Errorf("lesson holder not found in this lesson list")
 
 }
 
@@ -170,6 +178,7 @@ func (ll *LessonList) AddLesson(l *CalLessonHolder) {
 	if ll.LessonHolders == nil {
 		log.Fatal("LessonHolders is nil")
 	}
+	// make sure this isn't a duplicate
 	for _, lessonHolder := range ll.LessonHolders {
 		if lessonHolder.Lesson.ID == l.Lesson.ID {
 			return
@@ -187,26 +196,27 @@ func (ch *CourseHandler) ShowCourseCalendar(course domain.Course) {
 	if err != nil {
 		ch.w.SetContent(ErrorMsg(err))
 	}
-	ch.w.SetContent(calendar.NewTermMonthsList(calendar.Schedule))
+	ch.w.SetContent(calendar.NewTermMonthsList())
+	ch.w.SetFixedSize(true)
 }
 
-func (cc *CourseCalendar) NewTermMonthsList(schedule domain.CourseSchedule) *widget.List {
+func (cc *CourseCalendar) NewTermMonthsList() *widget.List {
 	list := widget.NewList(
 		func() int {
-			return len(schedule.Term.TermMonths())
+			return len(cc.Course.Term.TermMonths())
 		},
 		func() fyne.CanvasObject {
 			return container.NewVBox(widget.NewLabel("month header"), container.NewVBox())
 		},
 		func(lii widget.ListItemID, co fyne.CanvasObject) {
 			monthBox := co.(*fyne.Container)
-			day := schedule.Term.TermMonths()[lii]
+			day := cc.Course.Term.TermMonths()[lii]
 			monthLabel := monthBox.Objects[0].(*widget.Label)
 			monthLabel.SetText(day.Month().String() + strconv.Itoa(day.Year()))
 		},
 	)
 	list.OnSelected = func(id widget.ListItemID) {
-		cc.NewMonthCalendar(schedule, schedule.Course.TermMonths()[id])
+		cc.NewMonthCalendar(cc.Course.TermMonths()[id])
 		cc.ShowMonthCalendar()
 	}
 	return list
@@ -216,40 +226,66 @@ func (cc *CourseCalendar) ShowMonthCalendar() {
 	cc.w.SetContent(cc.CurrentMonthCal.Calendar)
 }
 
-func (cc *CourseCalendar) NewMonthCalendar(schedule domain.CourseSchedule, month time.Time) {
+func (cc *CourseCalendar) NewMonthCalendar(month time.Time) {
 	mc := MonthCalendar{}
+	mc.Month = month
 	dateGrid := container.NewGridWithColumns(5)
 	dateMap := make(map[int]*LessonList)
+	// GetMonthDates returns a slice of weeks for the months
+	// Weeks are slices of dates where the index corresponds to the weekday and the value is the date
+	// Begins with Sunday
 	for _, week := range util.GetMonthDates(month) {
-		for _, date := range week[1:6] {
-			dailySchedule := schedule.GetSchedule(date)
+		for _, calDate := range week[1:6] {
 			dateContainer := container.NewVBox()
 			// GetMonthDates puts a zero date when date is not within month
-			if !date.IsZero() {
-				dateHeader := widget.NewLabel(date.Format("Mon 1/02/06"))
-				addLessonButton := widget.NewButton("Add Lesson", func() {
-					log.Println("this will open a dialog to add an existing lesson to the current day")
-				})
+			if !calDate.IsZero() {
+				dateHeader := widget.NewLabel(calDate.Format("Mon 1/02/06"))
 				dateContainer.Add(dateHeader)
-				dateContainer.Add(addLessonButton)
-			}
-			if !dailySchedule.Date.IsZero() {
+				lessonList := mc.NewLessonList(calDate)
+				isInstructDay := cc.Course.Term.IsInstructionDay(calDate)
+				if isInstructDay {
+					addLessonButton := widget.NewButton("Add Lesson", func() {
+						log.Println("this will open a dialog to add an existing lesson to the current day")
+					})
+					dateContainer.Add(addLessonButton)
 
-				lessonList := mc.NewLessonList(date)
-				for _, lesson := range dailySchedule.Lessons {
-					lessonHolder := cc.NewCalLessonHolder(date, lesson)
-					lessonList.AddLesson(lessonHolder)
+					for _, unit := range cc.Course.Units {
+						for _, lesson := range unit.Lessons {
+							for _, lessonDate := range lesson.Dates {
+								if domain.IsSameDate(lessonDate, calDate) {
+									lessonHolder := cc.NewCalLessonHolder(calDate, lesson)
+									lessonList.AddLesson(lessonHolder)
+								}
+							}
+						}
+					}
+					dateContainer.Add(lessonList.ListContainer)
+					dateMap[calDate.Day()] = lessonList
+					log.Println(calDate.Format(time.DateOnly))
+				} else {
+					holidayLabel := widget.NewLabel("No Class")
+					dateContainer.Add(holidayLabel)
 				}
-				dateContainer.Add(lessonList.ListContainer)
-				dateMap[date.Day()] = lessonList
-			} else {
-				log.Println(date.Format(time.DateOnly))
-				log.Fatal("dailySchedule.Date.IsZero() true", dailySchedule.Date)
 			}
 			dateGrid.Add(dateContainer)
+
 		}
+
 	}
-	cal := container.NewBorder(widget.NewLabel(month.Format(time.DateOnly)), nil, nil, nil, dateGrid)
+	calHeader := container.NewVBox()
+	monthLabel := widget.NewLabel(fmt.Sprintf("%s %s", month.Month().String(), strconv.Itoa(month.Year())))
+	calHeader.Add(monthLabel)
+	nextMonthBtn := widget.NewButton("Next Month", func() {
+		cc.NewMonthCalendar(month.AddDate(0, 1, 0))
+		cc.ShowMonthCalendar()
+	})
+	prevMonthBtn := widget.NewButton("Previous Month", func() {
+		cc.NewMonthCalendar(month.AddDate(0, -1, 0))
+		cc.ShowMonthCalendar()
+	})
+	calHeader.Add(prevMonthBtn)
+	calHeader.Add(nextMonthBtn)
+	cal := container.NewBorder(calHeader, nil, nil, nil, dateGrid)
 	mc.Calendar = cal
 	mc.DateMap = dateMap
 	cc.CurrentMonthCal = &mc
