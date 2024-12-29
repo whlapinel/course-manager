@@ -10,5 +10,3 @@ func (svc CourseService) GetSchedule(course domain.Course) (domain.CourseSchedul
 	}
 	return schedule, nil
 }
-
-func (svc CourseService) GetCourseSchedule(course domain.Course) (domain.CourseScheduleV2, error)
