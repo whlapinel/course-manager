@@ -79,6 +79,18 @@ func IsSameDate(t1 time.Time, t2 time.Time) bool {
 	return false
 }
 
+func (t Term) IsInstructionDay(queryDate time.Time) (bool, error) {
+	if queryDate.Before(t.Start) || queryDate.After(t.End) {
+		return false, fmt.Errorf("query date is outside term")
+	}
+	for _, termDate := range t.InstructionalDays {
+		if IsSameDate(queryDate, termDate) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // returns a slice consisting of the first of each month that is included in the term
 func (t Term) TermMonths() []time.Time {
 	if t.Start.IsZero() || t.End.IsZero() {

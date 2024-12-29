@@ -17,10 +17,10 @@ import (
 )
 
 type CourseCalendar struct {
-	CalendarMap map[int]MonthCalendar // month to calendar
-	Service     service.CourseService
-	Schedule    domain.CourseSchedule
-	w           fyne.Window
+	Service         service.CourseService
+	Schedule        domain.CourseSchedule
+	CurrentMonthCal *MonthCalendar
+	w               fyne.Window
 }
 
 func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course domain.Course, w fyne.Window) (CourseCalendar, error) {
@@ -29,12 +29,6 @@ func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course doma
 	if err != nil {
 		return CourseCalendar{}, err
 	}
-	calMap := make(map[int]MonthCalendar)
-	for _, month := range schedule.Term.TermMonths() {
-		monthCal := cc.NewMonthCalendar(schedule, month)
-		calMap[int(month.Month())] = monthCal
-	}
-	cc.CalendarMap = calMap
 	cc.Service = svc
 	cc.Schedule = schedule
 	cc.w = w
@@ -43,8 +37,8 @@ func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course doma
 
 type MonthCalendar struct {
 	Calendar *fyne.Container
-	Month    time.Time          // first of month
-	DateMap  map[int]LessonList // map of date (day) to LessonHolder
+	Month    time.Time           // first of month
+	DateMap  map[int]*LessonList // map of date (day) to LessonHolder
 }
 
 type CalLessonHolder struct {
@@ -54,7 +48,7 @@ type CalLessonHolder struct {
 	Date         time.Time
 }
 
-func (cc CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesson) CalLessonHolder {
+func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesson) *CalLessonHolder {
 	var onClickShiftLesson = cc.OnClickShiftLesson(date, lesson)
 	var file, err = os.ReadFile("./cmd/fyne_app/images/arrow_right.png")
 	if err != nil {
@@ -99,14 +93,14 @@ func (cc CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesson
 	lessonContainer.Add(lessonLabel)
 	lessonContainer.Add(shiftRightBtn)
 
-	return CalLessonHolder{
+	return &CalLessonHolder{
 		Lesson:    lesson,
 		Container: lessonContainer,
 	}
 
 }
 
-func (cc CourseCalendar) OnClickShiftLesson(date time.Time, lesson domain.Lesson) func(domain.CalendarDirection) func() {
+func (cc *CourseCalendar) OnClickShiftLesson(date time.Time, lesson domain.Lesson) func(domain.CalendarDirection) func() {
 	return func(cd domain.CalendarDirection) func() {
 		return func() {
 			log.Println(cd)
@@ -114,14 +108,25 @@ func (cc CourseCalendar) OnClickShiftLesson(date time.Time, lesson domain.Lesson
 			if err != nil {
 				log.Println("error in OnClickShiftLesson", err)
 			}
-			currList := cc.CalendarMap[int(date.Month())].DateMap[date.Day()]
+			if newDate.Month() != date.Month() {
+				return
+			}
+			log.Println("cc.CurrentMonthCal is", cc.CurrentMonthCal)
+			if cc.CurrentMonthCal != nil {
+				log.Println("cc.CurrentMonthCal.DateMap is", cc.CurrentMonthCal.DateMap)
+			}
+			currList := cc.CurrentMonthCal.DateMap[date.Day()]
+			if currList == nil {
+				log.Fatal("currList is nil")
+			}
 			holder, err := currList.RemoveLesson(lesson.ID)
 			if err != nil {
 				log.Println("error in OnClickShiftLesson", err)
 			}
 			holder.Lesson = l
-			newList := cc.CalendarMap[int(newDate.Month())].DateMap[newDate.Day()]
+			newList := cc.CurrentMonthCal.DateMap[newDate.Day()]
 			newList.AddLesson(holder)
+			cc.CurrentMonthCal.Calendar.Refresh()
 		}
 	}
 
@@ -130,36 +135,51 @@ func (cc CourseCalendar) OnClickShiftLesson(date time.Time, lesson domain.Lesson
 type LessonList struct {
 	Date          time.Time
 	ListContainer *fyne.Container
-	LessonHolders []CalLessonHolder
+	LessonHolders []*CalLessonHolder
 }
 
-func (cc MonthCalendar) NewLessonList(date time.Time, listContainer *fyne.Container) LessonList {
-	return LessonList{
+func (cc *MonthCalendar) NewLessonList(date time.Time) *LessonList {
+	return &LessonList{
 		Date:          date,
-		ListContainer: listContainer,
+		ListContainer: container.NewVBox(),
+		LessonHolders: []*CalLessonHolder{},
 	}
 }
 
-func (ll LessonList) RemoveLesson(id int) (CalLessonHolder, error) {
-	for _, lessonHolder := range ll.LessonHolders {
+func (ll *LessonList) RemoveLesson(id int) (*CalLessonHolder, error) {
+	log.Println("length of ll.LessonHolders: ", len(ll.LessonHolders))
+	if len(ll.LessonHolders) == 0 {
+		return nil, fmt.Errorf("LessonHolders empty")
+	}
+	for i, lessonHolder := range ll.LessonHolders {
 		if lessonHolder.Lesson.ID == id {
+			ll.LessonHolders = append(ll.LessonHolders[:i], ll.LessonHolders[i+1:]...)
 			ll.ListContainer.Remove(lessonHolder.Container)
 			ll.ListContainer.Refresh()
 			return lessonHolder, nil
 		}
 	}
-	return CalLessonHolder{}, fmt.Errorf("lesson holder not found in this lesson list")
+	return nil, fmt.Errorf("lesson holder not found in this lesson list")
 
 }
 
-func (ll LessonList) AddLesson(l CalLessonHolder) {
+func (ll *LessonList) AddLesson(l *CalLessonHolder) {
+	if ll == nil {
+		log.Fatal("LessonList is nil")
+	}
+	if ll.LessonHolders == nil {
+		log.Fatal("LessonHolders is nil")
+	}
 	for _, lessonHolder := range ll.LessonHolders {
 		if lessonHolder.Lesson.ID == l.Lesson.ID {
 			return
 		}
 	}
+	if l.Container == nil {
+		log.Fatal("ll.AddLesson: l.Container is nil")
+	}
+	ll.LessonHolders = append(ll.LessonHolders, l)
 	ll.ListContainer.Add(l.Container)
-	ll.ListContainer.Refresh()
 }
 
 func (ch *CourseHandler) ShowCourseCalendar(course domain.Course) {
@@ -186,24 +206,25 @@ func (cc *CourseCalendar) NewTermMonthsList(schedule domain.CourseSchedule) *wid
 		},
 	)
 	list.OnSelected = func(id widget.ListItemID) {
-		cal := cc.NewMonthCalendar(schedule, schedule.Course.TermMonths()[id])
-		cc.ShowMonthCalendar(cal)
+		cc.NewMonthCalendar(schedule, schedule.Course.TermMonths()[id])
+		cc.ShowMonthCalendar()
 	}
 	return list
 }
 
-func (cc *CourseCalendar) ShowMonthCalendar(mc MonthCalendar) {
-	cc.w.SetContent(mc.Calendar)
+func (cc *CourseCalendar) ShowMonthCalendar() {
+	cc.w.SetContent(cc.CurrentMonthCal.Calendar)
 }
 
-func (cc *CourseCalendar) NewMonthCalendar(schedule domain.CourseSchedule, month time.Time) MonthCalendar {
-	var mc MonthCalendar
+func (cc *CourseCalendar) NewMonthCalendar(schedule domain.CourseSchedule, month time.Time) {
+	mc := MonthCalendar{}
 	dateGrid := container.NewGridWithColumns(5)
-	dateMap := make(map[int]LessonList)
+	dateMap := make(map[int]*LessonList)
 	for _, week := range util.GetMonthDates(month) {
 		for _, date := range week[1:6] {
 			dailySchedule := schedule.GetSchedule(date)
 			dateContainer := container.NewVBox()
+			// GetMonthDates puts a zero date when date is not within month
 			if !date.IsZero() {
 				dateHeader := widget.NewLabel(date.Format("Mon 1/02/06"))
 				addLessonButton := widget.NewButton("Add Lesson", func() {
@@ -213,22 +234,23 @@ func (cc *CourseCalendar) NewMonthCalendar(schedule domain.CourseSchedule, month
 				dateContainer.Add(addLessonButton)
 			}
 			if !dailySchedule.Date.IsZero() {
-				llContainer := container.NewVBox()
-				lessonList := mc.NewLessonList(date, llContainer)
+
+				lessonList := mc.NewLessonList(date)
 				for _, lesson := range dailySchedule.Lessons {
 					lessonHolder := cc.NewCalLessonHolder(date, lesson)
 					lessonList.AddLesson(lessonHolder)
-
 				}
-				dateContainer.Add(llContainer)
+				dateContainer.Add(lessonList.ListContainer)
 				dateMap[date.Day()] = lessonList
+			} else {
+				log.Println(date.Format(time.DateOnly))
+				log.Fatal("dailySchedule.Date.IsZero() true", dailySchedule.Date)
 			}
 			dateGrid.Add(dateContainer)
 		}
 	}
 	cal := container.NewBorder(widget.NewLabel(month.Format(time.DateOnly)), nil, nil, nil, dateGrid)
-	return MonthCalendar{
-		Calendar: cal,
-		DateMap:  dateMap,
-	}
+	mc.Calendar = cal
+	mc.DateMap = dateMap
+	cc.CurrentMonthCal = &mc
 }

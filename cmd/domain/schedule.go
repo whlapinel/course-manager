@@ -29,7 +29,7 @@ func (cs CourseSchedule) GetSchedule(date time.Time) DailySchedule {
 		}
 		return schedule
 	}
-	return DailySchedule{}
+	return DailySchedule{Date: date}
 }
 
 func (cs *CourseSchedule) AddLesson(date time.Time, lesson Lesson) DailySchedule {
@@ -48,7 +48,7 @@ func (cs *CourseSchedule) AddLesson(date time.Time, lesson Lesson) DailySchedule
 		schedule.Lessons = append(schedule.Lessons, lesson)
 		return schedule
 	}
-	return DailySchedule{}
+	return DailySchedule{Date: date}
 }
 
 func (cs *CourseSchedule) RemoveLesson(date time.Time, removedLesson Lesson) DailySchedule {
@@ -72,6 +72,6 @@ func (cs *CourseSchedule) RemoveLesson(date time.Time, removedLesson Lesson) Dai
 		cs.Schedule[i] = schedule
 		return schedule
 	}
-	return DailySchedule{}
+	return DailySchedule{Date: date}
 
 }
