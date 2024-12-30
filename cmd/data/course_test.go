@@ -18,13 +18,13 @@ func TestImportCoursesFromCSV(t *testing.T) {
 			t.Errorf("tr.Save(): %s", err)
 		}
 	}
-	courses, err := csv.ImportCoursesFromCSV()
+	courses, err := csv.ImportCoursesFromCSVReader()
 	if err != nil {
 		t.Errorf("importCoursesFromCSV: %s", err)
 	}
 	for _, course := range courses {
 		for _, term := range terms {
-			course = course.FitToTerm(term)
+			*course = course.FitToTerm(term)
 			log.Println("Course: ", course.Name, course.ID, course.Term.Name)
 			for _, unit := range course.Units {
 				log.Println("Unit:", unit.Name)
@@ -54,14 +54,14 @@ func TestSaveCourse(t *testing.T) {
 			t.Errorf("tr.Save(): %s", err)
 		}
 	}
-	courses, err := csv.ImportCoursesFromCSV()
+	courses, err := csv.ImportCoursesFromCSVReader()
 	if err != nil {
 		t.Errorf("importCoursesFromCSV: %s", err)
 	}
 	for _, course := range courses {
 		for _, term := range terms {
-			course = course.FitToTerm(term)
-			course.ID, err = cr.SaveCourse(course)
+			*course = course.FitToTerm(term)
+			course.ID, err = cr.SaveCourse(*course)
 			if err != nil {
 				t.Errorf("cr.SaveInstance(): %s", err)
 			}

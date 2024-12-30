@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-var testTermStart = time.Date(2025, time.January, 2, 0, 0, 0, 0, time.Local)
-var testTermEnd = testTermStart.AddDate(0, 3, 0)
-var testLessonDates = []time.Time{time.Date(2025, time.January, 3, 0, 0, 0, 0, time.Local)}
-var testNonInstructDays = []time.Time{time.Date(2025, time.January, 6, 0, 0, 0, 0, time.Local)}
-
 func TestShift(t *testing.T) {
 	svc := NewCourseService(cr)
 	terms, err := svc.GetTerms()
@@ -28,7 +23,7 @@ func TestShift(t *testing.T) {
 	for _, date := range lesson.Dates {
 		log.Println(date.Format(time.DateOnly))
 	}
-	shifted, newTime, err := svc.Shift(lesson, terms[0], domain.Left)
+	shifted, newTime, err := svc.Shift(*lesson, terms[0], domain.Left)
 	if err != nil {
 		t.Error(err)
 	}
@@ -49,7 +44,7 @@ func TestExtend(t *testing.T) {
 		t.Error(err)
 	}
 	lesson := courses[0].Units[0].Lessons[0]
-	extended, err := svc.Extend(lesson, terms[0], domain.Right)
+	extended, err := svc.Extend(*lesson, terms[0], domain.Right)
 	if err != nil {
 		t.Error(err)
 	}
@@ -59,4 +54,22 @@ func TestExtend(t *testing.T) {
 		log.Println(date.Format(time.DateOnly))
 	}
 
+}
+
+func TestUpdateLesson(t *testing.T) {
+	terms, err := svc.GetTerms()
+	if err != nil {
+		t.Error(err)
+	}
+	courses, err := svc.GetCourses(terms[0].ID)
+	if err != nil {
+		t.Error(err)
+	}
+	lesson := courses[0].Units[0].Lessons[0]
+	log.Println(lesson)
+	lesson.Description = "TEST DESCRIPTION"
+	err = svc.UpdateLesson(*lesson)
+	if err != nil {
+		t.Error(err)
+	}
 }

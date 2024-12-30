@@ -154,6 +154,9 @@ func (c CourseRepo) SaveLessonTemplate(lesson domain.Lesson) (*domain.Lesson, er
 }
 
 func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
+	log.Println("CourseRepo.UpdateLesson: ")
+	log.Println("Descr:", lesson.Description)
+
 	err := lr.queries.UpdateLesson(context.Background(), database.UpdateLessonParams{
 		Name: sql.NullString{
 			Valid:  lesson.Name != "",
@@ -164,6 +167,7 @@ func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 			Valid:  lesson.Description != "",
 			String: lesson.Description,
 		},
+		ID: int64(lesson.ID),
 	})
 	if err != nil {
 		return err

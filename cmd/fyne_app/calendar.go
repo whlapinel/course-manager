@@ -18,12 +18,12 @@ import (
 
 type CourseCalendar struct {
 	Service         service.CourseService
-	Course          domain.Course
+	Course          *domain.Course
 	CurrentMonthCal *MonthCalendar
 	w               fyne.Window
 }
 
-func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course domain.Course, w fyne.Window) (*CourseCalendar, error) {
+func (ch CourseHandler) NewCourseCalendar(svc service.CourseService, course *domain.Course, w fyne.Window) (*CourseCalendar, error) {
 	var cc CourseCalendar
 	cc.Service = svc
 	cc.Course = course
@@ -38,13 +38,13 @@ type MonthCalendar struct {
 }
 
 type CalLessonHolder struct {
-	Lesson       domain.Lesson
+	Lesson       *domain.Lesson
 	Container    *fyne.Container
 	FirstOfMonth time.Time
 	Date         time.Time
 }
 
-func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesson) *CalLessonHolder {
+func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Lesson) *CalLessonHolder {
 	var lh CalLessonHolder
 	lh.Date = date
 	var onClickShiftLesson = cc.OnClickShiftLesson(&lh)
@@ -59,27 +59,56 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesso
 	}
 
 	arrowLeft := fyne.NewStaticResource("arrow_left", file)
+	file, err = os.ReadFile("./cmd/fyne_app/images/delete.png")
+	if err != nil {
+		log.Println("error creating resource: ", err)
+	}
+
+	deleteIcon := fyne.NewStaticResource("delete_icon", file)
+	file, err = os.ReadFile("./cmd/fyne_app/images/edit.png")
+	if err != nil {
+		log.Println("error creating resource: ", err)
+	}
+
+	editIcon := fyne.NewStaticResource("edit_icon", file)
 	if err != nil {
 		log.Println("error creating resource: ", err)
 	}
 
 	lessonContainer := container.NewHBox()
-	lessonRemoveButton := widget.NewButton("Remove", func() {
+	lessonRemoveBtn := widget.NewButton("", func() {
 		log.Println("this will remove the current lesson from the current date")
 	})
-	lessonEdit := widget.NewButton("Edit", func() {
+	lessonRemoveBtn.SetIcon(deleteIcon)
+	lessonEditBtn := widget.NewButton("", func() {
 		nameEdit := widget.NewEntry()
-		formItem := widget.NewFormItem(lesson.Name, nameEdit)
-		form := dialog.NewForm("Edit Lesson", "Ok", "Cancel", []*widget.FormItem{formItem}, func(b bool) {
+		nameEdit.SetText(lesson.Name)
+		descrEdit := widget.NewMultiLineEntry()
+		descrEdit.SetText(lesson.Description)
+		nameItem := widget.NewFormItem("Name", nameEdit)
+		descrItem := widget.NewFormItem("Description", descrEdit)
+		form := dialog.NewForm("Edit Lesson", "Ok", "Cancel", []*widget.FormItem{nameItem, descrItem}, func(b bool) {
 			if b {
 				log.Println("user confirmed!")
+				log.Println("ID: ", lesson.ID)
+				lesson.Name = nameEdit.Text
+				log.Println("Name:", lesson.Name)
+				lesson.Description = descrEdit.Text
+				log.Println("Description:", lesson.Description)
+				err := cc.Service.UpdateLesson(*lesson)
+				if err != nil {
+					dialog.ShowError(err, cc.w)
+				} else {
+					dialog.ShowInformation("Confirmation", "Lesson updated!", cc.w)
+				}
 			} else {
 				log.Println("user canceled!")
 			}
-			log.Println(nameEdit.Text)
 		}, cc.w)
+		form.Resize(form.MinSize().Add(fyne.NewSize(200, 200)))
 		form.Show()
 	})
+	lessonEditBtn.SetIcon(editIcon)
 	shiftRightBtn := widget.NewButton("", onClickShiftLesson(domain.Right))
 	shiftLeftBtn := widget.NewButton("", onClickShiftLesson(domain.Left))
 	shiftRightBtn.SetIcon(arrowRight)
@@ -91,8 +120,8 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson domain.Lesso
 		labelText = lesson.Name
 	}
 	lessonLabel := widget.NewLabel(labelText)
-	lessonContainer.Add(lessonRemoveButton)
-	lessonContainer.Add(lessonEdit)
+	lessonContainer.Add(lessonRemoveBtn)
+	lessonContainer.Add(lessonEditBtn)
 	lessonContainer.Add(shiftLeftBtn)
 	lessonContainer.Add(lessonLabel)
 	lessonContainer.Add(shiftRightBtn)
@@ -105,7 +134,7 @@ func (cc *CourseCalendar) OnClickShiftLesson(holder *CalLessonHolder) func(domai
 	return func(cd domain.CalendarDirection) func() {
 		return func() {
 			log.Println(cd)
-			l, newDate, err := cc.Service.Shift(holder.Lesson, cc.Course.Term, cd)
+			l, newDate, err := cc.Service.Shift(*holder.Lesson, cc.Course.Term, cd)
 			if err != nil {
 				log.Println("error in OnClickShiftLesson", err)
 				return
@@ -130,7 +159,7 @@ func (cc *CourseCalendar) OnClickShiftLesson(holder *CalLessonHolder) func(domai
 					return
 				}
 				holder.Date = newDate
-				holder.Lesson = l
+				*holder.Lesson = l
 				newList := cc.CurrentMonthCal.DateMap[newDate.Day()]
 				newList.AddLesson(holder)
 				cc.CurrentMonthCal.Calendar.Refresh()
@@ -191,7 +220,7 @@ func (ll *LessonList) AddLesson(l *CalLessonHolder) {
 	ll.ListContainer.Add(l.Container)
 }
 
-func (ch *CourseHandler) ShowCourseCalendar(course domain.Course) {
+func (ch *CourseHandler) ShowCourseCalendar(course *domain.Course) {
 	calendar, err := ch.NewCourseCalendar(ch.svc, course, ch.w)
 	if err != nil {
 		ch.w.SetContent(ErrorMsg(err))

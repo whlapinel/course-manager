@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"gh_static_portfolio/cmd/domain"
+	"io"
 	"log"
 	"os"
 	"slices"
@@ -77,7 +78,7 @@ type CourseHolder struct {
 }
 type CourseMap map[string]CourseHolder
 
-func ImportCoursesFromCSV() (domain.Courses, error) {
+func ImportCoursesFromCSVReader() (domain.Courses, error) {
 	file, err := os.Open(scheduleCsvDir)
 	if err != nil {
 		return nil, err
@@ -167,7 +168,7 @@ func ImportCoursesFromCSV() (domain.Courses, error) {
 		courseHolder.Units[unitSequence] = unit
 		courseMap[courseName] = courseHolder
 	}
-	var courses []domain.Course
+	var courses []*domain.Course
 	for _, courseHolder := range courseMap {
 		course := courseHolder.Course
 		unitNums := sortUnitMapKeys(courseHolder.Units)
@@ -177,11 +178,115 @@ func ImportCoursesFromCSV() (domain.Courses, error) {
 			lessonNums := sortLessonMapKeys(unitHolder.Lessons)
 			for _, lessonNum := range lessonNums {
 				lesson := unitHolder.Lessons[lessonNum]
-				unit.Lessons = append(unit.Lessons, lesson)
+				unit.Lessons = append(unit.Lessons, &lesson)
 			}
-			course.Units = append(course.Units, unit)
+			course.Units = append(course.Units, &unit)
 		}
-		courses = append(courses, course)
+		courses = append(courses, &course)
+
+	}
+	return courses, nil
+}
+func ImportCoursesFromCSVReaderV2(r io.Reader) (domain.Courses, error) {
+	reader := csv.NewReader(r)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return nil, fmt.Errorf("file is empty")
+	}
+	courseMap := CourseMap{}
+	for _, record := range records[1:] {
+		courseName := record[courseNameCol]
+		termName := record[scheduleTermNameCol]
+		courseHolder, exists := courseMap[courseName]
+		if !exists {
+			course := domain.Course{
+				Name: courseName,
+				Term: domain.Term{
+					Name: termName,
+				},
+			}
+			holder := CourseHolder{
+				Course: course,
+				Units:  UnitMap{},
+			}
+			courseMap[courseName] = holder
+			courseHolder = holder
+		}
+		unitNum := 0
+		if record[unitNumCol] != "" {
+			unitNum, err = strconv.Atoi(record[unitNumCol])
+			if err != nil {
+				return nil, fmt.Errorf("error reading unit number from csv")
+			}
+		} else {
+			return nil, fmt.Errorf("unit number field is blank")
+		}
+		unitSequence, err := strconv.Atoi(record[unitSequenceCol])
+		if err != nil {
+			return nil, fmt.Errorf("error reading unit sequence number from csv")
+		}
+		unitName := fmt.Sprintf("Unit %d", unitNum)
+		if unitNum < 0 {
+			unitName = record[unitDescrCol]
+		}
+		unitDescr := record[unitDescrCol]
+		unit, exists := courseHolder.Units[unitSequence]
+		if !exists {
+			unit = UnitHolder{
+				Unit: domain.Unit{
+					Number:      unitNum,
+					SequenceNum: unitSequence,
+					Name:        unitName,
+					Description: unitDescr,
+				},
+				Lessons: LessonMap{},
+			}
+		}
+		lessonNum := 0
+		if record[lessonNumCol] != "" {
+			lessonNum, err = strconv.Atoi(record[lessonNumCol])
+			if err != nil {
+				return nil, fmt.Errorf("error reading lesson number from csv")
+			}
+		}
+		lessonName := fmt.Sprintf("Lesson %d.%d", unitNum, lessonNum)
+		if unitNum < 0 {
+			lessonName = fmt.Sprintf("%s Day %d", unitName, lessonNum)
+
+		}
+		lessonDescr := record[lessonDescrCol]
+		lessonDate, err := time.Parse(time.DateOnly, record[scheduleDateCol])
+		if err != nil {
+			return nil, fmt.Errorf("error parsing date: %s", err)
+		}
+		lesson, exists := unit.Lessons[lessonNum]
+		if !exists {
+			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, lessonName, lessonDescr, []time.Time{lessonDate})
+		} else {
+			lesson.Dates = append(lesson.Dates, lessonDate)
+		}
+		unit.Lessons[lessonNum] = lesson
+		courseHolder.Units[unitSequence] = unit
+		courseMap[courseName] = courseHolder
+	}
+	var courses []*domain.Course
+	for _, courseHolder := range courseMap {
+		course := courseHolder.Course
+		unitNums := sortUnitMapKeys(courseHolder.Units)
+		for _, unitNum := range unitNums {
+			unit := courseHolder.Units[unitNum].Unit
+			unitHolder := courseHolder.Units[unitNum]
+			lessonNums := sortLessonMapKeys(unitHolder.Lessons)
+			for _, lessonNum := range lessonNums {
+				lesson := unitHolder.Lessons[lessonNum]
+				unit.Lessons = append(unit.Lessons, &lesson)
+			}
+			course.Units = append(course.Units, &unit)
+		}
+		courses = append(courses, &course)
 
 	}
 	return courses, nil
@@ -214,6 +319,55 @@ func WriteCoursesToCSV(courses domain.Courses) error {
 		return err
 	}
 	writer := csv.NewWriter(file)
+	var rows [][]string
+	rows = append(rows, CSVHeaders())
+	for _, course := range courses {
+		dayNum := 0
+		for _, unit := range course.Units {
+			for _, lesson := range unit.Lessons {
+				dayNum++
+				courseName := course.Name
+				unitNum := unit.Number
+				unitDescr := unit.Description
+				lessonNum := lesson.Number
+				stdNum := ""
+				stdDescr := ""
+				for _, date := range lesson.Dates {
+					dateString := date.Format(time.DateOnly)
+					if date.IsZero() {
+						dateString = ""
+					}
+					termID := ""
+					termName := course.Term.Name
+					row := []string{
+						courseName,
+						strconv.Itoa(dayNum),
+						strconv.Itoa(unitNum),
+						unitDescr,
+						strconv.Itoa(lessonNum),
+						lesson.Description,
+						stdNum,
+						stdDescr,
+						dateString,
+						termID,
+						termName,
+					}
+					rows = append(rows, row)
+				}
+
+			}
+
+		}
+	}
+	writer.WriteAll(rows)
+	return nil
+
+}
+func WriteCoursesToCSVV2(courses domain.Courses, w io.Writer) error {
+	if w == nil {
+		return nil
+	}
+	writer := csv.NewWriter(w)
 	var rows [][]string
 	rows = append(rows, CSVHeaders())
 	for _, course := range courses {

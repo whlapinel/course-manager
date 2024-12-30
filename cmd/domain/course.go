@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-func NewCourseTemplate(title string, descr string, units []Unit) Course {
+func NewCourseTemplate(title string, descr string, units []*Unit) Course {
 	return Course{Name: title, Description: descr, Units: units}
 }
 
@@ -11,13 +11,13 @@ type Course struct {
 	ID          int
 	Name        string
 	Description string
-	Units       []Unit
+	Units       []*Unit
 	Term
 }
 
 type CourseType int
 
-type Courses []Course
+type Courses []*Course
 
 // takes a course and fits all lessons to dates in order, one lesson per day
 func (c Course) FitToTerm(term Term) Course {
@@ -39,18 +39,12 @@ func (c Course) FitToTerm(term Term) Course {
 	return c
 }
 
-func (i Courses) Courses() []Course {
-	var courses []Course
-	for _, course := range i {
-		courses = append(courses, course)
-	}
-	return courses
-}
+
 
 func (c Course) GetTitle() string {
 	return c.Name
 }
 
 func (c *Course) AddUnit(unit Unit) {
-	c.Units = append(c.Units, unit)
+	c.Units = append(c.Units, &unit)
 }

@@ -16,7 +16,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func NewInstanceHandler(w fyne.Window, svc service.CourseService) *CourseHandler {
+func NewCourseHandler(w fyne.Window, svc service.CourseService) *CourseHandler {
 	return &CourseHandler{w, svc}
 }
 
@@ -25,13 +25,13 @@ type CourseHandler struct {
 	svc service.CourseService
 }
 
-func (ih *CourseHandler) ShowCourseTree(termID int) {
-	courses, err := ih.svc.GetCourses(termID)
+func (ch *CourseHandler) ShowCourseTree(termID int) {
+	courses, err := ch.svc.GetCourses(termID)
 	if err != nil {
-		ih.w.SetContent(ErrorMsg(err))
+		ch.w.SetContent(ErrorMsg(err))
 	}
-	tree := ih.NewCourseTree(courses, ih.svc)
-	ih.w.SetContent(tree.Tree)
+	tree := ch.NewCourseTree(courses, ch.svc)
+	ch.w.SetContent(tree.Tree)
 }
 
 func (ih *CourseHandler) NewCourseTree(courses domain.Courses, svc service.CourseService) CourseTree {
@@ -68,31 +68,31 @@ type CourseTree struct {
 	Courses            domain.Courses
 	Service            service.CourseService
 	ShowLessonDates    func(domain.Lesson)
-	ShowCourseCalendar func(course domain.Course)
+	ShowCourseCalendar func(course *domain.Course)
 	CourseMap          map[int]CourseHolder
 	UnitMap            map[int]UnitHolder
 	LessonMap          map[int]LessonHolder
 }
 
 type CourseHolder struct {
-	course       domain.Course
+	course       *domain.Course
 	NameBinding  binding.String
 	DescrBinding binding.String
 }
 
 type UnitHolder struct {
-	Unit         domain.Unit
+	Unit         *domain.Unit
 	NameBinding  binding.String
 	DescrBinding binding.String
 }
 
 type LessonHolder struct {
-	Lesson       domain.Lesson
+	Lesson       *domain.Lesson
 	NameBinding  binding.String
 	DescrBinding binding.String
 }
 
-func (ct CourseTree) NewCourseHolder(tpl domain.Course) CourseHolder {
+func (ct CourseTree) NewCourseHolder(tpl *domain.Course) CourseHolder {
 	holder := CourseHolder{
 		course:       tpl,
 		NameBinding:  binding.NewString(),
@@ -103,7 +103,7 @@ func (ct CourseTree) NewCourseHolder(tpl domain.Course) CourseHolder {
 	return holder
 }
 
-func (ct *CourseTree) NewUnitHolder(u domain.Unit) UnitHolder {
+func (ct *CourseTree) NewUnitHolder(u *domain.Unit) UnitHolder {
 	holder := UnitHolder{
 		Unit:         u,
 		NameBinding:  binding.NewString(),
@@ -113,7 +113,7 @@ func (ct *CourseTree) NewUnitHolder(u domain.Unit) UnitHolder {
 	holder.DescrBinding.Set(u.Description)
 	return holder
 }
-func (ct *CourseTree) NewLessonHolder(l domain.Lesson) LessonHolder {
+func (ct *CourseTree) NewLessonHolder(l *domain.Lesson) LessonHolder {
 	holder := LessonHolder{
 		Lesson:       l,
 		NameBinding:  binding.NewString(),
@@ -258,13 +258,13 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 
 	typ, id := ct.parseNodeID(nodeID)
 	switch typ {
-	case "C": // Template node
+	case "C": // Course node
 		holder := ct.CourseMap[id]
 		row.datesBox.Hide()
 		row.nameLabel.Bind(holder.NameBinding)
 		row.descrLabel.Bind(holder.DescrBinding)
 		row.calendarBtn.OnTapped = func() {
-			ct.ShowCourseCalendar(ct.Courses[0]) // should only be one instance if it's an instance tree!
+			ct.ShowCourseCalendar(ct.CourseMap[id].course) // should only be one instance if it's an instance tree!
 		}
 		if row.editBtn.OnTapped == nil {
 			row.editBtn.OnTapped = func() {
@@ -281,7 +281,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 					log.Println("value of submitted text:", nameEdit.Text)
 					// Need to do some sort of input validation here
 					holder.course.Name = nameEdit.Text
-					err = ct.Service.UpdateCourse(holder.course)
+					err = ct.Service.UpdateCourse(*holder.course)
 					if err != nil {
 						log.Fatalf("error updating template: %s", err)
 					}
@@ -317,7 +317,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 				log.Println("value of submitted text:", nameEdit.Text)
 				// Need to do some sort of input validation here
 				holder.Unit.Name = nameEdit.Text
-				err = ct.Service.UpdateUnit(holder.Unit)
+				err = ct.Service.UpdateUnit(*holder.Unit)
 				if err != nil {
 					log.Fatalf("error updating unit: %s", err)
 				}
@@ -366,7 +366,7 @@ func (ct *CourseTree) updateNode(nodeID string, _ bool, obj fyne.CanvasObject) {
 				log.Println("value of submitted text:", nameEdit.Text)
 				// Need to do some sort of input validation here
 				holder.Lesson.Name = nameEdit.Text
-				err = ct.Service.UpdateLesson(holder.Lesson)
+				err = ct.Service.UpdateLesson(*holder.Lesson)
 				if err != nil {
 					log.Fatalf("error updating unit: %s", err)
 				}

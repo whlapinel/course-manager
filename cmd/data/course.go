@@ -29,15 +29,15 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 	course.ID = int(savedCourse.ID)
 	for _, unit := range course.Units {
 		unit.CourseID = int(savedCourse.ID)
-		savedUnit, err := c.SaveUnit(unit)
+		savedUnit, err := c.SaveUnit(*unit)
 		if err != nil {
 			return 0, fmt.Errorf("error in c.SaveUnit(): %s", err)
 		}
-		unit = *savedUnit
+		*unit = *savedUnit
 		log.Println("lesson count: ", len(unit.Lessons), "for ", unit.Name)
 		for _, lesson := range unit.Lessons {
 			lesson.UnitID = unit.ID
-			_, err := c.SaveLessonInstance(lesson)
+			_, err := c.SaveLessonInstance(*lesson)
 			if err != nil {
 				return 0, fmt.Errorf("error in SaveLessonInstance():%s", err)
 			}
@@ -48,7 +48,7 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 
 }
 
-func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
+func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 	dbCourses, err := c.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 	}
 	// THIS IS KINDA JACKED UP
 	term.InstructionalDays = termWithDates.InstructionalDays
-	var courses []domain.Course
+	var courses []*domain.Course
 	for _, dbCourse := range dbCourses {
 		course := domain.Course{
 			ID:          int(dbCourse.CourseID),
@@ -75,7 +75,7 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 		if err != nil {
 			return nil, err
 		}
-		var units []domain.Unit
+		var units []*domain.Unit
 		for _, dbUnit := range dbUnits {
 			unit := domain.Unit{
 				ID:          int(dbUnit.ID),
@@ -89,7 +89,7 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 			if err != nil {
 				return nil, err
 			}
-			var lessons []domain.Lesson
+			var lessons []*domain.Lesson
 			for _, dbLesson := range dbLessons {
 				lesson := domain.Lesson{
 					ID:          int(dbLesson.ID),
@@ -111,16 +111,16 @@ func (c CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 					lessonDates = append(lessonDates, lessonDate)
 				}
 				lesson.Dates = lessonDates
-				lessons = append(lessons, lesson)
+				lessons = append(lessons, &lesson)
 			}
 			unit.Lessons = lessons
-			units = append(units, unit)
+			units = append(units, &unit)
 		}
 		course.Units = units
 		if course.Term.Start.IsZero() {
 			log.Fatal("term not initialized")
 		}
-		courses = append(courses, course)
+		courses = append(courses, &course)
 
 	}
 	return courses, nil

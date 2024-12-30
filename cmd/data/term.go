@@ -8,6 +8,7 @@ import (
 	"gh_static_portfolio/cmd/domain"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -264,4 +265,31 @@ func SaveTerm(ctx context.Context, term domain.Term, queries *database.Queries) 
 		return database.Term{}, err
 	}
 	return dbTerm, nil
+}
+
+
+func parseDates(dateStrings []string) ([]time.Time, error) {
+	var dates []time.Time
+	for _, dateString := range dateStrings {
+		date, err := time.Parse(time.DateOnly, dateString)
+		if err != nil {
+			return nil, err
+		}
+		dates = append(dates, date)
+
+	}
+	return dates, nil
+}
+
+func sortDates(dates []time.Time) []time.Time {
+	slices.SortFunc(dates, compare)
+	return dates
+}
+
+func compare(a time.Time, b time.Time) int {
+	if a.Before(b) {
+		return -1
+	} else {
+		return 1
+	}
 }

@@ -7,6 +7,8 @@ import (
 )
 
 func (svc CourseService) UpdateLesson(l domain.Lesson) error {
+	log.Println("CourseService.UpdateLesson: ")
+	log.Println("Descr:", l.Description)
 	err := svc.repo.UpdateLesson(l)
 	if err != nil {
 		return err
