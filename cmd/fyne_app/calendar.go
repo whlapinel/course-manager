@@ -114,8 +114,8 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 	shiftRightBtn.SetIcon(arrowRight)
 	shiftLeftBtn.SetIcon(arrowLeft)
 	var labelText string
-	if len(lesson.Name) > 10 {
-		labelText = lesson.Name[:10] + "..."
+	if len(lesson.Name) > 15 {
+		labelText = lesson.Name[:15] + "..."
 	} else {
 		labelText = lesson.Name
 	}

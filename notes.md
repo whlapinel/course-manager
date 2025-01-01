@@ -2,6 +2,21 @@
 
 ## Progress Log
 
+### 1/1/2025
+
+- Actually I think I'm going to change my site generator route naming to match the id-based structure. I also think I might do a full rebuild each time and see if it's ok.
+
+- I am flailing a bit today. Going back to work has me on the fence a little about what to work on. Sleep-deprived by myself, and nervous about not getting a job I've applied for.
+- I'm nervous about messing something up right before going back to work so I put my most recent work on the file system in a new feature branch called file_feature. I'm nervous about making other improvements in the dev branch that might be hard to deconflict if and when the feature branch is complete.
+- The questions that are plaguing me revolve around the same things mentioned on 12/30. I have begun implementing a File resource system but I have a lot of uncertainty around how this will work and integrate with the site generator. I am thinking that:
+  - While the app will keep files using id-based filenames, the site generator will maintain the name-based structure, so when a lesson name is changed a new directory will be created and the files will be added. The old name will remain however which is ok if links no longer point to that name but what if there's eventually a name conflict because of these old files? Otherwise it is a problem from the perspective of cleanliness. How will I handle the orphan files? I can't build everything from scratch every time, it will take too long right?  Or maybe not, since the longest part is probably not the copying but the marp slide generation. If I run marp on the slides.md files in the file system instead of in the generator, maybe I could just copy the files every time I build the site. Still, we are talking about 700+ files minimum, for the lesson pages and slides alone, ignoring the other lesson files which are admittedly small in size and quantity. If I have to copy 800 to a thousand files every time I build the site, it could be a real drag.
+  - Essentially what I need is a cache system, and I am really unsure about how to do that.
+  - The files will reside in the file system and will be edited there through the app by the user, by checking out and checking back in or something like that. Not really sure how best to do it.
+  - How will the markdown slides fit in?  Should they be a file resource or should it be written from the database?
+  - 
+
+### 12/30/24
+
 - 12/30/24 Today was a day of stepping back and realizing I have created a whole new mess of problems.
 - 12/30/24 I am increasingly thinking that I should try to eliminate the central importance of the unit in the system.
   - A lesson should belong to a course rather than a unit
