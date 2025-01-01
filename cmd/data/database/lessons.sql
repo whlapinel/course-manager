@@ -15,9 +15,17 @@ SELECT
   l.id,
   l.number,
   l.name,
-  l.description
+  l.description,
+  f.name as file_name,
+  f.description as file_descr,
+  f.file_name,
+  f.modified as file_modified
 FROM
   lessons l
+LEFT JOIN
+  lesson_files lf ON lf.lesson_id = l.id
+JOIN
+  files f ON f.id = lf.file_id 
 WHERE
   l.unit_id = ?;
 

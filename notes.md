@@ -2,6 +2,12 @@
 
 ## Progress Log
 
+- 12/30/24 I think I've thought of a setup that would solve my problem:
+  - The site generator file/route structure can be left alone
+  - The site generator files should be 100% generated, there should be no direct manipulation of these files by the user
+  - Data will reside in id-based file system rather than name-based file system, so that names can be changed. These files should be uploaded and/or altered only through the application since the user won't be able to locate a lesson based on the id and the same lesson's id will change from term to term.
+  - Within a lesson, there can be files including images that would be used in the slides
+  
 - 12/30/24 Today was a day of stepping back and realizing I have created a whole new mess of problems.
 - 12/30/24 I am increasingly thinking that I should try to eliminate the central importance of the unit in the system.
   - A lesson should belong to a course rather than a unit

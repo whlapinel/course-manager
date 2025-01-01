@@ -17,6 +17,7 @@ type Lesson struct {
 	Name        string
 	Description string
 	Dates       []time.Time
+	Files       []File
 }
 
 func (l Lesson) GetTitle() string {
@@ -107,4 +108,18 @@ func (l Lesson) SortDates() Lesson {
 		return -1
 	})
 	return l
+}
+
+
+func (l *Lesson) AddFile(file File) error {
+	for _, existingFile := range l.Files {
+		if existingFile.Name == file.Name {
+			return fmt.Errorf("file with same name already in lesson files")
+		}
+		if existingFile.SourcePath == file.SourcePath {
+			return fmt.Errorf("file with same path already in lesson files")
+		}
+	}
+	l.Files = append(l.Files, file)
+	return nil
 }
