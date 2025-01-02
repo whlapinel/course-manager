@@ -22,6 +22,14 @@ type Date struct {
 	Date      string
 }
 
+type File struct {
+	ID          int64
+	Name        string
+	Description sql.NullString
+	FileName    string
+	Modified    string
+}
+
 type Lesson struct {
 	ID          int64
 	UnitID      int64
@@ -33,6 +41,11 @@ type Lesson struct {
 type LessonDate struct {
 	LessonID int64
 	DateID   int64
+}
+
+type LessonFile struct {
+	LessonID int64
+	FileID   int64
 }
 
 type LessonObjective struct {

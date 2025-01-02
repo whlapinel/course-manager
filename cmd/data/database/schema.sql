@@ -28,6 +28,21 @@ CREATE TABLE IF NOT EXISTS lessons (
     UNIQUE(unit_id, number)
 );
 
+CREATE TABLE IF NOT EXISTS files (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    file_name TEXT NOT NULL,
+    modified TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS lesson_files (
+    lesson_id INTEGER NOT NULL, 
+    file_id INTEGER NOT NULL,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
+    FOREIGN KEY (file_id) REFERENCES files(id)
+);
+
 CREATE TABLE IF NOT EXISTS dates (
     id INTEGER PRIMARY KEY,
     term_id INTEGER NOT NULL,

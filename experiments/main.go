@@ -1,23 +1,32 @@
 package main
 
 import (
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/binding"
-	"fyne.io/fyne/v2/widget"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	myApp := app.New()
-	w := myApp.NewWindow("Two Way")
+	AddFile("hello.txt")
+}
 
-	str := binding.NewString()
-	str.Set("Hi!")
+func AddFile(path string) {
+	err := os.MkdirAll("./lesson_1", 0777)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	newFile, err := os.Create(filepath.Join("./lesson_1", filepath.Base(path)))
+	if err != nil {
+		log.Fatal(err)
+	}
+	io.Copy(newFile, file)
 
-	w.SetContent(container.NewVBox(
-		widget.NewLabelWithData(str),
-		widget.NewEntryWithData(str),
-	))
-
-	w.ShowAndRun()
 }
