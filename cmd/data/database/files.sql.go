@@ -10,36 +10,74 @@ import (
 	"database/sql"
 )
 
+const getLessonFiles = `-- name: GetLessonFiles :many
+SELECT id, name, description, base_path, lesson_id, file_id FROM files f
+JOIN lesson_files lf ON lf.file_id = f.id
+WHERE lf.lesson_id = ?
+`
+
+type GetLessonFilesRow struct {
+	ID          int64
+	Name        string
+	Description sql.NullString
+	BasePath    string
+	LessonID    int64
+	FileID      int64
+}
+
+func (q *Queries) GetLessonFiles(ctx context.Context, lessonID int64) ([]GetLessonFilesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLessonFiles, lessonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLessonFilesRow
+	for rows.Next() {
+		var i GetLessonFilesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.BasePath,
+			&i.LessonID,
+			&i.FileID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const saveFile = `-- name: SaveFile :one
 INSERT INTO files (
- name, description, file_name, modified
+ name, description, base_path
 ) VALUES (
-    ?, ?, ?, ?
+    ?, ?, ?
 )
-RETURNING id, name, description, file_name, modified
+RETURNING id, name, description, base_path
 `
 
 type SaveFileParams struct {
 	Name        string
 	Description sql.NullString
-	FileName    string
-	Modified    string
+	BasePath    string
 }
 
 func (q *Queries) SaveFile(ctx context.Context, arg SaveFileParams) (File, error) {
-	row := q.db.QueryRowContext(ctx, saveFile,
-		arg.Name,
-		arg.Description,
-		arg.FileName,
-		arg.Modified,
-	)
+	row := q.db.QueryRowContext(ctx, saveFile, arg.Name, arg.Description, arg.BasePath)
 	var i File
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.FileName,
-		&i.Modified,
+		&i.BasePath,
 	)
 	return i, err
 }

@@ -48,8 +48,21 @@ func lessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, pa
 	return dirPath
 }
 
-func lessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
-	return filepath.Join(githubRoot, lessonPath(lesson, unit, course, false), "files")
+func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	return filepath.Join(githubRoot, LessonFilesPath(lesson, unit, course))
+}
+
+func LessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	return filepath.Join(lessonPath(lesson, unit, course, false), "files")
+}
+
+func SlidesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	return filepath.Join(lessonPath(lesson, unit, course, false), "slides.html")
+}
+
+// This should not be used except for a one-time transfer
+func SlidesMarkdownPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	return filepath.Join(lessonPath(lesson, unit, course, false), "slides.md")
 }
 
 func hasImage(path string) bool {

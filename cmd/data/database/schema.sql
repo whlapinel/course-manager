@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS files (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
-    file_name TEXT NOT NULL,
-    modified TEXT NOT NULL
+    base_path TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS lesson_files (

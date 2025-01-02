@@ -110,13 +110,12 @@ func (l Lesson) SortDates() Lesson {
 	return l
 }
 
-
 func (l *Lesson) AddFile(file File) error {
 	for _, existingFile := range l.Files {
 		if existingFile.Name == file.Name {
 			return fmt.Errorf("file with same name already in lesson files")
 		}
-		if existingFile.SourcePath == file.SourcePath {
+		if existingFile.BasePath == file.BasePath {
 			return fmt.Errorf("file with same path already in lesson files")
 		}
 	}

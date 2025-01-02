@@ -15,17 +15,9 @@ SELECT
   l.id,
   l.number,
   l.name,
-  l.description,
-  f.name as file_name,
-  f.description as file_descr,
-  f.file_name,
-  f.modified as file_modified
+  l.description
 FROM
   lessons l
-LEFT JOIN
-  lesson_files lf ON lf.lesson_id = l.id
-JOIN
-  files f ON f.id = lf.file_id 
 WHERE
   l.unit_id = ?;
 
@@ -50,6 +42,14 @@ WHERE
 -- name: SaveLessonDate :one
 INSERT INTO lesson_dates (
   lesson_id, date_id
+) VALUES (
+  ?, ?
+)
+RETURNING *;
+
+-- name: SaveLessonFile :one
+INSERT INTO lesson_files (
+  file_id, lesson_id
 ) VALUES (
   ?, ?
 )

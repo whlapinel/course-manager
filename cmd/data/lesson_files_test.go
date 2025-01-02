@@ -7,8 +7,12 @@ import (
 	"testing"
 )
 
-func TestAddFiles(t *testing.T) {
-	file := domain.NewFile("hello", "test .txt file", "hello.txt")
+func TestSaveFiles(t *testing.T) {
+	srcPath, err := filepath.Abs("hello.txt")
+	if err != nil {
+		t.Error(err)
+	}
+	file := domain.NewFile("hello", "test .txt file", srcPath)
 	id, err := cr.SaveFile(file)
 	file.ID = id
 	if err != nil {

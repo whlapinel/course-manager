@@ -127,24 +127,24 @@ templ UnitComponent(unit domain.Unit, instance domain.Course) {
 	}
 }
 
-templ LessonComponent(lesson domain.Lesson, unit domain.Unit, instance domain.Course) {
-	@Layout(Page{Title: instance.GetTitle()}) {
-		@CourseDivContainer(instance, unitPath(unit, instance, true), unit.GetTitle()) {
+templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course) {
+	@Layout(Page{Title: course.GetTitle()}) {
+		@CourseDivContainer(course, unitPath(unit, course, true), unit.GetTitle()) {
 			@CourseUnorderedList() {
-				if hasSlides(lessonPath(lesson, unit, instance, false)) {
-					@ListedLinkItem(filepath.Join(lessonPath(lesson, unit, instance, false), "slides.html"), true) {
+				if hasSlides(lessonPath(lesson, unit, course, false)) {
+					@ListedLinkItem(SlidesPath(lesson, unit, course), true) {
 						Slides
 					}
 				} else {
 					<p>No content for this lesson yet!</p>
 				}
-				if hasFilesDir(lessonPath(lesson, unit, instance, false)) {
-					@ListedLinkItemAbsoluteURL(lessonFilesPath(lesson, unit, instance), true) {
+				if hasFilesDir(lessonPath(lesson, unit, course, false)) {
+					@ListedLinkItemAbsoluteURL(LessonFilesPath(lesson, unit, course), true) {
 						Other Files
 					}
 				}
 			}
-			@TitleDiv(lesson.Name, lesson.Description, lessonPath(lesson, unit, instance, false), true)
+			@TitleDiv(lesson.Name, lesson.Description, lessonPath(lesson, unit, course, false), true)
 		}
 	}
 }

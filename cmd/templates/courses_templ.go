@@ -891,7 +891,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, instance domain.Cou
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL(lessonFilesPath(lesson, unit, instance), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var46), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL(LessonFilesURL(lesson, unit, instance), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var46), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

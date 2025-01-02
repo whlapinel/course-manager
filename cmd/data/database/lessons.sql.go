@@ -99,30 +99,18 @@ SELECT
   l.id,
   l.number,
   l.name,
-  l.description,
-  f.name as file_name,
-  f.description as file_descr,
-  f.file_name,
-  f.modified as file_modified
+  l.description
 FROM
   lessons l
-LEFT JOIN
-  lesson_files lf ON lf.lesson_id = l.id
-JOIN
-  files f ON f.id = lf.file_id 
 WHERE
   l.unit_id = ?
 `
 
 type GetLessonsRow struct {
-	ID           int64
-	Number       int64
-	Name         sql.NullString
-	Description  sql.NullString
-	FileName     string
-	FileDescr    sql.NullString
-	FileName_2   string
-	FileModified string
+	ID          int64
+	Number      int64
+	Name        sql.NullString
+	Description sql.NullString
 }
 
 func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow, error) {
@@ -139,10 +127,6 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 			&i.Number,
 			&i.Name,
 			&i.Description,
-			&i.FileName,
-			&i.FileDescr,
-			&i.FileName_2,
-			&i.FileModified,
 		); err != nil {
 			return nil, err
 		}
@@ -209,6 +193,27 @@ func (q *Queries) SaveLessonDate(ctx context.Context, arg SaveLessonDateParams) 
 	row := q.db.QueryRowContext(ctx, saveLessonDate, arg.LessonID, arg.DateID)
 	var i LessonDate
 	err := row.Scan(&i.LessonID, &i.DateID)
+	return i, err
+}
+
+const saveLessonFile = `-- name: SaveLessonFile :one
+INSERT INTO lesson_files (
+  file_id, lesson_id
+) VALUES (
+  ?, ?
+)
+RETURNING lesson_id, file_id
+`
+
+type SaveLessonFileParams struct {
+	FileID   int64
+	LessonID int64
+}
+
+func (q *Queries) SaveLessonFile(ctx context.Context, arg SaveLessonFileParams) (LessonFile, error) {
+	row := q.db.QueryRowContext(ctx, saveLessonFile, arg.FileID, arg.LessonID)
+	var i LessonFile
+	err := row.Scan(&i.LessonID, &i.FileID)
 	return i, err
 }
 

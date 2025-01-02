@@ -26,8 +26,7 @@ type File struct {
 	ID          int64
 	Name        string
 	Description sql.NullString
-	FileName    string
-	Modified    string
+	BasePath    string
 }
 
 type Lesson struct {

@@ -10,7 +10,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 func (c CourseRepo) SaveFile(file domain.File) (int, error) {
@@ -20,40 +19,49 @@ func (c CourseRepo) SaveFile(file domain.File) (int, error) {
 			Valid:  file.Description != "",
 			String: file.Description,
 		},
-		FileName: filepath.Base(file.SourcePath),
-		Modified: time.Now().Format(time.DateOnly),
+		BasePath: file.BasePath,
 	})
 	if err != nil {
 		return 0, err
 	}
 	file.ID = int(dbFile.ID)
-	err = AddFile(file)
+	err = addFile(file)
 	if err != nil {
 		return 0, err
 	}
 	return int(dbFile.ID), nil
 }
 
-func FileName(baseDir string, file domain.File) (string, error) {
-	basePath, err := filepath.Abs(baseDir)
+func (c CourseRepo) GetLessonFiles(lesson domain.Lesson) ([]domain.File, error) {
+	dbLessonFiles, err := c.queries.GetLessonFiles(context.Background(), int64(lesson.ID))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	dstPath := filepath.Join(basePath, fmt.Sprintf("file_id_%d_%s", file.ID, filepath.Base(file.SourcePath)))
-	return dstPath, nil
+	var files []domain.File
+	for _, dbFile := range dbLessonFiles {
+		file := domain.File{
+			Name:        dbFile.Name,
+			Description: dbFile.Description.String,
+			BasePath:    dbFile.BasePath,
+		}
+		files = append(files, file)
+	}
+	return files, nil
 }
 
-func AddFile(file domain.File) error {
+func LessonFilePath(file domain.File) string {
+	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/files"
+	dstPath := filepath.Join(basePath, fmt.Sprintf("file_id_%d_%s", file.ID, file.BasePath))
+	return dstPath
+}
+
+func addFile(file domain.File) error {
 	srcFile, err := os.Open(file.SourcePath)
 	if err != nil {
 		return err
 	}
 	defer srcFile.Close()
-	err = os.MkdirAll("./cmd/data/files", 0777)
-	if err != nil {
-		return err
-	}
-	dstPath, err := FileName("./cmd/data/files", file)
+	dstPath := LessonFilePath(file)
 	if err != nil {
 		return err
 	}
@@ -71,5 +79,46 @@ func AddFile(file domain.File) error {
 	}
 	log.Println("Bytes written: ", bytes)
 	return nil
+}
 
+// if file ID is 0, the file will be saved before adding to the lesson
+func (cr CourseRepo) AddFileToLesson(file domain.File, lesson domain.Lesson) error {
+	if file.ID == 0 {
+		// cannot save without source path
+		if file.SourcePath == "" {
+			return fmt.Errorf("no source path provided")
+		}
+		id, err := cr.SaveFile(file)
+		if err != nil {
+			return err
+		}
+		file.ID = id
+	}
+	_, err := cr.queries.SaveLessonFile(context.Background(), database.SaveLessonFileParams{
+		LessonID: int64(lesson.ID),
+		FileID:   int64(file.ID),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func deleteFile(file domain.File) error {
+	path := LessonFilePath(file)
+	err := os.Remove(path)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SlidesHTMLFilePath(lesson domain.Lesson) string {
+	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/html"
+	return filepath.Join(basePath, fmt.Sprintf("lesson_%d_slides.html", lesson.ID))
+}
+
+func SlidesMarkdownFilePath(lesson domain.Lesson) string {
+	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/markdown"
+	return filepath.Join(basePath, fmt.Sprintf("lesson_%d_slides.md", lesson.ID))
 }
