@@ -21,7 +21,6 @@ import (
 )
 
 func main() {
-	log.Println("something is going wrong")
 	myApp := app.New()
 	w := myApp.NewWindow("Course Manager")
 	queries, db, err := data.InitDB("course_manager.db")

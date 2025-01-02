@@ -19,7 +19,7 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 }
 
 templ CourseCalendarComponent(course domain.Course) {
-	@Layout(&page{title: course.Name}) {
+	@Layout(Page{Title: course.Name}) {
 		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
 				<div id="calendar" class="flex flex-col gap-4">
@@ -40,7 +40,7 @@ templ CourseCalendarComponent(course domain.Course) {
 															for _, lessonDate := range lesson.Dates {
 																if util.IsSameDate(lessonDate, calDate) {
 																	<li>
-																		@ListedLinkItem(RemoveDocsFromPath(lessonFilePath(*lesson, *unit, course)+FileName(lesson)), false) {
+																		@ListedLinkItem(RemoveDocsFromPath(lessonPath(*lesson, *unit, course, true)), false) {
 																			<p>{ lesson.Name } </p>
 																		}
 																	</li>
@@ -58,7 +58,7 @@ templ CourseCalendarComponent(course domain.Course) {
 					}
 				</div>
 			}
-			@TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, courseFilePath(course), false)
+			@TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, coursePath(course, true), false)
 		}
 	}
 }

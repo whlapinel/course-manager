@@ -2,9 +2,18 @@
 
 ## Progress Log
 
+### 1/2/2025
+
+- Name-based directory naming
+  - Pros: I can find a lesson outside the application
+  - Cons: Potential for name collisions, caching builds is less feasible
+- Id-based directory naming
+  - Pros: Caching build is more feasible
+
 ### 1/1/2025
 
-- Actually I think I'm going to change my site generator route naming to match the id-based structure. I also think I might do a full rebuild each time and see if it's ok.
+- If I change my site generator route naming to match the id-based structure, then the name-change possibility is not as much of a problem. Another problem with name-based structure is the potential for name conflicts - I need to protect against that somehow.
+- But if I'm doing a full rebuild each time, the name-change possibility is no problem at all apart from the name-conflict issue. But the nested structure mitigates this risk since 2 lessons in the same unit having the same name is low-chance.
 
 - I am flailing a bit today. Going back to work has me on the fence a little about what to work on. Sleep-deprived by myself, and nervous about not getting a job I've applied for.
 - I'm nervous about messing something up right before going back to work so I put my most recent work on the file system in a new feature branch called file_feature. I'm nervous about making other improvements in the dev branch that might be hard to deconflict if and when the feature branch is complete.

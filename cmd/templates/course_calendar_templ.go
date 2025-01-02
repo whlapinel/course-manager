@@ -180,7 +180,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 														}
 														return templ_7745c5c3_Err
 													})
-													templ_7745c5c3_Err = ListedLinkItem(RemoveDocsFromPath(lessonFilePath(*lesson, *unit, course)+FileName(lesson)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
+													templ_7745c5c3_Err = ListedLinkItem(RemoveDocsFromPath(lessonPath(*lesson, *unit, course, true)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
 													if templ_7745c5c3_Err != nil {
 														return templ_7745c5c3_Err
 													}
@@ -222,7 +222,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, courseFilePath(course), false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, coursePath(course, true), false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -234,7 +234,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = Layout(&page{title: course.Name}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Layout(Page{Title: course.Name}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -17,6 +18,9 @@ import (
 )
 
 func Generate() {
+	GenerateTempl()
+	BuildTailwind()
+	BuildTypeScript()
 	directories := templates.DirectoriesClearList()
 	for _, directory := range directories {
 		ClearHTMLFiles(directory)
@@ -91,7 +95,7 @@ func Generate() {
 			// Generate page for each lesson
 			for _, lesson := range unit.Lessons {
 				lessonPage := templates.NewLessonPage(*lesson, *unit, *course)
-				GenerateSlides(lessonPage.Directory())
+				GenerateSlides(filepath.Dir(lessonPage.Path))
 				err = RenderPage(lessonPage)
 				if err != nil {
 					log.Fatalf("failed to render pages: %v", err)
@@ -116,20 +120,38 @@ func ClearHTMLFiles(directory string) {
 	}
 }
 
-func RenderPage(t templates.Templifier) error {
-	log.Println("RenderPage: ", t.GetTitle())
-	if t.GetTitle() == "" {
-		return fmt.Errorf("RenderPage(): t.GetTitle() is empty")
+func BuildTailwind() {
+	err := exec.Command("npx", "tailwindcss", "-i", "./input.css", "-o", "./python/docs/styles/styles.css").Run()
+	if err != nil {
+		log.Println(err)
 	}
-	err := os.MkdirAll(t.Directory(), os.ModePerm)
+}
+
+func GenerateTempl() {
+	err := exec.Command("templ", "generate").Run()
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func BuildTypeScript() {
+	err := exec.Command("tsc", "--build").Run()
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func RenderPage(page templates.Page) error {
+	log.Println("RenderPage: ", page.Title)
+	err := os.MkdirAll(filepath.Dir(page.Path), os.ModePerm)
 	if err != nil {
 		log.Fatalf("failed to create directory: %v", err)
 	}
-	f, err := os.Create(t.Directory() + templates.FileName(t))
+	f, err := os.Create(page.Path)
 	if err != nil {
 		log.Fatalf("failed to create output file: %v", err)
 	}
-	err = t.Templify().Render(context.Background(), f)
+	err = page.Component.Render(context.Background(), f)
 	if err != nil {
 		log.Fatalf("failed to write output file: %v", err)
 	}

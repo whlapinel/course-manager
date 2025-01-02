@@ -10,7 +10,7 @@ func logThings(page Templifier, selectedPage Templifier) bool {
 	return true
 }
 
-templ Layout(selectedPage Templifier) {
+templ Layout(selectedPage Page) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
@@ -60,18 +60,18 @@ templ Layout(selectedPage Templifier) {
 						>
 							<a
 								if page.GetTitle() != "About" {
-									href={ templ.SafeURL(FilePathToURL(page.Directory() + FileName(page))) }
+									href={ FilePathToURL(page.Path) }
 									hx-target="#page"
 									hx-select="#page"
 								}
 								class="hover:bg-green-700 p-2 rounded-md cursor-pointer"
-								if page.GetTitle() == "Home" {
+								if page.Title == "Home" {
 									id={ "nav-index" }
 								} else {
-									id={ "nav-" + strings.ToLower(page.GetTitle()) }
+									id={ "nav-" + strings.ToLower(page.Title) }
 								}
 							>
-								{ page.GetTitle() }
+								{ page.Title }
 							</a>
 						</div>
 					}
