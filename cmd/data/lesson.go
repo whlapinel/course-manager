@@ -51,6 +51,16 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			}
 		}
 		lesson.Files = files
+		dbSlides, err := lr.queries.GetSlides(context.Background(), int64(lesson.ID))
+		if err != nil {
+			return nil, err
+		}
+		slides := domain.Slides{
+			ID:          int(dbSlides.ID),
+			Name:        dbSlides.Name,
+			Description: dbSlides.Description.String,
+		}
+		lesson.Slides = slides
 		var lessonDates []time.Time
 		for _, dbLessonDate := range dbLessonDates {
 			lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)

@@ -51,7 +51,7 @@ func main() {
 						}
 					}
 					slides := domain.NewSlides(lesson.Name, lesson.Description, srcPath)
-					_, err := courseRepo.SaveSlides(slides, lesson)
+					_, err = courseRepo.SaveSlides(slides, lesson)
 					if err != nil {
 						log.Fatal(err)
 					}
