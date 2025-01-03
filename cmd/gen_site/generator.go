@@ -2,15 +2,16 @@ package sitegenerator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/templates"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,7 +19,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Generate() {
+func Generate(courseRepo data.CourseRepo) error {
 	GenerateTempl()
 	BuildTailwind()
 	BuildTypeScript()
@@ -30,24 +31,17 @@ func Generate() {
 	homePage := templates.NewHomePage()
 	err := RenderPage(homePage)
 	if err != nil {
-		log.Fatalf("failed to render pages: %v", err)
+		return fmt.Errorf("failed to render pages: %v", err)
 	}
 	// Generate contact page
 	contactPage := templates.NewContactPage()
 	err = RenderPage(contactPage)
 	if err != nil {
-		log.Fatalf("failed to render pages: %v", err)
+		return fmt.Errorf("failed to render pages: %v", err)
 	}
-	// Database
-	queries, db, err := data.InitDB("course_manager.db")
-	defer db.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	courseRepo := data.NewCourseRepo(queries)
 	terms, err := courseRepo.GetTerms()
 	if err != nil {
-		log.Fatalf("error fetching term: %s", err)
+		return fmt.Errorf("error fetching term: %s", err)
 	}
 	var currentTerm domain.Term
 	for _, term := range terms {
@@ -57,53 +51,189 @@ func Generate() {
 	}
 	log.Println()
 	if currentTerm.Start.IsZero() {
-		log.Fatal("main(): term not initialized")
+		return fmt.Errorf("main(): term not initialized")
 	}
 	// Generate "courses I teach" list page
 	courses, err := courseRepo.GetCourses(currentTerm.ID)
 	if err != nil {
-		log.Fatalf("error getting instances: %v", err)
+		return fmt.Errorf("error getting instances: %v", err)
 	}
 	coursesPage := templates.NewCoursesListPage(courses)
 	err = RenderPage(coursesPage)
 	if err != nil {
-		log.Fatalf("failed to render pages: %v", err)
+		return fmt.Errorf("failed to render pages: %v", err)
 	}
 	for _, course := range courses {
 		if course.Term.Start.IsZero() {
-			log.Fatal("main(): instance.Term.Start is zero")
+			return fmt.Errorf("main(): instance.Term.Start is zero")
 		}
 		// Generate calendar page for each course
 		calendarPage := templates.NewCourseCalendarPage(*course)
 		err = RenderPage(calendarPage)
 		if err != nil {
-			log.Fatalf("failed to render pages: %v", err)
+			return fmt.Errorf("failed to render pages: %v", err)
 		}
-		log.Println("Site generator main() course: Name: ", course.Name)
 		coursePage := templates.NewCoursePage(*course)
 		err = RenderPage(coursePage)
 		if err != nil {
-			log.Fatalf("failed to render pages: %v", err)
+			return fmt.Errorf("failed to render pages: %v", err)
+		}
+		err = CopyCourseImage(*course)
+		if err != nil {
+			return err
 		}
 		// Generate page for each unit
 		for _, unit := range course.Units {
-			log.Println("looping through units in main():", unit.Name)
 			unitPage := templates.NewUnitPage(*unit, *course)
+			err = CopyUnitImage(*unit, *course)
+			if err != nil {
+				return err
+			}
 			err = RenderPage(unitPage)
 			if err != nil {
-				log.Fatalf("failed to render pages: %v", err)
+				return fmt.Errorf("failed to render pages: %v", err)
+			}
+			lessons, err := courseRepo.GetLessons(unit.ID)
+			if err != nil {
+				return err
 			}
 			// Generate page for each lesson
-			for _, lesson := range unit.Lessons {
-				lessonPage := templates.NewLessonPage(*lesson, *unit, *course)
-				GenerateSlides(filepath.Dir(lessonPage.Path))
+			for _, lesson := range lessons {
+				lessonPage := templates.NewLessonPage(lesson, *unit, *course)
 				err = RenderPage(lessonPage)
 				if err != nil {
-					log.Fatalf("failed to render pages: %v", err)
+					return fmt.Errorf("failed to render pages: %v", err)
+				}
+				GenerateSlides(lesson)
+				err = CopyFiles(lesson, *unit, *course, courseRepo)
+				if err != nil {
+					log.Println("failed to copy files: ", err)
+				}
+				err = CopySlides(lesson, *unit, *course)
+				if err != nil {
+					log.Println("failed to copy slides: ", err)
+				}
+				err = CopyLessonImage(lesson, *unit, *course)
+				if err != nil {
+					return err
+				}
+				err = RenderPage(lessonPage)
+				if err != nil {
+					return fmt.Errorf("failed to render pages: %v", err)
 				}
 			}
 		}
 	}
+	return nil
+}
+
+func CopyFiles(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
+	fileDir := lesson.Files
+	if fileDir.ID == 0 {
+		return nil
+	}
+	log.Println("Copying fileDir ", fileDir.ID)
+	srcRoot := data.LessonFilesDirPath(fileDir)
+	log.Println("Source ", srcRoot)
+	destRoot := templates.LessonFilesPath(lesson, unit, course)
+	log.Println("Dest ", destRoot)
+	return filepath.WalkDir(srcRoot, func(srcPath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		relPath, err := filepath.Rel(srcRoot, srcPath)
+		if err != nil {
+			return err
+		}
+		destPath := filepath.Join(destRoot, relPath)
+		if d.IsDir() {
+			return os.MkdirAll(destPath, os.ModePerm)
+		}
+		return copyFile(srcPath, destPath)
+	})
+}
+
+func copyFile(srcPath, destPath string) error {
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+	dst, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+	_, err = io.Copy(dst, src)
+	return err
+}
+
+func CopyCourseImage(course domain.Course) error {
+	srcPath := data.ImagesPath(course.Image)
+	if !FileExists(srcPath) {
+		return nil
+	}
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	dstPath := templates.CourseImagePath(course)
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func CopyUnitImage(unit domain.Unit, course domain.Course) error {
+	if unit.Image.ID == 0 {
+		return nil
+	}
+	srcPath := data.ImagesPath(unit.Image)
+	if !FileExists(srcPath) {
+		return fmt.Errorf("file not found: %s", srcPath)
+	}
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	dstPath := templates.UnitImagePath(unit, course)
+	err = os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
+	if err != nil {
+		return err
+	}
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func CopyLessonImage(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
+	srcPath := data.ImagesPath(lesson.Image)
+	if !FileExists(srcPath) {
+		return nil
+	}
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	dstPath := templates.LessonImagePath(lesson, unit, course)
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func ClearHTMLFiles(directory string) {
@@ -143,7 +273,6 @@ func BuildTypeScript() {
 }
 
 func RenderPage(page templates.Page) error {
-	log.Println("RenderPage: ", page.Title)
 	err := os.MkdirAll(filepath.Dir(page.Path), os.ModePerm)
 	if err != nil {
 		log.Fatalf("failed to create directory: %v", err)
@@ -159,24 +288,23 @@ func RenderPage(page templates.Page) error {
 	return nil
 }
 
-func GenerateSlides(dir string) {
+func GenerateSlides(lesson domain.Lesson) {
 	// File paths
-	markdownFile := "slides.md"
-	htmlFile := "slides.html"
-	markdownPath := path.Join(dir, markdownFile)
-	htmlPath := path.Join(dir, htmlFile)
+	markdownPath := data.SlidesMarkdownFilePath(lesson.Slides)
+	htmlPath := data.SlidesHTMLFilePath(lesson)
 
 	// Get file information
 	mdInfo, err := os.Stat(markdownPath)
 	if err != nil {
-		log.Printf("Error: Could not access %s: %v\n", markdownPath, err)
+		if !errors.Is(err, fs.ErrNotExist) {
+			log.Printf("Error: Could not access %s: %v\n", markdownPath, err)
+		}
 		return
 	}
 
 	htmlInfo, err := os.Stat(htmlPath)
 	if os.IsNotExist(err) {
 		// If HTML file doesn't exist, regenerate it
-		log.Println("HTML file does not exist. Generating...")
 		regenerateHTML(markdownPath, htmlPath)
 		return
 	} else if err != nil {
@@ -187,62 +315,107 @@ func GenerateSlides(dir string) {
 	// Compare modification times
 	mdModTime := mdInfo.ModTime()
 	htmlModTime := htmlInfo.ModTime()
-
 	if mdModTime.After(htmlModTime) {
-		log.Println("Markdown file is newer. Regenerating HTML...")
 		regenerateHTML(markdownPath, htmlPath)
-	} else {
-		log.Println("No need to regenerate. HTML is up-to-date.")
 	}
 }
 
-// this is a temporary function to save all slides in the main directory, this function should be deleted
-func SaveSlides(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
-	srcPath := templates.SlidesMarkdownPath(lesson, unit, course)
-	dstPath := data.SlidesMarkdownFilePath(lesson)
-	srcFile, err := os.Open(srcPath)
+// // this is a temporary function to save all slides in the main directory, this function should be deleted once that process is complete
+// func SaveSlides(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
+// 	srcPath := templates.SlidesMarkdownPath(lesson, unit, course)
+// 	dstPath := data.SlidesMarkdownFilePath(lesson)
+// 	err := os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
+// 	errInfo := fmt.Sprintf("srcPath: %s\ndstPath: %s", srcPath, dstPath)
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	srcFile, err := os.Open(srcPath)
+// 	if err != nil {
+// 		return fmt.Errorf(errInfo, err)
+// 	}
+// 	defer func() error {
+// 		err := srcFile.Close()
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	}()
+// 	dstFile, err := os.Create(dstPath)
+// 	if err != nil {
+// 		return fmt.Errorf(errInfo, err)
+// 	}
+// 	bytes, err := io.Copy(dstFile, srcFile)
+// 	if err != nil {
+// 		return fmt.Errorf(errInfo, err)
+// 	}
+// 	log.Println("Copied ", bytes, " from ", srcPath, " to", dstPath)
+// 	return nil
+// }
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
 	if err != nil {
-		return err
-	}
-	defer func() error {
-		err := srcFile.Close()
-		if err != nil {
-			return err
+		if errors.Is(err, fs.ErrNotExist) {
+			return false
 		}
-		return nil
-	}()
-	dstFile, err := os.Create(dstPath)
-	if err != nil {
-		return err
+		panic("this should not happen")
 	}
-	bytes, err := io.Copy(srcFile, dstFile)
-	if err != nil {
-		return err
-	}
-	log.Println("Copied ", bytes, " from ", srcPath, " to", dstPath)
-	return nil
+	return true
 }
 
-func SaveFiles(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
-	filesDir := templates.LessonFilesPath(lesson, unit, course)
-	files, err := os.ReadDir(filesDir)
-	if err != nil {
-		return err
-	}
-	for _, file := range files {
-		srcPath := filepath.Join(filesDir, file.Name())
-		newFile := domain.NewFile(file.Name(), "transferred from generator", srcPath)
-		newFile.ID, err = cr.SaveFile(newFile)
-		if err != nil {
-			return err
-		}
-		err := cr.AddFileToLesson(newFile, lesson)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+// func SaveCourseImage(course domain.Course, cr data.CourseRepo) error {
+// 	path := templates.CourseImagePath(course)
+// 	if !FileExists(path) {
+// 		return nil
+// 	}
+// 	image := domain.NewImage(course.Name, "", path)
+// 	imageID, err := cr.SaveImage(image)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	image.ID = imageID
+// 	err = cr.AddImageToCourse(image, course)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+// func SaveUnitImage(unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
+// 	path := templates.UnitImagePath(unit, course)
+// 	if !FileExists(path) {
+// 		return nil
+// 	}
+// 	image := domain.NewImage(unit.Name, "", path)
+// 	imageID, err := cr.SaveImage(image)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	image.ID = imageID
+// 	err = cr.AddImageToUnit(image, unit)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+// func SaveLessonImage(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
+// 	path := templates.LessonImagePath(lesson, unit, course)
+// 	if !FileExists(path) {
+// 		return nil
+// 	}
+// 	image := domain.NewImage(lesson.Name, "", path)
+// 	imageID, err := cr.SaveImage(image)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	image.ID = imageID
+// 	err = cr.AddImageToLesson(image, lesson)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // This will copy the html files from the ./cmd/data/slides directory.
 // It should replace the generate slides function.
@@ -252,55 +425,20 @@ func CopySlides(lesson domain.Lesson, unit domain.Unit, course domain.Course) er
 	dstPath := templates.SlidesPath(lesson, unit, course)
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		}
 		return err
 	}
-	defer func() error {
-		err := srcFile.Close()
-		if err != nil {
-			return err
-		}
-		return nil
-	}()
+	defer srcFile.Close()
 	dstFile, err := os.Create(dstPath)
 	if err != nil {
 		return err
 	}
-	bytes, err := io.Copy(srcFile, dstFile)
+	defer dstFile.Close()
+	_, err = io.Copy(dstFile, srcFile)
 	if err != nil {
 		return err
-	}
-	log.Println("Copied ", bytes, " from ", srcPath, " to", dstPath)
-	return nil
-}
-
-func CopyFiles(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
-	files, err := cr.GetLessonFiles(lesson)
-	if err != nil {
-		return err
-	}
-	for _, file := range files {
-		srcPath := data.LessonFilePath(file)
-		srcFile, err := os.Open(srcPath)
-		if err != nil {
-			return err
-		}
-		defer func() error {
-			err := srcFile.Close()
-			if err != nil {
-				return err
-			}
-			return nil
-		}()
-		dstPath := templates.LessonFilesURL(lesson, unit, course)
-		dstFile, err := os.Create(dstPath)
-		if err != nil {
-			return err
-		}
-		bytes, err := io.Copy(srcFile, dstFile)
-		if err != nil {
-			return err
-		}
-		log.Println("Copied ", bytes, " from ", srcPath, " to", dstPath)
 	}
 	return nil
 }

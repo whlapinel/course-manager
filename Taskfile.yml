@@ -17,6 +17,12 @@ tasks:
       - cd python && git switch dev
 
   run-manager:
+    - echo 'running templ generate...'
+    - templ generate
+    - echo 'running tsc build...'
+    - tsc --build
+    - echo 'running npx tailwindcss...'
+    - npx tailwindcss -i ./input.css -o ./python/docs/styles/styles.css
     - echo 'Starting Course Manager'
     - go run ./cmd/fyne_app
 

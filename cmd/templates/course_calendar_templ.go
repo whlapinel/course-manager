@@ -222,7 +222,7 @@ func CourseCalendarComponent(course domain.Course) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, coursePath(course, true), false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, coursePath(course, true), false, false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

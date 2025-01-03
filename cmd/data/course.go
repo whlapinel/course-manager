@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
@@ -71,6 +72,18 @@ func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 			Description: dbCourse.CourseDescr.String,
 			Term:        term,
 		}
+		dbImage, err := c.queries.GetCourseImage(context.Background(), dbCourse.CourseID)
+		if err != nil {
+			if !errors.Is(err, sql.ErrNoRows) {
+				return nil, err
+			}
+		}
+		course.Image = domain.Image{
+			ID:          int(dbImage.ID),
+			Name:        dbImage.Name,
+			Description: dbImage.Description.String,
+			BasePath:    dbImage.BasePath,
+		}
 		dbUnits, err := c.queries.GetUnits(context.Background(), int64(course.ID))
 		if err != nil {
 			return nil, err
@@ -84,6 +97,18 @@ func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 				SequenceNum: int(dbUnit.Sequence),
 				Name:        dbUnit.Name,
 				Description: dbUnit.Description.String,
+			}
+			dbImage, err := c.queries.GetUnitImage(context.Background(), int64(unit.ID))
+			if err != nil {
+				if !errors.Is(err, sql.ErrNoRows) {
+					return nil, err
+				}
+			}
+			unit.Image = domain.Image{
+				ID:          int(dbImage.ID),
+				Name:        dbImage.Name,
+				Description: dbImage.Description.String,
+				BasePath:    dbImage.BasePath,
 			}
 			dbLessons, err := c.queries.GetLessons(context.Background(), int64(unit.ID))
 			if err != nil {

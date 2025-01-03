@@ -95,7 +95,10 @@ func main() {
 	})
 	fileMenu := fyne.NewMenu("File", importCSVItem, exportCSVItem)
 	generateMenu := fyne.NewMenu("Generate", fyne.NewMenuItem("Generate Site", func() {
-		sitegenerator.Generate()
+		err := sitegenerator.Generate(courseRepo)
+		if err != nil {
+			dialog.ShowError(err, w)
+		}
 	}))
 	mainMenu := fyne.NewMainMenu(fileMenu, termsMenu, generateMenu)
 	w.SetMainMenu(mainMenu)

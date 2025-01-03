@@ -1,15 +1,12 @@
 package domain
 
-import "path/filepath"
-
-type File struct {
+type FilesDir struct {
 	ID          int
-	Name        string
-	Description string
+	Name        string // typically should be lesson name
+	Description string // describe contents
 	SourcePath  string // original source path of file, not persisted
-	BasePath    string // the last segment of the original path including extension, prefixed with file ID when saved
 }
 
-func NewFile(name, descr, srcPath string) File {
-	return File{Name: name, Description: descr, SourcePath: srcPath, BasePath: filepath.Base(srcPath)}
+func NewFile(name, descr, srcPath string) FilesDir {
+	return FilesDir{Name: name, Description: descr, SourcePath: srcPath}
 }

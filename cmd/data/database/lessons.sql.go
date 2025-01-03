@@ -196,7 +196,7 @@ func (q *Queries) SaveLessonDate(ctx context.Context, arg SaveLessonDateParams) 
 	return i, err
 }
 
-const saveLessonFile = `-- name: SaveLessonFile :one
+const saveLessonFilesDir = `-- name: SaveLessonFilesDir :one
 INSERT INTO lesson_files (
   file_id, lesson_id
 ) VALUES (
@@ -205,13 +205,13 @@ INSERT INTO lesson_files (
 RETURNING lesson_id, file_id
 `
 
-type SaveLessonFileParams struct {
+type SaveLessonFilesDirParams struct {
 	FileID   int64
 	LessonID int64
 }
 
-func (q *Queries) SaveLessonFile(ctx context.Context, arg SaveLessonFileParams) (LessonFile, error) {
-	row := q.db.QueryRowContext(ctx, saveLessonFile, arg.FileID, arg.LessonID)
+func (q *Queries) SaveLessonFilesDir(ctx context.Context, arg SaveLessonFilesDirParams) (LessonFile, error) {
+	row := q.db.QueryRowContext(ctx, saveLessonFilesDir, arg.FileID, arg.LessonID)
 	var i LessonFile
 	err := row.Scan(&i.LessonID, &i.FileID)
 	return i, err

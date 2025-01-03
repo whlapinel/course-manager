@@ -1,30 +1,36 @@
 package data
 
 import (
-	"gh_static_portfolio/cmd/domain"
 	"log"
-	"path/filepath"
 	"testing"
 )
 
-func TestSaveFiles(t *testing.T) {
-	srcPath, err := filepath.Abs("hello.txt")
+func TestGetLessonFiles(t *testing.T) {
+	terms, err := cr.GetTerms()
 	if err != nil {
 		t.Error(err)
 	}
-	file := domain.NewFile("hello", "test .txt file", srcPath)
-	id, err := cr.SaveFile(file)
-	file.ID = id
+	term := terms[0]
+	log.Println(term.Name)
+	courses, err := cr.GetCourses(term.ID)
 	if err != nil {
 		t.Error(err)
 	}
-}
+	course := courses[1]
+	log.Println(course.Name)
 
-func TestAbsPath(t *testing.T) {
-	path := "./files"
-	absPath, err := filepath.Abs(path)
+	units, err := cr.GetUnits(course.ID)
 	if err != nil {
 		t.Error(err)
 	}
-	log.Println(absPath)
+	unit := units[7]
+	log.Println(unit.Name)
+	lessons, err := cr.GetLessons(unit.ID)
+	if err != nil {
+		t.Error(err)
+	}
+	for _, lesson := range lessons {
+		log.Println(lesson.Files.ID)
+	}
+
 }

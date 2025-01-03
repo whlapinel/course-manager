@@ -16,10 +16,6 @@ const (
 	coursesDir = "./python/docs/courses/"
 )
 
-type NameHaver interface {
-	GetName() string
-}
-
 func kebabCase(str string) string {
 	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
 }
@@ -32,12 +28,22 @@ func coursePath(course domain.Course, page bool) string {
 	return dirPath
 }
 
+func CourseImagePath(course domain.Course) string {
+	dir := coursePath(course, false)
+	return filepath.Join(dir, "image.png")
+}
+
 func unitPath(unit domain.Unit, course domain.Course, page bool) string {
 	dirPath := filepath.Join(coursePath(course, false), kebabCase(unit.Name))
 	if page {
 		return filepath.Join(dirPath, kebabCase(unit.Name+".html"))
 	}
 	return dirPath
+}
+
+func UnitImagePath(unit domain.Unit, course domain.Course) string {
+	dir := unitPath(unit, course, false)
+	return filepath.Join(dir, "image.png")
 }
 
 func lessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, page bool) string {
@@ -48,8 +54,14 @@ func lessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, pa
 	return dirPath
 }
 
-func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
-	return filepath.Join(githubRoot, LessonFilesPath(lesson, unit, course))
+func LessonImagePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+	dir := lessonPath(lesson, unit, course, false)
+	return filepath.Join(dir, "image.png")
+}
+
+func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.SafeURL {
+	filePath := filepath.Join(githubRoot, LessonFilesPath(lesson, unit, course))
+	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
 
 func LessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
@@ -66,7 +78,7 @@ func SlidesMarkdownPath(lesson domain.Lesson, unit domain.Unit, course domain.Co
 }
 
 func hasImage(path string) bool {
-	files, err := os.ReadDir(path)
+	files, err := os.ReadDir(filepath.Dir(path))
 	if err != nil {
 		log.Fatalf("error reading directory:%s", err)
 	}
@@ -115,28 +127,10 @@ func DirectoriesClearList() []string {
 	}
 }
 
-type Templifier interface {
-	Templify() templ.Component
-	GetTitle() string
-	Directory() string
-}
-
-type Titler interface {
-	GetTitle() string
-}
-
 type Page struct {
 	Title     string
 	Path      string
 	Component templ.Component
-}
-
-func (p *Page) Templify() templ.Component {
-	return p.Component
-}
-
-func (p *Page) GetTitle() string {
-	return p.Title
 }
 
 func NewHomePage() Page {
@@ -176,7 +170,7 @@ func NewCourseCalendarPage(course domain.Course) Page {
 	pageTitle := course.Name + " Calendar"
 	return Page{
 		Title:     pageTitle,
-		Path:      filepath.Join(coursePath(course, false), kebabCase(pageTitle)),
+		Path:      filepath.Join(coursePath(course, false), kebabCase(pageTitle+".html")),
 		Component: CourseCalendarComponent(course),
 	}
 }

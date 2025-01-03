@@ -15,6 +15,11 @@ type Course struct {
 	Description sql.NullString
 }
 
+type CourseImage struct {
+	CourseID int64
+	ImageID  int64
+}
+
 type Date struct {
 	ID        int64
 	TermID    int64
@@ -22,7 +27,13 @@ type Date struct {
 	Date      string
 }
 
-type File struct {
+type FilesDir struct {
+	ID          int64
+	Name        string
+	Description sql.NullString
+}
+
+type Image struct {
 	ID          int64
 	Name        string
 	Description sql.NullString
@@ -47,10 +58,20 @@ type LessonFile struct {
 	FileID   int64
 }
 
+type LessonImage struct {
+	LessonID int64
+	ImageID  int64
+}
+
 type LessonObjective struct {
 	ID       int64
 	ObjID    int64
 	LessonID int64
+}
+
+type LessonSlide struct {
+	LessonID int64
+	SlidesID int64
 }
 
 type NonInstructDay struct {
@@ -64,6 +85,12 @@ type Objective struct {
 	StdID  int64
 	Number int64
 	Name   string
+}
+
+type Slide struct {
+	ID          int64
+	Name        string
+	Description sql.NullString
 }
 
 type Standard struct {
@@ -87,6 +114,11 @@ type Unit struct {
 	Sequence    int64
 	Name        string
 	Description sql.NullString
+}
+
+type UnitImage struct {
+	UnitID  int64
+	ImageID int64
 }
 
 type UnitStandard struct {

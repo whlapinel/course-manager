@@ -46,8 +46,8 @@ templ ListedLinkItem(path string, newTab bool) {
 	</a>
 }
 
-templ ListedLinkItemAbsoluteURL(path string, newTab bool) {
-	<a href={ templ.SafeURL(path) } target={ targetAttrVal(newTab) }>
+templ ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) {
+	<a href={ path } target={ targetAttrVal(newTab) }>
 		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
 			{ children... }
 		</li>
@@ -64,12 +64,16 @@ templ BackButton(path, text string) {
 }
 
 // Title for page. Path allows checking for image
-templ TitleDiv(title, description, path string, showImg bool) {
+templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) {
 	<div class="flex flex-col gap-6 max-w-3xl">
 		<h1 class=" text-4xl">{ title }</h1>
 		<p class="text-2xl">{ description }</p>
-		if showImg == true && hasImage(path) {
-			<img src={ "./image.png" } class="max-w-full h-auto rounded border border-solid border-purple-400"/>
+		if showImg == true {
+			if lightBg {
+				<img src={ string(FilePathToURL(imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300"/>
+			} else {
+				<img src={ string(FilePathToURL(imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400"/>
+			}
 		}
 	</div>
 }
@@ -84,7 +88,7 @@ templ CoursesListComponent(instances []*domain.Course) {
 					}
 				}
 			}
-			@TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", coursesDir, true)
+			@TitleDiv("Python Courses at Phillip O. Berry Academy of Technology", "This section is for students of Python I and II at Phillip O. Berry Academy of Technology. Included are links to all course slides, files and other resources. All assignments must be submitted via Canvas.", "./python/docs/images/Berry_Cardinals.png", true, true)
 		}
 	}
 }
@@ -103,7 +107,7 @@ templ CourseComponent(instance domain.Course) {
 					}
 				}
 			}
-			@TitleDiv(instance.Name, instance.Description, coursePath(instance, false), true)
+			@TitleDiv(instance.Name, instance.Description, filepath.Join(coursePath(instance, false), instance.Image.BasePath), instance.Image.ID != 0, false)
 		}
 	}
 }
@@ -122,7 +126,7 @@ templ UnitComponent(unit domain.Unit, instance domain.Course) {
 					}
 				}
 			}
-			@TitleDiv(unit.Name, unit.Description, unitPath(unit, instance, false), true)
+			@TitleDiv(unit.Name, unit.Description, filepath.Join(unitPath(unit, instance, false), unit.Image.BasePath), unit.Image.ID != 0, false)
 		}
 	}
 }
@@ -139,12 +143,12 @@ templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cour
 					<p>No content for this lesson yet!</p>
 				}
 				if hasFilesDir(lessonPath(lesson, unit, course, false)) {
-					@ListedLinkItemAbsoluteURL(LessonFilesPath(lesson, unit, course), true) {
+					@ListedLinkItemAbsoluteURL((LessonFilesURL(lesson, unit, course)), true) {
 						Other Files
 					}
 				}
 			}
-			@TitleDiv(lesson.Name, lesson.Description, lessonPath(lesson, unit, course, false), true)
+			@TitleDiv(lesson.Name, lesson.Description, filepath.Join(lessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false)
 		}
 	}
 }

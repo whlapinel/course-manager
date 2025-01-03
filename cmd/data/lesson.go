@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
@@ -14,6 +15,7 @@ import (
 func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 	dbLessons, err := lr.queries.GetLessons(context.Background(), int64(unitID))
 	if err != nil {
+		log.Fatal("error getting lessons", err)
 		return nil, err
 	}
 	var lessons []domain.Lesson
@@ -25,10 +27,30 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
 		}
+		image, err := lr.GetLessonImage(lesson)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				log.Println("no images for lesson ", lesson.Name)
+			} else {
+				log.Fatal("error getting lesson images", err)
+				return nil, err
+			}
+		}
+		lesson.Image = image
 		dbLessonDates, err := lr.queries.GetLessonDates(context.Background(), int64(lesson.ID))
 		if err != nil {
 			return nil, err
 		}
+		files, err := lr.getLessonFiles(lesson)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				log.Println("no files for lesson ", lesson.Name)
+			} else {
+				log.Fatal("error getting lesson files", err)
+				return nil, err
+			}
+		}
+		lesson.Files = files
 		var lessonDates []time.Time
 		for _, dbLessonDate := range dbLessonDates {
 			lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)

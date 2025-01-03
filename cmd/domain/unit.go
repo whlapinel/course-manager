@@ -18,6 +18,7 @@ type Unit struct {
 	Name        string
 	Description string
 	Lessons     []*Lesson
+	Image       Image
 }
 
 func (u *Unit) AddLesson(lesson *Lesson) {

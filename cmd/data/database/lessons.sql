@@ -47,7 +47,7 @@ INSERT INTO lesson_dates (
 )
 RETURNING *;
 
--- name: SaveLessonFile :one
+-- name: SaveLessonFilesDir :one
 INSERT INTO lesson_files (
   file_id, lesson_id
 ) VALUES (

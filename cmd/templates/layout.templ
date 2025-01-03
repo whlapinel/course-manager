@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-func logThings(page Templifier, selectedPage Templifier) bool {
-	log.Printf("page: %v, selectedPage: %v", page.GetTitle(), selectedPage.GetTitle())
+func logThings(page Page, selectedPage Page) bool {
+	log.Printf("page: %v, selectedPage: %v", page.Title, selectedPage.Title)
 	return true
 }
 
@@ -59,7 +59,7 @@ templ Layout(selectedPage Page) {
 							class="relative"
 						>
 							<a
-								if page.GetTitle() != "About" {
+								if page.Title != "About" {
 									href={ FilePathToURL(page.Path) }
 									hx-target="#page"
 									hx-select="#page"
