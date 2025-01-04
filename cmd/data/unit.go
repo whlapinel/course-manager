@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
@@ -43,9 +44,9 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
 
 }
 
-func (ur CourseRepo) GetUnits(courseID int) ([]domain.Unit, error) {
-	var units []domain.Unit
-	dbUnits, err := ur.queries.GetUnits(context.Background(), int64(courseID))
+func (cr CourseRepo) GetUnits(courseID int) ([]*domain.Unit, error) {
+	var units []*domain.Unit
+	dbUnits, err := cr.queries.GetUnits(context.Background(), int64(courseID))
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +59,19 @@ func (ur CourseRepo) GetUnits(courseID int) ([]domain.Unit, error) {
 			Name:        dbUnit.Name,
 			Description: dbUnit.Description.String,
 		}
-		units = append(units, unit)
+		dbImage, err := cr.queries.GetUnitImage(context.Background(), int64(unit.ID))
+		if err != nil {
+			if !errors.Is(err, sql.ErrNoRows) {
+				return nil, err
+			}
+		}
+		unit.Image = domain.Image{
+			ID:          int(dbImage.ID),
+			Name:        dbImage.Name,
+			Description: dbImage.Description.String,
+			BasePath:    dbImage.BasePath,
+		}
+		units = append(units, &unit)
 	}
 	return units, nil
 }

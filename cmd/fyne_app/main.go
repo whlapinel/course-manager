@@ -8,6 +8,8 @@ import (
 	sitegenerator "gh_static_portfolio/cmd/gen_site"
 	"gh_static_portfolio/cmd/service"
 	"log"
+	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -21,6 +23,7 @@ import (
 )
 
 func main() {
+	log.Println("something isn't right!")
 	myApp := app.New()
 	w := myApp.NewWindow("Course Manager")
 	queries, db, err := data.InitDB("course_manager.db")
@@ -93,7 +96,21 @@ func main() {
 		selectFileDialog.SetFilter(storage.NewExtensionFileFilter([]string{".csv"}))
 		selectFileDialog.Show()
 	})
-	fileMenu := fyne.NewMenu("File", importCSVItem, exportCSVItem)
+	testButtonItem := fyne.NewMenuItem("Test File Open", func() {
+		file, err := os.Create("hello_world.md")
+		if err != nil {
+			dialog.ShowError(err, w)
+		}
+		defer file.Close()
+		content := []byte("My name is joe and I work in a button factory")
+		file.Write(content)
+		err = exec.Command("code", file.Name()).Start()
+		if err != nil {
+			dialog.ShowError(err, w)
+		}
+
+	})
+	fileMenu := fyne.NewMenu("File", importCSVItem, exportCSVItem, testButtonItem)
 	generateMenu := fyne.NewMenu("Generate", fyne.NewMenuItem("Generate Site", func() {
 		err := sitegenerator.Generate(courseRepo)
 		if err != nil {

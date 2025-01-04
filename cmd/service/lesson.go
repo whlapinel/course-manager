@@ -3,6 +3,7 @@ package service
 import (
 	"gh_static_portfolio/cmd/domain"
 	"log"
+	"os"
 	"time"
 )
 
@@ -65,4 +66,25 @@ func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, directio
 		return domain.Lesson{}, err
 	}
 	return shifted, nil
+}
+
+func (svc CourseService) CreateNewLessonSlides(lesson *domain.Lesson) (domain.Slides, error) {
+	tempPath := "./temp_files"
+	err := os.MkdirAll(tempPath, os.ModePerm)
+	if err != nil {
+		return domain.Slides{}, err
+	}
+	tempFile, err := os.CreateTemp(tempPath, "slides*.md")
+	if err != nil {
+		return domain.Slides{}, err
+	}
+	defer os.Remove(tempFile.Name())
+	slides := domain.NewSlides(lesson.Name, lesson.Description, tempFile.Name())
+	id, err := svc.repo.SaveSlides(slides, *lesson)
+	if err != nil {
+		return domain.Slides{}, err
+	}
+	slides.ID = id
+	lesson.Slides = slides
+	return slides, nil
 }

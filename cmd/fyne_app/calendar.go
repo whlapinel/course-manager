@@ -1,12 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/service"
 	"gh_static_portfolio/cmd/util"
+	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"time"
 
@@ -80,6 +84,22 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 		log.Println("this will remove the current lesson from the current date")
 	})
 	lessonRemoveBtn.SetIcon(deleteIcon)
+	viewSlidesBtn := widget.NewButton("Slides", func() {
+		var path = data.SlidesMarkdownFilePath(lesson.Slides)
+		_, err := os.Stat(path)
+		if errors.Is(err, fs.ErrNotExist) {
+			dialog.ShowInformation("Info", "Slides file does not exist, creating and registering file.", cc.w)
+			slides, err := cc.Service.CreateNewLessonSlides(lesson)
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+			path = data.SlidesMarkdownFilePath(slides)
+		}
+		err = exec.Command("code", path).Start()
+		if err != nil {
+			dialog.ShowError(err, cc.w)
+		}
+	})
 	lessonEditBtn := widget.NewButton("", func() {
 		nameEdit := widget.NewEntry()
 		nameEdit.SetText(lesson.Name)
@@ -122,6 +142,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 	lessonLabel := widget.NewLabel(labelText)
 	lessonContainer.Add(lessonRemoveBtn)
 	lessonContainer.Add(lessonEditBtn)
+	lessonContainer.Add(viewSlidesBtn)
 	lessonContainer.Add(shiftLeftBtn)
 	lessonContainer.Add(lessonLabel)
 	lessonContainer.Add(shiftRightBtn)

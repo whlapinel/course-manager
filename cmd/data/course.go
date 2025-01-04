@@ -8,7 +8,6 @@ import (
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
 	"log"
-	"time"
 )
 
 func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
@@ -49,20 +48,19 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 
 }
 
-func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
-	dbCourses, err := c.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
+func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
+	dbCourses, err := cr.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
 	if err != nil {
 		return nil, err
 	}
-	term, err := c.GetTermByID(termID)
+	term, err := cr.GetTermByID(termID)
 	if err != nil {
 		return nil, err
 	}
-	termWithDates, err := c.GetTermDates(termID)
+	termWithDates, err := cr.GetTermDates(termID)
 	if err != nil {
 		return nil, err
 	}
-	// THIS IS KINDA JACKED UP
 	term.InstructionalDays = termWithDates.InstructionalDays
 	var courses []*domain.Course
 	for _, dbCourse := range dbCourses {
@@ -72,7 +70,7 @@ func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 			Description: dbCourse.CourseDescr.String,
 			Term:        term,
 		}
-		dbImage, err := c.queries.GetCourseImage(context.Background(), dbCourse.CourseID)
+		dbImage, err := cr.queries.GetCourseImage(context.Background(), dbCourse.CourseID)
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
 				return nil, err
@@ -84,67 +82,17 @@ func (c CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 			Description: dbImage.Description.String,
 			BasePath:    dbImage.BasePath,
 		}
-		dbUnits, err := c.queries.GetUnits(context.Background(), int64(course.ID))
+		units, err := cr.GetUnits(course.ID)
 		if err != nil {
 			return nil, err
 		}
-		var units []*domain.Unit
-		for _, dbUnit := range dbUnits {
-			unit := domain.Unit{
-				ID:          int(dbUnit.ID),
-				CourseID:    int(dbUnit.CourseID),
-				Number:      int(dbUnit.Number),
-				SequenceNum: int(dbUnit.Sequence),
-				Name:        dbUnit.Name,
-				Description: dbUnit.Description.String,
-			}
-			dbImage, err := c.queries.GetUnitImage(context.Background(), int64(unit.ID))
-			if err != nil {
-				if !errors.Is(err, sql.ErrNoRows) {
-					return nil, err
-				}
-			}
-			unit.Image = domain.Image{
-				ID:          int(dbImage.ID),
-				Name:        dbImage.Name,
-				Description: dbImage.Description.String,
-				BasePath:    dbImage.BasePath,
-			}
-			dbLessons, err := c.queries.GetLessons(context.Background(), int64(unit.ID))
+		for i, unit := range units {
+			units[i].Lessons, err = cr.GetLessons(unit.ID)
 			if err != nil {
 				return nil, err
 			}
-			var lessons []*domain.Lesson
-			for _, dbLesson := range dbLessons {
-				lesson := domain.Lesson{
-					ID:          int(dbLesson.ID),
-					UnitID:      unit.ID,
-					Number:      int(dbLesson.Number),
-					Name:        dbLesson.Name.String,
-					Description: dbLesson.Description.String,
-				}
-				dbLessonDates, err := c.queries.GetLessonDates(context.Background(), int64(lesson.ID))
-				if err != nil {
-					return nil, err
-				}
-				var lessonDates []time.Time
-				for _, dbLessonDate := range dbLessonDates {
-					lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)
-					if err != nil {
-						return nil, err
-					}
-					lessonDates = append(lessonDates, lessonDate)
-				}
-				lesson.Dates = lessonDates
-				lessons = append(lessons, &lesson)
-			}
-			unit.Lessons = lessons
-			units = append(units, &unit)
 		}
 		course.Units = units
-		if course.Term.Start.IsZero() {
-			log.Fatal("term not initialized")
-		}
 		courses = append(courses, &course)
 
 	}

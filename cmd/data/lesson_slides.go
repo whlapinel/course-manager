@@ -50,9 +50,14 @@ func (cr CourseRepo) SaveSlides(slides domain.Slides, lesson domain.Lesson) (int
 	return slides.ID, nil
 }
 
-func SlidesHTMLFilePath(lesson domain.Lesson) string {
+func OldSlidesHTMLFilePath(lesson domain.Lesson) string {
 	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/html"
 	return filepath.Join(basePath, fmt.Sprintf("lesson_%d_slides.html", lesson.ID))
+}
+
+func SlidesHTMLFilePath(slides domain.Slides) string {
+	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/html"
+	return filepath.Join(basePath, fmt.Sprintf("slides_%d.html", slides.ID))
 }
 
 func SlidesMarkdownFilePath(slides domain.Slides) string {

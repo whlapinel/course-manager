@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
-	dbLessons, err := lr.queries.GetLessons(context.Background(), int64(unitID))
+func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
+	dbLessons, err := cr.queries.GetLessons(context.Background(), int64(unitID))
 	if err != nil {
 		log.Fatal("error getting lessons", err)
 		return nil, err
 	}
-	var lessons []domain.Lesson
+	var lessons []*domain.Lesson
 	for _, dbLesson := range dbLessons {
 		lesson := domain.Lesson{
 			ID:          int(dbLesson.ID),
@@ -27,7 +27,7 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
 		}
-		image, err := lr.GetLessonImage(lesson)
+		image, err := cr.GetLessonImage(lesson)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				log.Println("no images for lesson ", lesson.Name)
@@ -37,11 +37,11 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			}
 		}
 		lesson.Image = image
-		dbLessonDates, err := lr.queries.GetLessonDates(context.Background(), int64(lesson.ID))
+		dbLessonDates, err := cr.queries.GetLessonDates(context.Background(), int64(lesson.ID))
 		if err != nil {
 			return nil, err
 		}
-		files, err := lr.getLessonFiles(lesson)
+		files, err := cr.getLessonFiles(lesson)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				log.Println("no files for lesson ", lesson.Name)
@@ -51,9 +51,11 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			}
 		}
 		lesson.Files = files
-		dbSlides, err := lr.queries.GetSlides(context.Background(), int64(lesson.ID))
+		dbSlides, err := cr.queries.GetSlides(context.Background(), int64(lesson.ID))
 		if err != nil {
-			return nil, err
+			if !errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("error getting slides: %s", err)
+			}
 		}
 		slides := domain.Slides{
 			ID:          int(dbSlides.ID),
@@ -70,7 +72,7 @@ func (lr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			lessonDates = append(lessonDates, lessonDate)
 		}
 		lesson.Dates = lessonDates
-		lessons = append(lessons, lesson)
+		lessons = append(lessons, &lesson)
 	}
 	return lessons, nil
 }
