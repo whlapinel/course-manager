@@ -859,7 +859,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					if hasSlides(lessonPath(lesson, unit, course, false)) {
+					if lesson.Slides.ID != 0 {
 						templ_7745c5c3_Var46 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -892,7 +892,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if hasFilesDir(lessonPath(lesson, unit, course, false)) {
+					if lesson.Files.ID != 0 {
 						templ_7745c5c3_Var47 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)

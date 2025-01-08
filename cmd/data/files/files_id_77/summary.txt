@@ -1,0 +1,1 @@
+total number of lines in example.log: 3

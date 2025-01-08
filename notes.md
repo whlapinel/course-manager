@@ -2,6 +2,10 @@
 
 ## Progress Log
 
+### 1/4/2025
+
+Shifted to lesson planning today and had a lovely time working with the files through the app. It's still a little cumbersome.
+
 ### 1/3/2025
 
 Big progress today. I'm now able to delete the courses directory and re-generate it from the app's database and file system. It's pretty fragile though, and there are some things that need to be fixed ASAP:
@@ -53,37 +57,3 @@ Big progress today. I'm now able to delete the courses directory and re-generate
   - If a lesson has a new ID
 - 12/30/24 Worked on the edit lesson form a bit.
 - 12/29/24 Major milestone today. Finally got the calendar interface working with the ability to move lessons one date left or right. Got rid of CourseSchedule across all layers.
-
-## Features
-
-### Pending (keep in priority order)
-
-- 12/30/24 Go command to generate site should include other build commands e.g. tailwind, templ, etc (all the things that the task command does). Should probably also pass in the data instead of Generator using its own connection and fetching data?
-- 12/30/24 Create Copy Course to Term interface (this will use the Course.FitToTerm method)
-- 12/30/24 Create `New Lesson` UI
-- 12/30/24 Create `New Unit` UI
-- 12/30/24 Create New Course interface
-
-### Complete
-
-## Issues
-
-### Pending
-
-- 12/30/24 (minor) Lesson Edit form shows description as single-line with horizontal scroll rather than wrapping text.
-
-### Complete
-
-- 12/30/24 (major) ShowCalendar shows wrong course! Resolved 12/30/24
-
-- 12/26/24 There's a serious problem with how the courses are saved, at least when imported from CSV. I noticed that the calendar for Spring 2025 was showing dates for January but none of the other term months. After some digging I realized that the problem in the "lesson dates" table and how lesson dates are saved.  Basically all I know is that the date_id column in the lesson_dates table consists only of Fall 2024 dates. Resolved 12/26 (new domain.Course method `FitToTerm(term Term) Course` which just sets the dates sequentially for each lesson to dates from the new term, with one date per lesson. After instructional days are exhausted, lesson dates are left empty. Lessons will be visible from course tree but not in course calendar.)
-
-- 12/18/24 Resolved 12/27/24 (see proposal 2): figure out how to relate templates to instances. should the template
-id only be present for a row if they are marked by user as synchronized? i.e. until the user marks sync?
-  - Proposed solution 1 (rejected): whenever a user edits a course, unit or lesson that is an instance, i.e. where template is NOT NULL, the change should be also be made to the template row (and vice versa). If the user has elected to de-link the course, unit or lesson instance from the template, the change will not be reflected in the template object.
-  - Proposed solution 2 (implemented): completely eliminate the entire concept and all implementations of course template as opposed to course instance.
-    - There would only be a course, which will always be associated with a term. The fact that the dates table has a day number column will facilitate copying a course from one term to another.  This would be a very big change but the impact would be to dramatically simplify the code.
-    - Would probably add the fields currently exclusively found in CourseInstance and move them to Course. Need to identify all parts of the code that depend on a distinction between the two, for example any use of templateID, and alter essential parts and eliminate non-essential ones.
-    - Make sure the Database tables reflect this change completely.
-- 12/19/24 calendar looks better now
-- 12/17/24 lesson struct should have Date field be Dates []time.Time instead of Date time.Time so that a lesson can span multiple dates if necessary (not ideal but sometimes necessary) (completed 12/17/24)

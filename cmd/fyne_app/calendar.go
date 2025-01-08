@@ -11,12 +11,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -84,6 +86,76 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 		log.Println("this will remove the current lesson from the current date")
 	})
 	lessonRemoveBtn.SetIcon(deleteIcon)
+	viewFilesBtn2 := widget.NewButton("F2", func() {
+		fileDialog := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if reader == nil {
+				return
+			}
+			path := reader.URI().Path()
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+			err = exec.Command("code", path).Start()
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+
+		}, cc.w)
+		if lesson.Files.ID == 0 {
+			dialog.ShowInformation("Info", "No files have been added to this lesson", cc.w)
+		}
+		path := data.LessonFilesDirPath(lesson.Files)
+		uri, err := storage.ParseURI("file://" + path)
+		if err != nil {
+			dialog.ShowError(err, cc.w)
+		}
+		if uri == nil {
+			dialog.ShowError(fmt.Errorf("URI is nil"), cc.w)
+		} else {
+			listableURI, err := storage.ListerForURI(uri)
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+			fileDialog.SetLocation(listableURI)
+			fileDialog.Show()
+		}
+	})
+	if lesson.Files.ID == 0 {
+		viewFilesBtn2.Disable()
+	}
+	viewFilesBtn := widget.NewButton("Files", func() {
+		var path = data.LessonFilesDirPath(lesson.Files)
+		hasFiles := lesson.Files.ID != 0
+		_, err := os.Stat(path)
+		if !hasFiles || errors.Is(err, fs.ErrNotExist) {
+			dialog.ShowInformation("Info", "Directory does not exist, creating and registering directory.", cc.w)
+			fileDir, err := cc.Service.CreateNewLessonFileDir(lesson)
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+			path = data.LessonFilesDirPath(fileDir)
+		}
+		log.Println(path)
+		// Should open file in new window in VS Code
+		infoFile, err := os.Create(filepath.Join(path, "secret_info.txt"))
+		if err != nil {
+			dialog.ShowError(err, cc.w)
+		} else {
+			info := fmt.Sprintf(
+				`Lesson ID: %d
+				Lesson Name: %s
+				Lesson Description: %s
+				Date this info last updated: %s`,
+				lesson.ID, lesson.Name, lesson.Description, time.Now().Format(time.DateOnly))
+			infoFile.WriteString(info)
+		}
+		if lesson.Files.ID != 0 {
+			err = exec.Command("code", path).Start()
+			if err != nil {
+				dialog.ShowError(err, cc.w)
+			}
+		}
+	})
 	viewSlidesBtn := widget.NewButton("Slides", func() {
 		var path = data.SlidesMarkdownFilePath(lesson.Slides)
 		_, err := os.Stat(path)
@@ -143,6 +215,8 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 	lessonContainer.Add(lessonRemoveBtn)
 	lessonContainer.Add(lessonEditBtn)
 	lessonContainer.Add(viewSlidesBtn)
+	lessonContainer.Add(viewFilesBtn)
+	lessonContainer.Add(viewFilesBtn2)
 	lessonContainer.Add(shiftLeftBtn)
 	lessonContainer.Add(lessonLabel)
 	lessonContainer.Add(shiftRightBtn)
@@ -175,12 +249,33 @@ func (cc *CourseCalendar) OnClickShiftLesson(holder *CalLessonHolder) func(domai
 			if holder == nil {
 				log.Println(("error: holder is nil after RemoveLesson(); unable to add to new LessonList"))
 			} else {
+				// need to update the cc.Courses with updated lesson
+				if l.ID == 0 {
+					dialog.ShowError(fmt.Errorf("shifted lesson ID is 0"), cc.w)
+				}
+				log.Println("shifted lesson id: ", l.ID)
+			outerLoop:
+				for i, unit := range cc.Course.Units {
+					for k, lesson := range unit.Lessons {
+						log.Println("lesson id: ", lesson.ID, "l.ID:", l.ID)
+						if lesson.ID == l.ID {
+							log.Println("updating cc.Course")
+							*cc.Course.Units[i].Lessons[k] = l
+							log.Println("updated cc.Course Lesson:", cc.Course.Units[i].Lessons[k].Dates)
+							break outerLoop
+						} else {
+							log.Println("not equal")
+						}
+					}
+				}
+
 				// if it's another month we don't need to update the UI
 				if newDate.Month() != holder.Date.Month() {
 					return
 				}
 				holder.Date = newDate
 				*holder.Lesson = l
+
 				newList := cc.CurrentMonthCal.DateMap[newDate.Day()]
 				newList.AddLesson(holder)
 				cc.CurrentMonthCal.Calendar.Refresh()

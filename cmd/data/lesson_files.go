@@ -31,32 +31,31 @@ func LessonFilesDirPath(file domain.FilesDir) string {
 }
 
 // temp function to save files to app file system, V2
-func (cr CourseRepo) SaveFilesDir(filesDir string, lesson domain.Lesson) error {
-	newFilesDir := domain.NewFile(lesson.Name, "", filesDir)
+func (cr CourseRepo) SaveFilesDir(filesDir domain.FilesDir, lesson domain.Lesson) (domain.FilesDir, error) {
 	dbFilesDir, err := cr.queries.SaveFilesDir(context.Background(), database.SaveFilesDirParams{
-		Name: newFilesDir.Name,
+		Name: filesDir.Name,
 		Description: sql.NullString{
-			Valid:  newFilesDir.Description != "",
-			String: newFilesDir.Description,
+			Valid:  filesDir.Description != "",
+			String: filesDir.Description,
 		},
 	})
 	if err != nil {
-		return err
+		return domain.FilesDir{}, err
 	}
-	newFilesDir.ID = int(dbFilesDir.ID)
-	destRoot := LessonFilesDirPath(newFilesDir)
+	filesDir.ID = int(dbFilesDir.ID)
+	destRoot := LessonFilesDirPath(filesDir)
 	_, err = cr.queries.SaveLessonFilesDir(context.Background(), database.SaveLessonFilesDirParams{
-		FileID:   int64(newFilesDir.ID),
+		FileID:   int64(filesDir.ID),
 		LessonID: int64(lesson.ID),
 	})
 	if err != nil {
-		return err
+		return domain.FilesDir{}, err
 	}
-	return filepath.WalkDir(filesDir, func(path string, d fs.DirEntry, err error) error {
+	return filesDir, filepath.WalkDir(filesDir.SourcePath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		relPath, err := filepath.Rel(filesDir, path)
+		relPath, err := filepath.Rel(filesDir.SourcePath, path)
 		if err != nil {
 			return err
 		}
@@ -82,3 +81,30 @@ func copyFile(srcPath, dstPath string) error {
 	return err
 }
 
+func (cr CourseRepo) NewFileDir(lesson domain.Lesson) (domain.FilesDir, error) {
+	fileDir := domain.NewFileDir(lesson.Name, lesson.Description, "")
+	dbFilesDir, err := cr.queries.SaveFilesDir(context.Background(), database.SaveFilesDirParams{
+		Name: fileDir.Name,
+		Description: sql.NullString{
+			Valid:  fileDir.Description != "",
+			String: fileDir.Description,
+		},
+	})
+	if err != nil {
+		return domain.FilesDir{}, err
+	}
+	fileDir.ID = int(dbFilesDir.ID)
+	destRoot := LessonFilesDirPath(fileDir)
+	err = os.MkdirAll(destRoot, os.ModePerm)
+	if err != nil {
+		return domain.FilesDir{}, err
+	}
+	_, err = cr.queries.SaveLessonFilesDir(context.Background(), database.SaveLessonFilesDirParams{
+		FileID:   int64(fileDir.ID),
+		LessonID: int64(lesson.ID),
+	})
+	if err != nil {
+		return domain.FilesDir{}, err
+	}
+	return fileDir, nil
+}

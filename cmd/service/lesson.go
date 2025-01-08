@@ -88,3 +88,13 @@ func (svc CourseService) CreateNewLessonSlides(lesson *domain.Lesson) (domain.Sl
 	lesson.Slides = slides
 	return slides, nil
 }
+
+// lesson param is a pointer because this updates the Lesson.Files field
+func (svc CourseService) CreateNewLessonFileDir(lesson *domain.Lesson) (domain.FilesDir, error) {
+	fileDir, err := svc.repo.NewFileDir(*lesson)
+	if err != nil {
+		return domain.FilesDir{}, err
+	}
+	lesson.Files = fileDir
+	return fileDir, nil
+}

@@ -135,14 +135,14 @@ templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cour
 	@Layout(Page{Title: course.GetTitle()}) {
 		@CourseDivContainer(course, unitPath(unit, course, true), unit.GetTitle()) {
 			@CourseUnorderedList() {
-				if hasSlides(lessonPath(lesson, unit, course, false)) {
+				if lesson.Slides.ID != 0 {
 					@ListedLinkItem(SlidesPath(lesson, unit, course), true) {
 						Slides
 					}
 				} else {
 					<p>No content for this lesson yet!</p>
 				}
-				if hasFilesDir(lessonPath(lesson, unit, course, false)) {
+				if lesson.Files.ID != 0 {
 					@ListedLinkItemAbsoluteURL((LessonFilesURL(lesson, unit, course)), true) {
 						Other Files
 					}

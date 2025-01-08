@@ -3,6 +3,7 @@ package templates
 import (
 	"gh_static_portfolio/cmd/domain"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -60,7 +61,10 @@ func LessonImagePath(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 }
 
 func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.SafeURL {
-	filePath := filepath.Join(githubRoot, LessonFilesPath(lesson, unit, course))
+	filePath, err := url.JoinPath(githubRoot, LessonFilesPath(lesson, unit, course))
+	if err != nil {
+		log.Println("error generating LessonFilesURL:", err)
+	}
 	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
 
@@ -75,34 +79,6 @@ func SlidesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) st
 // This should not be used except for a one-time transfer
 func SlidesMarkdownPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return filepath.Join(lessonPath(lesson, unit, course, false), "slides.md")
-}
-
-func hasImage(path string) bool {
-	files, err := os.ReadDir(filepath.Dir(path))
-	if err != nil {
-		log.Fatalf("error reading directory:%s", err)
-	}
-	for _, file := range files {
-		if file.Name() == "image.png" {
-			return true
-		}
-	}
-	return false
-
-}
-
-// if files are found in "files" subdirectory of lesson directory, this will return true, unless the name is prefixed with "secret"
-func hasFilesDir(path string) bool {
-	files, err := os.ReadDir(path + "/files")
-	if err != nil {
-		return false
-	}
-	for _, file := range files {
-		if file.Name()[:6] != "secret" {
-			return true
-		}
-	}
-	return false
 }
 
 // this returns true if and only if a file is found with name "slides.html"
@@ -125,6 +101,11 @@ func DirectoriesClearList() []string {
 		rootDir,
 		coursesDir,
 	}
+}
+
+// courses directory to be deleted completely
+func DeleteDirList() []string {
+	return []string{coursesDir}
 }
 
 type Page struct {

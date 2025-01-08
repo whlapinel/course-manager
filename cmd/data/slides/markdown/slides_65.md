@@ -20,4 +20,4 @@ paginate: true
 Assignment 10.2 (Practice with List Comprehensions)
 
 - See "other files" in lesson folder
-- [Link](https://whlapinel.github.io/courses/python-i-programming-honors/unit-10/lesson-10.2/files/assignment.py)
+- [Link](https://whlapinel.github.io/python/courses/python-i-programming-honors/unit-10/lesson-10.2/files/assignment.txt)

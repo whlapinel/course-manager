@@ -7,6 +7,6 @@ type FilesDir struct {
 	SourcePath  string // original source path of file, not persisted
 }
 
-func NewFile(name, descr, srcPath string) FilesDir {
+func NewFileDir(name, descr, srcPath string) FilesDir {
 	return FilesDir{Name: name, Description: descr, SourcePath: srcPath}
 }

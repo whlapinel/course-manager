@@ -27,6 +27,14 @@ func Generate(courseRepo data.CourseRepo) error {
 	for _, directory := range directories {
 		ClearHTMLFiles(directory)
 	}
+	// delete ./python/docs/courses so there are no orphan files
+	for _, dir := range templates.DeleteDirList() {
+		err := os.RemoveAll(dir)
+		if err != nil {
+			return fmt.Errorf("failed to delete directory: %s: %v", dir, err)
+		}
+	}
+
 	// Generate home page
 	homePage := templates.NewHomePage()
 	err := RenderPage(homePage)

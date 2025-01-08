@@ -9,6 +9,8 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
+# Unit 9 Test
+
 # **Challenge: Sensor Log Analyzer**
 
 ## **Scenario**
@@ -33,10 +35,14 @@ You need to **parse** these entries, gather various statistics, and produce a **
      - **SENSOR** (i.e., normal sensor readings)
      - **ALERT**
      - **ERROR**
-   - **Extract** all **temperature values** from any `SENSOR` entries.
-   - **Identify** the **highest and lowest** temperature readings overall.
-   - **Calculate** the **average** temperature reading per sensor. 
-     - For instance, if sensor `#001` has recorded `[72.5, 90.2]`, its average is `(72.5 + 90.2) / 2`.
+
+# **Your Tasks (Cont'd) Analyze the log entries (cont'd)**
+
+- **Extract** all **temperature values** from any `SENSOR` entries.
+- **Identify** the **highest and lowest** temperature readings overall.
+- **Calculate** the **average** temperature reading per sensor.
+  - For instance, if sensor `#001` has recorded `[72.5, 90.2]`, its average is `(72.5 + 90.2) / 2`.
+
 3. **Write** these results (and any other observations you find helpful) to a new file named `summary.txt`.
 
 # **Details and Requirements**
@@ -47,28 +53,31 @@ You need to **parse** these entries, gather various statistics, and produce a **
 - If it doesn’t exist, display an error message (e.g. “File `sensor.log` not found!”) and stop.
 - **Create** a new file named `summary.txt` to store your findings.
 
-## **Log Entry Analysis**
+# **Log Entry Analysis**
 
-1. **Count Log Entry Types**  
-   - How many `SENSOR` entries are there?  
-   - How many `ALERT` entries are there?  
-   - How many `ERROR` entries are there?
+# 1. **Count Log Entry Types**
 
-2. **Temperature Readings**  
-   - Extract every temperature from lines that begin with `SENSOR`.  
-   - Track each sensor’s readings (e.g., sensor `#001`, sensor `#002`, etc.).  
-   - Compute:
-     - The **minimum** temperature you encounter (across all sensors).
-     - The **maximum** temperature you encounter (across all sensors).
-     - The **average** temperature **per sensor**.
+- How many `SENSOR` entries are there?  
+- How many `ALERT` entries are there?  
+- How many `ERROR` entries are there?
 
-3. **Edge Cases**  
-   - What if there are no `SENSOR` entries? (Then you can’t compute temperatures—handle carefully.)  
-   - What if a sensor appears only once? (Then its average temperature is just that single reading.)
+# 2. **Temperature Readings**  
+
+- Extract every temperature from lines that begin with `SENSOR`.  
+- Track each sensor’s readings (e.g., sensor `#001`, sensor `#002`, etc.).  
+- Compute:
+  - The **minimum** temperature you encounter (across all sensors).
+  - The **maximum** temperature you encounter (across all sensors).
+  - The **average** temperature **per sensor**.
+
+# 3. **Edge Cases**  
+
+- What if there are no `SENSOR` entries? (Then you can’t compute temperatures—handle carefully.)  
+- What if a sensor appears only once? (Then its average temperature is just that single reading.)
 
 # **Sample `summary.txt` (Hypothetical Example)**
 
-```
+```text
 Sensor Log Analysis Report
 ===========================
 Log Entry Counts:
@@ -101,16 +110,20 @@ Average Temperature per Sensor:
    - Creates and writes to `summary.txt`.  
    - Gracefully handles the case where `sensor.log` does not exist.
 
-2. **Data Processing**  
+# **Assessment Criteria**
+
+1. **Data Processing**  
    - Correctly identifies `SENSOR`, `ALERT`, and `ERROR` lines.  
    - Extracts numerical temperature values and keeps track by sensor ID.  
    - Correctly calculates min, max, average temperatures, and total counts.
 
-3. **Output Quality**  
+2. **Output Quality**  
    - Report in `summary.txt` is well-structured, easy to read, and accurately reflects the data.  
    - Handles unusual or missing data (no sensor lines, no alerts, etc.) without breaking.
 
 # **Starter Code (Optional)**
+
+<!-- header: -->
 
 ```python
 import os
@@ -132,6 +145,3 @@ if log_entries:
     # TODO: Parse these log entries and build your final string for summary.txt
     report_content = "Your final report goes here..."
     write_report("summary.txt", report_content)
-```
-
-Feel free to expand on this code or write your own. Good luck analyzing those sensor logs!

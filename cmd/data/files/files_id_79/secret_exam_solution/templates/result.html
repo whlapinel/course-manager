@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<p>{{query}} : {{result}}</p>
+<a href="{{ url_for('search')}}">Search Again</a>
+{% endblock %}
