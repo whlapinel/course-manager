@@ -29,6 +29,24 @@ func (q *Queries) DeleteUnit(ctx context.Context, id int64) (Unit, error) {
 	return i, err
 }
 
+const getUnit = `-- name: GetUnit :one
+SELECT id, course_id, number, sequence, name, description FROM units u WHERE u.id = ?
+`
+
+func (q *Queries) GetUnit(ctx context.Context, id int64) (Unit, error) {
+	row := q.db.QueryRowContext(ctx, getUnit, id)
+	var i Unit
+	err := row.Scan(
+		&i.ID,
+		&i.CourseID,
+		&i.Number,
+		&i.Sequence,
+		&i.Name,
+		&i.Description,
+	)
+	return i, err
+}
+
 const getUnits = `-- name: GetUnits :many
 SELECT
   u.id,

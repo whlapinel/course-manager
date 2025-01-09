@@ -4,7 +4,6 @@ import (
 	"gh_static_portfolio/cmd/domain"
 	"log"
 	"net/url"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -17,10 +16,12 @@ const (
 	coursesDir = "./python/docs/courses/"
 )
 
+// Student-facing site
 func kebabCase(str string) string {
 	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
 }
 
+// Student-facing site
 func coursePath(course domain.Course, page bool) string {
 	dirPath := filepath.Join(coursesDir, kebabCase(course.Name))
 	if page {
@@ -29,11 +30,13 @@ func coursePath(course domain.Course, page bool) string {
 	return dirPath
 }
 
+// Student-facing site
 func CourseImagePath(course domain.Course) string {
 	dir := coursePath(course, false)
 	return filepath.Join(dir, "image.png")
 }
 
+// Student-facing site
 func unitPath(unit domain.Unit, course domain.Course, page bool) string {
 	dirPath := filepath.Join(coursePath(course, false), kebabCase(unit.Name))
 	if page {
@@ -42,11 +45,13 @@ func unitPath(unit domain.Unit, course domain.Course, page bool) string {
 	return dirPath
 }
 
+// Student-facing site
 func UnitImagePath(unit domain.Unit, course domain.Course) string {
 	dir := unitPath(unit, course, false)
 	return filepath.Join(dir, "image.png")
 }
 
+// Student-facing site
 func lessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, page bool) string {
 	dirPath := filepath.Join(unitPath(unit, course, false), kebabCase(lesson.Name))
 	if page {
@@ -55,11 +60,13 @@ func lessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, pa
 	return dirPath
 }
 
+// Student-facing site
 func LessonImagePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	dir := lessonPath(lesson, unit, course, false)
 	return filepath.Join(dir, "image.png")
 }
 
+// Student-facing site
 func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.SafeURL {
 	filePath, err := url.JoinPath(githubRoot, LessonFilesPath(lesson, unit, course))
 	if err != nil {
@@ -68,10 +75,12 @@ func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course
 	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
 
+// Student-facing site
 func LessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return filepath.Join(lessonPath(lesson, unit, course, false), "files")
 }
 
+// Student-facing site
 func SlidesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return filepath.Join(lessonPath(lesson, unit, course, false), "slides.html")
 }
@@ -79,20 +88,6 @@ func SlidesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) st
 // This should not be used except for a one-time transfer
 func SlidesMarkdownPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return filepath.Join(lessonPath(lesson, unit, course, false), "slides.md")
-}
-
-// this returns true if and only if a file is found with name "slides.html"
-func hasSlides(path string) bool {
-	files, err := os.ReadDir(path)
-	if err != nil {
-		log.Fatalf("error reading directory: %s", err)
-	}
-	for _, file := range files {
-		if file.Name() == "slides.html" {
-			return true
-		}
-	}
-	return false
 }
 
 // list of directories to be cleared (used for clearing html files only)

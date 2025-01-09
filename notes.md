@@ -2,6 +2,12 @@
 
 ## Progress Log
 
+### 1/9/2025
+
+Decided to shift to building a web app instead of a Fyne app. One big reason is I want to be able to display slides in markdown and html side-by-side. It will also make deployment much more straightforward.
+
+I am starting to think it was a mistake to decouple lessons, slides and files. Now I think I should just make copies of everything with each new quarter instead of trying to preserve space. So the slides and files will now be stored in lessons directory named by lessonID, and accessing outside the web app will still not be feasible but at least it will all be in the same place.
+
 ### 1/4/2025
 
 Shifted to lesson planning today and had a lovely time working with the files through the app. It's still a little cumbersome.

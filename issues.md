@@ -2,11 +2,11 @@
 
 ## Pending
 
-- 1/7/25 (major) Calendar doesn't fit to screen properly.
-- 12/30/24 (minor) Lesson Edit form shows description as single-line with horizontal scroll rather than wrapping text.
 
 ## Complete
 
+- 12/30/24 (minor) Lesson Edit form shows description as single-line with horizontal scroll rather than wrapping text. Resolved by switching from Fyne to web application (lol) 1/8/25
+- 1/7/25 (major) Calendar doesn't fit to screen properly. Resolved by switching from Fyne to web application (lol) 1/8/25
 - 1/4/25 (major) Shifting lessons across months doesn't show properly in the UI layer, probably because the map isn't updated or something. Going back out and then back into the calendar works though. Problem was I wasn't updating the in-memory Course upon shifting, I was only updating the UI and the DB. Resolved 1/4/24
 
 - 12/30/24 (major) ShowCalendar shows wrong course! Resolved 12/30/24

@@ -47,7 +47,18 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 	return course.ID, nil
 
 }
+func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
+	dbCourse, err := cr.queries.GetCourseByCourseID(context.Background(), int64(courseID))
+	if err != nil {
+		return nil, err
+	}
+	course := domain.Course{
+		ID:   int(dbCourse.ID),
+		Name: dbCourse.Name,
+	}
+	return &course, nil
 
+}
 func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 	dbCourses, err := cr.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
 	if err != nil {

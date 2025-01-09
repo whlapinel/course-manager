@@ -5,7 +5,6 @@ type Slides struct {
 	Name        string
 	Description string
 	SourcePath  string
-	BasePath    string
 }
 
 func NewSlides(name, descr, srcPath string) Slides {

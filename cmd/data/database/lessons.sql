@@ -9,6 +9,13 @@ INSERT INTO lessons (
 )
 RETURNING *;
 
+-- name: GetLesson :one
+SELECT 
+  l.*
+FROM 
+  lessons l
+WHERE 
+  l.id = ?;
 
 -- name: GetLessons :many
 SELECT

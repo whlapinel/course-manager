@@ -1,0 +1,150 @@
+package templates
+
+import (
+	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/util"
+	"github.com/labstack/echo/v4"
+	"strconv"
+	"time"
+)
+
+// CourseManager site
+templ CourseManagerLayout(pageTitle string, page templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+			<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+			<script src="/dist/htmx.js" defer></script>
+			<title>{ pageTitle }</title>
+		</head>
+		// TODO: need to make the header
+		<header>
+			<ul>
+				<li></li>
+			</ul>
+		</header>
+		<body>
+			<main id="page">
+				@page
+			</main>
+		</body>
+	</html>
+}
+
+templ ManagerHomePage() {
+	<h1>Welcome to Course Manager</h1>
+}
+
+// CourseManager site
+templ TermsListTemplate(terms []domain.Term, coursesRouteName string, e *echo.Echo) {
+	for _, term := range terms {
+		<ul>
+			<li>
+				<button hx-get={ e.Reverse(coursesRouteName, term.ID) } hx-target="#page" hx-push-url="true">
+					{ term.Name }
+				</button>
+			</li>
+		</ul>
+	}
+}
+
+// CourseManager site
+templ CourseCalendarTemplate(course domain.Course) {
+	<div id="calendar" class="flex flex-col gap-4">
+		for _, day := range course.Term.TermMonths() {
+			<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
+			<div id="month-container" class="flex flex-col border border-solid">
+				for _, week := range util.GetMonthDates(day) {
+					<div id="week-container" class="grid grid-cols-5">
+						for _, calDate := range week[1:6] {
+							<div id="date-container">
+								if !calDate.IsZero() {
+									{ calDate.Format("Mon 1/02/06") }
+								}
+								<ul>
+									if course.Term.IsInstructionDay(calDate) {
+										for _, unit := range course.Units {
+											for _, lesson := range unit.Lessons {
+												for _, lessonDate := range lesson.Dates {
+													if util.IsSameDate(lessonDate, calDate) {
+														<li>
+															@ListedLinkItem(RemoveDocsFromPath(lessonPath(*lesson, *unit, course, true)), false) {
+																<p>{ lesson.Name } </p>
+															}
+														</li>
+													}
+												}
+											}
+										}
+									}
+								</ul>
+							</div>
+						}
+					</div>
+				}
+			</div>
+		}
+	</div>
+}
+
+// CourseManager site
+templ CoursesListTemplate(
+	termID int, courses domain.Courses, unitsRouteHandlerName string, courseCalendarRouteHandlerName string, e *echo.Echo,
+) {
+	for _, course := range courses {
+		<ul>
+			<li>
+				<button hx-get={ e.Reverse(unitsRouteHandlerName, termID, course.ID) } hx-target="#page" hx-push-url="true">
+					{ course.Name }
+				</button>
+				<button hx-get={ e.Reverse(courseCalendarRouteHandlerName, termID, course.ID) } hx-target="#page" hx-push-url="true">
+					{ course.Name }
+				</button>
+			</li>
+		</ul>
+	}
+}
+
+// CourseManager site
+templ UnitsListTemplate(termID, courseID int, units []*domain.Unit, unitRouteName string, e *echo.Echo) {
+	for _, unit := range units {
+		<ul>
+			<li>
+				<button hx-get={ e.Reverse(unitRouteName, termID, courseID, unit.ID) } hx-target="#page" hx-push-url="true">
+					{ unit.Name }
+				</button>
+			</li>
+		</ul>
+	}
+}
+
+// CourseManager site
+templ LessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesson, lessonRouteName string, e *echo.Echo) {
+	for _, lesson := range lessons {
+		<ul>
+			<li>
+				<button hx-get={ e.Reverse(lessonRouteName, termID, courseID, unitID, lesson.ID) } hx-target="#page" hx-push-url="true">
+					{ lesson.Name }
+				</button>
+			</li>
+		</ul>
+	}
+}
+
+// CourseManager site
+templ LessonDetailsTemplate(termID, courseID, unitID, lessonID int, lesson *domain.Lesson, unit *domain.Unit, course *domain.Course, slidesRouteName string, e *echo.Echo) {
+	<p>{ lesson.Name }</p>
+	<p>{ lesson.Description }</p>
+	<a href={ LessonFilesURL(*lesson, *unit, *course) }>Files</a>
+	<a href={ templ.SafeURL(e.Reverse(slidesRouteName, termID, courseID, unitID, lessonID)) } target="_blank">Slides</a>
+	for _, date := range lesson.Dates {
+		<ul>
+			<li>
+				{ date.Format(time.DateOnly) }
+			</li>
+		</ul>
+	}
+}

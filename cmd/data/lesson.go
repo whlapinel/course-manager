@@ -8,9 +8,47 @@ import (
 	"gh_static_portfolio/cmd/data/database"
 	"gh_static_portfolio/cmd/domain"
 	"log"
+	"path/filepath"
 	"strconv"
 	"time"
 )
+
+func LessonDirPath(lessonID int) string {
+	return fmt.Sprintf("./cmd/data/lessons/lesson_%d", lessonID)
+}
+
+func NewLessonFilesDirPath(lessonID int) string {
+	return filepath.Join(LessonDirPath(lessonID), "files")
+}
+
+func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
+	log.Println("CourseRepo: GetLesson: lessonID:", lessonID)
+	dbLesson, err := cr.queries.GetLesson(context.Background(), int64(lessonID))
+	if err != nil {
+		return nil, err
+	}
+	lesson := domain.Lesson{
+		ID:          lessonID,
+		UnitID:      int(dbLesson.UnitID),
+		Number:      int(dbLesson.Number),
+		Name:        dbLesson.Name.String,
+		Description: dbLesson.Description.String,
+	}
+	return &lesson, nil
+}
+
+func (cr CourseRepo) GetSlides(lessonID int) (domain.Slides, error) {
+	dbSlides, err := cr.queries.GetSlides(context.Background(), int64(lessonID))
+	if err != nil {
+		return domain.Slides{}, err
+	}
+	slides := domain.Slides{
+		ID:          int(dbSlides.ID),
+		Name:        dbSlides.Name,
+		Description: dbSlides.Description.String,
+	}
+	return slides, nil
+}
 
 func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 	dbLessons, err := cr.queries.GetLessons(context.Background(), int64(unitID))
@@ -41,7 +79,7 @@ func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 		if err != nil {
 			return nil, err
 		}
-		files, err := cr.getLessonFiles(lesson)
+		files, err := cr.GetLessonFiles(lesson)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				log.Println("no files for lesson ", lesson.Name)

@@ -1,11 +1,44 @@
 package service
 
 import (
+	"fmt"
 	"gh_static_portfolio/cmd/domain"
 	"log"
 	"os"
 	"time"
 )
+
+func (svc CourseService) GetLesson(lessonID int) (*domain.Lesson, error) {
+	lesson, err := svc.repo.GetLesson(lessonID)
+	if err != nil {
+		return nil, fmt.Errorf("CourseService.GetLesson: %d", lessonID)
+	}
+	slides, err := svc.repo.GetSlides(lessonID)
+	if err != nil {
+		return nil, err
+	}
+	lesson.Slides = slides
+	lessonDates, err := svc.repo.GetLessonDates(lessonID)
+	if err != nil {
+		return nil, err
+	}
+	lesson.Dates = lessonDates
+	lessonFiles, err := svc.repo.GetLessonFiles(*lesson)
+	if err != nil {
+		return nil, err
+	}
+	lesson.Files = lessonFiles
+	return lesson, nil
+
+}
+
+func (svc CourseService) GetLessons(unitID int) ([]*domain.Lesson, error) {
+	lessons, err := svc.repo.GetLessons(unitID)
+	if err != nil {
+		return nil, err
+	}
+	return lessons, nil
+}
 
 func (svc CourseService) UpdateLesson(l domain.Lesson) error {
 	log.Println("CourseService.UpdateLesson: ")

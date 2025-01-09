@@ -1,3 +1,6 @@
+-- name: GetUnit :one
+SELECT * FROM units u WHERE u.id = ?;
+
 -- name: GetUnits :many
 SELECT
   u.id,

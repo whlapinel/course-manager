@@ -104,7 +104,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 		if lesson.Files.ID == 0 {
 			dialog.ShowInformation("Info", "No files have been added to this lesson", cc.w)
 		}
-		path := data.LessonFilesDirPath(lesson.Files)
+		path := data.OldLessonFilesDirPath(lesson.Files)
 		uri, err := storage.ParseURI("file://" + path)
 		if err != nil {
 			dialog.ShowError(err, cc.w)
@@ -124,7 +124,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 		viewFilesBtn2.Disable()
 	}
 	viewFilesBtn := widget.NewButton("Files", func() {
-		var path = data.LessonFilesDirPath(lesson.Files)
+		var path = data.OldLessonFilesDirPath(lesson.Files)
 		hasFiles := lesson.Files.ID != 0
 		_, err := os.Stat(path)
 		if !hasFiles || errors.Is(err, fs.ErrNotExist) {
@@ -133,7 +133,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 			if err != nil {
 				dialog.ShowError(err, cc.w)
 			}
-			path = data.LessonFilesDirPath(fileDir)
+			path = data.OldLessonFilesDirPath(fileDir)
 		}
 		log.Println(path)
 		// Should open file in new window in VS Code

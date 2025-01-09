@@ -267,7 +267,6 @@ func SaveTerm(ctx context.Context, term domain.Term, queries *database.Queries) 
 	return dbTerm, nil
 }
 
-
 func parseDates(dateStrings []string) ([]time.Time, error) {
 	var dates []time.Time
 	for _, dateString := range dateStrings {

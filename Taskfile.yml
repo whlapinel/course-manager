@@ -6,7 +6,13 @@ tasks:
       - echo 'Hello World from Task!'
     silent: true
 
-  sync:
+  generate:
+    desc: Generate stuff and things
+    cmds:
+      - go generate ./...
+
+  sync-site:
+    desc: Push generated site code to GitHub to make publicly available
     cmds:
       - cd python && git add .
       - cd python && git commit -m "auto-sync"
@@ -16,23 +22,18 @@ tasks:
       - cd python && git push
       - cd python && git switch dev
 
-  run-manager:
-    - echo 'running templ generate...'
-    - templ generate
-    - echo 'running tsc build...'
-    - tsc --build
-    - echo 'running npx tailwindcss...'
-    - npx tailwindcss -i ./input.css -o ./python/docs/styles/styles.css
-    - echo 'Starting Course Manager'
-    - go run ./cmd/fyne_app
-
-  build:
+  run-fyne-manager:
+    desc: Start Fyne course manager app locally
+    deps:
+      - generate
     cmds:
-      - echo 'running templ generate...'
-      - templ generate
-      - echo 'running tsc build...'
-      - tsc --build
-      - echo 'running npx tailwindcss...'
-      - npx tailwindcss -i ./input.css -o ./python/docs/styles/styles.css
-      - echo 'running go run...'
-      - go run ./cmd/gen_site
+      - echo 'Starting Course Manager'
+      - go run ./cmd/fyne_app
+
+  run-web-manager:
+    desc: Start server for course manager web application
+    deps:
+      - generate
+    cmds:
+      - echo 'Starting Course Manager'
+      - go run ./cmd/web_app

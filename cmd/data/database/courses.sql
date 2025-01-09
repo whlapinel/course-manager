@@ -1,3 +1,6 @@
+-- name: GetCourseByCourseID :one
+SELECT * FROM courses c WHERE c.id = ?;
+
 -- name: GetCourses :many
 SELECT
   c.id as course_id,

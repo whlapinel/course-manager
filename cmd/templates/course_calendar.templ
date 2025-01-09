@@ -18,6 +18,7 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 	return dates
 }
 
+// Student-facing site
 templ CourseCalendarComponent(course domain.Course) {
 	@Layout(Page{Title: course.Name}) {
 		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {

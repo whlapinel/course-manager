@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Student-facing site
 templ CourseDivContainer(course domain.Course, upPath, text string) {
 	<nav class="flex gap-2 ml-4">
 		if course.Term.Name != "" {
@@ -25,12 +26,14 @@ templ CourseDivContainer(course domain.Course, upPath, text string) {
 	</div>
 }
 
+// Student-facing site
 templ CourseUnorderedList() {
 	<ul class="max-w-fit min-w-fit">
 		{ children... }
 	</ul>
 }
 
+// Student-facing site
 func targetAttrVal(newTab bool) string {
 	if newTab {
 		return "_blank"
@@ -38,6 +41,7 @@ func targetAttrVal(newTab bool) string {
 	return "_self"
 }
 
+// Student-facing site
 templ ListedLinkItem(path string, newTab bool) {
 	<a href={ FilePathToURL(path) } target={ targetAttrVal(newTab) }>
 		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
@@ -46,6 +50,7 @@ templ ListedLinkItem(path string, newTab bool) {
 	</a>
 }
 
+// Student-facing site
 templ ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) {
 	<a href={ path } target={ targetAttrVal(newTab) }>
 		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
@@ -54,6 +59,7 @@ templ ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) {
 	</a>
 }
 
+// Student-facing site
 templ BackButton(path, text string) {
 	<a href={ FilePathToURL(path) }>
 		<li class="flex gap-2 text-lg mb-10 items-center bg-green-600 p-3 rounded hover:bg-green-500">
@@ -63,6 +69,7 @@ templ BackButton(path, text string) {
 	</a>
 }
 
+// Student-facing site
 // Title for page. Path allows checking for image
 templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) {
 	<div class="flex flex-col gap-6 max-w-3xl">
@@ -78,6 +85,7 @@ templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) {
 	</div>
 }
 
+// Student-facing site
 templ CoursesListComponent(instances []*domain.Course) {
 	@Layout(NewCoursesListPage(nil)) {
 		@CourseDivContainer(domain.Course{}, "", "") {
@@ -93,6 +101,7 @@ templ CoursesListComponent(instances []*domain.Course) {
 	}
 }
 
+// Student-facing site
 templ CourseComponent(instance domain.Course) {
 	@Layout(Page{Title: instance.Name}) {
 		@CourseDivContainer(instance, coursesDir+"courses.html", "Course List") {
@@ -112,6 +121,7 @@ templ CourseComponent(instance domain.Course) {
 	}
 }
 
+// Student-facing site
 templ UnitComponent(unit domain.Unit, instance domain.Course) {
 	@Layout(Page{Title: instance.GetTitle()}) {
 		@CourseDivContainer(instance, coursePath(instance, true), instance.Name) {
@@ -131,6 +141,7 @@ templ UnitComponent(unit domain.Unit, instance domain.Course) {
 	}
 }
 
+// Student-facing site
 templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course) {
 	@Layout(Page{Title: course.GetTitle()}) {
 		@CourseDivContainer(course, unitPath(unit, course, true), unit.GetTitle()) {

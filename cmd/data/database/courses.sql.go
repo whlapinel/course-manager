@@ -58,6 +58,22 @@ func (q *Queries) GetCourse(ctx context.Context, termID sql.NullInt64) (GetCours
 	return i, err
 }
 
+const getCourseByCourseID = `-- name: GetCourseByCourseID :one
+SELECT id, term_id, name, description FROM courses c WHERE c.id = ?
+`
+
+func (q *Queries) GetCourseByCourseID(ctx context.Context, id int64) (Course, error) {
+	row := q.db.QueryRowContext(ctx, getCourseByCourseID, id)
+	var i Course
+	err := row.Scan(
+		&i.ID,
+		&i.TermID,
+		&i.Name,
+		&i.Description,
+	)
+	return i, err
+}
+
 const getCourseByID = `-- name: GetCourseByID :one
 SELECT id, term_id, name, description from courses WHERE id = ?
 `

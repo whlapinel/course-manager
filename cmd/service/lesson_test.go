@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+func TestGetLesson(t *testing.T) {
+	lesson, err := svc.GetLesson(1)
+	if err != nil {
+		t.Error(err)
+	}
+	log.Println(lesson.Name)
+}
 func TestShift(t *testing.T) {
 	svc := NewCourseService(cr)
 	terms, err := svc.GetTerms()

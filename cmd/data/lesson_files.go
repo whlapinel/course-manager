@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func (c CourseRepo) getLessonFiles(lesson domain.Lesson) (domain.FilesDir, error) {
+func (c CourseRepo) GetLessonFiles(lesson domain.Lesson) (domain.FilesDir, error) {
 	dbFile, err := c.queries.GetLessonFilesDir(context.Background(), int64(lesson.ID))
 	if err != nil {
 		return domain.FilesDir{}, err
@@ -25,7 +25,7 @@ func (c CourseRepo) getLessonFiles(lesson domain.Lesson) (domain.FilesDir, error
 	return file, nil
 }
 
-func LessonFilesDirPath(file domain.FilesDir) string {
+func OldLessonFilesDirPath(file domain.FilesDir) string {
 	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/files"
 	return filepath.Join(basePath, fmt.Sprintf("files_id_%d", file.ID))
 }
@@ -43,7 +43,7 @@ func (cr CourseRepo) SaveFilesDir(filesDir domain.FilesDir, lesson domain.Lesson
 		return domain.FilesDir{}, err
 	}
 	filesDir.ID = int(dbFilesDir.ID)
-	destRoot := LessonFilesDirPath(filesDir)
+	destRoot := OldLessonFilesDirPath(filesDir)
 	_, err = cr.queries.SaveLessonFilesDir(context.Background(), database.SaveLessonFilesDirParams{
 		FileID:   int64(filesDir.ID),
 		LessonID: int64(lesson.ID),
@@ -94,7 +94,7 @@ func (cr CourseRepo) NewFileDir(lesson domain.Lesson) (domain.FilesDir, error) {
 		return domain.FilesDir{}, err
 	}
 	fileDir.ID = int(dbFilesDir.ID)
-	destRoot := LessonFilesDirPath(fileDir)
+	destRoot := OldLessonFilesDirPath(fileDir)
 	err = os.MkdirAll(destRoot, os.ModePerm)
 	if err != nil {
 		return domain.FilesDir{}, err

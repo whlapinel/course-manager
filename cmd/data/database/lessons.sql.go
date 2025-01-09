@@ -60,6 +60,28 @@ func (q *Queries) GetDateID(ctx context.Context, date string) (int64, error) {
 	return id, err
 }
 
+const getLesson = `-- name: GetLesson :one
+SELECT 
+  l.id, l.unit_id, l.number, l.name, l.description
+FROM 
+  lessons l
+WHERE 
+  l.id = ?
+`
+
+func (q *Queries) GetLesson(ctx context.Context, id int64) (Lesson, error) {
+	row := q.db.QueryRowContext(ctx, getLesson, id)
+	var i Lesson
+	err := row.Scan(
+		&i.ID,
+		&i.UnitID,
+		&i.Number,
+		&i.Name,
+		&i.Description,
+	)
+	return i, err
+}
+
 const getLessonDates = `-- name: GetLessonDates :many
 SELECT
   d.date

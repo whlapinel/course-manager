@@ -137,7 +137,7 @@ func CopyFiles(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr 
 		return nil
 	}
 	log.Println("Copying fileDir ", fileDir.ID)
-	srcRoot := data.LessonFilesDirPath(fileDir)
+	srcRoot := data.OldLessonFilesDirPath(fileDir)
 	log.Println("Source ", srcRoot)
 	destRoot := templates.LessonFilesPath(lesson, unit, course)
 	log.Println("Dest ", destRoot)

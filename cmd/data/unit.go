@@ -44,6 +44,35 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
 
 }
 
+func (cr CourseRepo) GetUnit(unitID int) (*domain.Unit, error) {
+	dbUnit, err := cr.queries.GetUnit(context.Background(), int64(unitID))
+	if err != nil {
+		return nil, err
+	}
+	unit := domain.Unit{
+		ID:          int(dbUnit.ID),
+		CourseID:    int(dbUnit.CourseID),
+		Number:      int(dbUnit.Number),
+		SequenceNum: int(dbUnit.Sequence),
+		Name:        dbUnit.Name,
+		Description: dbUnit.Description.String,
+	}
+	return &unit, nil
+}
+
+func (cr CourseRepo) GetUnitImage(unitID int) (*domain.Image, error) {
+	dbImage, err := cr.queries.GetUnitImage(context.Background(), int64(unitID))
+	if err != nil {
+		return nil, err
+	}
+	image := domain.Image{
+		ID:          int(dbImage.ID),
+		Name:        dbImage.Name,
+		Description: dbImage.Description.String,
+		BasePath:    dbImage.BasePath,
+	}
+	return &image, nil
+}
 func (cr CourseRepo) GetUnits(courseID int) ([]*domain.Unit, error) {
 	var units []*domain.Unit
 	dbUnits, err := cr.queries.GetUnits(context.Background(), int64(courseID))
