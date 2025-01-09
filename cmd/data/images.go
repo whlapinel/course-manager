@@ -47,7 +47,7 @@ func (c CourseRepo) GetLessonImage(lesson domain.Lesson) (domain.Image, error) {
 }
 
 // This returns the path for an image, either for retrieving or storing the actual file
-func ImagesPath(image domain.Image) string {
+func OldImagesPath(image domain.Image) string {
 	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/images"
 	dstPath := filepath.Join(basePath, fmt.Sprintf("image_id_%d_%s", image.ID, image.BasePath))
 	return dstPath
@@ -60,7 +60,7 @@ func addImage(image domain.Image) error {
 		return err
 	}
 	defer srcFile.Close()
-	dstPath := ImagesPath(image)
+	dstPath := OldImagesPath(image)
 	newFile, err := os.Create(dstPath)
 	if err != nil {
 		return err

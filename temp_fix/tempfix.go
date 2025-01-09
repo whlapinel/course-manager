@@ -36,46 +36,55 @@ func main() {
 					log.Fatal(err)
 				}
 				for _, lesson := range lessons {
-					// get new lesson_dir path (.cmd/data/lessons/lesson_{id})
-					newLessonPath := data.LessonDirPath(lesson.ID)
-
-					// for each lesson, get slides path
-					oldSlidesPath := data.OldSlidesMarkdownFilePath(*lesson)
-					oldFile, err := os.Open(oldSlidesPath)
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					// create new lesson directory
-					err = os.Mkdir(newLessonPath, os.ModePerm)
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					// create new slides.md
-					newFile, err := os.Create(filepath.Join(newLessonPath, "slides.md"))
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					// copy slides to lesson directory
-					_, err = io.Copy(newFile, oldFile)
-					if err != nil {
-						log.Fatal(err)
-					}
-
-					// get old files path
-					oldFilesPath := data.OldLessonFilesDirPath(lesson.Files)
+					CopySlides(*lesson)
 
 					// recursively copy all files from old files to lesson directory
+					CopyFiles(*lesson, cr)
 
 					// Additional Notes (nothing to implement below, must be done manually)
-					// files and slides will no longer have their own id and will thus not need to be entered in the database, won't need a domain model either, so no need to update these
+					// files and slides will no longer have their own id and will thus not need to be entered in the database
+					// won't need a domain model either, so no need to update these but do need to delete them and alter code accordingly
+
+					// Images will need to remain for now
 					// Also, should just move the slides.html to the same directory
 				}
 			}
 		}
 	}
+}
+
+func CopySlides(lesson domain.Lesson) {
+
+	// get new lesson_dir path (.cmd/data/lessons/lesson_{id})
+	newLessonPath := data.LessonDirPath(lesson.ID)
+
+	// for each lesson, get slides path
+	oldSlidesPath := data.OldSlidesMarkdownFilePath(lesson)
+	oldFile, err := os.Open(oldSlidesPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer oldFile.Close()
+
+	// create new lesson directory
+	err = os.Mkdir(newLessonPath, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// create new slides.md
+	newFile, err := os.Create(filepath.Join(newLessonPath, "slides.md"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer newFile.Close()
+
+	// copy slides to lesson directory
+	_, err = io.Copy(newFile, oldFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
 
 func CopyFiles(lesson domain.Lesson, cr data.CourseRepo) error {

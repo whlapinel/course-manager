@@ -173,7 +173,7 @@ func copyFile(srcPath, destPath string) error {
 }
 
 func CopyCourseImage(course domain.Course) error {
-	srcPath := data.ImagesPath(course.Image)
+	srcPath := data.OldImagesPath(course.Image)
 	if !FileExists(srcPath) {
 		return nil
 	}
@@ -196,7 +196,7 @@ func CopyUnitImage(unit domain.Unit, course domain.Course) error {
 	if unit.Image.ID == 0 {
 		return nil
 	}
-	srcPath := data.ImagesPath(unit.Image)
+	srcPath := data.OldImagesPath(unit.Image)
 	if !FileExists(srcPath) {
 		return fmt.Errorf("file not found: %s", srcPath)
 	}
@@ -220,7 +220,7 @@ func CopyUnitImage(unit domain.Unit, course domain.Course) error {
 	return nil
 }
 func CopyLessonImage(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
-	srcPath := data.ImagesPath(lesson.Image)
+	srcPath := data.OldImagesPath(lesson.Image)
 	if !FileExists(srcPath) {
 		return nil
 	}
