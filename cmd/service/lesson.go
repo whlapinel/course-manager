@@ -2,32 +2,46 @@ package service
 
 import (
 	"fmt"
+	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/domain"
 	"log"
 	"os"
 	"time"
 )
 
+func (svc CourseService) CreateNewLessonSlides(lessonID int) error {
+	path := data.NewSlidesMarkdownFilePath(lessonID)
+	// make sure file does not exist
+	_, err := os.Stat(path)
+	if err == nil {
+		return fmt.Errorf("CourseService.CreateNewLessonSlides: file exists already at %s", path)
+	}
+	_, err = os.Create(path)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (svc CourseService) CreateNewLessonFileDir(lessonID int) error {
+	path := data.NewLessonFilesDirPath(lessonID)
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (svc CourseService) GetLesson(lessonID int) (*domain.Lesson, error) {
 	lesson, err := svc.repo.GetLesson(lessonID)
 	if err != nil {
 		return nil, fmt.Errorf("CourseService.GetLesson: %d", lessonID)
 	}
-	slides, err := svc.repo.GetSlides(lessonID)
-	if err != nil {
-		return nil, err
-	}
-	lesson.Slides = slides
 	lessonDates, err := svc.repo.GetLessonDates(lessonID)
 	if err != nil {
 		return nil, err
 	}
 	lesson.Dates = lessonDates
-	lessonFiles, err := svc.repo.GetLessonFiles(*lesson)
-	if err != nil {
-		return nil, err
-	}
-	lesson.Files = lessonFiles
 	return lesson, nil
 
 }
@@ -99,35 +113,4 @@ func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, directio
 		return domain.Lesson{}, err
 	}
 	return shifted, nil
-}
-
-func (svc CourseService) CreateNewLessonSlides(lesson *domain.Lesson) (domain.Slides, error) {
-	tempPath := "./temp_files"
-	err := os.MkdirAll(tempPath, os.ModePerm)
-	if err != nil {
-		return domain.Slides{}, err
-	}
-	tempFile, err := os.CreateTemp(tempPath, "slides*.md")
-	if err != nil {
-		return domain.Slides{}, err
-	}
-	defer os.Remove(tempFile.Name())
-	slides := domain.NewSlides(lesson.Name, lesson.Description, tempFile.Name())
-	id, err := svc.repo.SaveSlides(slides, *lesson)
-	if err != nil {
-		return domain.Slides{}, err
-	}
-	slides.ID = id
-	lesson.Slides = slides
-	return slides, nil
-}
-
-// lesson param is a pointer because this updates the Lesson.Files field
-func (svc CourseService) CreateNewLessonFileDir(lesson *domain.Lesson) (domain.FilesDir, error) {
-	fileDir, err := svc.repo.NewFileDir(*lesson)
-	if err != nil {
-		return domain.FilesDir{}, err
-	}
-	lesson.Files = fileDir
-	return fileDir, nil
 }

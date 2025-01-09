@@ -21,6 +21,14 @@ func NewLessonFilesDirPath(lessonID int) string {
 	return filepath.Join(LessonDirPath(lessonID), "files")
 }
 
+func NewSlidesMarkdownFilePath(lessonID int) string {
+	return filepath.Join(LessonDirPath(lessonID), "slides.md")
+}
+
+func NewSlidesHTMLFilePath(lessonID int) string {
+	return filepath.Join(LessonDirPath(lessonID), "slides.html")
+}
+
 func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
 	log.Println("CourseRepo: GetLesson: lessonID:", lessonID)
 	dbLesson, err := cr.queries.GetLesson(context.Background(), int64(lessonID))
@@ -35,19 +43,6 @@ func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
 		Description: dbLesson.Description.String,
 	}
 	return &lesson, nil
-}
-
-func (cr CourseRepo) GetSlides(lessonID int) (domain.Slides, error) {
-	dbSlides, err := cr.queries.GetSlides(context.Background(), int64(lessonID))
-	if err != nil {
-		return domain.Slides{}, err
-	}
-	slides := domain.Slides{
-		ID:          int(dbSlides.ID),
-		Name:        dbSlides.Name,
-		Description: dbSlides.Description.String,
-	}
-	return slides, nil
 }
 
 func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
@@ -79,28 +74,6 @@ func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 		if err != nil {
 			return nil, err
 		}
-		files, err := cr.GetLessonFiles(lesson)
-		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				log.Println("no files for lesson ", lesson.Name)
-			} else {
-				log.Fatal("error getting lesson files", err)
-				return nil, err
-			}
-		}
-		lesson.Files = files
-		dbSlides, err := cr.queries.GetSlides(context.Background(), int64(lesson.ID))
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				return nil, fmt.Errorf("error getting slides: %s", err)
-			}
-		}
-		slides := domain.Slides{
-			ID:          int(dbSlides.ID),
-			Name:        dbSlides.Name,
-			Description: dbSlides.Description.String,
-		}
-		lesson.Slides = slides
 		var lessonDates []time.Time
 		for _, dbLessonDate := range dbLessonDates {
 			lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)

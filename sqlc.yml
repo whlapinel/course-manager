@@ -5,8 +5,6 @@ sql:
       - "cmd/data/database/courses.sql"
       - "cmd/data/database/units.sql"
       - "cmd/data/database/lessons.sql"
-      - "cmd/data/database/files.sql"
-      - "cmd/data/database/slides.sql"
       - "cmd/data/database/images.sql"
       - "cmd/data/database/dates.sql"
       - "cmd/data/database/terms.sql"

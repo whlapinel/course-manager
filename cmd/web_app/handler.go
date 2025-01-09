@@ -241,12 +241,7 @@ func (h CourseHandler) LessonSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	lesson, err := h.svc.GetLesson(lessonID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	slidesPath := data.OldSlidesHTMLFilePath(lesson.Slides)
+	slidesPath := data.NewSlidesHTMLFilePath(lessonID)
 	log.Println(slidesPath)
 	return c.File(slidesPath)
 }

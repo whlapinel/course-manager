@@ -218,27 +218,6 @@ func (q *Queries) SaveLessonDate(ctx context.Context, arg SaveLessonDateParams) 
 	return i, err
 }
 
-const saveLessonFilesDir = `-- name: SaveLessonFilesDir :one
-INSERT INTO lesson_files (
-  file_id, lesson_id
-) VALUES (
-  ?, ?
-)
-RETURNING lesson_id, file_id
-`
-
-type SaveLessonFilesDirParams struct {
-	FileID   int64
-	LessonID int64
-}
-
-func (q *Queries) SaveLessonFilesDir(ctx context.Context, arg SaveLessonFilesDirParams) (LessonFile, error) {
-	row := q.db.QueryRowContext(ctx, saveLessonFilesDir, arg.FileID, arg.LessonID)
-	var i LessonFile
-	err := row.Scan(&i.LessonID, &i.FileID)
-	return i, err
-}
-
 const updateLesson = `-- name: UpdateLesson :exec
 UPDATE lessons
 set name = ?, number = ?, description = ?

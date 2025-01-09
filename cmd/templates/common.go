@@ -159,11 +159,11 @@ func NewUnitPage(unit domain.Unit, course domain.Course) Page {
 	}
 }
 
-func NewLessonPage(lesson domain.Lesson, unit domain.Unit, course domain.Course) Page {
+func NewLessonPage(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) Page {
 	return Page{
 		Title:     lesson.Name,
 		Path:      lessonPath(lesson, unit, course, true),
-		Component: LessonComponent(lesson, unit, course),
+		Component: LessonComponent(lesson, unit, course, hasSlides, hasFiles),
 	}
 }
 

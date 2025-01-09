@@ -27,12 +27,6 @@ type Date struct {
 	Date      string
 }
 
-type FilesDir struct {
-	ID          int64
-	Name        string
-	Description sql.NullString
-}
-
 type Image struct {
 	ID          int64
 	Name        string
@@ -53,11 +47,6 @@ type LessonDate struct {
 	DateID   int64
 }
 
-type LessonFile struct {
-	LessonID int64
-	FileID   int64
-}
-
 type LessonImage struct {
 	LessonID int64
 	ImageID  int64
@@ -67,11 +56,6 @@ type LessonObjective struct {
 	ID       int64
 	ObjID    int64
 	LessonID int64
-}
-
-type LessonSlide struct {
-	LessonID int64
-	SlidesID int64
 }
 
 type NonInstructDay struct {
@@ -85,12 +69,6 @@ type Objective struct {
 	StdID  int64
 	Number int64
 	Name   string
-}
-
-type Slide struct {
-	ID          int64
-	Name        string
-	Description sql.NullString
 }
 
 type Standard struct {

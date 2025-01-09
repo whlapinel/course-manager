@@ -54,13 +54,6 @@ INSERT INTO lesson_dates (
 )
 RETURNING *;
 
--- name: SaveLessonFilesDir :one
-INSERT INTO lesson_files (
-  file_id, lesson_id
-) VALUES (
-  ?, ?
-)
-RETURNING *;
 
 -- name: UpdateLesson :exec
 UPDATE lessons

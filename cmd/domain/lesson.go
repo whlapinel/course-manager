@@ -17,8 +17,6 @@ type Lesson struct {
 	Name        string
 	Description string
 	Dates       []time.Time
-	Files       FilesDir
-	Slides      Slides
 	Image       Image
 }
 

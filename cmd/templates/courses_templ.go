@@ -816,7 +816,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 }
 
 // Student-facing site
-func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.Component {
+func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -870,7 +870,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					if lesson.Slides.ID != 0 {
+					if !hasSlides {
 						templ_7745c5c3_Var46 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -903,7 +903,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if lesson.Files.ID != 0 {
+					if !hasFiles {
 						templ_7745c5c3_Var47 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)

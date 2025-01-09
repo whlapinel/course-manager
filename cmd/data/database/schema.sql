@@ -28,30 +28,11 @@ CREATE TABLE IF NOT EXISTS lessons (
     UNIQUE(unit_id, number)
 );
 
-CREATE TABLE IF NOT EXISTS files_dir (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT
-);
-
 CREATE TABLE IF NOT EXISTS images (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
     base_path TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS slides (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT
-);
-
-CREATE TABLE IF NOT EXISTS lesson_slides (
-    lesson_id INTEGER NOT NULL, 
-    slides_id INTEGER NOT NULL,
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
-    FOREIGN KEY (slides_id) REFERENCES slides(id)
 );
 
 CREATE TABLE IF NOT EXISTS course_images (
@@ -74,12 +55,6 @@ CREATE TABLE IF NOT EXISTS lesson_images (
     FOREIGN KEY (image_id) REFERENCES images(id)
 );
 
-CREATE TABLE IF NOT EXISTS lesson_files (
-    lesson_id INTEGER NOT NULL, 
-    file_id INTEGER NOT NULL,
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id),
-    FOREIGN KEY (file_id) REFERENCES files_dir(id)
-);
 
 CREATE TABLE IF NOT EXISTS dates (
     id INTEGER PRIMARY KEY,

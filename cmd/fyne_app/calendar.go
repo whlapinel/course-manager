@@ -101,10 +101,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 			}
 
 		}, cc.w)
-		if lesson.Files.ID == 0 {
-			dialog.ShowInformation("Info", "No files have been added to this lesson", cc.w)
-		}
-		path := data.OldLessonFilesDirPath(lesson.Files)
+		path := data.NewLessonFilesDirPath(lesson.ID)
 		uri, err := storage.ParseURI("file://" + path)
 		if err != nil {
 			dialog.ShowError(err, cc.w)
@@ -120,20 +117,15 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 			fileDialog.Show()
 		}
 	})
-	if lesson.Files.ID == 0 {
-		viewFilesBtn2.Disable()
-	}
 	viewFilesBtn := widget.NewButton("Files", func() {
-		var path = data.OldLessonFilesDirPath(lesson.Files)
-		hasFiles := lesson.Files.ID != 0
+		var path = data.NewLessonFilesDirPath(lesson.ID)
 		_, err := os.Stat(path)
-		if !hasFiles || errors.Is(err, fs.ErrNotExist) {
-			dialog.ShowInformation("Info", "Directory does not exist, creating and registering directory.", cc.w)
-			fileDir, err := cc.Service.CreateNewLessonFileDir(lesson)
+		if errors.Is(err, fs.ErrNotExist) {
+			dialog.ShowInformation("Info", "Directory does not exist, creating directory.", cc.w)
+			err = cc.Service.CreateNewLessonFileDir(lesson.ID)
 			if err != nil {
 				dialog.ShowError(err, cc.w)
 			}
-			path = data.OldLessonFilesDirPath(fileDir)
 		}
 		log.Println(path)
 		// Should open file in new window in VS Code
@@ -149,23 +141,20 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 				lesson.ID, lesson.Name, lesson.Description, time.Now().Format(time.DateOnly))
 			infoFile.WriteString(info)
 		}
-		if lesson.Files.ID != 0 {
-			err = exec.Command("code", path).Start()
-			if err != nil {
-				dialog.ShowError(err, cc.w)
-			}
+		err = exec.Command("code", path).Start()
+		if err != nil {
+			dialog.ShowError(err, cc.w)
 		}
 	})
 	viewSlidesBtn := widget.NewButton("Slides", func() {
-		var path = data.OldSlidesMarkdownFilePath(lesson.Slides)
+		var path = data.NewSlidesMarkdownFilePath(lesson.ID)
 		_, err := os.Stat(path)
-		if errors.Is(err, fs.ErrNotExist) {
+		if os.IsNotExist(err) {
 			dialog.ShowInformation("Info", "Slides file does not exist, creating and registering file.", cc.w)
-			slides, err := cc.Service.CreateNewLessonSlides(lesson)
+			err := cc.Service.CreateNewLessonSlides(lesson.ID)
 			if err != nil {
 				dialog.ShowError(err, cc.w)
 			}
-			path = data.OldSlidesMarkdownFilePath(slides)
 		}
 		err = exec.Command("code", path).Start()
 		if err != nil {
