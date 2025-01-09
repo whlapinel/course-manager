@@ -25,7 +25,7 @@ func (cr CourseRepo) SaveSlides(slides domain.Slides, lesson domain.Lesson) (int
 	}
 	slides.ID = int(dbSlides.ID)
 	srcPath := slides.SourcePath
-	destPath := SlidesMarkdownFilePath(slides)
+	destPath := OldSlidesMarkdownFilePath(slides)
 	src, err := os.Open(srcPath)
 	if err != nil {
 		return 0, err
@@ -50,22 +50,20 @@ func (cr CourseRepo) SaveSlides(slides domain.Slides, lesson domain.Lesson) (int
 	return slides.ID, nil
 }
 
-func OldSlidesHTMLFilePath(lesson domain.Lesson) string {
-	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/html"
-	return filepath.Join(basePath, fmt.Sprintf("lesson_%d_slides.html", lesson.ID))
-}
-
-func SlidesHTMLFilePath(slides domain.Slides) string {
+func OldSlidesHTMLFilePath(slides domain.Slides) string {
 	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/html"
 	return filepath.Join(basePath, fmt.Sprintf("slides_%d.html", slides.ID))
 }
 
-func SlidesMarkdownFilePath(slides domain.Slides) string {
+func OldSlidesMarkdownFilePath(slides domain.Slides) string {
 	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/markdown"
 	return filepath.Join(basePath, fmt.Sprintf("slides_%d.md", slides.ID))
 }
 
-func OldSlidesMarkdownFilePath(lesson domain.Lesson) string {
-	basePath := "/home/whlapinel/personal_projects/course_manager/cmd/data/slides/markdown"
-	return filepath.Join(basePath, fmt.Sprintf("lesson_%d_slides.md", lesson.ID))
+func NewSlidesMarkdownFilePath(lesson domain.Lesson) string {
+	return filepath.Join(LessonDirPath(lesson.ID), "slides.md")
+}
+
+func NewSlidesHTMLFilePath(lesson domain.Lesson) string {
+	return filepath.Join(LessonDirPath(lesson.ID), "slides.html")
 }

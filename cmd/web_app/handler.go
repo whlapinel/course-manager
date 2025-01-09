@@ -246,7 +246,7 @@ func (h CourseHandler) LessonSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	slidesPath := data.SlidesHTMLFilePath(lesson.Slides)
+	slidesPath := data.OldSlidesHTMLFilePath(lesson.Slides)
 	log.Println(slidesPath)
 	return c.File(slidesPath)
 }

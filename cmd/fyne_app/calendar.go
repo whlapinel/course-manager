@@ -157,7 +157,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 		}
 	})
 	viewSlidesBtn := widget.NewButton("Slides", func() {
-		var path = data.SlidesMarkdownFilePath(lesson.Slides)
+		var path = data.OldSlidesMarkdownFilePath(lesson.Slides)
 		_, err := os.Stat(path)
 		if errors.Is(err, fs.ErrNotExist) {
 			dialog.ShowInformation("Info", "Slides file does not exist, creating and registering file.", cc.w)
@@ -165,7 +165,7 @@ func (cc *CourseCalendar) NewCalLessonHolder(date time.Time, lesson *domain.Less
 			if err != nil {
 				dialog.ShowError(err, cc.w)
 			}
-			path = data.SlidesMarkdownFilePath(slides)
+			path = data.OldSlidesMarkdownFilePath(slides)
 		}
 		err = exec.Command("code", path).Start()
 		if err != nil {

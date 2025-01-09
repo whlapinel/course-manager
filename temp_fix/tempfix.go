@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // this will be a one-time program to transfer all files and slides into the new lesson_dir
@@ -20,6 +22,9 @@ func main() {
 	defer db.Close()
 	cr := data.NewCourseRepo(queries)
 	terms, err := cr.GetTerms()
+	if err != nil {
+		log.Fatal(err)
+	}
 	for _, term := range terms {
 		courses, err := cr.GetCourses(term.ID)
 		if err != nil {
@@ -36,10 +41,13 @@ func main() {
 					log.Fatal(err)
 				}
 				for _, lesson := range lessons {
-					CopySlides(*lesson)
-
-					// recursively copy all files from old files to lesson directory
-					CopyFiles(*lesson, cr)
+					if lesson.Slides.ID != 0 {
+						CopySlides(*lesson)
+					}
+					if lesson.Files.ID != 0 {
+						// recursively copy all files from old files to lesson directory
+						CopyFiles(*lesson, cr)
+					}
 
 					// Additional Notes (nothing to implement below, must be done manually)
 					// files and slides will no longer have their own id and will thus not need to be entered in the database
@@ -59,7 +67,7 @@ func CopySlides(lesson domain.Lesson) {
 	newLessonPath := data.LessonDirPath(lesson.ID)
 
 	// for each lesson, get slides path
-	oldSlidesPath := data.OldSlidesMarkdownFilePath(lesson)
+	oldSlidesPath := data.OldSlidesMarkdownFilePath(lesson.Slides)
 	oldFile, err := os.Open(oldSlidesPath)
 	if err != nil {
 		log.Fatal(err)
@@ -67,7 +75,7 @@ func CopySlides(lesson domain.Lesson) {
 	defer oldFile.Close()
 
 	// create new lesson directory
-	err = os.Mkdir(newLessonPath, os.ModePerm)
+	err = os.MkdirAll(newLessonPath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
