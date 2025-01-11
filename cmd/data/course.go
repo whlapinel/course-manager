@@ -13,11 +13,8 @@ import (
 func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 	ctx := context.Background()
 	savedCourse, err := c.queries.SaveCourse(ctx, database.SaveCourseParams{
-		TermID: sql.NullInt64{
-			Int64: int64(course.Term.ID),
-			Valid: course.Term.ID != 0,
-		},
-		Name: course.Name,
+		TermID: int64(course.Term.ID),
+		Name:   course.Name,
 		Description: sql.NullString{
 			String: course.Description,
 			Valid:  course.Description != "",
@@ -55,12 +52,25 @@ func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 	course := domain.Course{
 		ID:   int(dbCourse.ID),
 		Name: dbCourse.Name,
+		Term: domain.Term{
+			ID: int(dbCourse.TermID),
+		},
 	}
+	term, err := cr.GetTermByID(course.Term.ID)
+	if err != nil {
+		return nil, err
+	}
+	termWithDates, err := cr.GetTermDates(term.ID)
+	if err != nil {
+		return nil, err
+	}
+	term.InstructionalDays = termWithDates.InstructionalDays
+	course.Term = term
 	return &course, nil
 
 }
 func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
-	dbCourses, err := cr.queries.GetCourses(context.Background(), sql.NullInt64{Valid: true, Int64: int64(termID)})
+	dbCourses, err := cr.queries.GetCourses(context.Background(), int64(termID))
 	if err != nil {
 		return nil, err
 	}

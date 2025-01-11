@@ -62,9 +62,7 @@ func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 		}
 		image, err := cr.GetLessonImage(lesson)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				log.Println("no images for lesson ", lesson.Name)
-			} else {
+			if !errors.Is(err, sql.ErrNoRows) {
 				log.Fatal("error getting lesson images", err)
 				return nil, err
 			}

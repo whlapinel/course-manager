@@ -31,10 +31,19 @@ const (
 	Left
 )
 
+var dirStringList = []string{"right", "left"}
+
 func (d CalendarDirection) String() string {
-	return [...]string{
-		"right",
-		"left"}[d]
+	return dirStringList[d]
+}
+
+func ParseDirection(cd string) (CalendarDirection, error) {
+	for i, word := range dirStringList {
+		if cd == word {
+			return CalendarDirection(i), nil
+		}
+	}
+	return 0, fmt.Errorf("invalid direction value")
 }
 
 // removes all current instructional days and adds subsequent or previous instructional days from/to lesson.Dates,

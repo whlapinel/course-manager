@@ -43,10 +43,10 @@ type GetCourseRow struct {
 	CourseID    int64
 	CourseName  string
 	CourseDescr sql.NullString
-	TermID      sql.NullInt64
+	TermID      int64
 }
 
-func (q *Queries) GetCourse(ctx context.Context, termID sql.NullInt64) (GetCourseRow, error) {
+func (q *Queries) GetCourse(ctx context.Context, termID int64) (GetCourseRow, error) {
 	row := q.db.QueryRowContext(ctx, getCourse, termID)
 	var i GetCourseRow
 	err := row.Scan(
@@ -107,7 +107,7 @@ type GetCoursesRow struct {
 	CourseDescr sql.NullString
 }
 
-func (q *Queries) GetCourses(ctx context.Context, termID sql.NullInt64) ([]GetCoursesRow, error) {
+func (q *Queries) GetCourses(ctx context.Context, termID int64) ([]GetCoursesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getCourses, termID)
 	if err != nil {
 		return nil, err
@@ -140,7 +140,7 @@ RETURNING id, term_id, name, description
 `
 
 type SaveCourseParams struct {
-	TermID      sql.NullInt64
+	TermID      int64
 	Name        string
 	Description sql.NullString
 }

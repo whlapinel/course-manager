@@ -10,7 +10,7 @@ import (
 
 type Course struct {
 	ID          int64
-	TermID      sql.NullInt64
+	TermID      int64
 	Name        string
 	Description sql.NullString
 }

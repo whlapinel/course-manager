@@ -4,6 +4,8 @@ import (
 	"gh_static_portfolio/cmd/domain"
 	"gh_static_portfolio/cmd/util"
 	"github.com/labstack/echo/v4"
+	"log"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -26,7 +28,7 @@ templ CourseManagerLayout(pageTitle string, page templ.Component) {
 				<li></li>
 			</ul>
 		</header>
-		<body>
+		<body class="bg-slate-800 text-white">
 			<main id="page">
 				@page
 			</main>
@@ -51,8 +53,61 @@ templ TermsListTemplate(terms []domain.Term, coursesRouteName string, e *echo.Ec
 	}
 }
 
+type ShiftButtonFactory struct {
+	TermID                      int
+	CourseID                    int
+	ShiftLessonRouteHandlerName string
+	e                           *echo.Echo
+}
+
+func NewShiftButtonFactory(course domain.Course, shiftLessonHandlerName string, e *echo.Echo) ShiftButtonFactory {
+	return ShiftButtonFactory{
+		TermID:                      course.Term.ID,
+		CourseID:                    course.ID,
+		ShiftLessonRouteHandlerName: shiftLessonHandlerName,
+		e:                           e,
+	}
+
+}
+
+func (sbf ShiftButtonFactory) ShiftButton(unitID, lessonID int, cd domain.CalendarDirection) templ.Component {
+	return ShiftButtonTemplate(sbf.TermID, sbf.CourseID, unitID, lessonID, sbf.ShiftLessonRouteHandlerName, cd, sbf.e)
+}
+
+templ ShiftButtonTemplate(termID, courseID, unitID, lessonID int, shiftLessonRouteHandlerName string, cd domain.CalendarDirection, e *echo.Echo) {
+	<button hx-post={ e.Reverse(shiftLessonRouteHandlerName, termID, courseID, unitID, lessonID, cd) } hx-target="#page">
+		if cd == domain.Right {
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"></path></svg>
+		} else if cd == domain.Left {
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"></path></svg>
+		}
+	</button>
+}
+
+templ CalendarLessonContainer(sbf ShiftButtonFactory, lesson domain.Lesson, lessonDetailsRouteHandlerName string) {
+	<li>
+		<div class="flex">
+			@sbf.ShiftButton(lesson.UnitID, lesson.ID, domain.Left)
+			<div
+				class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+				hx-get={ sbf.e.Reverse(lessonDetailsRouteHandlerName, 
+															sbf.TermID, 
+															sbf.CourseID, 
+															lesson.UnitID, 
+															lesson.ID,
+															) }
+				hx-target="#page"
+				hx-push-url="true"
+			>
+				{ lesson.Name }
+			</div>
+			@sbf.ShiftButton(lesson.UnitID, lesson.ID, domain.Right)
+		</div>
+	</li>
+}
+
 // CourseManager site
-templ CourseCalendarTemplate(course domain.Course) {
+templ CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName, shiftLessonRouteHandlerName string, e *echo.Echo) {
 	<div id="calendar" class="flex flex-col gap-4">
 		for _, day := range course.Term.TermMonths() {
 			<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
@@ -70,11 +125,7 @@ templ CourseCalendarTemplate(course domain.Course) {
 											for _, lesson := range unit.Lessons {
 												for _, lessonDate := range lesson.Dates {
 													if util.IsSameDate(lessonDate, calDate) {
-														<li>
-															@ListedLinkItem(RemoveDocsFromPath(lessonPath(*lesson, *unit, course, true)), false) {
-																<p>{ lesson.Name } </p>
-															}
-														</li>
+														@CalendarLessonContainer(NewShiftButtonFactory(course, shiftLessonRouteHandlerName, e), *lesson, lessonDetailsRouteHandlerName)
 													}
 												}
 											}
@@ -134,17 +185,112 @@ templ LessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesson,
 	}
 }
 
-// CourseManager site
-templ LessonDetailsTemplate(termID, courseID, unitID, lessonID int, lesson *domain.Lesson, unit *domain.Unit, course *domain.Course, slidesRouteName string, e *echo.Echo) {
-	<p>{ lesson.Name }</p>
-	<p>{ lesson.Description }</p>
-	<a href={ LessonFilesURL(*lesson, *unit, *course) }>Files</a>
-	<a href={ templ.SafeURL(e.Reverse(slidesRouteName, termID, courseID, unitID, lessonID)) } target="_blank">Slides</a>
-	for _, date := range lesson.Dates {
-		<ul>
-			<li>
-				{ date.Format(time.DateOnly) }
-			</li>
-		</ul>
+func AddQueryParam(path, key, value string) string {
+	u, err := url.Parse(path)
+	if err != nil {
+		log.Println(err)
+		return ""
 	}
+	query := u.Query()
+	query.Set(key, value)
+	u.RawQuery = query.Encode()
+	log.Println(u.String())
+	return u.String()
+}
+
+// CourseManager site
+templ LessonDetailsTemplate(params CourseIDParams,
+	lesson *domain.Lesson,
+	unit *domain.Unit,
+	course *domain.Course,
+	slidesRouteName, editSlidesRouteHandlerName, editLessonRouteHandlerName string,
+	e *echo.Echo) {
+	<h1>{ lesson.Name }</h1>
+	<button
+		hx-get={ AddQueryParam(e.Reverse(editLessonRouteHandlerName, params.ToIntSlice()...), "field", kebabCase(string(EditLessonNameInputID))) }
+		hx-target={ string(EditLessonContainerID.Selector()) }
+	>Edit</button>
+	<div id={ string(EditLessonContainerID) }></div>
+	if !(lesson.Image.ID == 0) {
+		<p>this lesson has an image, I just need to figure out how to render it</p>
+	}
+	<div class="flex flex-col">
+		<div class="flex">
+			<p>{ lesson.Description }</p>
+			<button
+				hx-get={ AddQueryParam(e.Reverse(editLessonRouteHandlerName, params.ToIntSlice()...), "field", kebabCase(string(EditLessonDescInputID))) }
+				hx-target={ string(EditLessonContainerID.Selector()) }
+			>Edit</button>
+			<div id={ string(EditLessonContainerID) }></div>
+		</div>
+		<a
+			class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+			href={ LessonFilesURL(*lesson, *unit, *course) }
+			target="_blank"
+		>Files</a>
+		<a
+			class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+			href={ templ.SafeURL(e.Reverse(slidesRouteName, params.ToIntSlice()...)) }
+			target="_blank"
+		>View Slides</a>
+		<button hx-get={ e.Reverse(editSlidesRouteHandlerName, params.ToIntSlice()...) } hx-target="#editor" hx-swap="outerHTML">
+			Edit Slides (Placeholder, doesn't work yet)
+		</button>
+		<textarea id="editor" hidden></textarea>
+		for _, date := range lesson.Dates {
+			<ul>
+				<li>
+					{ date.Format(time.DateOnly) }
+				</li>
+			</ul>
+		}
+	</div>
+}
+
+const (
+	EditLessonContainerID ElementID = "edit-lesson-container"
+	EditLessonNameInputID ElementID = "lesson-name"
+	EditLessonDescInputID ElementID = "lesson-desc"
+)
+
+templ EditLessonNameTemplate(lesson domain.Lesson, params CourseIDParams, postEditLessonRouteHandlerName string, e *echo.Echo) {
+	<label for={ string(EditLessonNameInputID) }>Name</label>
+	<input
+		class="bg-black"
+		id={ string(EditLessonNameInputID) }
+		name={ string(EditLessonNameInputID) }
+		type="text"
+		value={ lesson.Name }
+	/>
+	<button hx-post={ e.Reverse(postEditLessonRouteHandlerName, params.ToIntSlice()...) } hx-include={ string(EditLessonNameInputID.Selector()) }>Submit</button>
+}
+
+templ EditLessonDescTemplate(lesson domain.Lesson, params CourseIDParams, postEditLessonRouteHandlerName string, e *echo.Echo) {
+	<label for={ string(EditLessonDescInputID) }>Description</label>
+	<textarea
+		class="bg-black"
+		id={ string(EditLessonDescInputID) }
+		name={ string(EditLessonDescInputID) }
+		type="text"
+	>{ lesson.Description }</textarea>
+	<button hx-post={ e.Reverse(postEditLessonRouteHandlerName, params.ToIntSlice()...) } hx-include={ string(EditLessonDescInputID.Selector()) }>Submit</button>
+}
+
+type ElementID string
+
+func (i ElementID) Selector() ElementID {
+	return "#" + i
+}
+
+const (
+	EditSlidesTextAreaID ElementID = "editor"
+)
+
+templ EditSlidesTemplate(params CourseIDParams, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
+	<textarea id="editor" name={ string(EditSlidesTextAreaID) } class="bg-slate-900 min-w-full min-h-96 font-mono">
+		{ contents }
+	</textarea>
+	<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToIntSlice()...) } hx-include={ string(EditSlidesTextAreaID.Selector()) }>
+		Submit
+	</button>
 }

@@ -191,3 +191,19 @@ func rootPages() []Page {
 		NewCoursesListPage(nil),
 	}
 }
+
+type CourseIDParams struct {
+	TermID   IDParam
+	CourseID IDParam
+	UnitID   IDParam
+	LessonID IDParam
+}
+
+type IDParam struct {
+	Valid bool
+	Value int
+}
+
+func (params CourseIDParams) ToIntSlice() []interface{} {
+	return []interface{}{params.TermID.Value, params.CourseID.Value, params.UnitID.Value, params.LessonID.Value}
+}

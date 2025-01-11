@@ -64,6 +64,33 @@ func (svc CourseService) UpdateLesson(l domain.Lesson) error {
 	return nil
 }
 
+// This version is for the web app
+func (svc CourseService) WebShift(termID, courseID, lessonID int, cd domain.CalendarDirection) error {
+	lesson, err := svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	term, err := svc.repo.GetTermByID(termID)
+	if err != nil {
+		return err
+	}
+	termWithDates, err := svc.repo.GetTermDates(termID)
+	if err != nil {
+		return err
+	}
+	term.InstructionalDays = termWithDates.InstructionalDays
+	newLesson, _, err := lesson.Shift(cd, term)
+	if err != nil {
+		return err
+	}
+	err = svc.UpdateLesson(newLesson)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// This version is for the fyne app
 func (svc CourseService) Shift(lesson domain.Lesson, term domain.Term, direction domain.CalendarDirection) (domain.Lesson, time.Time, error) {
 	if lesson.ID == 0 {
 		log.Println("lesson id: ", lesson.ID)

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS courses (
     id INTEGER PRIMARY KEY,
-    term_id INTEGER,
+    term_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     FOREIGN KEY (term_id) REFERENCES terms(id)
