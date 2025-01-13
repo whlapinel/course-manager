@@ -1,21 +1,15 @@
 ### **Assignment: Build a Simple Task Manager**
 
----
-
 ### **Overview**
 In this project, you will create a small Flask-based **Task Manager** application using SQLite for data storage and Object-Oriented Programming (OOP) principles. The application will allow users to:
 1. View a list of tasks.
 2. Add a new task.
 3. Mark a task as completed.
 
----
-
 ### **Objectives**
 1. Use Flask to create a basic web application.
 2. Interact with an SQLite database for storing and retrieving tasks.
 3. Apply OOP principles by creating a `Task` class for managing task-related operations.
-
----
 
 ### **Requirements**
 1. **Task Class**:
@@ -38,7 +32,8 @@ In this project, you will create a small Flask-based **Task Manager** applicatio
 
 #### 1. **Set Up the Project**
 - Create the following folder structure:
-   ```
+
+   ```text
    project/
        app.py
        templates/
@@ -51,6 +46,7 @@ In this project, you will create a small Flask-based **Task Manager** applicatio
 
 #### 2. **Task Class**
 Define a `Task` class in `app.py`:
+
 ```python
 import sqlite3
 
@@ -79,8 +75,6 @@ class Task:
         with sqlite3.connect(self.db_name) as conn:
             conn.execute("UPDATE tasks SET completed = 1 WHERE id = ?", (task_id,))
 ```
-
----
 
 #### 3. **Flask App**
 
@@ -177,4 +171,3 @@ if __name__ == '__main__':
 | Dynamic task list display     | 30         |
 | Task addition functionality   | 20         |
 | Task completion functionality | 20         |
-

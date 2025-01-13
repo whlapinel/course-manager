@@ -147,14 +147,14 @@ templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cour
 	@Layout(Page{Title: course.GetTitle()}) {
 		@CourseDivContainer(course, templates.UnitPath(unit, course, true), unit.GetTitle()) {
 			@CourseUnorderedList() {
-				if !hasSlides {
+				if hasSlides {
 					@ListedLinkItem(SlidesPath(lesson, unit, course), true) {
 						Slides
 					}
 				} else {
 					<p>No content for this lesson yet!</p>
 				}
-				if !hasFiles {
+				if hasFiles {
 					@ListedLinkItemAbsoluteURL((templates.LessonFilesURL(lesson, unit, course)), true) {
 						Other Files
 					}
