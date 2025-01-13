@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/templates"
 	"path/filepath"
 	"strconv"
 )
@@ -54,7 +55,7 @@ func CourseDivContainer(course domain.Course, upPath, text string) templ.Compone
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(course.Term.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 16, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 17, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -165,7 +166,7 @@ func ListedLinkItem(path string, newTab bool) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 46, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 47, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -222,7 +223,7 @@ func ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) templ.Component 
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 55, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 56, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -279,7 +280,7 @@ func BackButton(path, text string) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 67, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 68, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -320,7 +321,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) te
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 76, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 77, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -333,7 +334,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) te
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 77, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 78, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -352,7 +353,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) te
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 80, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 81, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -370,7 +371,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) te
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 82, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 83, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -465,7 +466,7 @@ func CoursesListComponent(instances []*domain.Course) templ.Component {
 							var templ_7745c5c3_Var24 string
 							templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(instance.Name)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 95, Col: 24}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 96, Col: 24}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 							if templ_7745c5c3_Err != nil {
@@ -477,7 +478,7 @@ func CoursesListComponent(instances []*domain.Course) templ.Component {
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = ListedLinkItem(coursePath(*instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItem(templates.CoursePath(*instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -584,7 +585,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var30 string
 								templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 112, Col: 25}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 113, Col: 25}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 								if templ_7745c5c3_Err != nil {
@@ -598,7 +599,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var31 string
 								templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(unit.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 114, Col: 39}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 115, Col: 39}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 								if templ_7745c5c3_Err != nil {
@@ -611,7 +612,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var32 string
 								templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 114, Col: 61}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 115, Col: 61}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 								if templ_7745c5c3_Err != nil {
@@ -620,7 +621,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = ListedLinkItem(unitPath(*unit, instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var29), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItem(templates.UnitPath(*unit, instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var29), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -635,13 +636,13 @@ func CourseComponent(instance domain.Course) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(instance.Name, instance.Description, filepath.Join(coursePath(instance, false), instance.Image.BasePath), instance.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(instance.Name, instance.Description, filepath.Join(templates.CoursePath(instance, false), instance.Image.BasePath), instance.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = CourseDivContainer(instance, coursesDir+"courses.html", "Course List").Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CourseDivContainer(instance, templates.StaticSiteCoursesDir+"courses.html", "Course List").Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -731,7 +732,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var38 string
 								templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(lesson.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 132, Col: 48}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 133, Col: 48}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 								if templ_7745c5c3_Err != nil {
@@ -744,7 +745,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var39 string
 								templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 132, Col: 81}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 133, Col: 81}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 								if templ_7745c5c3_Err != nil {
@@ -758,7 +759,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var40 string
 								templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(lesson.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 134, Col: 51}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 135, Col: 51}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 								if templ_7745c5c3_Err != nil {
@@ -771,7 +772,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var41 string
 								templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/courses.templ`, Line: 134, Col: 84}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/static_site_templates/courses.templ`, Line: 135, Col: 84}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 								if templ_7745c5c3_Err != nil {
@@ -780,7 +781,7 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = ListedLinkItem(lessonPath(*lesson, unit, instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var37), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItem(templates.LessonPath(*lesson, unit, instance, true), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var37), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -795,13 +796,13 @@ func UnitComponent(unit domain.Unit, instance domain.Course) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(unit.Name, unit.Description, filepath.Join(unitPath(unit, instance, false), unit.Image.BasePath), unit.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(unit.Name, unit.Description, filepath.Join(templates.UnitPath(unit, instance, false), unit.Image.BasePath), unit.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = CourseDivContainer(instance, coursePath(instance, true), instance.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var35), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CourseDivContainer(instance, templates.CoursePath(instance, true), instance.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var35), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -922,7 +923,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL((LessonFilesURL(lesson, unit, course)), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var47), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL((templates.LessonFilesURL(lesson, unit, course)), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var47), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -937,13 +938,13 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(lesson.Name, lesson.Description, filepath.Join(lessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = TitleDiv(lesson.Name, lesson.Description, filepath.Join(templates.LessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = CourseDivContainer(course, unitPath(unit, course, true), unit.GetTitle()).Render(templ.WithChildren(ctx, templ_7745c5c3_Var44), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CourseDivContainer(course, templates.UnitPath(unit, course, true), unit.GetTitle()).Render(templ.WithChildren(ctx, templ_7745c5c3_Var44), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

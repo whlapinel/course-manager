@@ -1,0 +1,40 @@
+package managertemplates
+
+// places buttons side by side
+templ ButtonContainer() {
+	<div class="flex gap-2 self-center">
+		{ children... }
+	</div>
+}
+
+templ CancelEditButton() {
+	<button onclick="window.history.back()">
+		Cancel
+	</button>
+}
+
+templ hxButton(props HXButton) {
+	<button
+		if props.Method == HxGet {
+			hx-get={ props.URL }
+		}
+		if props.Method == HxPost {
+			hx-post={ props.URL }
+		}
+		class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+		if props.HxTargetID != "" {
+			hx-target={ props.HxTargetID }
+		}
+		if props.NewTab {
+			target="_blank"
+		}
+		if props.PushURL {
+			hx-push-url="true"
+		}
+		if props.HxSwap != "" {
+			hx-swap={ string(props.HxSwap) }
+		}
+	>
+		{ children... }
+	</button>
+}

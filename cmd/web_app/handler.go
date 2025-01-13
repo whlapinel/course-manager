@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/domain"
+	sitegenerator "gh_static_portfolio/cmd/gen_site"
 	"gh_static_portfolio/cmd/service"
-	"gh_static_portfolio/cmd/templates"
+	mt "gh_static_portfolio/cmd/templates/manager_templates"
 	"io"
 	"log"
 	"net/http"
@@ -56,8 +57,8 @@ func (p RouteParam) Name() string {
 
 }
 
-func ParseCourseIDParams(c echo.Context) templates.CourseIDParams {
-	var params templates.CourseIDParams
+func ParseCourseIDParams(c echo.Context) mt.CourseIDParams {
+	var params mt.CourseIDParams
 	termID, err := ParseRouteParam(c, TermID)
 	if err == nil {
 		params.TermID.Valid = true
@@ -81,28 +82,28 @@ func ParseCourseIDParams(c echo.Context) templates.CourseIDParams {
 	return params
 }
 
-func CourseIDParam(params templates.CourseIDParams) (int, error) {
+func CourseIDParam(params mt.CourseIDParams) (int, error) {
 	if params.CourseID.Valid {
 		return params.CourseID.Value, nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func UnitIDParam(params templates.CourseIDParams) (int, error) {
+func UnitIDParam(params mt.CourseIDParams) (int, error) {
 	if params.UnitID.Valid {
 		return params.UnitID.Value, nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func LessonIDParam(params templates.CourseIDParams) (int, error) {
+func LessonIDParam(params mt.CourseIDParams) (int, error) {
 	if params.LessonID.Valid {
 		return params.LessonID.Value, nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func TermIDParam(params templates.CourseIDParams) (int, error) {
+func TermIDParam(params mt.CourseIDParams) (int, error) {
 	if params.TermID.Valid {
 		return params.TermID.Value, nil
 	} else {
@@ -134,6 +135,10 @@ const (
 )
 
 type RouteHandlerName string
+
+func (rhn RouteHandlerName) String() string {
+	return string(rhn)
+}
 
 const (
 	ShowHome                    = RouteHandlerName(GET + Home)
@@ -169,8 +174,12 @@ func (h CourseHandler) Mount() {
 }
 
 func (h CourseHandler) ShowHome(c echo.Context) error {
-	template := templates.ManagerHomePage()
-	return Respond(c, "", template, templates.CourseManagerLayout("Home", template))
+	terms, err := h.svc.GetTerms()
+	if err != nil {
+		return err
+	}
+	template := mt.ManagerHomePage(terms, string(ListTermCourses), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Home", template))
 }
 
 func (h CourseHandler) ListTerms(c echo.Context) error {
@@ -181,8 +190,8 @@ func (h CourseHandler) ListTerms(c echo.Context) error {
 	if len(terms) == 0 {
 		return fmt.Errorf("error in CourseHandler.ListTerms: terms is empty")
 	}
-	template := templates.TermsListTemplate(terms, string(ListTermCourses), h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Terms", template))
+	template := mt.TermsListTemplate(terms, string(ListTermCourses), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Terms", template))
 }
 
 func (h CourseHandler) ListTermCourses(c echo.Context) error {
@@ -197,8 +206,8 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := templates.CoursesListTemplate(termID, courses, string(ListCourseUnits), string(ShowCourseCalendar), h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Courses", template))
+	template := mt.CoursesListTemplate(termID, courses, string(ListTerms), string(ListCourseUnits), string(ShowCourseCalendar), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Courses", template))
 }
 
 func (h CourseHandler) ListCourseUnits(c echo.Context) error {
@@ -217,8 +226,8 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := templates.UnitsListTemplate(termID, courseID, units, string(ListUnitLessons), h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Units", template))
+	template := mt.UnitsListTemplate(termID, courseID, ListTermCourses.String(), units, ListUnitLessons.String(), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Units", template))
 }
 
 func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
@@ -232,8 +241,8 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := templates.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Calendar", template))
+	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Calendar", template))
 }
 
 func (h CourseHandler) ListUnitLessons(c echo.Context) error {
@@ -257,8 +266,8 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := templates.LessonListTemplate(TermID, courseID, unitID, lessons, string(LessonDetails), h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Lessons", template))
+	template := mt.LessonListTemplate(TermID, courseID, unitID, lessons, ListCourseUnits.String(), LessonDetails.String(), h.e)
+	return Respond(c, "", template, mt.CourseManagerLayout("Lessons", template))
 }
 
 func (h CourseHandler) LessonDetails(c echo.Context) error {
@@ -299,9 +308,21 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 		log.Println("error getting course:", err)
 		return err
 	}
-	editor := templates.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
-	template := templates.LessonDetailsTemplate(params, lesson, unit, course, string(ViewLessonSlides), string(ShowEditSlides), string(ShowEditLesson), string(PostEditLesson), editor, h.e)
-	return Respond(c, "", template, templates.CourseManagerLayout("Lesson Details", template))
+	editor := mt.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
+	template := mt.LessonDetailsTemplate(
+		params,
+		lesson,
+		unit,
+		course,
+		ViewLessonSlides.String(),
+		ShowEditSlides.String(),
+		ShowEditLesson.String(),
+		PostEditLesson.String(),
+		ListUnitLessons.String(),
+		editor,
+		h.e,
+	)
+	return Respond(c, "", template, mt.CourseManagerLayout("Lesson Details", template))
 }
 
 func (h CourseHandler) ShowEditLesson(c echo.Context) error {
@@ -321,7 +342,7 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		log.Println(err)
 		return fmt.Errorf("field query param is missing")
 	}
-	editor := templates.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
+	editor := mt.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
 	respond := func(comp templ.Component) error {
 		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), comp, nil)
 	}
@@ -348,10 +369,10 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	lessonDescr := c.FormValue(string(templates.EditLessonDescID))
-	lessonName := c.FormValue(string(templates.EditLessonNameID))
+	lessonDescr := c.FormValue(string(mt.EditLessonDescID))
+	lessonName := c.FormValue(string(mt.EditLessonNameID))
 	log.Println(lessonDescr)
-	var editor templates.LessonEditor
+	var editor mt.LessonEditor
 	respond := func(comp templ.Component) error {
 		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), comp, nil)
 	}
@@ -371,7 +392,7 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			return err
 		}
 		updateLesson()
-		editor = templates.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
+		editor = mt.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
 		return respond(editor.LessonDescription(false))
 	}
 	if lessonName != "" {
@@ -381,21 +402,28 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			return err
 		}
 		updateLesson()
-		editor = templates.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
+		editor = mt.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
 		return respond(editor.LessonName(false))
 	}
 	return nil
 }
 
 func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
+	params := ParseCourseIDParams(c)
 	lessonID, err := ParseRouteParam(c, LessonID)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+	sitegenerator.GenerateSlides(lessonID)
 	slidesPath := data.NewSlidesHTMLFilePath(lessonID)
 	log.Println(slidesPath)
-	return c.File(slidesPath)
+	slidesContent, err := os.ReadFile(slidesPath)
+	if err != nil {
+		return err
+	}
+	template := mt.Slides(string(slidesContent))
+	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), template, nil)
 }
 
 func (h CourseHandler) ShowEditSlides(c echo.Context) error {
@@ -405,7 +433,10 @@ func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	markdownPath := data.NewSlidesMarkdownFilePath(lessonID)
+	markdownPath, err := CreateSlidesIfNotExist(lessonID, h.svc.GetLesson)
+	if err != nil {
+		return err
+	}
 	markdownFile, err := os.Open(markdownPath)
 	if err != nil {
 		log.Println(err)
@@ -418,18 +449,16 @@ func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 		return err
 	}
 	log.Println(len(bytes), "bytes read")
+
 	log.Println(string(bytes))
-	template := templates.EditSlidesTemplate(params, string(bytes), string(PostEditSlides), h.e)
-	if !IsHTMX(c) {
-		template = templates.CourseManagerLayout("Lessons", template)
-	}
-	return template.Render(context.Background(), c.Response())
+	template := mt.EditSlidesTemplate(params, string(bytes), string(PostEditSlides), h.e)
+	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), template, nil)
 }
 
 func (h CourseHandler) PostEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	log.Println(params)
-	content := c.FormValue(string(templates.EditSlidesTextAreaID))
+	content := c.FormValue(string(mt.EditSlidesTextAreaID))
 	lessonID, err := LessonIDParam(params)
 	if err != nil {
 		log.Println(err)
@@ -482,9 +511,9 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := templates.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), h.e)
+	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
 	if !IsHTMX(c) {
-		template = templates.CourseManagerLayout("Calendar", template)
+		template = mt.CourseManagerLayout("Calendar", template)
 	}
 	return template.Render(context.Background(), c.Response())
 }

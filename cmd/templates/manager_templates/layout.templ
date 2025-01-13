@@ -1,0 +1,28 @@
+
+package managertemplates
+
+// CourseManager site
+templ CourseManagerLayout(pageTitle string, page templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="stylesheet" href="/dist/styles.css"/>
+			<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+			<script src="/dist/htmx.js" defer></script>
+			<title>{ pageTitle }</title>
+		</head>
+		// TODO: need to make the header
+		<body class="bg-slate-800 text-white p-2">
+			<header>
+				<ul>
+					<li></li>
+				</ul>
+			</header>
+			<main id={ string(pageElementID) }>
+				@page
+			</main>
+		</body>
+	</html>
+}

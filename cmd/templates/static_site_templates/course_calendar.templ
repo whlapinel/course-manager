@@ -2,6 +2,7 @@ package templates
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/templates"
 	"gh_static_portfolio/cmd/util"
 	"strconv"
 	"time"
@@ -21,7 +22,7 @@ func UnitDateRange(unit domain.Unit) []time.Time {
 // Student-facing site
 templ CourseCalendarComponent(course domain.Course) {
 	@Layout(Page{Title: course.Name}) {
-		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(coursesDir+"courses.html"), "Course List") {
+		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(templates.StaticSiteCoursesDir+"courses.html"), "Course List") {
 			@CourseUnorderedList() {
 				<div id="calendar" class="flex flex-col gap-4">
 					for _, day := range course.Term.TermMonths() {
@@ -41,7 +42,7 @@ templ CourseCalendarComponent(course domain.Course) {
 															for _, lessonDate := range lesson.Dates {
 																if util.IsSameDate(lessonDate, calDate) {
 																	<li>
-																		@ListedLinkItem(RemoveDocsFromPath(lessonPath(*lesson, *unit, course, true)), false) {
+																		@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(*lesson, *unit, course, true)), false) {
 																			<p>{ lesson.Name } </p>
 																		}
 																	</li>
@@ -59,7 +60,7 @@ templ CourseCalendarComponent(course domain.Course) {
 					}
 				</div>
 			}
-			@TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, coursePath(course, true), false, false)
+			@TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, templates.CoursePath(course, true), false, false)
 		}
 	}
 }

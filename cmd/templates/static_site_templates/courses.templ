@@ -2,6 +2,7 @@ package templates
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/templates"
 	"path/filepath"
 	"strconv"
 )
@@ -91,7 +92,7 @@ templ CoursesListComponent(instances []*domain.Course) {
 		@CourseDivContainer(domain.Course{}, "", "") {
 			@CourseUnorderedList() {
 				for _, instance := range instances {
-					@ListedLinkItem(coursePath(*instance, true), false) {
+					@ListedLinkItem(templates.CoursePath(*instance, true), false) {
 						<p>{ instance.Name }</p>
 					}
 				}
@@ -104,10 +105,10 @@ templ CoursesListComponent(instances []*domain.Course) {
 // Student-facing site
 templ CourseComponent(instance domain.Course) {
 	@Layout(Page{Title: instance.Name}) {
-		@CourseDivContainer(instance, coursesDir+"courses.html", "Course List") {
+		@CourseDivContainer(instance, templates.StaticSiteCoursesDir+"courses.html", "Course List") {
 			@CourseUnorderedList() {
 				for _, unit := range instance.Units {
-					@ListedLinkItem(unitPath(*unit, instance, true), false) {
+					@ListedLinkItem(templates.UnitPath(*unit, instance, true), false) {
 						if unit.Number < 0 {
 							{ unit.Description }
 						} else {
@@ -116,7 +117,7 @@ templ CourseComponent(instance domain.Course) {
 					}
 				}
 			}
-			@TitleDiv(instance.Name, instance.Description, filepath.Join(coursePath(instance, false), instance.Image.BasePath), instance.Image.ID != 0, false)
+			@TitleDiv(instance.Name, instance.Description, filepath.Join(templates.CoursePath(instance, false), instance.Image.BasePath), instance.Image.ID != 0, false)
 		}
 	}
 }
@@ -124,10 +125,10 @@ templ CourseComponent(instance domain.Course) {
 // Student-facing site
 templ UnitComponent(unit domain.Unit, instance domain.Course) {
 	@Layout(Page{Title: instance.GetTitle()}) {
-		@CourseDivContainer(instance, coursePath(instance, true), instance.Name) {
+		@CourseDivContainer(instance, templates.CoursePath(instance, true), instance.Name) {
 			@CourseUnorderedList() {
 				for _, lesson := range unit.Lessons {
-					@ListedLinkItem(lessonPath(*lesson, unit, instance, true), false) {
+					@ListedLinkItem(templates.LessonPath(*lesson, unit, instance, true), false) {
 						if unit.Number < 0 {
 							<strong>Day { strconv.Itoa(lesson.Number) }:</strong> { lesson.Description }
 						} else {
@@ -136,7 +137,7 @@ templ UnitComponent(unit domain.Unit, instance domain.Course) {
 					}
 				}
 			}
-			@TitleDiv(unit.Name, unit.Description, filepath.Join(unitPath(unit, instance, false), unit.Image.BasePath), unit.Image.ID != 0, false)
+			@TitleDiv(unit.Name, unit.Description, filepath.Join(templates.UnitPath(unit, instance, false), unit.Image.BasePath), unit.Image.ID != 0, false)
 		}
 	}
 }
@@ -144,7 +145,7 @@ templ UnitComponent(unit domain.Unit, instance domain.Course) {
 // Student-facing site
 templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) {
 	@Layout(Page{Title: course.GetTitle()}) {
-		@CourseDivContainer(course, unitPath(unit, course, true), unit.GetTitle()) {
+		@CourseDivContainer(course, templates.UnitPath(unit, course, true), unit.GetTitle()) {
 			@CourseUnorderedList() {
 				if !hasSlides {
 					@ListedLinkItem(SlidesPath(lesson, unit, course), true) {
@@ -154,12 +155,12 @@ templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cour
 					<p>No content for this lesson yet!</p>
 				}
 				if !hasFiles {
-					@ListedLinkItemAbsoluteURL((LessonFilesURL(lesson, unit, course)), true) {
+					@ListedLinkItemAbsoluteURL((templates.LessonFilesURL(lesson, unit, course)), true) {
 						Other Files
 					}
 				}
 			}
-			@TitleDiv(lesson.Name, lesson.Description, filepath.Join(lessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false)
+			@TitleDiv(lesson.Name, lesson.Description, filepath.Join(templates.LessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false)
 		}
 	}
 }

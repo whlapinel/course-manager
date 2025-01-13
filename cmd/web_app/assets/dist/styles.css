@@ -770,6 +770,10 @@ video {
   gap: 1.5rem;
 }
 
+.self-center {
+  align-self: center;
+}
+
 .rounded {
   border-radius: 0.25rem;
 }

@@ -26,7 +26,6 @@ Big progress today. I'm now able to delete the courses directory and re-generate
 - docs root folder is not generated, so js, styles etc. must be manipulated manually. only courses folder and below is generated. Need to make deleting this directory part of the generation code.
 - Courses main page image is not an attribute of term, but should be (very minor issue)
 
-
 ### 1/2/2025
 
 - Name-based directory naming
@@ -47,7 +46,7 @@ Big progress today. I'm now able to delete the courses directory and re-generate
   - Essentially what I need is a cache system, and I am really unsure about how to do that.
   - The files will reside in the file system and will be edited there through the app by the user, by checking out and checking back in or something like that. Not really sure how best to do it.
   - How will the markdown slides fit in?  Should they be a file resource or should it be written from the database?
-  - 
+  -
 
 ### 12/30/24
 
