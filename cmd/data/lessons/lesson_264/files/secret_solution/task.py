@@ -4,10 +4,6 @@ import sqlite3
 class Task:
     db_name = "tasks.db"
 
-    def __init__(self, db_name="tasks.db"):
-        self.db_name = db_name
-        self._create_table()
-
     @staticmethod
     def _create_table():
         with sqlite3.connect(Task.db_name) as conn:

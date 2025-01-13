@@ -9,10 +9,15 @@ paginate: true
 <!-- headingDivider: 1 -->
 <!-- backgroundColor: black -->
 <!-- class: invert -->
-# Lesson 10.3
 
-# **Warmup**
-		
+# Lesson 10.3
+  
 # **Agenda**
-		
-# **Looking ahead**
+
+Final Exam
+
+We will start at the designated time. The files will be located in lesson files on the course website.
+
+There are 10 bugs and/or missing lines. Fix/complete all, verify everything works, then submit your files as a .zip file.
+  
+Good luck!!
