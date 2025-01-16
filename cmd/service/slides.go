@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type fetchLesson func(int) (*domain.Lesson, error)
 
 // This check to see if the file already exists. if not, should create a new markdown file, write the template to it,
 // and generate the html file. Returns the file path
-func CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, error) {
+func (svc CourseService) CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, error) {
 	markdownPath := data.NewSlidesMarkdownFilePath(lessonID)
 	_, err := os.Stat(markdownPath)
 	if os.IsNotExist(err) {
@@ -26,7 +26,7 @@ func CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, erro
 			return "", err
 		}
 		// write template to file
-		templateFileContents, err := SlidesTemplate(lessonID, fetchLesson)
+		templateFileContents, err := svc.SlidesTemplate(lessonID, fetchLesson)
 		if err != nil {
 			return "", err
 		}
@@ -39,7 +39,7 @@ func CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, erro
 	return markdownPath, nil
 }
 
-func SlidesTemplate(lessonID int, fetchLesson fetchLesson) ([]byte, error) {
+func (svc CourseService) SlidesTemplate(lessonID int, fetchLesson fetchLesson) ([]byte, error) {
 	lesson, err := fetchLesson(lessonID)
 	if err != nil {
 		return nil, err

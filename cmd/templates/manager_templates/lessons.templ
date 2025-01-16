@@ -5,8 +5,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+templ LessonListTemplate(props NodeListPage) {
+	@NodeListComponent(props)
+}
+
 // CourseManager site
-templ LessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesson, listCourseUnitsRHN, lessonRouteName string, e *echo.Echo) {
+templ OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesson, listCourseUnitsRHN, lessonRouteName, createLessonRHN string, e *echo.Echo) {
 	<button hx-get={ e.Reverse(listCourseUnitsRHN, termID, courseID) } hx-target={ pageElementID.Selector() } hx-push-url="true">
 		Back to Course Units
 	</button>
@@ -18,5 +22,8 @@ templ LessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesson,
 				</button>
 			</li>
 		</ul>
+	}
+	@NewHXButton(HxGet, "", e.Reverse(createLessonRHN, termID, courseID, unitID), "#page", true).Component() {
+		Add Lesson
 	}
 }

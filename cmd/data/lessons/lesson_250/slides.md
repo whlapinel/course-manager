@@ -257,5 +257,7 @@ from flask import Flask, render_template, request
 
 1. Add a **Help Page** (`/help`) that explains the available search terms.  
    - Extend `base.html` and include a list of keys from `do_re_mi`.  
-   - Example content: "Available terms: Do, Re, Mi, Fa, So, La, Ti."  
+   - Example content: "Available terms: Do, Re, Mi, Fa, So, La, Ti."
+
+**************
 

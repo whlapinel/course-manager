@@ -5,6 +5,14 @@ import (
 	"log"
 )
 
+func (svc CourseService) GetTerm(termID int) (domain.Term, error) {
+	term, err := svc.repo.GetTermByID(termID)
+	if err != nil {
+		return term, err
+	}
+	return term, nil
+}
+
 func (svc CourseService) GetTerms() ([]domain.Term, error) {
 	terms, err := svc.repo.GetTerms()
 	if err != nil {

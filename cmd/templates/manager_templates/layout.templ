@@ -2,7 +2,7 @@
 package managertemplates
 
 // CourseManager site
-templ CourseManagerLayout(pageTitle string, page templ.Component) {
+templ CourseManagerLayoutComponent(cml CourseManagerLayout) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -11,18 +11,42 @@ templ CourseManagerLayout(pageTitle string, page templ.Component) {
 			<link rel="stylesheet" href="/dist/styles.css"/>
 			<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 			<script src="/dist/htmx.js" defer></script>
-			<title>{ pageTitle }</title>
+			<title>Course Manager</title>
 		</head>
 		// TODO: need to make the header
-		<body class="bg-slate-800 text-white p-2">
+		<body class="bg-slate-800 text-white p-2 min-h-screen">
 			<header>
-				<ul>
-					<li></li>
-				</ul>
+				<div id="confirmation"></div>
+				<nav class="flex">
+					@NewHXButton(HxGet, "", cml.E.Reverse(cml.ListTermsRHN), "#page", true).Component() {
+						Course Terms
+					}
+					@NewHXButton(HxPost, "", cml.E.Reverse(cml.GenerateSiteRHN), "#confirmation", false).Component() {
+						Generate Site
+					}
+					@NewHXButton(HxPost, "", cml.E.Reverse(cml.SyncSiteRHN), "#confirmation", false).Component() {
+						Sync Site
+					}
+				</nav>
 			</header>
-			<main id={ string(pageElementID) }>
-				@page
+			<main id={ string(pageElementID) } class="min-w-full min-h-screen">
+				@cml.Page
 			</main>
 		</body>
 	</html>
+}
+
+templ PageLayoutComponent(props Page) {
+	@PageHeadingComponent(props.PageLayout().PageTitle)
+	@UpNavComponent(props.PageLayout().UpNav)
+	{ children... }
+}
+
+templ Confirm(msg string) {
+	<dialog open class="p-4">
+		<form method="dialog">
+			<p>{ msg }</p>
+			<button>OK</button>
+		</form>
+	</dialog>
 }

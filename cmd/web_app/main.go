@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/cmd/data"
 	"gh_static_portfolio/cmd/service"
 	"gh_static_portfolio/cmd/web_app/assets"
+	"gh_static_portfolio/cmd/web_app/handlers"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -20,7 +21,7 @@ func main() {
 	}
 	defer db.Close()
 	courseRepo := data.NewCourseRepo(queries)
-	courseHandler := NewCourseHandler(e, service.NewCourseService(courseRepo))
+	courseHandler := handlers.NewCourseHandler(e, service.NewCourseService(courseRepo))
 	courseHandler.Mount()
 	assets.RegisterStatic(e)
 	e.Logger.Fatal(e.Start(":1323"))

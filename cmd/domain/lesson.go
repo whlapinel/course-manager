@@ -6,13 +6,14 @@ import (
 	"time"
 )
 
-func NewLesson(number, unitID int, name string, descr string, dates []time.Time) Lesson {
-	return Lesson{Number: number, UnitID: unitID, Name: name, Description: descr, Dates: dates}
+func NewLesson(number, unitID int, unitNum int, name string, descr string, dates []time.Time) Lesson {
+	return Lesson{Number: number, UnitID: unitID, UnitNum: unitNum, Name: name, Description: descr, Dates: dates}
 }
 
 type Lesson struct {
 	ID          int
 	UnitID      int
+	UnitNum     int
 	Number      int
 	Name        string
 	Description string
@@ -20,8 +21,43 @@ type Lesson struct {
 	Image       Image
 }
 
-func (l Lesson) GetTitle() string {
+func (l Lesson) GetName() string {
 	return l.Name
+}
+
+func (l Lesson) GetDescription() string {
+	return l.Description
+}
+
+func (l Lesson) GetID() int {
+	return l.ID
+}
+
+func (l Lesson) GetParentID() int {
+	return l.UnitID
+}
+
+func (l Lesson) Children() []CourseNode {
+	return []CourseNode{}
+}
+
+func (l Lesson) TypeName() string {
+	return LessonTypeName.String()
+}
+
+func (l Lesson) ParentTypeName() string {
+	return UnitTypeName.String()
+}
+
+func (l Lesson) ChildTypeName() string {
+	return ""
+}
+
+func LessonDesignator(lesson Lesson, unit Unit) string {
+	if unit.Number < 0 {
+		return fmt.Sprintf("%s %d", unit.Name, lesson.Number)
+	}
+	return fmt.Sprintf("Lesson %d.%d", unit.Number, lesson.Number)
 }
 
 type CalendarDirection int

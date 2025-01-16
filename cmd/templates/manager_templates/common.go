@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/templates"
 	"log"
 	"net/url"
 
@@ -29,6 +30,7 @@ func (params CourseIDParams) ToIntSlice() []interface{} {
 
 type ElementID string
 
+// simply prefixes with '#'
 func (i ElementID) Selector() string {
 	return string("#" + i)
 }
@@ -38,72 +40,9 @@ func (i ElementID) String() string {
 }
 
 const (
-	EditSlidesContainerID ElementID = "editor-container"
-	EditSlidesTextAreaID  ElementID = "editor-text-area"
+	EditSlidesContainerID ElementID = "slides-editor-container"
+	EditSlidesTextAreaID  ElementID = "slides-editor-text-area"
 )
-
-type LessonEditor struct {
-	Params                 CourseIDParams
-	GetEditLessonRHN       string // route handler name to retrieve form upon clicking edit
-	PostEditLessonRHN      string // route handler name to post edits upon clicking submit
-	E                      *echo.Echo
-	Lesson                 domain.Lesson
-	DescriptionContainerID ElementID
-	DescriptionInputID     ElementID
-	NameContainerID        ElementID
-	NameInputID            ElementID
-}
-
-const (
-	EditLessonDescID ElementID = "lesson-desc-input"
-	EditLessonNameID ElementID = "lesson-name-input"
-)
-
-func NewLessonEditor(params CourseIDParams, getEdit, postEdit string, e *echo.Echo, lesson domain.Lesson) LessonEditor {
-	return LessonEditor{
-		Params:                 params,
-		GetEditLessonRHN:       getEdit,
-		PostEditLessonRHN:      postEdit,
-		E:                      e,
-		Lesson:                 lesson,
-		DescriptionContainerID: "lesson-desc-container",
-		DescriptionInputID:     EditLessonDescID,
-		NameContainerID:        "lesson-name-container",
-		NameInputID:            EditLessonNameID,
-	}
-}
-
-func (editor LessonEditor) LessonDescription(isEdit bool) templ.Component {
-	input := DescriptionInput(editor.DescriptionInputID, editor.Lesson.Description)
-	return LessonFieldTemplate(
-		editor.Lesson,
-		editor.Params,
-		editor.GetEditLessonRHN,
-		editor.PostEditLessonRHN,
-		editor.DescriptionContainerID,
-		editor.DescriptionInputID,
-		editor.E,
-		isEdit,
-		input,
-		editor.Lesson.Description,
-	)
-}
-
-func (editor LessonEditor) LessonName(isEdit bool) templ.Component {
-	input := NameInput(editor.NameInputID, editor.Lesson.Name)
-	return LessonFieldTemplate(
-		editor.Lesson,
-		editor.Params,
-		editor.GetEditLessonRHN,
-		editor.PostEditLessonRHN,
-		editor.NameContainerID,
-		editor.NameInputID,
-		editor.E,
-		isEdit,
-		input,
-		editor.Lesson.Name,
-	)
-}
 
 type ShiftButtonFactory struct {
 	TermID                      int
@@ -144,26 +83,24 @@ type HXButton struct {
 	URL        string
 	HxTargetID string
 	PushURL    bool
-	NewTab     bool
 	HxSwap     HxSwap
 }
 
 type HxSwap string
 
 const (
-	AfterEnd = "afterend"
+	AfterEnd HxSwap = "afterend"
 )
 
 func (button HXButton) Component() templ.Component {
 	return hxButton(button)
 }
-func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL, newTab bool) HXButton {
+func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL bool) HXButton {
 	return HXButton{
 		Method:     method,
 		URL:        url,
 		HxTargetID: hxTargetID,
 		PushURL:    pushURL,
-		NewTab:     newTab,
 		HxSwap:     hxSwap,
 	}
 }
@@ -171,6 +108,25 @@ func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL
 type HXMethod string
 
 const (
-	HxGet  = "hx-get"
-	HxPost = "hx-post"
+	HxGet    = "hx-get"
+	HxPost   = "hx-post"
+	HxDelete = "hx-delete"
 )
+
+type EditField struct {
+	Params           CourseIDParams
+	FieldName        string
+	Content          string
+	GetEditFieldURL  string
+	PostEditFieldURL string
+	InputComponent   templ.Component
+	IsEdit           bool
+}
+
+func FieldContainerID(fieldName string) string {
+	return templates.KebabCase(fieldName) + "-container"
+}
+
+func FieldInputID(fieldName string) string {
+	return templates.KebabCase(fieldName)
+}

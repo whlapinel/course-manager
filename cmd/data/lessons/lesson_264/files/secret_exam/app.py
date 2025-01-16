@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for
 # Bug(5) Missing import of Task
 app = Flask(__name__)
 
-
 @app.route("/")
 def index():
     # Bug (6): Missing the call to get tasks

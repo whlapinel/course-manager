@@ -16,7 +16,9 @@ paginate: true
 
 Final Exam
 
-We will start at the designated time. The files will be located in lesson files on the course website.
+We will start at the designated time.
+
+You will access the assignment on Canvas, called Final Exam.
 
 There are 10 bugs and/or missing lines. Fix/complete all, verify everything works, then submit your files as a .zip file.
   

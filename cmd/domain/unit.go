@@ -5,8 +5,41 @@ func NewUnit(num int, sequence int, name string, descr string, lessons []*Lesson
 
 }
 
-func (u Unit) GetTitle() string {
+func (u Unit) GetName() string {
 	return u.Name
+}
+
+func (u Unit) GetDescription() string {
+	return u.Description
+}
+
+func (u Unit) GetID() int {
+	return u.ID
+}
+
+func (u Unit) GetParentID() int {
+	return u.CourseID
+}
+
+func (u Unit) Children() []CourseNode {
+	var nodes []CourseNode
+	for _, l := range u.Lessons {
+		nodes = append(nodes, l)
+	}
+	return nodes
+}
+
+func (u Unit) TypeName() string {
+	return "Unit"
+
+}
+
+func (u Unit) ParentTypeName() string {
+	return "Course"
+}
+
+func (u Unit) ChildTypeName() string {
+	return "Lesson"
 }
 
 // Always associated with a particular course

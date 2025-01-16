@@ -27,6 +27,44 @@ type Term struct {
 	TermType             TermType
 	ID                   int
 	Name                 string
+	Description          string
+	Courses              Courses
+}
+
+func (t Term) GetName() string {
+	return t.Name
+}
+
+func (t Term) GetDescription() string {
+	return t.Description
+}
+
+func (t Term) GetID() int {
+	return t.ID
+}
+
+func (t Term) GetParentID() int {
+	return 0
+}
+
+func (t Term) Children() []CourseNode {
+	var courses []CourseNode
+	for _, c := range t.Courses {
+		courses = append(courses, c)
+	}
+	return courses
+}
+
+func (t Term) TypeName() string {
+	return TermTypeName.String()
+}
+
+func (t Term) ParentTypeName() string {
+	return ""
+}
+
+func (t Term) ChildTypeName() string {
+	return CourseTypeName.String()
 }
 
 type NonInstructionalDays struct {

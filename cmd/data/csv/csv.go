@@ -160,7 +160,7 @@ func ImportCoursesFromCSVReader() (domain.Courses, error) {
 		}
 		lesson, exists := unit.Lessons[lessonNum]
 		if !exists {
-			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, lessonName, lessonDescr, []time.Time{lessonDate})
+			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, unitNum, lessonName, lessonDescr, []time.Time{lessonDate})
 		} else {
 			lesson.Dates = append(lesson.Dates, lessonDate)
 		}
@@ -264,7 +264,7 @@ func ImportCoursesFromCSVReaderV2(r io.Reader) (domain.Courses, error) {
 		}
 		lesson, exists := unit.Lessons[lessonNum]
 		if !exists {
-			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, lessonName, lessonDescr, []time.Time{lessonDate})
+			lesson = domain.NewLesson(lessonNum, unit.Unit.ID, unitNum, lessonName, lessonDescr, []time.Time{lessonDate})
 		} else {
 			lesson.Dates = append(lesson.Dates, lessonDate)
 		}

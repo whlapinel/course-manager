@@ -2,12 +2,7 @@ package domain
 
 import "time"
 
-type CurriculumLayer interface {
-	GetImage() Image
-	SetImage(Image)
-}
-
-func NewCourseTemplate(title string, descr string, units []*Unit) Course {
+func NewCourse(title string, descr string, units []*Unit) Course {
 	return Course{Name: title, Description: descr, Units: units}
 }
 
@@ -19,14 +14,6 @@ type Course struct {
 	Units       []*Unit
 	Image       Image
 	Term
-}
-
-func (c Course) GetImage() Image {
-	return c.Image
-}
-
-func (c *Course) SetImage(image Image) {
-	c.Image = image
 }
 
 type CourseType int
@@ -53,8 +40,40 @@ func (c Course) FitToTerm(term Term) Course {
 	return c
 }
 
-func (c Course) GetTitle() string {
+func (c Course) GetName() string {
 	return c.Name
+}
+
+func (c Course) GetDescription() string {
+	return c.Description
+}
+
+func (c Course) GetID() int {
+	return c.ID
+}
+
+func (c Course) GetParentID() int {
+	return c.Term.ID
+}
+
+func (c Course) Children() []CourseNode {
+	var nodes []CourseNode
+	for _, u := range c.Units {
+		nodes = append(nodes, u)
+	}
+	return nodes
+}
+
+func (c Course) TypeName() string {
+	return CourseTypeName.String()
+}
+
+func (c Course) ParentTypeName() string {
+	return TermTypeName.String()
+}
+
+func (c Course) ChildTypeName() string {
+	return UnitTypeName.String()
 }
 
 func (c *Course) AddUnit(unit Unit) {

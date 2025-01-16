@@ -8,13 +8,7 @@ package managertemplates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"gh_static_portfolio/cmd/domain"
-	"github.com/labstack/echo/v4"
-)
-
-// CourseManager site
-func UnitsListTemplate(termID, courseID int, listTermCoursesRHN string, units []*domain.Unit, unitRouteName string, e *echo.Echo) templ.Component {
+func UnitsListTemplate(props NodeListPage) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -32,70 +26,37 @@ func UnitsListTemplate(termID, courseID int, listTermCoursesRHN string, units []
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button hx-get=\"")
+		templ_7745c5c3_Err = NodeListComponent(props).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(listTermCoursesRHN, termID))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/manager_templates/units.templ`, Line: 10, Col: 55}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(string(pageElementID.Selector()))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/manager_templates/units.templ`, Line: 10, Col: 102}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-push-url=\"true\">Back to Term Courses</button> ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		for _, unit := range units {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul><li><button hx-get=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(unitRouteName, termID, courseID, unit.ID))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/manager_templates/units.templ`, Line: 16, Col: 72}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#page\" hx-push-url=\"true\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Name)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/templates/manager_templates/units.templ`, Line: 17, Col: 16}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></li></ul>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 		}
 		return templ_7745c5c3_Err
 	})
 }
 
+// // CourseManager site
+//
+//	templ OldUnitsListTemplate(termID, courseID int, listTermCoursesRHN string, createUnitRHN string, units []*domain.Unit, listLessonsRHN, unitDetailsRHN string, e *echo.Echo) {
+//		<button hx-get={ e.Reverse(listTermCoursesRHN, termID) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
+//			Back to Term Courses
+//		</button>
+//		for _, unit := range units {
+//			<ul>
+//				<li>
+//					@NewHXButton(HxGet, "", e.Reverse(listLessonsRHN, termID, courseID, unit.ID), pageElementID.Selector(), true).Component() {
+//						Lessons
+//					}
+//					@NewHXButton(HxGet, "", e.Reverse(unitDetailsRHN, termID, courseID, unit.ID), pageElementID.Selector(), true).Component() {
+//						Details
+//					}
+//					<button hx-get={ e.Reverse(listLessonsRHN, termID, courseID, unit.ID) } hx-target="#page" hx-push-url="true">
+//						{ unit.Name }
+//					</button>
+//				</li>
+//			</ul>
+//		}
+//		@NewHXButton(HxGet, "", e.Reverse(createUnitRHN, termID, courseID), "#page", true).Component() {
+//			Add Unit
+//		}
+//	}
 var _ = templruntime.GeneratedTemplate

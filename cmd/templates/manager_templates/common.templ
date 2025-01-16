@@ -1,5 +1,7 @@
 package managertemplates
 
+import "gh_static_portfolio/cmd/domain"
+
 // places buttons side by side
 templ ButtonContainer() {
 	<div class="flex gap-2 self-center">
@@ -13,6 +15,14 @@ templ CancelEditButton() {
 	</button>
 }
 
+templ UpNavComponent(props UpNav) {
+	if props.URL != "" {
+		<button hx-get={ props.URL } hx-target={ string(pageElementID.Selector()) } hx-push-url="true" class="text-xl">
+			{ props.Text }
+		</button>
+	}
+}
+
 templ hxButton(props HXButton) {
 	<button
 		if props.Method == HxGet {
@@ -21,12 +31,12 @@ templ hxButton(props HXButton) {
 		if props.Method == HxPost {
 			hx-post={ props.URL }
 		}
+		if props.Method == HxDelete {
+			hx-delete={ props.URL }
+		}
 		class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
 		if props.HxTargetID != "" {
 			hx-target={ props.HxTargetID }
-		}
-		if props.NewTab {
-			target="_blank"
 		}
 		if props.PushURL {
 			hx-push-url="true"
@@ -37,4 +47,107 @@ templ hxButton(props HXButton) {
 	>
 		{ children... }
 	</button>
+}
+
+func AddNodeChildIDToParams(params CourseIDParams, childID int) CourseIDParams {
+	var newParams CourseIDParams
+	if params.TermID.Value == 0 {
+		newParams.TermID = IDParam{Value: childID}
+		return newParams
+	} else if params.CourseID.Value == 0 {
+		newParams = params
+		newParams.CourseID = IDParam{Value: childID}
+		return newParams
+	} else if params.UnitID.Value == 0 {
+		newParams = params
+		newParams.UnitID = IDParam{Value: childID}
+		return newParams
+	} else if params.LessonID.Value == 0 {
+		newParams = params
+		newParams.LessonID = IDParam{Value: childID}
+		return newParams
+	}
+	panic("no ID to add")
+}
+
+func upNavText(typeName string) string {
+	if typeName == string(domain.RootTypeName) {
+		return "Home"
+	}
+	return typeName + "s"
+}
+
+templ EditNameComponent(props NodeDetailsPage) {
+	@EditFieldComponent(EditField{
+		FieldName:        "Name",
+		Content:          props.Node.GetName(),
+		IsEdit:           props.IsEdit,
+		InputComponent:   InputComponent(FieldInputID("Name"), props.Node.GetName()),
+		GetEditFieldURL:  props.GetEditNodeURL,
+		PostEditFieldURL: props.PostEditNodeURL,
+		Params:           props.Params,
+	})
+}
+
+templ EditDescriptionComponent(props NodeDetailsPage) {
+	@EditFieldComponent(EditField{
+		FieldName:        "Description",
+		Content:          props.Node.GetDescription(),
+		IsEdit:           props.IsEdit,
+		InputComponent:   TextAreaComponent(FieldInputID("Description"), props.Node.GetDescription()),
+		PostEditFieldURL: props.PostEditNodeURL,
+		GetEditFieldURL:  props.GetEditNodeURL,
+		Params:           props.Params,
+	})
+}
+
+templ EditFieldComponent(
+	props EditField,
+) {
+	<div id={ FieldContainerID(props.FieldName) } class="flex gap-2">
+		<p>{ props.FieldName }:</p>
+		if props.IsEdit {
+			@props.InputComponent
+			@CancelEditButton()
+			<button
+				hx-post={ props.PostEditFieldURL }
+				hx-target={ "#" + FieldContainerID(props.FieldName) }
+				hx-include={ "#" + FieldInputID(props.FieldName) }
+			>Submit</button>
+		} else {
+			<p>{ props.Content }</p>
+			<button
+				hx-get={ AddQueryParam(props.GetEditFieldURL, "field", FieldInputID(props.FieldName)) }
+				hx-push-url="true"
+				hx-swap={ "outerHTML" }
+				hx-target={ "#" + FieldContainerID(props.FieldName) }
+			>
+				Edit
+			</button>
+		}
+	</div>
+}
+
+templ InputComponent(inputID string, value string) {
+	<input
+		class="bg-black"
+		type="text"
+		name={ inputID }
+		id={ inputID }
+		value={ value }
+	/>
+}
+
+templ TextAreaComponent(id string, value string) {
+	<textarea
+		class="bg-black"
+		id={ id }
+		name={ id }
+	>
+		{ value }
+	</textarea>
+}
+
+templ PageHeadingComponent(pageTitle string) {
+	<h1 class="text-2xl">{ pageTitle }</h1>
 }

@@ -3,6 +3,7 @@ from task import Task
 
 app = Flask(__name__)
 task_manager = Task()
+Task._create_table()
 
 
 @app.route("/")

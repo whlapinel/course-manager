@@ -1,11 +1,10 @@
 package managertemplates
 
-import (
-	"gh_static_portfolio/cmd/domain"
-	"github.com/labstack/echo/v4"
-)
-
-templ ManagerHomePage(terms []domain.Term, termCoursesRHN string, e *echo.Echo) {
-	<h1>Welcome to Course Manager</h1>
-	@TermsListTemplate(terms, termCoursesRHN, e)
+templ HomePageComponent(props HomePage) {
+	@PageLayoutComponent(props) {
+		<h1 class="text-xl">Welcome to Course Manager</h1>
+		@NewHXButton(HxGet, "", props.ListTermsURL, pageElementID.Selector(), true).Component() {
+			View Terms
+		}
+	}
 }
