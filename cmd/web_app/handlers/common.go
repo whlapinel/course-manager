@@ -187,10 +187,9 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 	return component.Render(context.Background(), c.Response())
 }
 
-func (h CourseHandler) CourseManagerLayout(page templ.Component, pageTitle string) templ.Component {
+func (h CourseHandler) CourseManagerLayout(page templ.Component) templ.Component {
 	cml := mt.CourseManagerLayout{
 		Page:            page,
-		PageTitle:       pageTitle,
 		ListTermsRHN:    ListTerms.String(),
 		GenerateSiteRHN: GenerateSite.String(),
 		SyncSiteRHN:     SyncSite.String(),

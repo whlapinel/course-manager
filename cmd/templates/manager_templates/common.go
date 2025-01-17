@@ -10,6 +10,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type ComponentData interface {
+	Component() templ.Component
+}
+
 const pageElementID ElementID = "page"
 
 type CourseIDParams struct {

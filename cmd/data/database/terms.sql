@@ -20,7 +20,7 @@ SELECT
   d.date
 FROM
   terms t
-JOIN
+LEFT JOIN
   dates d ON d.term_id = t.id
 WHERE
   d.date = ?;
@@ -36,7 +36,7 @@ SELECT
   t.end,
   d.date 
 FROM terms t
-JOIN dates d 
+LEFT JOIN dates d 
 ON d.term_id = t.id
 ORDER BY t.id, d.day_number;
 
@@ -47,3 +47,7 @@ WHERE d.term_id = ?;
 -- name: DeleteNonInstructDays :one
 DELETE FROM non_instruct_days WHERE id = ?
 RETURNING *;
+
+-- name: DeleteTerm :exec
+DELETE FROM terms t WHERE t.id = ?
+LEFT JOIN dates on d.term_id = 

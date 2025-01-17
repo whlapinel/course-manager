@@ -36,7 +36,7 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 		return err
 	}
 	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
-	layout := h.CourseManagerLayout(template, "Calendar")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -73,6 +73,6 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		return err
 	}
 	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
-	layout := h.CourseManagerLayout(template, "Calendar")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }

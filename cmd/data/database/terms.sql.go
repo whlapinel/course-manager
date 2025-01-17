@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const deleteNonInstructDays = `-- name: DeleteNonInstructDays :one
@@ -47,7 +48,7 @@ SELECT
   d.date
 FROM
   terms t
-JOIN
+LEFT JOIN
   dates d ON d.term_id = t.id
 WHERE
   d.date = ?
@@ -58,7 +59,7 @@ type GetTermRow struct {
 	Name  string
 	Start string
 	End   string
-	Date  string
+	Date  sql.NullString
 }
 
 func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) {
@@ -131,7 +132,7 @@ SELECT
   t.end,
   d.date 
 FROM terms t
-JOIN dates d 
+LEFT JOIN dates d 
 ON d.term_id = t.id
 ORDER BY t.id, d.day_number
 `
@@ -141,7 +142,7 @@ type GetTermsRow struct {
 	Name  string
 	Start string
 	End   string
-	Date  string
+	Date  sql.NullString
 }
 
 func (q *Queries) GetTerms(ctx context.Context) ([]GetTermsRow, error) {

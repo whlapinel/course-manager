@@ -69,7 +69,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 		E:                h.e,
 	}
 	template := mt.NodeListComponent(coursesList)
-	layout := h.CourseManagerLayout(template, "Courses")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -90,10 +90,9 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 		IsEdit:          false,
-		E:               h.e,
 	}
 	template := mt.NodeDetailsComponent(courseDetails)
-	layout := h.CourseManagerLayout(template, "Course Details")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -115,7 +114,7 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
-	layout := h.CourseManagerLayout(template, "New Course")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -146,7 +145,6 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		E:               h.e,
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)

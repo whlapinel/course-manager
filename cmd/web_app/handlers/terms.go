@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"gh_static_portfolio/cmd/domain"
 	mt "gh_static_portfolio/cmd/templates/manager_templates"
+	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -60,30 +62,87 @@ func (h CourseHandler) ListTerms(c echo.Context) error {
 		E:                h.e,
 	}
 	template := mt.NodeListComponent(termsList)
-	layout := h.CourseManagerLayout(template, "Terms")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) TermDetails(c echo.Context) error {
-	return nil
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	pageData := mt.NodeDetailsPage{
+		Params:          params,
+		Node:            term,
+		GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+		UpNavURL:        h.e.Reverse(ListTerms.String()),
+	}
+	template := pageData.Component()
+	layout := h.CourseManagerLayout(template)
+	return Respond(c, "", pageData.Component(), layout)
 }
 
 func (h CourseHandler) ShowNewTerm(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	nodeCreate := mt.NodeCreatePage{
+		ParentNode:        domain.RootCourseNode{},
 		NodeType:          domain.TermTypeName,
 		Params:            params,
 		PostCreateNodeURL: h.e.Reverse(PostNewTerm.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
-	layout := h.CourseManagerLayout(template, "New Term")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 
 }
 
 func (h CourseHandler) PostNewTerm(c echo.Context) error {
-	return nil
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println("key, val: ", key, val)
+	}
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	startDateStr := c.FormValue("start-date")
+	startDate, err := time.Parse(time.DateOnly, startDateStr)
+	if err != nil {
+		return err
+	}
+	endDateStr := c.FormValue("end-date")
+	endDate, err := time.Parse(time.DateOnly, endDateStr)
+	if err != nil {
+		return err
+	}
+	term := domain.Term{
+		Name:        name,
+		Description: description,
+		Start:       startDate,
+		End:         endDate,
+	}
+	term.ID, err = h.svc.SaveTerm(term)
+	if err != nil {
+		return err
+	}
+	page := mt.NodeDetailsPage{
+		Node:            term,
+		GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), term.ID),
+		PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), term.ID),
+		UpNavURL:        h.e.Reverse(ListTerms.String()),
+	}
+	template := page.Component()
+	layout := h.CourseManagerLayout(template)
+	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) ShowEditTerm(c echo.Context) error {

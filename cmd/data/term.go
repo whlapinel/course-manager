@@ -93,12 +93,13 @@ func (cr CourseRepo) GetTerms() ([]domain.Term, error) {
 				Name:  dbGetTermRow.Name,
 			}
 		}
-		parsedInstructDate, err := time.Parse(time.DateOnly, dbGetTermRow.Date)
-		if err != nil {
-			return nil, err
+		if dbGetTermRow.Date.Valid {
+			parsedInstructDate, err := time.Parse(time.DateOnly, dbGetTermRow.Date.String)
+			if err != nil {
+				return nil, err
+			}
+			term.InstructionalDays = append(term.InstructionalDays, parsedInstructDate)
 		}
-		term.InstructionalDays = append(term.InstructionalDays, parsedInstructDate)
-
 	}
 	terms = append(terms, term)
 	return terms, nil

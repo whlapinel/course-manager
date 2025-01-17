@@ -31,7 +31,7 @@ func (h CourseHandler) ShowHome(c echo.Context) error {
 		ListTermsURL: h.e.Reverse(ListTerms.String()),
 	}
 	template := mt.HomePageComponent(pageData)
-	layout := h.CourseManagerLayout(template, "Home")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 

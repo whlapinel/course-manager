@@ -5,10 +5,12 @@ import (
 	"gh_static_portfolio/cmd/domain"
 	tpl "gh_static_portfolio/cmd/templates"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
 type Page interface {
+	ComponentData
 	PageLayout() PageLayout
 }
 
@@ -18,6 +20,10 @@ type NodeCreatePage struct {
 	Params            CourseIDParams
 	PostCreateNodeURL string
 	CancelURL         string
+}
+
+func (page NodeCreatePage) Component() templ.Component {
+	return NodeCreateComponent(page)
 }
 
 func (page NodeCreatePage) PageLayout() PageLayout {
@@ -41,7 +47,10 @@ type NodeDetailsPage struct {
 	PostEditNodeURL string
 	UpNavURL        string
 	IsEdit          bool
-	E               *echo.Echo
+}
+
+func (page NodeDetailsPage) Component() templ.Component {
+	return NodeDetailsComponent(page)
 }
 
 func (page NodeDetailsPage) PageLayout() PageLayout {
@@ -73,6 +82,10 @@ type NodeListPage struct {
 	DeleteChildRHN   string
 	UpNavURL         string
 	E                *echo.Echo // for generating URLs from route handler name
+}
+
+func (page NodeListPage) Component() templ.Component {
+	return NodeListComponent(page)
 }
 
 type UpNav struct {

@@ -75,7 +75,7 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 	// old begins here
 	// template := mt.UnitsListTemplate(termID, courseID, ListTermCourses.String(), ShowNewUnit.String(), units, ListUnitLessons.String(), UnitDetails.String(), h.e)
 	template := mt.NodeListComponent(unitList)
-	layout := h.CourseManagerLayout(template, "Units")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -92,10 +92,9 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
-		E:               h.e,
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
-	layout := h.CourseManagerLayout(template, "Unit Details")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -132,7 +131,6 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		E:               h.e,
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)
@@ -181,7 +179,6 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 			IsEdit:          false,
-			E:               h.e,
 		}
 	}
 	var template templ.Component

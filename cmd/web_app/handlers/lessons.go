@@ -86,7 +86,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		E:               h.e,
 	}
 	template := mt.LessonListTemplate(lessonList)
-	layout := h.CourseManagerLayout(template, "Lessons")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -135,7 +135,6 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          false,
-		E:               h.e,
 	}
 	lessonDetails := mt.LessonDetailsPage{
 		NodeDetailsPage: nodeDetails,
@@ -160,7 +159,7 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 	// 	h.e,
 	// )
 	// old stuff ends here
-	layout := h.CourseManagerLayout(template, "Lesson Details")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
@@ -188,7 +187,6 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		E:               h.e,
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), component, nil)
@@ -239,7 +237,6 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 			IsEdit:          false,
-			E:               h.e,
 		}
 	}
 	var template templ.Component
@@ -363,7 +360,7 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 	}
 	template := mt.NodeCreateComponent(page)
-	layout := h.CourseManagerLayout(template, "New Lesson")
+	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
 
