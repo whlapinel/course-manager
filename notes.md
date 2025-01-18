@@ -2,6 +2,25 @@
 
 ## Progress Log
 
+### 1/18/2025
+
+I've been making a ton of progress though I haven't been writing it here.
+
+Major decision to be made regarding how to store term dates. Currently I have a table for instructional days and a table for non-instructional days but only one of them is used in the application, so the non-instruct table is empty. Since these days are mutually exclusive I have a challenge in that I need to make sure any change to one is checked against the other and handled appropriately.
+
+So, say if user adds a non-instructional day for a date which currently is listed in the instructional days (a highly probable scenario), the date would need to be deleted along with any associated lesson_date rows. This would not delete the lesson since lesson_dates is just a junction table. But then dates.day_number would then need to be updated, and I'm not sure this makes sense. I think day_number should probably be removed from persistence and calculated on the fly.
+
+So to recap, the plan is:
+- Use both instruct_dates ("dates) and non_instruct dates and check instruct_dates whenever there is a change to non_instruct_dates.
+- Remove day_number
+  - Remove from domain struct
+  - Apply migration
+  - Modify schema to remove column from schema
+  - Modify any application code that uses day_number (e.g. I think FitToTerm uses this)
+  - I think that rather than fixing the import from csv code, I'll just delete it.
+- Code to modify dates in either table should modify dates in the other table accordingly.
+- Add ON DELETE CASCADE to lesson_dates if it's not already there
+
 ### 1/10/2025
 
 Great progress on the web app. I've just about matched the feaures of the fyne app and about to surpass. Surprised at how easy it was to implement the Shift Lesson UI. Quality of everything is much better and I feel more confident in how everything is laid out. Having fun returning to web dev, and just absolutely love working with HTMX.

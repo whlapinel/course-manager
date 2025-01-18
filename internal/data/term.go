@@ -111,8 +111,12 @@ func (cr CourseRepo) GetTerms() ([]domain.Term, error) {
 
 }
 
-func (cr CourseRepo) GetTermDates(termID int) (domain.Term, error) {
+func (cr CourseRepo) GetTermWithDates(termID int) (domain.Term, error) {
 	var term domain.Term
+	term, err := cr.GetTermByID(termID)
+	if err != nil {
+		return term, err
+	}
 	dbDates, err := cr.queries.GetTermDates(context.Background(), int64(termID))
 	if len(dbDates) == 0 {
 		log.Println("dates returned: 0. CourseRepo.GetTermDates")

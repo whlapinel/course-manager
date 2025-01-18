@@ -10,7 +10,7 @@ sql:
       - "internal/data/database/terms.sql"
       - "internal/data/database/schedules.sql"
 
-    schema: "internal/data/database/schema.sql"
+    schema: "internal/data/database/migrations/schema"
     gen:
       go:
         package: "database"

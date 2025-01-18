@@ -24,7 +24,7 @@ func (q *Queries) DeleteNonInstructDays(ctx context.Context, id int64) (NonInstr
 
 const deleteTerm = `-- name: DeleteTerm :one
 DELETE FROM terms WHERE id = ?
-RETURNING id, name, description, start, "end"
+RETURNING id, name, start, "end", description
 `
 
 func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
@@ -33,9 +33,9 @@ func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Description,
 		&i.Start,
 		&i.End,
+		&i.Description,
 	)
 	return i, err
 }
@@ -80,7 +80,7 @@ func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) 
 }
 
 const getTermByID = `-- name: GetTermByID :one
-SELECT id, name, description, start, "end" FROM terms WHERE id = ?
+SELECT id, name, start, "end", description FROM terms WHERE id = ?
 `
 
 func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
@@ -89,9 +89,9 @@ func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Description,
 		&i.Start,
 		&i.End,
+		&i.Description,
 	)
 	return i, err
 }
@@ -188,7 +188,7 @@ INSERT INTO terms (
 ) VALUES (
   ?, ?, ?, ?
 )
-RETURNING id, name, description, start, "end"
+RETURNING id, name, start, "end", description
 `
 
 type SaveTermParams struct {
@@ -209,9 +209,9 @@ func (q *Queries) SaveTerm(ctx context.Context, arg SaveTermParams) (Term, error
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Description,
 		&i.Start,
 		&i.End,
+		&i.Description,
 	)
 	return i, err
 }

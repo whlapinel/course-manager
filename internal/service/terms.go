@@ -21,7 +21,7 @@ func (svc CourseService) DeleteTerm(termID int) error {
 }
 
 func (svc CourseService) GetTerm(termID int) (domain.Term, error) {
-	term, err := svc.repo.GetTermByID(termID)
+	term, err := svc.repo.GetTermWithDates(termID)
 	if err != nil {
 		return term, err
 	}

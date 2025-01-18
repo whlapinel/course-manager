@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"gh_static_portfolio/internal/util"
 	"log"
 	"net/http"
 	"time"
@@ -14,20 +15,23 @@ import (
 )
 
 const (
-	Terms    RouteName = "/terms"
-	Term     RouteName = Terms + RouteName(TermID)
-	EditTerm RouteName = Term + "/edit"
-	NewTerm  RouteName = Terms + "/new"
+	Terms     RouteName = "/terms"
+	Term      RouteName = Terms + RouteName(TermID)
+	TermDates RouteName = Term + "/dates"
+	EditTerm  RouteName = Term + "/edit"
+	NewTerm   RouteName = Terms + "/new"
 )
 
 const (
-	ListTerms    = RouteHandlerName(GET + Terms)
-	TermDetails  = RouteHandlerName(GET + Term)
-	ShowEditTerm = RouteHandlerName(GET + EditTerm)
-	PostEditTerm = RouteHandlerName(POST + EditTerm)
-	ShowNewTerm  = RouteHandlerName(GET + NewTerm)
-	PostNewTerm  = RouteHandlerName(POST + NewTerm)
-	DeleteTerm   = RouteHandlerName(POST + Term)
+	ListTerms         = RouteHandlerName(GET + Terms)
+	TermDetails       = RouteHandlerName(GET + Term)
+	ShowEditTermDates = RouteHandlerName(GET + TermDates)
+	PostEditTermDates = RouteHandlerName(POST + TermDates)
+	ShowEditTerm      = RouteHandlerName(GET + EditTerm)
+	PostEditTerm      = RouteHandlerName(POST + EditTerm)
+	ShowNewTerm       = RouteHandlerName(GET + NewTerm)
+	PostNewTerm       = RouteHandlerName(POST + NewTerm)
+	DeleteTerm        = RouteHandlerName(POST + Term)
 )
 
 func (h CourseHandler) TermHandlers() []RouteHandler {
@@ -35,6 +39,8 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		// Terms handlers
 		{Terms, ListTerms, GET, h.ListTerms},
 		{Term, TermDetails, GET, h.TermDetails},
+		{TermDates, ShowEditTermDates, GET, h.ShowEditTermDates},
+		{TermDates, PostEditTermDates, POST, h.PostEditTermDates},
 		{NewTerm, ShowNewTerm, GET, h.ShowNewTerm},
 		{NewTerm, PostNewTerm, POST, h.PostNewTerm},
 		{EditTerm, ShowEditTerm, GET, h.ShowEditTerm},
@@ -79,12 +85,15 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	pageData := mt.NodeDetailsPage{
-		Params:          params,
-		Node:            term,
-		GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListTerms.String()),
+	pageData := mt.TermDetailsPage{
+		NodeDetailsPage: mt.NodeDetailsPage{
+			Params:          params,
+			Node:            term,
+			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+			UpNavURL:        h.e.Reverse(ListTerms.String()),
+		},
+		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), termID),
 	}
 	template := pageData.Component()
 	layout := h.CourseManagerLayout(template)
@@ -165,21 +174,24 @@ func (h CourseHandler) ShowEditTerm(c echo.Context) error {
 		log.Println(err)
 		return fmt.Errorf("field query param is missing")
 	}
-	details := mt.NodeDetailsPage{
-		Params:          params,
-		Node:            term,
-		GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
-		IsEdit:          true,
+	details := mt.TermDetailsPage{
+		NodeDetailsPage: mt.NodeDetailsPage{
+			Params:          params,
+			Node:            term,
+			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+			UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
+			IsEdit:          true,
+		},
 	}
+
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(TermDetails.String(), params.ToIntSlice()...), component, nil)
 	}
 	if queryParam == templates.KebabCase(string(Description)) {
-		return respond(mt.EditDescriptionComponent(details))
+		return respond(mt.EditDescriptionComponent(details.NodeDetailsPage))
 	} else if queryParam == templates.KebabCase(string(Name)) {
-		return respond(mt.EditNameComponent(details))
+		return respond(mt.EditNameComponent(details.NodeDetailsPage))
 	}
 	errText := "field value is not expected"
 	log.Println(errText)
@@ -267,4 +279,79 @@ func (h CourseHandler) DeleteTerm(c echo.Context) error {
 		return err
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (h CourseHandler) ShowEditTermDates(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	if term.InstructionalDays == nil {
+		log.Println("term.InstructionalDays is nil")
+	}
+	for _, d := range term.InstructionalDays {
+		log.Println("date: ", d.Format(time.DateOnly))
+	}
+	pageData := mt.AddNonInstructDayPage{
+		Term:           term,
+		GetAddDayURL:   h.e.Reverse(ShowEditTermDates.String(), termID),
+		PostAddDayURL:  h.e.Reverse(PostEditTermDates.String(), termID),
+		TermDetailsURL: h.e.Reverse(TermDetails.String(), termID),
+	}
+	template := pageData.Component()
+	layout := h.CourseManagerLayout(template)
+	return Respond(c, "", template, layout)
+}
+
+func (h CourseHandler) PostEditTermDates(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	formDate := form.Get("date")
+	date, err := time.Parse(time.DateOnly, formDate)
+	if err != nil {
+		return err
+	}
+	// make sure it's not a duplicate
+	for _, d := range term.NonInstructionalDays {
+		if util.IsSameDate(d, date) {
+			return fmt.Errorf("date already exists")
+		}
+	}
+	term.NonInstructionalDays = append(term.NonInstructionalDays, date)
+	err = h.svc.UpdateTerm(term)
+	if err != nil {
+		return err
+	}
+	updatedTerm, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	term = updatedTerm
+
+	var pageData = mt.AddNonInstructDayPage{
+		Term:           term,
+		GetAddDayURL:   h.e.Reverse(ShowEditTermDates.String(), term.ID),
+		PostAddDayURL:  h.e.Reverse(PostEditTerm.String(), term.ID),
+		TermDetailsURL: h.e.Reverse(TermDetails.String(), term.ID),
+	}
+	var template = pageData.Component()
+	return Respond(c, h.e.Reverse(string(TermDetails), params.ToIntSlice()...), template, nil)
+
 }

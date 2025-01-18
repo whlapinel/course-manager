@@ -74,7 +74,7 @@ func (svc CourseService) WebShift(termID, courseID, lessonID int, cd domain.Cale
 	if err != nil {
 		return err
 	}
-	termWithDates, err := svc.repo.GetTermDates(termID)
+	termWithDates, err := svc.repo.GetTermWithDates(termID)
 	if err != nil {
 		return err
 	}

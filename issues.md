@@ -2,6 +2,8 @@
 
 ## Pending
 
+- 1/18/24 (major) Error when user attempts to view slides that haven't been generated yet. Need to generate slides when file doesn't exist.
+
 ## Complete
 
 - 12/30/24 (minor) Lesson Edit form shows description as single-line with horizontal scroll rather than wrapping text. Resolved by switching from Fyne to web application (lol) 1/8/25

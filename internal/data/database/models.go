@@ -81,9 +81,9 @@ type Standard struct {
 type Term struct {
 	ID          int64
 	Name        string
-	Description sql.NullString
 	Start       string
 	End         string
+	Description sql.NullString
 }
 
 type Unit struct {

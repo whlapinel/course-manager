@@ -60,7 +60,7 @@ func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-	termWithDates, err := cr.GetTermDates(term.ID)
+	termWithDates, err := cr.GetTermWithDates(term.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-	termWithDates, err := cr.GetTermDates(termID)
+	termWithDates, err := cr.GetTermWithDates(termID)
 	if err != nil {
 		return nil, err
 	}

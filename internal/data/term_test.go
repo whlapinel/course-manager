@@ -50,6 +50,25 @@ func TestGetTerm(t *testing.T) {
 	}
 }
 
+func TestGetTermWithDates(t *testing.T) {
+	term, err := cr.GetTermWithDates(1)
+	if err != nil {
+		t.Errorf("error fetching term: %s", err)
+	}
+	if term.ID != 0 {
+		if term.Start.IsZero() {
+			t.Error("term Start is zero")
+		}
+		log.Println(term.Name)
+		log.Println(term.ID)
+		for _, date := range term.InstructionalDays {
+			log.Println(date.Format(time.DateOnly))
+		}
+	} else {
+		log.Println("term id was 0")
+	}
+}
+
 func TestGetTerms(t *testing.T) {
 	terms, err := cr.GetTerms()
 	if err != nil {

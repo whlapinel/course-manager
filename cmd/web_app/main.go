@@ -15,7 +15,7 @@ func main() {
 	e := echo.New()
 	e.Debug = true
 	e.Use(logger)
-	queries, db, err := data.InitDB("course_manager.db")
+	queries, db, err := data.InitDB("internal/data/course_manager.db")
 	if err != nil {
 		log.Fatal(err)
 	}

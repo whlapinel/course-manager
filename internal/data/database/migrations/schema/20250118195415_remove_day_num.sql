@@ -1,7 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-ALTER TABLE terms ADD COLUMN description TEXT;
-
+ALTER TABLE dates DROP COLUMN day_number;
 -- +goose StatementEnd
 
 -- +goose Down
