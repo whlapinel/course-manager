@@ -30,7 +30,7 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 		if err != nil {
 			return 0, fmt.Errorf("error in c.SaveUnit(): %s", err)
 		}
-		*unit = *savedUnit
+		*unit = savedUnit
 		log.Println("lesson count: ", len(unit.Lessons), "for ", unit.Name)
 		for _, lesson := range unit.Lessons {
 			lesson.UnitID = unit.ID

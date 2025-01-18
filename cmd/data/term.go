@@ -155,6 +155,14 @@ func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	return int(dbTerm.ID), nil
 }
 
+func (r CourseRepo) UpdateTerm(term domain.Term) error {
+	err := r.queries.UpdateTerm(context.Background(), database.UpdateTermParams{
+		Name:  term.Name,
+		Start: term.Start.Format(time.DateOnly),
+		End:   term.End.Format(time.DateOnly),
+	})
+}
+
 const termsPath = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/terms.csv"
 const nonIDaysPath = "/home/whlapinel/personal_projects/course_manager/cmd/data/csv_files/non_instruct_days.csv"
 
@@ -257,16 +265,24 @@ func (t CourseRepo) ImportTermsFromCSV() ([]domain.Term, error) {
 
 }
 
-func SaveTerm(ctx context.Context, term domain.Term, queries *database.Queries) (database.Term, error) {
-	params := database.SaveTermParams{}
-	params.Start = term.Start.Format(time.DateOnly)
-	params.End = term.End.Format(time.DateOnly)
-	dbTerm, err := queries.SaveTerm(ctx, params)
+func (c CourseRepo) DeleteTerm(termID int) error {
+	_, err := c.queries.DeleteTerm(context.Background(), int64(termID))
 	if err != nil {
-		return database.Term{}, err
+		return err
 	}
-	return dbTerm, nil
+	return nil
 }
+
+// func SaveTerm(ctx context.Context, term domain.Term, queries *database.Queries) (database.Term, error) {
+// 	params := database.SaveTermParams{}
+// 	params.Start = term.Start.Format(time.DateOnly)
+// 	params.End = term.End.Format(time.DateOnly)
+// 	dbTerm, err := queries.SaveTerm(ctx, params)
+// 	if err != nil {
+// 		return database.Term{}, err
+// 	}
+// 	return dbTerm, nil
+// }
 
 func parseDates(dateStrings []string) ([]time.Time, error) {
 	var dates []time.Time

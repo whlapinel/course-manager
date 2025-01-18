@@ -210,7 +210,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 	if template == nil {
 		panic("template is nil!")
 	}
-	return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), template, nil)
+	return Respond(c, h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...), template, nil)
 
 }
 

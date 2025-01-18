@@ -1,4 +1,3 @@
-
 -- name: SaveTerm :one
 INSERT INTO terms (
   name, start, end
@@ -6,6 +5,10 @@ INSERT INTO terms (
   ?, ?, ?
 )
 RETURNING *;
+
+-- name: UpdateTerm :exec
+UPDATE terms SET name = ?, start = ?, end = ?
+WHERE id = ?;
 
 -- name: DeleteTerm :one
 DELETE FROM terms WHERE id = ?
@@ -47,7 +50,3 @@ WHERE d.term_id = ?;
 -- name: DeleteNonInstructDays :one
 DELETE FROM non_instruct_days WHERE id = ?
 RETURNING *;
-
--- name: DeleteTerm :exec
-DELETE FROM terms t WHERE t.id = ?
-LEFT JOIN dates on d.term_id = 

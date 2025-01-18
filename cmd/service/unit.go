@@ -41,3 +41,12 @@ func (svc CourseService) UpdateUnit(u domain.Unit) error {
 	}
 	return nil
 }
+
+func (svc CourseService) CreateUnit(u domain.Unit) (domain.Unit, error) {
+	unit, err := svc.repo.SaveUnit(u)
+	if err != nil {
+		return domain.Unit{}, err
+	}
+	return unit, nil
+
+}

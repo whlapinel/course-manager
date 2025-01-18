@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS terms (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    start TEXT NOT NULL,
+    end TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS courses (
     id INTEGER PRIMARY KEY,
     term_id INTEGER NOT NULL,
@@ -73,12 +81,6 @@ CREATE TABLE IF NOT EXISTS lesson_dates (
 );
 
 
-CREATE TABLE IF NOT EXISTS terms (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    start TEXT NOT NULL,
-    end TEXT NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS non_instruct_days (
     id INTEGER PRIMARY KEY,

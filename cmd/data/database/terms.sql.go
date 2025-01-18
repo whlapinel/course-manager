@@ -200,3 +200,25 @@ func (q *Queries) SaveTerm(ctx context.Context, arg SaveTermParams) (Term, error
 	)
 	return i, err
 }
+
+const updateTerm = `-- name: UpdateTerm :exec
+UPDATE terms SET name = ?, start = ?, end = ?
+WHERE id = ?
+`
+
+type UpdateTermParams struct {
+	Name  string
+	Start string
+	End   string
+	ID    int64
+}
+
+func (q *Queries) UpdateTerm(ctx context.Context, arg UpdateTermParams) error {
+	_, err := q.db.ExecContext(ctx, updateTerm,
+		arg.Name,
+		arg.Start,
+		arg.End,
+		arg.ID,
+	)
+	return err
+}

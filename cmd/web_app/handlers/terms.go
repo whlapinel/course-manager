@@ -3,10 +3,13 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/cmd/domain"
+	"gh_static_portfolio/cmd/templates"
 	mt "gh_static_portfolio/cmd/templates/manager_templates"
 	"log"
+	"net/http"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -146,13 +149,122 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 }
 
 func (h CourseHandler) ShowEditTerm(c echo.Context) error {
-	return nil
+	params := ParseCourseIDParams(c)
+	queryParam := c.QueryParam("field")
+	termID, err := TermIDParam(params)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if queryParam == "" {
+		log.Println(err)
+		return fmt.Errorf("field query param is missing")
+	}
+	details := mt.NodeDetailsPage{
+		Params:          params,
+		Node:            term,
+		GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+		UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
+		IsEdit:          true,
+	}
+	respond := func(component templ.Component) error {
+		return Respond(c, h.e.Reverse(TermDetails.String(), params.ToIntSlice()...), component, nil)
+	}
+	if queryParam == templates.KebabCase(string(Description)) {
+		return respond(mt.EditDescriptionComponent(details))
+	} else if queryParam == templates.KebabCase(string(Name)) {
+		return respond(mt.EditNameComponent(details))
+	}
+	errText := "field value is not expected"
+	log.Println(errText)
+	return fmt.Errorf("%s %s", errText, queryParam)
+
 }
 
 func (h CourseHandler) PostEditTerm(c echo.Context) error {
-	return nil
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	var updateUnit = func() error {
+		err := h.svc.UpdateTerm(term)
+		if err != nil {
+			return err
+		}
+		updatedTerm, err := h.svc.GetTerm(termID)
+		if err != nil {
+			return err
+		}
+		term = updatedTerm
+		return nil
+	}
+	var pageData = func(unit domain.Term) mt.NodeDetailsPage {
+		return mt.NodeDetailsPage{
+			Node:            unit,
+			Params:          params,
+			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+			IsEdit:          false,
+		}
+	}
+	var template templ.Component
+	for key, val := range form {
+		log.Println(key, val)
+		switch key {
+		case "description":
+			term.Description = val[0]
+			err := updateUnit()
+			if err != nil {
+				return err
+			}
+			details := pageData(term)
+			template = mt.EditDescriptionComponent(details)
+		case "name":
+			term.Name = val[0]
+			err := updateUnit()
+			if err != nil {
+				return err
+			}
+			details := pageData(term)
+			template = mt.EditNameComponent(details)
+		default:
+			log.Println("form key:", key)
+			panic("form key not expected!")
+		}
+
+	}
+	if template == nil {
+		panic("template is nil!")
+	}
+	return Respond(c, h.e.Reverse(string(TermDetails), params.ToIntSlice()...), template, nil)
+
 }
 
 func (h CourseHandler) DeleteTerm(c echo.Context) error {
-	return nil
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	err = h.svc.DeleteTerm(termID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
 }

@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func (c CourseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
+func (c CourseRepo) SaveUnit(unit domain.Unit) (domain.Unit, error) {
 	var hasDescr = unit.Description != ""
 	currUnit := database.Unit{
 		CourseID: int64(unit.CourseID),
@@ -23,7 +23,7 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
 		},
 	}
 	if currUnit.Sequence == 0 {
-		return nil, fmt.Errorf("currUnit sequence is 0")
+		return domain.Unit{}, fmt.Errorf("currUnit sequence is 0")
 	}
 	currUnit, err := c.queries.SaveUnit(context.Background(), database.SaveUnitParams{
 		Number:      currUnit.Number,
@@ -33,14 +33,14 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (*domain.Unit, error) {
 		CourseID:    currUnit.CourseID,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("courseRepo.SaveUnit(): %s", err)
+		return domain.Unit{}, fmt.Errorf("courseRepo.SaveUnit(): %s", err)
 	}
 	unit.ID = int(currUnit.ID)
 	log.Println("unit sequence:", unit.SequenceNum)
 	if unit.SequenceNum == 0 {
-		return nil, fmt.Errorf("unit sequence is 0")
+		return domain.Unit{}, fmt.Errorf("unit sequence is 0")
 	}
-	return &unit, nil
+	return unit, nil
 
 }
 
