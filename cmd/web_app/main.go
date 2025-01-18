@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gh_static_portfolio/cmd/data"
-	"gh_static_portfolio/cmd/service"
-	"gh_static_portfolio/cmd/web_app/assets"
-	"gh_static_portfolio/cmd/web_app/handlers"
+	"gh_static_portfolio/internal/assets"
+	"gh_static_portfolio/internal/data"
+	"gh_static_portfolio/internal/handlers"
+	"gh_static_portfolio/internal/service"
 	"log"
 
 	"github.com/labstack/echo/v4"

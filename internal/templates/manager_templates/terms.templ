@@ -1,0 +1,19 @@
+package managertemplates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"github.com/labstack/echo/v4"
+)
+
+// CourseManager site
+templ TermsListTemplate(terms []domain.Term, termCoursesRHN string, e *echo.Echo) {
+	<ul>
+		for _, term := range terms {
+			<li>
+				<button hx-get={ e.Reverse(termCoursesRHN, term.ID) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
+					{ term.Name }
+				</button>
+			</li>
+		}
+	</ul>
+}

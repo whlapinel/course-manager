@@ -1,0 +1,18 @@
+package service
+
+import (
+	sitegenerator "gh_static_portfolio/internal/gen_site"
+	"os/exec"
+)
+
+func (svc CourseService) GenerateSite() {
+	sitegenerator.Generate(svc.repo)
+}
+
+func (svc CourseService) SyncSite() error {
+	err := exec.Command("task", "sync-site").Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}

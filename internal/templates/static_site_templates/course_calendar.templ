@@ -1,0 +1,66 @@
+package templates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates"
+	"gh_static_portfolio/internal/util"
+	"strconv"
+	"time"
+)
+
+// this assumes the lessons are in ascending chronological order, and that lesson dates are also sorted in ascending chronological order
+func UnitDateRange(unit domain.Unit) []time.Time {
+	var dates []time.Time
+	lessonCount := len(unit.Lessons)
+	lastLesson := unit.Lessons[lessonCount-1]
+	dateCountLastLesson := len(lastLesson.Dates)
+	dates = append(dates, unit.Lessons[0].Dates[0])
+	dates = append(dates, lastLesson.Dates[dateCountLastLesson-1])
+	return dates
+}
+
+// Student-facing site
+templ CourseCalendarComponent(course domain.Course) {
+	@Layout(Page{Title: course.Name}) {
+		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(templates.StaticSiteCoursesDir+"courses.html"), "Course List") {
+			@CourseUnorderedList() {
+				<div id="calendar" class="flex flex-col gap-4">
+					for _, day := range course.Term.TermMonths() {
+						<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
+						<div id="month-container" class="flex flex-col border border-solid">
+							for _, week := range util.GetMonthDates(day) {
+								<div id="week-container" class="grid grid-cols-5">
+									for _, calDate := range week[1:6] {
+										<div id="date-container">
+											if !calDate.IsZero() {
+												{ calDate.Format("Mon 1/02/06") }
+											}
+											<ul>
+												if course.Term.IsInstructionDay(calDate) {
+													for _, unit := range course.Units {
+														for _, lesson := range unit.Lessons {
+															for _, lessonDate := range lesson.Dates {
+																if util.IsSameDate(lessonDate, calDate) {
+																	<li>
+																		@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(*lesson, *unit, course, true)), false) {
+																			<p>{ lesson.Name } </p>
+																		}
+																	</li>
+																}
+															}
+														}
+													}
+												}
+											</ul>
+										</div>
+									}
+								</div>
+							}
+						</div>
+					}
+				</div>
+			}
+			@TitleDiv("Course Calendar", course.Name+", "+course.Term.Name, templates.CoursePath(course, true), false, false)
+		}
+	}
+}

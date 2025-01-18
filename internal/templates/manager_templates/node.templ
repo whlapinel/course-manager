@@ -1,0 +1,71 @@
+package managertemplates
+
+import "gh_static_portfolio/internal/domain"
+
+templ NodeCreateComponent(props NodeCreatePage) {
+	@PageLayoutComponent(props) {
+		<form id={ NodeCreateFormID(props.NodeType) } class="grid grid-cols-2 gap-2">
+			if props.NodeType == domain.UnitTypeName || props.NodeType == domain.LessonTypeName {
+				<label for="number">Number</label>
+				<input type="number" id="number" name="number" required/>
+			}
+			<label for="name">Name</label>
+			<input type="text" id="name" name="name" required/>
+			<label for="description">Description</label>
+			<textarea id="description" name="description"></textarea>
+			if props.NodeType == domain.TermTypeName {
+				<label for="start-date">Start Date</label>
+				<input type="date" id="start-date" name="start-date" required/>
+				<label for="end-date">End Date</label>
+				<input type="date" id="end-date" name="end-date" required/>
+			}
+			<button
+				hx-post={ props.PostCreateNodeURL }
+				hx-target={ pageElementID.Selector() }
+				hx-include={ "#" + NodeCreateFormID(props.NodeType) }
+			>
+				Submit
+			</button>
+		</form>
+	}
+}
+
+templ NodeListComponent(props NodeListPage) {
+	@PageLayoutComponent(props) {
+		for _, node := range props.Children {
+			if node == nil {
+				<p>Node is nil!</p>
+			} else {
+				<ul>
+					<li id={ props.ListItemElementID(node).String() }>
+						@NewHXButton(HxDelete, "", props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), props.ListItemElementID(node).Selector(), false).Component() {
+							Delete
+						}
+						if node.ChildTypeName() != "" {
+							@NewHXButton(HxGet, "", props.E.Reverse(props.ChildChildrenRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component() {
+								{ node.ChildTypeName() + "s" }
+							}
+						}
+						@NewHXButton(HxGet, "", props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component() {
+							Details
+						}
+						<span>{ node.GetName() }</span>
+					</li>
+				</ul>
+			}
+		}
+		@NewHXButton(HxGet, "", props.E.Reverse(props.CreateChildRHN, props.Params.ToIntSlice()...), "#page", true).Component() {
+			Add { props.ParentNode.ChildTypeName() }
+		}
+	}
+}
+
+templ NodeDetailsComponent(props NodeDetailsPage) {
+	@PageLayoutComponent(props) {
+		<div class="flex flex-col gap-2">
+			@EditNameComponent(props)
+			@EditDescriptionComponent(props)
+			{ children... }
+		</div>
+	}
+}
