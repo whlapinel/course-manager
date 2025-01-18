@@ -1,8 +1,8 @@
 -- name: SaveDate :one
 INSERT INTO dates (
-  term_id, day_number, date
+  term_id, date
 ) VALUES (
-  ?, ?, ?
+  ?, ?
 )
 RETURNING *;
 

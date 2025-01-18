@@ -10,44 +10,33 @@ import (
 )
 
 const getDate = `-- name: GetDate :one
-SELECT id, term_id, day_number, date FROM dates WHERE date = ?
+SELECT id, term_id, date FROM dates WHERE date = ?
 `
 
 func (q *Queries) GetDate(ctx context.Context, date string) (Date, error) {
 	row := q.db.QueryRowContext(ctx, getDate, date)
 	var i Date
-	err := row.Scan(
-		&i.ID,
-		&i.TermID,
-		&i.DayNumber,
-		&i.Date,
-	)
+	err := row.Scan(&i.ID, &i.TermID, &i.Date)
 	return i, err
 }
 
 const saveDate = `-- name: SaveDate :one
 INSERT INTO dates (
-  term_id, day_number, date
+  term_id, date
 ) VALUES (
-  ?, ?, ?
+  ?, ?
 )
-RETURNING id, term_id, day_number, date
+RETURNING id, term_id, date
 `
 
 type SaveDateParams struct {
-	TermID    int64
-	DayNumber int64
-	Date      string
+	TermID int64
+	Date   string
 }
 
 func (q *Queries) SaveDate(ctx context.Context, arg SaveDateParams) (Date, error) {
-	row := q.db.QueryRowContext(ctx, saveDate, arg.TermID, arg.DayNumber, arg.Date)
+	row := q.db.QueryRowContext(ctx, saveDate, arg.TermID, arg.Date)
 	var i Date
-	err := row.Scan(
-		&i.ID,
-		&i.TermID,
-		&i.DayNumber,
-		&i.Date,
-	)
+	err := row.Scan(&i.ID, &i.TermID, &i.Date)
 	return i, err
 }

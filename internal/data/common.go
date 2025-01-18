@@ -17,18 +17,12 @@ func NewCourseRepo(db *database.Queries) CourseRepo {
 	return CourseRepo{queries: db}
 }
 
-//go:embed database/schema.sql
-var DDL string
-
 func InitDB(fileName string) (*database.Queries, *sql.DB, error) {
 	var queries *database.Queries
 	ctx := context.Background()
 	db, err := sql.Open("sqlite3", fileName)
 	if err != nil {
 		return nil, nil, err
-	}
-	if _, err := db.ExecContext(ctx, DDL); err != nil {
-		log.Fatal(err)
 	}
 	// Enable foreign keys
 	_, err = db.ExecContext(ctx, "PRAGMA foreign_keys = ON;")

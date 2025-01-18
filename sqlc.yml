@@ -8,7 +8,6 @@ sql:
       - "internal/data/database/images.sql"
       - "internal/data/database/dates.sql"
       - "internal/data/database/terms.sql"
-      - "internal/data/database/schedules.sql"
 
     schema: "internal/data/database/migrations/schema"
     gen:

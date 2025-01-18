@@ -97,7 +97,7 @@ func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
 }
 
 const getTermDates = `-- name: GetTermDates :many
-SELECT id, term_id, day_number, date FROM dates d
+SELECT id, term_id, date FROM dates d
 WHERE d.term_id = ?
 `
 
@@ -110,12 +110,7 @@ func (q *Queries) GetTermDates(ctx context.Context, termID int64) ([]Date, error
 	var items []Date
 	for rows.Next() {
 		var i Date
-		if err := rows.Scan(
-			&i.ID,
-			&i.TermID,
-			&i.DayNumber,
-			&i.Date,
-		); err != nil {
+		if err := rows.Scan(&i.ID, &i.TermID, &i.Date); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -140,7 +135,7 @@ SELECT
 FROM terms t
 LEFT JOIN dates d 
 ON d.term_id = t.id
-ORDER BY t.id, d.day_number
+ORDER BY t.id
 `
 
 type GetTermsRow struct {

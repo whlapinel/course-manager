@@ -145,7 +145,7 @@ func (c CourseRepo) SaveLessonDate(lesson domain.Lesson) error {
 		if err != nil {
 			return fmt.Errorf("courseRepo.SaveInstance(), c.queries.GetDate(): %s", err)
 		}
-		log.Println("Saved date: ID:", dbDate.ID, "\nDay Number:", dbDate.DayNumber, "\nTerm ID:", dbDate.TermID)
+		log.Println("Saved date: ID:", dbDate.ID, "\nDay Number:", "\nTerm ID:", dbDate.TermID)
 		lessonDate, err := c.queries.SaveLessonDate(context.Background(), database.SaveLessonDateParams{
 			LessonID: int64(lesson.ID),
 			DateID:   dbDate.ID,

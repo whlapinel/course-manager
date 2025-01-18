@@ -157,11 +157,10 @@ func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("termRepo.Save(): %s", err)
 	}
-	for i, date := range term.InstructionalDays {
+	for _, date := range term.InstructionalDays {
 		dateParams := database.SaveDateParams{
-			TermID:    dbTerm.ID,
-			DayNumber: int64(i) + 1,
-			Date:      date.Format(time.DateOnly),
+			TermID: dbTerm.ID,
+			Date:   date.Format(time.DateOnly),
 		}
 		t.queries.SaveDate(context.Background(), dateParams)
 	}

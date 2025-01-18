@@ -21,10 +21,9 @@ type CourseImage struct {
 }
 
 type Date struct {
-	ID        int64
-	TermID    int64
-	DayNumber int64
-	Date      string
+	ID     int64
+	TermID int64
+	Date   string
 }
 
 type Image struct {

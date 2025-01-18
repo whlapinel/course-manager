@@ -43,7 +43,7 @@ SELECT
 FROM terms t
 LEFT JOIN dates d 
 ON d.term_id = t.id
-ORDER BY t.id, d.day_number;
+ORDER BY t.id;
 
 -- name: GetTermDates :many
 SELECT * FROM dates d
