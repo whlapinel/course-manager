@@ -14,32 +14,6 @@ func TestGetLesson(t *testing.T) {
 	}
 	log.Println(lesson.Name)
 }
-func TestShift(t *testing.T) {
-	svc := NewCourseService(cr)
-	terms, err := svc.GetTerms()
-	if err != nil {
-		t.Error(err)
-	}
-	courses, err := svc.GetCourses(terms[0].ID)
-	if err != nil {
-		t.Error(err)
-	}
-	lesson := courses[0].Units[0].Lessons[0]
-	log.Println("before shifting: ", lesson.Name)
-	lesson.Dates = []time.Time{}
-	for _, date := range lesson.Dates {
-		log.Println(date.Format(time.DateOnly))
-	}
-	shifted, newTime, err := svc.Shift(*lesson, terms[0], domain.Left)
-	if err != nil {
-		t.Error(err)
-	}
-	log.Println("after shifting: ", newTime.Format(time.DateOnly))
-	got := shifted.Dates
-	log.Println("shifted dates", got)
-
-}
-
 func TestExtend(t *testing.T) {
 	svc := NewCourseService(cr)
 	terms, err := svc.GetTerms()

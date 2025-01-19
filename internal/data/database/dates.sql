@@ -9,3 +9,6 @@ RETURNING *;
 -- name: GetDate :one
 SELECT * FROM dates WHERE date = ?;
 
+-- name: DeleteDate :exec
+DELETE FROM dates
+WHERE date = ? AND term_id = ?;

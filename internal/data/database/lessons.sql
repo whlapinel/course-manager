@@ -54,6 +54,11 @@ INSERT INTO lesson_dates (
 )
 RETURNING *;
 
+-- name: GetLessonsOnDate :many
+SELECT ld.*, l.* from lesson_dates ld
+JOIN dates d ON d.id = ld.date_id
+JOIN lessons l ON l.id = ld.lesson_id
+WHERE d.date = ? and d.term_id = ?;
 
 -- name: UpdateLesson :exec
 UPDATE lessons

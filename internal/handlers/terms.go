@@ -5,7 +5,6 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
-	"gh_static_portfolio/internal/util"
 	"log"
 	"net/http"
 	"time"
@@ -328,14 +327,7 @@ func (h CourseHandler) PostEditTermDates(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	// make sure it's not a duplicate
-	for _, d := range term.NonInstructionalDays {
-		if util.IsSameDate(d, date) {
-			return fmt.Errorf("date already exists")
-		}
-	}
-	term.NonInstructionalDays = append(term.NonInstructionalDays, date)
-	err = h.svc.UpdateTerm(term)
+	err = h.svc.AddNonInstructDay(termID, date)
 	if err != nil {
 		return err
 	}

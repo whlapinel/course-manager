@@ -163,6 +163,59 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 	return items, nil
 }
 
+const getLessonsOnDate = `-- name: GetLessonsOnDate :many
+SELECT ld.lesson_id, ld.date_id, l.id, l.unit_id, l.number, l.name, l.description from lesson_dates ld
+JOIN dates d ON d.id = ld.date_id
+JOIN lessons l ON l.id = ld.lesson_id
+WHERE d.date = ? and d.term_id = ?
+`
+
+type GetLessonsOnDateParams struct {
+	Date   string
+	TermID int64
+}
+
+type GetLessonsOnDateRow struct {
+	LessonID    int64
+	DateID      int64
+	ID          int64
+	UnitID      int64
+	Number      int64
+	Name        sql.NullString
+	Description sql.NullString
+}
+
+func (q *Queries) GetLessonsOnDate(ctx context.Context, arg GetLessonsOnDateParams) ([]GetLessonsOnDateRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLessonsOnDate, arg.Date, arg.TermID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLessonsOnDateRow
+	for rows.Next() {
+		var i GetLessonsOnDateRow
+		if err := rows.Scan(
+			&i.LessonID,
+			&i.DateID,
+			&i.ID,
+			&i.UnitID,
+			&i.Number,
+			&i.Name,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const saveLesson = `-- name: SaveLesson :one
 INSERT INTO lessons (
   number, name, description, unit_id

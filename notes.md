@@ -11,7 +11,7 @@ Major decision to be made regarding how to store term dates. Currently I have a 
 So, say if user adds a non-instructional day for a date which currently is listed in the instructional days (a highly probable scenario), the date would need to be deleted along with any associated lesson_date rows. This would not delete the lesson since lesson_dates is just a junction table. But then dates.day_number would then need to be updated, and I'm not sure this makes sense. I think day_number should probably be removed from persistence and calculated on the fly.
 
 So to recap, the plan is:
-- Use both instruct_dates ("dates) and non_instruct dates and check instruct_dates whenever there is a change to non_instruct_dates.
+- Use both instruct_dates ("dates") and non_instruct dates and check instruct_dates whenever there is a change to non_instruct_dates.
 - Remove day_number
   - Remove from domain struct
   - Apply migration
@@ -20,6 +20,11 @@ So to recap, the plan is:
   - I think that rather than fixing the import from csv code, I'll just delete it.
 - Code to modify dates in either table should modify dates in the other table accordingly.
 - Add ON DELETE CASCADE to lesson_dates if it's not already there
+- Since day_number will be gone I'll need to ensure dates are sorted by date.
+
+On second thought:
+- I could pretty easily extrapolate the non-instruct days from the instruct days.
+- Or I could put all the dates in one table, and add a bool column to indicate whether it's an instruct day. Could also add a reason column to indicate why it's a non-instruct day.
 
 ### 1/10/2025
 

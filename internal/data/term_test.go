@@ -61,7 +61,12 @@ func TestGetTermWithDates(t *testing.T) {
 		}
 		log.Println(term.Name)
 		log.Println(term.ID)
+		log.Println("instructional days")
 		for _, date := range term.InstructionalDays {
+			log.Println(date.Format(time.DateOnly))
+		}
+		log.Println("non-instructional days")
+		for _, date := range term.NonInstructionalDays {
 			log.Println(date.Format(time.DateOnly))
 		}
 	} else {

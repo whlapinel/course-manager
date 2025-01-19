@@ -124,17 +124,28 @@ func (cr CourseRepo) GetTermWithDates(termID int) (domain.Term, error) {
 	if err != nil {
 		return term, nil
 	}
-	for _, dbDate := range dbDates {
-		date, err := time.Parse(time.DateOnly, dbDate.Date)
-		if err != nil {
-			return term, err
+	currDate := term.Start
+	currInstructIndex := 0
+	for !currDate.After(term.End) {
+		if currDate.Weekday() != time.Saturday && currDate.Weekday() != time.Sunday {
+			dbDate := dbDates[currInstructIndex]
+			date, err := time.Parse(time.DateOnly, dbDate.Date)
+			if err != nil {
+				return term, err
+			}
+			if currDate == date {
+				term.InstructionalDays = append(term.InstructionalDays, currDate)
+				currInstructIndex++
+			} else {
+				term.NonInstructionalDays = append(term.NonInstructionalDays, currDate)
+			}
 		}
-		term.InstructionalDays = append(term.InstructionalDays, date)
+		currDate = currDate.AddDate(0, 0, 1)
 	}
+
 	return term, nil
 }
 
-// ReadFromCSV implements TermRepo.
 func (t CourseRepo) ReadFromCSV() ([]domain.Term, error) {
 	terms, err := t.ImportTermsFromCSV()
 	if err != nil {
@@ -155,7 +166,7 @@ func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	}
 	dbTerm, err := t.queries.SaveTerm(context.Background(), termParams)
 	if err != nil {
-		return 0, fmt.Errorf("termRepo.Save(): %s", err)
+		return 0, fmt.Errorf("CourseRepo.SaveTerm: %s", err)
 	}
 	for _, date := range term.InstructionalDays {
 		dateParams := database.SaveDateParams{

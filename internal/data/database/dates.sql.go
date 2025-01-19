@@ -9,6 +9,21 @@ import (
 	"context"
 )
 
+const deleteDate = `-- name: DeleteDate :exec
+DELETE FROM dates
+WHERE date = ? AND term_id = ?
+`
+
+type DeleteDateParams struct {
+	Date   string
+	TermID int64
+}
+
+func (q *Queries) DeleteDate(ctx context.Context, arg DeleteDateParams) error {
+	_, err := q.db.ExecContext(ctx, deleteDate, arg.Date, arg.TermID)
+	return err
+}
+
 const getDate = `-- name: GetDate :one
 SELECT id, term_id, date FROM dates WHERE date = ?
 `

@@ -102,6 +102,29 @@ func (lr CourseRepo) GetLessonDates(lessonID int) ([]time.Time, error) {
 	}
 	return dates, nil
 }
+
+// this was written for shifting lessons on date upon removal of instructional dates from term.
+// it only provides the minimal information and a lot of fields will be zero.
+func (lr CourseRepo) GetLessonsOnDate(date time.Time, termID int) ([]domain.Lesson, error) {
+	dbLessons, err := lr.queries.GetLessonsOnDate(context.Background(), database.GetLessonsOnDateParams{
+		Date:   date.Format(time.DateOnly),
+		TermID: int64(termID),
+	})
+	if err != nil {
+		return nil, err
+	}
+	var lessons []domain.Lesson
+	for _, dbLesson := range dbLessons {
+		lesson := domain.Lesson{
+			ID:          int(dbLesson.ID),
+			UnitID:      int(dbLesson.UnitID),
+			Name:        dbLesson.Name.String,
+			Description: dbLesson.Description.String,
+		}
+		lessons = append(lessons, lesson)
+	}
+	return lessons, nil
+}
 func (lr CourseRepo) AddLessonDate(lesson domain.Lesson, date time.Time) error {
 	dbDate, err := lr.queries.GetDate(context.Background(), date.Format(time.DateOnly))
 	if err != nil {
@@ -238,4 +261,15 @@ func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 func (lr CourseRepo) DeleteLesson(lesson domain.Lesson) error {
 	err := lr.queries.DeleteLesson(context.Background(), int64(lesson.ID))
 	return err
+}
+
+func (cr CourseRepo) DeleteDate(termID int, date time.Time) error {
+	err := cr.queries.DeleteDate(context.Background(), database.DeleteDateParams{
+		Date:   date.Format(time.DateOnly),
+		TermID: int64(termID),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
