@@ -10,14 +10,36 @@ templ NodeCreateComponent(props NodeCreatePage) {
 				<input type="number" id="number" name="number" required/>
 			}
 			<label for="name">Name</label>
-			<input type="text" id="name" name="name" required/>
+			<input
+				class="bg-black"
+				type="text"
+				id="name"
+				name="name"
+				required
+			/>
 			<label for="description">Description</label>
-			<textarea id="description" name="description"></textarea>
+			<textarea
+				class="bg-black"
+				id="description"
+				name="description"
+			></textarea>
 			if props.NodeType == domain.TermTypeName {
 				<label for="start-date">Start Date</label>
-				<input type="date" id="start-date" name="start-date" required/>
+				<input
+					class="bg-black"
+					type="date"
+					id="start-date"
+					name="start-date"
+					required
+				/>
 				<label for="end-date">End Date</label>
-				<input type="date" id="end-date" name="end-date" required/>
+				<input
+					class="bg-black"
+					type="date"
+					id="end-date"
+					name="end-date"
+					required
+				/>
 			}
 			<button
 				hx-post={ props.PostCreateNodeURL }

@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
@@ -141,7 +142,12 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 		Start:       startDate,
 		End:         endDate,
 	}
-	term.ID, err = h.svc.SaveTerm(term)
+	term.ID, err = h.svc.SaveTerm(service.SaveTermParams{
+		Name:        name,
+		Description: description,
+		Start:       startDate,
+		End:         endDate,
+	})
 	if err != nil {
 		return err
 	}
@@ -213,17 +219,18 @@ func (h CourseHandler) PostEditTerm(c echo.Context) error {
 		return err
 	}
 	form := c.Request().Form
-	var updateUnit = func() error {
+	var updateTerm = func(term domain.Term) (domain.Term, error) {
+		log.Println("updating: ", term.ID, term.Name, term.Description)
 		err := h.svc.UpdateTerm(term)
 		if err != nil {
-			return err
+			return domain.Term{}, err
 		}
 		updatedTerm, err := h.svc.GetTerm(termID)
 		if err != nil {
-			return err
+			return domain.Term{}, err
 		}
-		term = updatedTerm
-		return nil
+		log.Println("retrieved term: ", updatedTerm.ID, updatedTerm.Name, updatedTerm.Description)
+		return updatedTerm, nil
 	}
 	var pageData = func(unit domain.Term) mt.NodeDetailsPage {
 		return mt.NodeDetailsPage{
@@ -240,7 +247,7 @@ func (h CourseHandler) PostEditTerm(c echo.Context) error {
 		switch key {
 		case "description":
 			term.Description = val[0]
-			err := updateUnit()
+			term, err := updateTerm(term)
 			if err != nil {
 				return err
 			}
@@ -248,7 +255,7 @@ func (h CourseHandler) PostEditTerm(c echo.Context) error {
 			template = mt.EditDescriptionComponent(details)
 		case "name":
 			term.Name = val[0]
-			err := updateUnit()
+			term, err := updateTerm(term)
 			if err != nil {
 				return err
 			}
@@ -340,7 +347,7 @@ func (h CourseHandler) PostEditTermDates(c echo.Context) error {
 	var pageData = mt.AddNonInstructDayPage{
 		Term:           term,
 		GetAddDayURL:   h.e.Reverse(ShowEditTermDates.String(), term.ID),
-		PostAddDayURL:  h.e.Reverse(PostEditTerm.String(), term.ID),
+		PostAddDayURL:  h.e.Reverse(PostEditTermDates.String(), term.ID),
 		TermDetailsURL: h.e.Reverse(TermDetails.String(), term.ID),
 	}
 	var template = pageData.Component()

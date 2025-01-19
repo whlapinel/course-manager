@@ -42,8 +42,16 @@ func (svc CourseService) UpdateUnit(u domain.Unit) error {
 	return nil
 }
 
-func (svc CourseService) CreateUnit(u domain.Unit) (domain.Unit, error) {
-	unit, err := svc.repo.SaveUnit(u)
+// TODO: modify this to take params instead of unit, should call domain NewUnit like in terms and courses
+type SaveUnitParams struct {
+	domain.Unit
+}
+
+func (svc CourseService) SaveUnit(params SaveUnitParams) (domain.Unit, error) {
+	newUnit := domain.NewUnit(domain.NewUnitParams{
+		Unit: params.Unit,
+	})
+	unit, err := svc.repo.SaveUnit(newUnit)
 	if err != nil {
 		return domain.Unit{}, err
 	}

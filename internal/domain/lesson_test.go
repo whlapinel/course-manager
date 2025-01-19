@@ -13,7 +13,13 @@ var testNonInstructDays = []time.Time{time.Date(2025, time.January, 6, 0, 0, 0, 
 
 func TestShift(t *testing.T) {
 	lesson := NewLesson(1, 1, 1, "Lesson 0.1", "How to turn on your computer", testLessonDates)
-	term, err := NewTerm(testTermStart, testTermEnd, testNonInstructDays, Semester, 1, "Spring 2025")
+	term, err := NewTerm(
+		NewTermParams{
+			Name:  "Spring 2025",
+			Start: testTermStart,
+			End:   testTermEnd,
+		},
+	)
 	if err != nil {
 		t.Error()
 	}
@@ -32,7 +38,13 @@ func TestShift(t *testing.T) {
 
 func TestExtend(t *testing.T) {
 	lesson := NewLesson(1, 1, 1, "Lesson 0.1", "How to turn on your computer", testLessonDates)
-	term, err := NewTerm(testTermStart, testTermEnd, testNonInstructDays, Semester, 1, "Spring 2025")
+	term, err := NewTerm(
+		NewTermParams{
+			Name:  "Spring 2025",
+			Start: testTermStart,
+			End:   testTermEnd,
+		},
+	)
 	if err != nil {
 		t.Error()
 	}

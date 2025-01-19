@@ -2,8 +2,20 @@ package domain
 
 import "time"
 
-func NewCourse(title string, descr string, units []*Unit) Course {
-	return Course{Name: title, Description: descr, Units: units}
+type NewCourseParams struct {
+	TermID      int
+	Name        string
+	Description string
+}
+
+func NewCourse(params NewCourseParams) Course {
+	return Course{
+		Term: Term{
+			ID: params.TermID,
+		},
+		Name:        params.Name,
+		Description: params.Description,
+	}
 }
 
 // Courses I teach. this is the OOP version of CourseInstance. Bad wording I know.

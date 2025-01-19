@@ -48,7 +48,3 @@ ORDER BY t.id;
 -- name: GetTermDates :many
 SELECT * FROM dates d
 WHERE d.term_id = ?;
-
--- name: DeleteNonInstructDays :one
-DELETE FROM non_instruct_days WHERE id = ?
-RETURNING *;

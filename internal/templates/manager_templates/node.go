@@ -69,7 +69,11 @@ func (page NodeDetailsPage) PageTitle() string {
 }
 
 func (page NodeDetailsPage) upNavText() string {
-	return fmt.Sprintf("Up to %s", page.Node.ParentTypeName())
+	parentPageText := page.Node.ParentTypeName()
+	if page.Node.ParentTypeName() == string(domain.RootTypeName) {
+		parentPageText = "Home"
+	}
+	return fmt.Sprintf("Up to %ss", parentPageText)
 }
 
 type NodeListPage struct {

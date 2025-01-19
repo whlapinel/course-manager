@@ -6,7 +6,23 @@ import (
 	"time"
 )
 
-func (svc CourseService) SaveTerm(term domain.Term) (int, error) {
+type SaveTermParams struct {
+	Name        string
+	Description string
+	Start       time.Time
+	End         time.Time
+}
+
+func (svc CourseService) SaveTerm(svcTerm SaveTermParams) (int, error) {
+	term, err := domain.NewTerm(domain.NewTermParams{
+		Name:        svcTerm.Name,
+		Description: svcTerm.Description,
+		Start:       svcTerm.Start,
+		End:         svcTerm.End,
+	})
+	if err != nil {
+		return 0, err
+	}
 	id, err := svc.repo.SaveTerm(term)
 	if err != nil {
 		return 0, err

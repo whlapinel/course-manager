@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
@@ -65,6 +66,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 		ChildDetailsRHN:  CourseDetails.String(),
 		CreateChildRHN:   ShowNewCourse.String(),
 		ChildChildrenRHN: ListCourseUnits.String(),
+		DeleteChildRHN:   DeleteCourse.String(),
 		UpNavURL:         h.e.Reverse(ListTerms.String()),
 		E:                h.e,
 	}
@@ -119,7 +121,34 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 }
 
 func (h CourseHandler) PostNewCourse(c echo.Context) error {
-	return nil
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println("key, val: ", key, val)
+	}
+	termID := ParseCourseIDParams(c).TermID
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	course, err := h.svc.SaveCourse(service.SaveCourseParams{
+		TermID:      termID.Value,
+		Name:        name,
+		Description: description,
+	})
+	if err != nil {
+		return err
+	}
+	page := mt.NodeDetailsPage{
+		Node:            course,
+		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), course.ID),
+		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), course.ID),
+		UpNavURL:        h.e.Reverse(ListTermCourses.String(), termID),
+	}
+	template := page.Component()
+	layout := h.CourseManagerLayout(template)
+	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) ShowEditCourse(c echo.Context) error {
@@ -165,5 +194,7 @@ func (h CourseHandler) PostEditCourse(c echo.Context) error {
 }
 
 func (h CourseHandler) DeleteCourse(c echo.Context) error {
-	panic("not implemented")
+	params := ParseCourseIDParams(c)
+	courseId := params.CourseID
+	return h.svc.DeleteCourse(courseId.Value)
 }

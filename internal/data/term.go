@@ -146,14 +146,6 @@ func (cr CourseRepo) GetTermWithDates(termID int) (domain.Term, error) {
 	return term, nil
 }
 
-func (t CourseRepo) ReadFromCSV() ([]domain.Term, error) {
-	terms, err := t.ImportTermsFromCSV()
-	if err != nil {
-		return nil, err
-	}
-	return terms, nil
-}
-
 func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	termParams := database.SaveTermParams{
 		Name: term.Name,
@@ -180,6 +172,7 @@ func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 
 func (r CourseRepo) UpdateTerm(term domain.Term) error {
 	err := r.queries.UpdateTerm(context.Background(), database.UpdateTermParams{
+		ID:   int64(term.ID),
 		Name: term.Name,
 		Description: sql.NullString{
 			Valid:  term.Description != "",
@@ -247,53 +240,6 @@ func filterNonInstructionalDates(termID int, dates *domain.NonInstructionalDays)
 		}
 	}
 	return filtered
-}
-
-func (t CourseRepo) ImportTermsFromCSV() ([]domain.Term, error) {
-	file, err := os.Open(termsPath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	dates, err := nonInstructionalDaysLoader()
-	if err != nil {
-		return nil, err
-	}
-	terms := []domain.Term{}
-	for i, record := range records {
-		if i == 0 {
-			continue
-		}
-		startDate, err := time.Parse(time.DateOnly, record[termStartCol])
-		if err != nil {
-			return nil, err
-		}
-		endDate, err := time.Parse(time.DateOnly, record[termEndCol])
-		if err != nil {
-			return nil, err
-		}
-		termID, err := strconv.Atoi(record[termIDCol])
-		if err != nil {
-			return nil, err
-		}
-		termDates := filterNonInstructionalDates(termID, dates)
-		termType := record[termTypeCol]
-
-		termName := record[termNameCol]
-		term, err := domain.NewTerm(startDate, endDate, termDates, domain.TermType(termType), termID, termName)
-		if err != nil {
-			return nil, err
-		}
-		terms = append(terms, term)
-
-	}
-	return terms, nil
-
 }
 
 func (c CourseRepo) DeleteTerm(termID int) error {

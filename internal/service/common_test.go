@@ -11,7 +11,7 @@ var cr data.CourseRepo
 var svc CourseService
 
 func TestMain(m *testing.M) {
-	queries, db, err := data.InitDB("../../course_manager.db")
+	queries, db, err := data.InitDB("../data/database/course_manager.db")
 	cr = data.NewCourseRepo(queries)
 	svc = NewCourseService(cr)
 	if err != nil {

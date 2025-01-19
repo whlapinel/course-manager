@@ -63,12 +63,12 @@ func NodeCreateComponent(props NodeCreatePage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"name\">Name</label> <input type=\"text\" id=\"name\" name=\"name\" required> <label for=\"description\">Description</label> <textarea id=\"description\" name=\"description\"></textarea> ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"name\">Name</label> <input class=\"bg-black\" type=\"text\" id=\"name\" name=\"name\" required> <label for=\"description\">Description</label> <textarea class=\"bg-black\" id=\"description\" name=\"description\"></textarea> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if props.NodeType == domain.TermTypeName {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"start-date\">Start Date</label> <input type=\"date\" id=\"start-date\" name=\"start-date\" required> <label for=\"end-date\">End Date</label> <input type=\"date\" id=\"end-date\" name=\"end-date\" required> ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"start-date\">Start Date</label> <input class=\"bg-black\" type=\"date\" id=\"start-date\" name=\"start-date\" required> <label for=\"end-date\">End Date</label> <input class=\"bg-black\" type=\"date\" id=\"end-date\" name=\"end-date\" required> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -80,7 +80,7 @@ func NodeCreateComponent(props NodeCreatePage) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostCreateNodeURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 23, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 45, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func NodeCreateComponent(props NodeCreatePage) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(pageElementID.Selector())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 24, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 46, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -106,7 +106,7 @@ func NodeCreateComponent(props NodeCreatePage) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("#" + NodeCreateFormID(props.NodeType))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 25, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 47, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -170,7 +170,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(props.ListItemElementID(node).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 40, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 62, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -218,7 +218,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 							var templ_7745c5c3_Var12 string
 							templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(node.ChildTypeName() + "s")
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 46, Col: 36}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 68, Col: 36}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 							if templ_7745c5c3_Err != nil {
@@ -260,7 +260,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(node.GetName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 52, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 74, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -295,7 +295,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.ChildTypeName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 58, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 80, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {

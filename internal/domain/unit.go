@@ -1,7 +1,17 @@
 package domain
 
-func NewUnit(num int, sequence int, name string, descr string, lessons []*Lesson) Unit {
-	return Unit{Number: num, SequenceNum: sequence, Name: name, Description: descr, Lessons: lessons}
+type NewUnitParams struct {
+	Unit
+}
+
+func NewUnit(params NewUnitParams) Unit {
+	return Unit{
+		Number:      params.Number,
+		SequenceNum: params.SequenceNum,
+		Name:        params.Name,
+		Description: params.Description,
+		Lessons:     params.Lessons,
+	}
 
 }
 

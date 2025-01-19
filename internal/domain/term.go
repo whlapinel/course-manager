@@ -6,12 +6,24 @@ import (
 	"time"
 )
 
-func NewTerm(start, end time.Time, nonInstructionalDays []time.Time, termType TermType, termID int, name string) (Term, error) {
+type NewTermParams struct {
+	Name        string
+	Description string
+	Start       time.Time
+	End         time.Time
+}
+
+func NewTerm(params NewTermParams) (Term, error) {
 	var term Term
-	if start.After(end) {
-		return term, fmt.Errorf("start must come before end: %s is after %s", start.String(), end.String())
+	if params.Start.After(params.End) {
+		return term, fmt.Errorf("start must come before end: %s is after %s", params.Start.String(), params.End.String())
 	}
-	term = Term{Start: start, End: end, NonInstructionalDays: nonInstructionalDays, TermType: termType, ID: termID, Name: name}
+	term = Term{
+		Name:        params.Name,
+		Description: params.Description,
+		Start:       params.Start,
+		End:         params.End,
+	}
 	instructionDates := InstructionDays(term)
 	term.InstructionalDays = instructionDates
 	return term, nil

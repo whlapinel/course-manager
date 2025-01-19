@@ -8,6 +8,18 @@ import (
 	"os"
 )
 
+type SaveLessonParams struct {
+	domain.Lesson
+}
+
+func (svc CourseService) SaveLesson(params SaveLessonParams) (domain.Lesson, error) {
+	lesson, err := svc.repo.SaveLesson(params.Lesson)
+	if err != nil {
+		return domain.Lesson{}, err
+	}
+	return *lesson, nil
+}
+
 func (svc CourseService) CreateNewLessonSlides(lessonID int) error {
 	path := data.NewSlidesMarkdownFilePath(lessonID)
 	// make sure file does not exist
@@ -89,46 +101,6 @@ func (svc CourseService) WebShift(termID, courseID, lessonID int, cd domain.Cale
 	return err
 }
 
-// // This version is for the fyne app
-// func (svc CourseService) Shift(lesson domain.Lesson, term domain.Term, direction domain.CalendarDirection) (domain.Lesson, time.Time, error) {
-// 	if lesson.ID == 0 {
-// 		log.Println("lesson id: ", lesson.ID)
-// 	}
-// 	dates, err := svc.repo.GetLessonDates(lesson.ID)
-// 	if err != nil {
-// 		return domain.Lesson{}, time.Time{}, err
-// 	}
-// 	if len(dates) == 0 {
-// 		log.Println("service: length dates 0!")
-// 	}
-// 	for _, date := range dates {
-// 		log.Println("service: date: ", date.Format(time.DateOnly))
-// 	}
-// 	lesson.Dates = dates
-// 	if len(lesson.Dates) == 0 {
-// 		log.Println("Lesson dates length 0!")
-// 	}
-// 	for _, date := range lesson.Dates {
-// 		log.Println("Service: Before shifting:")
-// 		log.Println(date.Format(time.DateOnly))
-// 	}
-// 	shiftedLesson, newTime, err := lesson.Shift(direction, term)
-// 	if err != nil {
-// 		return domain.Lesson{}, time.Time{}, err
-// 	}
-// 	err = svc.UpdateLesson(shiftedLesson)
-// 	if err != nil {
-// 		return domain.Lesson{}, time.Time{}, err
-// 	}
-
-// 	for _, date := range shiftedLesson.Dates {
-// 		log.Println("Service: After shifting:")
-
-// 		log.Println(date.Format(time.DateOnly))
-// 	}
-// 	return shiftedLesson, newTime, nil
-// }
-
 func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, direction domain.CalendarDirection) (domain.Lesson, error) {
 	shifted, err := lesson.Extend(direction, term)
 	if err != nil {
@@ -140,4 +112,3 @@ func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, directio
 	}
 	return shifted, nil
 }
-

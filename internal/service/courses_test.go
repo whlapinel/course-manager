@@ -29,3 +29,11 @@ func TestGetCourses(t *testing.T) {
 	}
 
 }
+
+func TestCopyCourse(t *testing.T) {
+	course, err := svc.CopyCourseToTerm(1, 2)
+	if err != nil {
+		t.Error(err)
+	}
+	log.Println(course)
+}

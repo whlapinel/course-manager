@@ -57,12 +57,6 @@ type LessonObjective struct {
 	LessonID int64
 }
 
-type NonInstructDay struct {
-	ID     int64
-	TermID int64
-	Date   string
-}
-
 type Objective struct {
 	ID     int64
 	StdID  int64

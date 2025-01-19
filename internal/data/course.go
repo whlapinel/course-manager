@@ -50,8 +50,9 @@ func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 		return nil, err
 	}
 	course := domain.Course{
-		ID:   int(dbCourse.ID),
-		Name: dbCourse.Name,
+		ID:          int(dbCourse.ID),
+		Name:        dbCourse.Name,
+		Description: dbCourse.Description.String,
 		Term: domain.Term{
 			ID: int(dbCourse.TermID),
 		},
@@ -134,4 +135,12 @@ func (c CourseRepo) UpdateCourse(instance domain.Course) error {
 	}
 	return nil
 
+}
+
+func (cr CourseRepo) DeleteCourse(courseID int) error {
+	_, err := cr.queries.DeleteCourse(context.Background(), int64(courseID))
+	if err != nil {
+		return err
+	}
+	return nil
 }
