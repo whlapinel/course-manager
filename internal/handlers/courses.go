@@ -236,7 +236,8 @@ func (h CourseHandler) PostCopyCourseToTerm(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		termIDParam := c.Request().Form.Get(TermID.Name())
+		termIDParam := c.Request().Form.Get("term-id")
+		log.Println("selected termID: ", termIDParam)
 		termID, err := strconv.Atoi(termIDParam)
 		if err != nil {
 			return err

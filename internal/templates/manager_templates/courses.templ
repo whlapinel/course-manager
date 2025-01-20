@@ -21,11 +21,12 @@ templ CopyCourseComponent(props CopyCourseData) {
 		id="copy-course-form"
 	>
 		<select
+			class="bg-black"
 			id="term-select"
-			name="term-select"
+			name="term-id"
 		>
 			for _, term := range props.Terms {
-				<option id={ strconv.Itoa(term.ID) }>{ term.Name }</option>
+				<option value={ strconv.Itoa(term.ID) }>{ term.Name }</option>
 			}
 		</select>
 		<button
