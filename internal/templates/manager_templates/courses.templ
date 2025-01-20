@@ -1,32 +1,36 @@
 package managertemplates
 
-import (
-	"gh_static_portfolio/internal/domain"
-	"github.com/labstack/echo/v4"
-)
+import "strconv"
 
-templ CoursesListTemplate(props NodeListPage) {
-	@NodeListComponent(props)
+templ CourseListComponent(props CourseListPage) {
+	@NodeListComponent(props.NodeListPage)
 }
 
-// CourseManager site
-templ OldCoursesListTemplate(
-	termID int, courses domain.Courses, listTermsRHN string, unitsRouteHandlerName string, courseCalendarRouteHandlerName string, e *echo.Echo,
-) {
-	<button hx-get={ e.Reverse(string(listTermsRHN)) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
-		Back to Terms
-	</button>
-	for _, course := range courses {
-		<ul>
-			<li class="flex gap-2">
-				<span>{ course.Name }</span>
-				@NewHXButton(HxGet, "", e.Reverse(unitsRouteHandlerName, termID, course.ID), pageElementID.Selector(), true).Component() {
-					Course Units
-				}
-				@NewHXButton(HxGet, "", e.Reverse(courseCalendarRouteHandlerName, termID, course.ID), pageElementID.Selector(), true).Component() {
-					Course Calendar
-				}
-			</li>
-		</ul>
+templ CourseDetailsComponent(props CourseDetailsPage) {
+	@NodeDetailsComponent(props.NodeDetailsPage) {
+		<button
+			hx-get={ props.GetCopyCourseURL }
+		>
+			Copy Course To Term
+		</button>
 	}
+}
+
+templ CopyCourseComponent(props CopyCourseData) {
+	<form
+		id="copy-course-form"
+	>
+		<select
+			id="term-select"
+			name="term-select"
+		>
+			for _, term := range props.Terms {
+				<option id={ strconv.Itoa(term.ID) }>{ term.Name }</option>
+			}
+		</select>
+		<button
+			hx-post={ props.E.Reverse(props.PostCopyCourseToTermRHN, props.TermID, props.CourseID) }
+			hx-include="#copy-course-form"
+		>Copy Course</button>
+	</form>
 }

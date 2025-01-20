@@ -83,6 +83,7 @@ func AddQueryParam(path, key, value string) string {
 }
 
 type HXButton struct {
+	HxConfirm  string
 	Method     HXMethod
 	URL        string
 	HxTargetID string
@@ -97,7 +98,7 @@ const (
 )
 
 func (button HXButton) Component() templ.Component {
-	return hxButton(button)
+	return HxButtonComponent(button)
 }
 func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL bool) HXButton {
 	return HXButton{

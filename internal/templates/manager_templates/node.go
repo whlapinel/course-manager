@@ -88,6 +88,11 @@ type NodeListPage struct {
 	E                *echo.Echo // for generating URLs from route handler name
 }
 
+type NodeDeleteButton struct {
+	DeleteChildRHN string
+}
+
+
 func (page NodeListPage) Component() templ.Component {
 	return NodeListComponent(page)
 }

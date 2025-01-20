@@ -12,12 +12,15 @@ type SaveLessonParams struct {
 	domain.Lesson
 }
 
-func (svc CourseService) SaveLesson(params SaveLessonParams) (domain.Lesson, error) {
-	lesson, err := svc.repo.SaveLesson(params.Lesson)
+func (svc CourseService) SaveLesson(params SaveLessonParams) (*domain.Lesson, error) {
+	newLesson := domain.NewLesson(domain.NewLessonParams{
+		Lesson: params.Lesson,
+	})
+	lesson, err := svc.repo.SaveLesson(newLesson)
 	if err != nil {
-		return domain.Lesson{}, err
+		return &domain.Lesson{}, err
 	}
-	return *lesson, nil
+	return lesson, nil
 }
 
 func (svc CourseService) CreateNewLessonSlides(lessonID int) error {

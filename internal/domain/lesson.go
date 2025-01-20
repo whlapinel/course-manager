@@ -6,8 +6,19 @@ import (
 	"time"
 )
 
-func NewLesson(number, unitID int, unitNum int, name string, descr string, dates []time.Time) Lesson {
-	return Lesson{Number: number, UnitID: unitID, UnitNum: unitNum, Name: name, Description: descr, Dates: dates}
+type NewLessonParams struct {
+	Lesson
+}
+
+func NewLesson(params NewLessonParams) Lesson {
+	return Lesson{
+		Name:        params.Name,
+		Description: params.Description,
+		UnitID:      params.UnitID,
+		Number:      params.Number,
+		UnitNum:     params.UnitNum,
+		Dates:       params.Dates,
+	}
 }
 
 type Lesson struct {

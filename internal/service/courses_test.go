@@ -39,5 +39,8 @@ func TestCopyCourse(t *testing.T) {
 	for _, date := range course.InstructionalDays {
 		log.Println("Date:", date)
 	}
+	for _, unit := range course.Units {
+		log.Println(unit.Name)
+	}
 
 }

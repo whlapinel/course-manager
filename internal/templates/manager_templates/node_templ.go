@@ -170,7 +170,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(props.ListItemElementID(node).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 62, Col: 52}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 63, Col: 49}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -192,13 +192,17 @@ func NodeListComponent(props NodeListPage) templ.Component {
 							}()
 						}
 						ctx = templ.InitializeContext(ctx)
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Delete")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Delete ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						return templ_7745c5c3_Err
 					})
-					templ_7745c5c3_Err = NewHXButton(HxDelete, "", props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), props.ListItemElementID(node).Selector(), false).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = NewHXButton(
+						HxDelete,
+						"",
+						props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+						props.ListItemElementID(node).Selector(), false).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -218,7 +222,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 							var templ_7745c5c3_Var12 string
 							templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(node.ChildTypeName() + "s")
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 68, Col: 36}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 81, Col: 36}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 							if templ_7745c5c3_Err != nil {
@@ -226,7 +230,14 @@ func NodeListComponent(props NodeListPage) templ.Component {
 							}
 							return templ_7745c5c3_Err
 						})
-						templ_7745c5c3_Err = NewHXButton(HxGet, "", props.E.Reverse(props.ChildChildrenRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var11), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = NewHXButton(
+							HxGet,
+							"",
+							props.E.Reverse(props.ChildChildrenRHN,
+								AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+							pageElementID.Selector(),
+							true,
+						).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var11), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -249,7 +260,13 @@ func NodeListComponent(props NodeListPage) templ.Component {
 						}
 						return templ_7745c5c3_Err
 					})
-					templ_7745c5c3_Err = NewHXButton(HxGet, "", props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var13), templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = NewHXButton(
+						HxGet,
+						"",
+						props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+						pageElementID.Selector(),
+						true,
+					).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var13), templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -260,7 +277,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(node.GetName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 74, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 93, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -295,7 +312,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.ChildTypeName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 80, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 99, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {

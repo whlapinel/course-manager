@@ -54,6 +54,7 @@ const (
 	ShiftDirection RouteParam = "/:shift-direction" // string param
 )
 
+// strips the '/:' off RouteParam
 func (p RouteParam) Name() string {
 	return string(p[2:])
 

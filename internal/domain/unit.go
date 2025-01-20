@@ -6,6 +6,7 @@ type NewUnitParams struct {
 
 func NewUnit(params NewUnitParams) Unit {
 	return Unit{
+		CourseID:    params.CourseID,
 		Number:      params.Number,
 		SequenceNum: params.SequenceNum,
 		Name:        params.Name,

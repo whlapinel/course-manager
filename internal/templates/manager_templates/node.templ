@@ -59,16 +59,35 @@ templ NodeListComponent(props NodeListPage) {
 				<p>Node is nil!</p>
 			} else {
 				<ul>
-					<li id={ props.ListItemElementID(node).String() }>
-						@NewHXButton(HxDelete, "", props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), props.ListItemElementID(node).Selector(), false).Component() {
-							Delete
+					<li
+						id={ props.ListItemElementID(node).String() }
+					>
+						@NewHXButton(
+							HxDelete,
+							"",
+							props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+							props.ListItemElementID(node).Selector(), false).Component() {
+							Delete 
 						}
 						if node.ChildTypeName() != "" {
-							@NewHXButton(HxGet, "", props.E.Reverse(props.ChildChildrenRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component() {
+							@NewHXButton(
+								HxGet,
+								"",
+								props.E.Reverse(props.ChildChildrenRHN,
+									AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+								pageElementID.Selector(),
+								true,
+							).Component() {
 								{ node.ChildTypeName() + "s" }
 							}
 						}
-						@NewHXButton(HxGet, "", props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...), pageElementID.Selector(), true).Component() {
+						@NewHXButton(
+							HxGet,
+							"",
+							props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
+							pageElementID.Selector(),
+							true,
+						).Component() {
 							Details
 						}
 						<span>{ node.GetName() }</span>

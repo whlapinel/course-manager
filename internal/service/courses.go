@@ -69,20 +69,46 @@ func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (domain.Cour
 		return domain.Course{}, err
 	}
 	newCourse := course.FitToTerm(term)
-	svc.SaveCourse(SaveCourseParams{
+	newCourse, err = svc.SaveCourse(SaveCourseParams{
 		TermID:      termID,
 		Name:        newCourse.Name,
 		Description: newCourse.Description,
 	})
-	for _, unit := range newCourse.Units {
-		svc.SaveUnit(SaveUnitParams{
+	if err != nil {
+		return domain.Course{}, err
+	}
+	units, err := svc.GetUnits(courseID)
+	if err != nil {
+		return domain.Course{}, err
+	}
+	var newUnits []*domain.Unit
+	for _, unit := range units {
+		unit.CourseID = newCourse.ID
+		newUnit, err := svc.SaveUnit(SaveUnitParams{
 			Unit: *unit,
 		})
-		for _, lesson := range unit.Lessons {
-			svc.SaveLesson(SaveLessonParams{
+		if err != nil {
+			return domain.Course{}, err
+		}
+
+		lessons, err := svc.GetLessons(unit.ID)
+		if err != nil {
+			return domain.Course{}, err
+		}
+		var newLessons []*domain.Lesson
+		for _, lesson := range lessons {
+			lesson.UnitID = newUnit.ID
+			newLesson, err := svc.SaveLesson(SaveLessonParams{
 				Lesson: *lesson,
 			})
+			if err != nil {
+				return domain.Course{}, err
+			}
+			newLessons = append(newLessons, newLesson)
 		}
+		newUnit.Lessons = newLessons
+		newUnits = append(newUnits, newUnit)
 	}
-	return newCourse, nil
+	newCourse.Units = newUnits
+	return newCourse, err
 }

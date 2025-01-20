@@ -7,25 +7,30 @@ import (
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
 const (
-	Courses    RouteName = Term + "/courses"
-	Course     RouteName = Courses + RouteName(CourseID)
-	NewCourse  RouteName = Courses + "/new"
-	EditCourse RouteName = Course + "/edit"
+	Courses          RouteName = Term + "/courses"
+	Course           RouteName = Courses + RouteName(CourseID)
+	NewCourse        RouteName = Courses + "/new"
+	EditCourse       RouteName = Course + "/edit"
+	CopyCourse       RouteName = Course + "/copy-to-term"
+	CopyCourseToTerm RouteName = CopyCourse
 )
 const (
-	ListTermCourses = RouteHandlerName(GET + Courses)
-	CourseDetails   = RouteHandlerName(GET + Course)
-	ShowEditCourse  = RouteHandlerName(GET + EditCourse)
-	PostEditCourse  = RouteHandlerName(POST + EditCourse)
-	ShowNewCourse   = RouteHandlerName(GET + NewCourse)
-	PostNewCourse   = RouteHandlerName(POST + NewCourse)
-	DeleteCourse    = RouteHandlerName(DELETE + Course)
+	ListTermCourses      = RouteHandlerName(GET + Courses)
+	CourseDetails        = RouteHandlerName(GET + Course)
+	ShowEditCourse       = RouteHandlerName(GET + EditCourse)
+	PostEditCourse       = RouteHandlerName(POST + EditCourse)
+	ShowNewCourse        = RouteHandlerName(GET + NewCourse)
+	PostNewCourse        = RouteHandlerName(POST + NewCourse)
+	DeleteCourse         = RouteHandlerName(DELETE + Course)
+	GetCopyCourse        = RouteHandlerName(GET + CopyCourse)
+	PostCopyCourseToTerm = RouteHandlerName(POST + CopyCourseToTerm)
 )
 
 func (h CourseHandler) CourseHandlers() []RouteHandler {
@@ -38,6 +43,8 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 		{EditCourse, ShowEditCourse, GET, h.ShowEditCourse},
 		{EditCourse, PostEditCourse, POST, h.PostEditCourse},
 		{Course, DeleteCourse, DELETE, h.DeleteCourse},
+		{CopyCourse, GetCopyCourse, GET, h.GetCopyCourse},
+		{CopyCourseToTerm, PostCopyCourseToTerm, POST, h.PostCopyCourseToTerm},
 	}
 }
 
@@ -59,20 +66,23 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 		return err
 	}
 	term.Courses = courses
-	coursesList := mt.NodeListPage{
-		Params:           params,
-		ParentNode:       term,
-		Children:         term.Children(),
-		ChildDetailsRHN:  CourseDetails.String(),
-		CreateChildRHN:   ShowNewCourse.String(),
-		ChildChildrenRHN: ListCourseUnits.String(),
-		DeleteChildRHN:   DeleteCourse.String(),
-		UpNavURL:         h.e.Reverse(ListTerms.String()),
-		E:                h.e,
+	page := mt.CourseListPage{
+		NodeListPage: mt.NodeListPage{
+			Params:           params,
+			ParentNode:       term,
+			Children:         term.Children(),
+			ChildDetailsRHN:  CourseDetails.String(),
+			CreateChildRHN:   ShowNewCourse.String(),
+			ChildChildrenRHN: ListCourseUnits.String(),
+			DeleteChildRHN:   DeleteCourse.String(),
+			UpNavURL:         h.e.Reverse(ListTerms.String()),
+			E:                h.e,
+		},
 	}
-	template := mt.NodeListComponent(coursesList)
-	layout := h.CourseManagerLayout(template)
-	return Respond(c, "", template, layout)
+
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) CourseDetails(c echo.Context) error {
@@ -85,17 +95,20 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	courseDetails := mt.NodeDetailsPage{
-		Params:          params,
-		Node:            *course,
-		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
-		IsEdit:          false,
+	page := mt.CourseDetailsPage{
+		GetCopyCourseURL: h.e.Reverse(GetCopyCourse.String(), params.ToIntSlice()...),
+		NodeDetailsPage: mt.NodeDetailsPage{
+			Params:          params,
+			Node:            *course,
+			GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
+			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
+			IsEdit:          false,
+		},
 	}
-	template := mt.NodeDetailsComponent(courseDetails)
-	layout := h.CourseManagerLayout(template)
-	return Respond(c, "", template, layout)
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowNewCourse(c echo.Context) error {
@@ -197,4 +210,44 @@ func (h CourseHandler) DeleteCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	courseId := params.CourseID
 	return h.svc.DeleteCourse(courseId.Value)
+}
+
+func (h CourseHandler) GetCopyCourse(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	terms, err := h.svc.GetTerms()
+	if err != nil {
+		return err
+	}
+	data := mt.CopyCourseData{
+		TermID:                  params.TermID.Value,
+		CourseID:                params.CourseID.Value,
+		Terms:                   terms,
+		E:                       h.e,
+		PostCopyCourseToTermRHN: string(PostCopyCourseToTerm),
+	}
+	component := data.Component()
+	return Respond(c, h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...), component, nil)
+}
+
+func (h CourseHandler) PostCopyCourseToTerm(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	if params.CourseID.Valid && params.TermID.Valid {
+		err := c.Request().ParseForm()
+		if err != nil {
+			return err
+		}
+		termIDParam := c.Request().Form.Get(TermID.Name())
+		termID, err := strconv.Atoi(termIDParam)
+		if err != nil {
+			return err
+		}
+		_, err = h.svc.CopyCourseToTerm(params.CourseID.Value, termID)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		return fmt.Errorf("params not valid: courseID: %d and termID: %d", params.CourseID.Value, params.TermID.Value)
+	}
+	return c.Redirect(200, h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...))
 }
