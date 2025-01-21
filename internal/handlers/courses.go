@@ -67,6 +67,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 	}
 	term.Courses = courses
 	page := mt.CourseListPage{
+		ShowCalendarRHN: string(ShowCourseCalendar),
 		NodeListPage: mt.NodeListPage{
 			Params:           params,
 			ParentNode:       term,
@@ -250,5 +251,5 @@ func (h CourseHandler) PostCopyCourseToTerm(c echo.Context) error {
 	} else {
 		return fmt.Errorf("params not valid: courseID: %d and termID: %d", params.CourseID.Value, params.TermID.Value)
 	}
-	return c.Redirect(200, h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...))
+	return c.Redirect(302, h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...))
 }

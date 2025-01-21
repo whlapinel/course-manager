@@ -2,7 +2,9 @@
 
 ## Pending
 
-- 1/18/24 (major) Error when user attempts to view slides that haven't been generated yet. Need to generate slides when file doesn't exist.
+- 1/21/25 (minor) I don't see any reason why CourseRepo.GetCourses() should also fetch the children. Moreover it doesn't appear that any of the current callers even use this data. Should only fetch course information.
+
+- 1/18/25 (major) Error when user attempts to view slides that haven't been generated yet. Need to generate slides when file doesn't exist.
 
 ## Complete
 

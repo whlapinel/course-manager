@@ -8,6 +8,7 @@ import (
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
 	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -17,15 +18,19 @@ func LessonDirPath(lessonID int) string {
 	return fmt.Sprintf("./internal/data/lessons/lesson_%d", lessonID)
 }
 
-func NewLessonFilesDirPath(lessonID int) string {
+func LessonFilesDirPath(lessonID int) string {
 	return filepath.Join(LessonDirPath(lessonID), "files")
 }
 
-func NewSlidesMarkdownFilePath(lessonID int) string {
+func LessonImagePath(lessonID int) string {
+	return filepath.Join(LessonDirPath(lessonID), "image.png")
+}
+
+func SlidesMarkdownFilePath(lessonID int) string {
 	return filepath.Join(LessonDirPath(lessonID), "slides.md")
 }
 
-func NewSlidesHTMLFilePath(lessonID int) string {
+func SlidesHTMLFilePath(lessonID int) string {
 	return filepath.Join(LessonDirPath(lessonID), "slides.html")
 }
 
@@ -207,6 +212,12 @@ func (c CourseRepo) SaveLesson(lesson domain.Lesson) (*domain.Lesson, error) {
 			err, strconv.Itoa(int(savedLesson.UnitID)), strconv.Itoa(int(dbLesson.Number)),
 		)
 	}
+	if lesson.Dates != nil {
+		err := c.SaveLessonDate(lesson)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &lesson, nil
 
 }
@@ -259,7 +270,11 @@ func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 }
 
 func (lr CourseRepo) DeleteLesson(lesson domain.Lesson) error {
-	err := lr.queries.DeleteLesson(context.Background(), int64(lesson.ID))
+	err := lr.deleteLessonDir(lesson.ID)
+	if err != nil {
+		return err
+	}
+	err = lr.queries.DeleteLesson(context.Background(), int64(lesson.ID))
 	return err
 }
 
@@ -272,4 +287,14 @@ func (cr CourseRepo) DeleteDate(termID int, date time.Time) error {
 		return err
 	}
 	return nil
+}
+
+func (cr CourseRepo) deleteLessonDir(lessonID int) error {
+	path := LessonDirPath(lessonID)
+	err := os.RemoveAll(path)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

@@ -80,6 +80,7 @@ type NodeListPage struct {
 	Params           CourseIDParams
 	ParentNode       domain.CourseNode
 	Children         []domain.CourseNode
+	ChildUI          []ComponentData
 	ChildDetailsRHN  string // details for child e.g. if listing units, this would be the route handler name to show unit details
 	ChildChildrenRHN string // children of child e.g. if listing units, this would be the route handler name to list unit lessons
 	CreateChildRHN   string // e.g. if listing units, this would be the route handler name to show new unit form
@@ -91,7 +92,6 @@ type NodeListPage struct {
 type NodeDeleteButton struct {
 	DeleteChildRHN string
 }
-
 
 func (page NodeListPage) Component() templ.Component {
 	return NodeListComponent(page)

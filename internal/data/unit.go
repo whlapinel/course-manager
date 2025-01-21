@@ -8,7 +8,21 @@ import (
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
 	"log"
+	"os"
+	"path/filepath"
 )
+
+func UnitDirPath(unitID int) string {
+	return fmt.Sprintf("./internal/data/units/unit_%d", unitID)
+}
+
+func UnitFilesDirPath(unitID int) string {
+	return filepath.Join(UnitDirPath(unitID), "files")
+}
+
+func UnitImagePath(unitID int) string {
+	return filepath.Join(UnitDirPath(unitID), "image.png")
+}
 
 func (c CourseRepo) SaveUnit(unit domain.Unit) (domain.Unit, error) {
 	var hasDescr = unit.Description != ""
@@ -120,4 +134,22 @@ func (c CourseRepo) UpdateUnit(u domain.Unit) error {
 		return err
 	}
 	return nil
+}
+
+func (lr CourseRepo) DeleteUnit(unit domain.Unit) error {
+	err := lr.deleteUnitDir(unit.ID)
+	if err != nil {
+		return err
+	}
+	_, err = lr.queries.DeleteUnit(context.Background(), int64(unit.ID))
+	return err
+}
+func (cr CourseRepo) deleteUnitDir(unitID int) error {
+	path := UnitDirPath(unitID)
+	err := os.RemoveAll(path)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

@@ -7,8 +7,21 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
-	"log"
+	"os"
+	"path/filepath"
 )
+
+func CourseDirPath(courseID int) string {
+	return fmt.Sprintf("./internal/data/courses/course_%d", courseID)
+}
+
+func CourseFilesDirPath(courseID int) string {
+	return filepath.Join(CourseDirPath(courseID), "files")
+}
+
+func CourseImagePath(courseID int) string {
+	return filepath.Join(CourseDirPath(courseID), "image.png")
+}
 
 func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 	ctx := context.Background()
@@ -23,26 +36,7 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 	if err != nil {
 		return 0, fmt.Errorf("courseRepo.SaveCourse(): %s", err)
 	}
-	course.ID = int(savedCourse.ID)
-	for _, unit := range course.Units {
-		unit.CourseID = int(savedCourse.ID)
-		savedUnit, err := c.SaveUnit(*unit)
-		if err != nil {
-			return 0, fmt.Errorf("error in c.SaveUnit(): %s", err)
-		}
-		*unit = savedUnit
-		log.Println("lesson count: ", len(unit.Lessons), "for ", unit.Name)
-		for _, lesson := range unit.Lessons {
-			lesson.UnitID = unit.ID
-			_, err := c.SaveLessonInstance(*lesson)
-			if err != nil {
-				return 0, fmt.Errorf("error in SaveLessonInstance():%s", err)
-			}
-		}
-
-	}
-	return course.ID, nil
-
+	return int(savedCourse.ID), nil
 }
 func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 	dbCourse, err := cr.queries.GetCourseByCourseID(context.Background(), int64(courseID))
@@ -137,8 +131,27 @@ func (c CourseRepo) UpdateCourse(instance domain.Course) error {
 
 }
 
-func (cr CourseRepo) DeleteCourse(courseID int) error {
-	_, err := cr.queries.DeleteCourse(context.Background(), int64(courseID))
+func (cr CourseRepo) DeleteCourse(course domain.Course) error {
+	for _, unit := range course.Units {
+		for _, lesson := range unit.Lessons {
+			cr.DeleteLesson(*lesson)
+		}
+		cr.DeleteUnit(*unit)
+	}
+	err := cr.deleteCourseDir(course.ID)
+	if err != nil {
+		return err
+	}
+	_, err = cr.queries.DeleteCourse(context.Background(), int64(course.ID))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cr CourseRepo) deleteCourseDir(courseID int) error {
+	path := CourseDirPath(courseID)
+	err := os.RemoveAll(path)
 	if err != nil {
 		return err
 	}

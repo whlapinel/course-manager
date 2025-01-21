@@ -2,6 +2,10 @@
 
 ## Progress Log
 
+### 1/21/2025
+
+Finally implemented Copying Course to Term. Thought I had trouble with units and lessons becoming orphaned after parent course was deleted but that doesn't seem to happen now. Something to watch out / test for though. It appears that all child rows are deleted by ON CASCADE, so that when a course is deleted, the units, lessons, and lesson_dates
+
 ### 1/18/2025
 
 I've been making a ton of progress though I haven't been writing it here.

@@ -54,7 +54,7 @@ templ NodeCreateComponent(props NodeCreatePage) {
 
 templ NodeListComponent(props NodeListPage) {
 	@PageLayoutComponent(props) {
-		for _, node := range props.Children {
+		for i, node := range props.Children {
 			if node == nil {
 				<p>Node is nil!</p>
 			} else {
@@ -89,6 +89,9 @@ templ NodeListComponent(props NodeListPage) {
 							true,
 						).Component() {
 							Details
+						}
+						if props.ChildUI != nil && props.ChildUI[i] != nil {
+							@props.ChildUI[i].Component()
 						}
 						<span>{ node.GetName() }</span>
 					</li>

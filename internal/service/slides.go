@@ -14,7 +14,7 @@ type fetchLesson func(int) (*domain.Lesson, error)
 // This check to see if the file already exists. if not, should create a new markdown file, write the template to it,
 // and generate the html file. Returns the file path
 func (svc CourseService) CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, error) {
-	markdownPath := data.NewSlidesMarkdownFilePath(lessonID)
+	markdownPath := data.SlidesMarkdownFilePath(lessonID)
 	_, err := os.Stat(markdownPath)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(filepath.Dir(markdownPath), os.ModePerm)

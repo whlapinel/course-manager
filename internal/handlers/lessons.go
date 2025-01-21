@@ -279,7 +279,7 @@ func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 		return err
 	}
 	sitegenerator.GenerateSlides(lessonID)
-	slidesPath := data.NewSlidesHTMLFilePath(lessonID)
+	slidesPath := data.SlidesHTMLFilePath(lessonID)
 	log.Println(slidesPath)
 	slidesContent, err := os.ReadFile(slidesPath)
 	if err != nil {
@@ -327,7 +327,7 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	path := data.NewSlidesMarkdownFilePath(lessonID)
+	path := data.SlidesMarkdownFilePath(lessonID)
 	file, err := os.Create(path)
 	if err != nil {
 		log.Println(err)

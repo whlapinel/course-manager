@@ -83,6 +83,7 @@ func AddQueryParam(path, key, value string) string {
 }
 
 type HXButton struct {
+	Text       string
 	HxConfirm  string
 	Method     HXMethod
 	URL        string

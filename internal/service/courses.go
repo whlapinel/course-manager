@@ -1,27 +1,33 @@
 package service
 
-import "gh_static_portfolio/internal/domain"
+import (
+	"gh_static_portfolio/internal/data"
+	"gh_static_portfolio/internal/domain"
+	"time"
+)
 
 type SaveCourseParams struct {
-	TermID      int
-	Name        string
-	Description string
+	TermID          int
+	Name            string
+	Description     string
+	InstructionDays []time.Time
 }
 
 func (svc CourseService) SaveCourse(params SaveCourseParams) (domain.Course, error) {
-
 	course := domain.NewCourse(domain.NewCourseParams{
 		TermID:      params.TermID,
 		Name:        params.Name,
 		Description: params.Description,
 	})
+	if params.InstructionDays != nil {
+		course.InstructionalDays = params.InstructionDays
+	}
 	id, err := svc.repo.SaveCourse(course)
 	if err != nil {
 		return domain.Course{}, err
 	}
 	course.ID = id
 	return course, nil
-
 }
 func (svc CourseService) GetCourseForCalendar(courseID int) (*domain.Course, error) {
 	course, err := svc.repo.GetCourse(courseID)
@@ -55,60 +61,102 @@ func (svc CourseService) UpdateCourse(instance domain.Course) error {
 }
 
 func (svc CourseService) DeleteCourse(courseID int) error {
-	return svc.repo.DeleteCourse(courseID)
+	course, err := svc.GetCourse(courseID)
+	if err != nil {
+		return err
+	}
+	units, err := svc.GetUnits(courseID)
+	if err != nil {
+		return err
+	}
+	for _, unit := range units {
+		lessons, err := svc.GetLessons(unit.ID)
+		if err != nil {
+			return err
+		}
+		unit.Lessons = append(unit.Lessons, lessons...)
+	}
+	course.Units = append(course.Units, units...)
+	return svc.repo.DeleteCourse(*course)
 }
 
-func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (domain.Course, error) {
+func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Course, error) {
 	// get course
 	course, err := svc.GetCourse(courseID)
 	if err != nil {
-		return domain.Course{}, err
+		return nil, err
 	}
+	// get units
+	units, err := svc.GetUnits(courseID)
+	if err != nil {
+		return nil, err
+	}
+	// for each unit get lessons
+	for _, unit := range units {
+		lessons, err := svc.GetLessons(unit.ID)
+		if err != nil {
+			return nil, err
+		}
+		// for each lesson append to unit.Lessons
+		unit.Lessons = append(unit.Lessons, lessons...)
+		course.Units = append(course.Units, unit)
+	}
+
+	// get term
 	term, err := svc.GetTerm(termID)
 	if err != nil {
-		return domain.Course{}, err
+		return nil, err
 	}
+	// fit course to term
 	newCourse := course.FitToTerm(term)
+
+	// save course
 	newCourse, err = svc.SaveCourse(SaveCourseParams{
-		TermID:      termID,
+		TermID:      term.ID,
 		Name:        newCourse.Name,
 		Description: newCourse.Description,
 	})
 	if err != nil {
-		return domain.Course{}, err
+		return nil, err
 	}
-	units, err := svc.GetUnits(courseID)
+	srcRoot := data.CourseDirPath(course.ID)
+	destRoot := data.CourseDirPath(newCourse.ID)
+	err = data.CopyNodeDir(srcRoot, destRoot)
 	if err != nil {
-		return domain.Course{}, err
+		return nil, err
 	}
-	var newUnits []*domain.Unit
-	for _, unit := range units {
+	// save unit with modified CourseID
+	for _, unit := range course.Units {
 		unit.CourseID = newCourse.ID
 		newUnit, err := svc.SaveUnit(SaveUnitParams{
 			Unit: *unit,
 		})
 		if err != nil {
-			return domain.Course{}, err
+			return nil, err
 		}
-
-		lessons, err := svc.GetLessons(unit.ID)
+		srcRoot := data.UnitDirPath(unit.ID)
+		destRoot := data.UnitDirPath(newUnit.ID)
+		err = data.CopyNodeDir(srcRoot, destRoot)
 		if err != nil {
-			return domain.Course{}, err
+			return nil, err
 		}
-		var newLessons []*domain.Lesson
-		for _, lesson := range lessons {
+		// save lesson with modified UnitID
+		for _, lesson := range unit.Lessons {
 			lesson.UnitID = newUnit.ID
 			newLesson, err := svc.SaveLesson(SaveLessonParams{
 				Lesson: *lesson,
 			})
 			if err != nil {
-				return domain.Course{}, err
+				return nil, err
 			}
-			newLessons = append(newLessons, newLesson)
+			srcRoot := data.LessonDirPath(lesson.ID)
+			destRoot := data.LessonDirPath(newLesson.ID)
+			err = data.CopyNodeDir(srcRoot, destRoot)
+			if err != nil {
+				return nil, err
+			}
+
 		}
-		newUnit.Lessons = newLessons
-		newUnits = append(newUnits, newUnit)
 	}
-	newCourse.Units = newUnits
-	return newCourse, err
+	return &newCourse, nil
 }

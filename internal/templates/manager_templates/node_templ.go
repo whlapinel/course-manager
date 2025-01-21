@@ -156,7 +156,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			for _, node := range props.Children {
+			for i, node := range props.Children {
 				if node == nil {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Node is nil!</p>")
 					if templ_7745c5c3_Err != nil {
@@ -270,6 +270,12 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+					if props.ChildUI != nil && props.ChildUI[i] != nil {
+						templ_7745c5c3_Err = props.ChildUI[i].Component().Render(ctx, templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -277,7 +283,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(node.GetName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 93, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 96, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -312,7 +318,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.ChildTypeName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 99, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node.templ`, Line: 102, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {

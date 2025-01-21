@@ -4,7 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"gh_static_portfolio/internal/data/database"
+	"io"
+	"io/fs"
 	"log"
+	"os"
+	"path/filepath"
 
 	_ "embed"
 )
@@ -41,4 +45,53 @@ func InitDB(fileName string) (*database.Queries, *sql.DB, error) {
 	queries = database.New(db)
 	return queries, db, nil
 
+}
+
+// for copying all files in the lesson, unit, or course directory
+func CopyNodeDir(srcRoot, destRoot string) error {
+	// if directory doesn't exist, early return
+	_, err := os.Stat(srcRoot)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			return err
+		}
+	}
+	files, err := os.ReadDir(srcRoot)
+	if err != nil {
+		return err
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	return filepath.WalkDir(srcRoot, func(srcPath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		relPath, err := filepath.Rel(srcRoot, srcPath)
+		if err != nil {
+			return err
+		}
+		destPath := filepath.Join(destRoot, relPath)
+		if d.IsDir() {
+			return os.MkdirAll(destPath, os.ModePerm)
+		}
+		return copyFile(srcPath, destPath)
+	})
+}
+
+func copyFile(srcPath, destPath string) error {
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+	dst, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+	_, err = io.Copy(dst, src)
+	return err
 }
