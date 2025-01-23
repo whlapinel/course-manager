@@ -79,7 +79,7 @@ func CourseDetailsComponent(props CourseDetailsPage) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Copy Course To Term</button>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\">Copy Course To Term</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -123,7 +123,7 @@ func CopyCourseComponent(props CopyCourseData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(term.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 29, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 30, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -136,7 +136,7 @@ func CopyCourseComponent(props CopyCourseData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(term.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 29, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 30, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -154,13 +154,13 @@ func CopyCourseComponent(props CopyCourseData) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.E.Reverse(props.PostCopyCourseToTermRHN, props.TermID, props.CourseID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 33, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/courses.templ`, Line: 34, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#copy-course-form\">Copy Course</button></form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#copy-course-form\" type=\"submit\" hx-target=\"#page\">Copy Course</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

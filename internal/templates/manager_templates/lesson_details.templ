@@ -12,9 +12,14 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			@ButtonContainer() {
 				<a
 					class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
-					href={ templ.SafeURL(props.FilesURL) }
+					href={ templ.SafeURL(props.GithubFilesURL) }
 					target="_blank"
-				>Files</a>
+				>Files on GitHub</a>
+				<button
+					hx-get={ props.ServerFilesURL }
+					hx-target="#page"
+					hx-push-url="true"
+				>Files on Server</button>
 				@NewHXButton(HxGet, "", props.GetSlidesURL, "#slides", true).Component() {
 					View Slides
 				}

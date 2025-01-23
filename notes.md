@@ -2,6 +2,14 @@
 
 ## Progress Log
 
+### 1/23/2025
+
+Didn't accomplish as much today due to time constraints. Cleaned up NodeList and NodeDetails components code by adding corresponding methods to the PageData structs.
+
+### 1/22/2025
+
+Added ability to view and upload lesson files. Went a lot quicker than I expected.
+
 ### 1/21/2025
 
 Finally implemented Copying Course to Term. Thought I had trouble with units and lessons becoming orphaned after parent course was deleted but that doesn't seem to happen now. Something to watch out / test for though. It appears that all child rows are deleted by ON CASCADE, so that when a course is deleted, the units, lessons, and lesson_dates

@@ -72,7 +72,7 @@ func (t Term) TypeName() string {
 }
 
 func (t Term) ParentTypeName() string {
-	return ""
+	return RootTypeName.String()
 }
 
 func (t Term) ChildTypeName() string {

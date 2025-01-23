@@ -5,6 +5,8 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
+	"net/http"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 
@@ -19,12 +21,13 @@ import (
 )
 
 const (
-	Lessons    RouteName = Unit + "/lessons"
-	Lesson     RouteName = Lessons + RouteName(LessonID)
-	NewLesson  RouteName = Lessons + "/new"
-	EditLesson RouteName = Lesson + "/edit"
-	Slides     RouteName = Lesson + "/slides"
-	EditSlides RouteName = Slides + "/edit"
+	Lessons     RouteName = Unit + "/lessons"
+	Lesson      RouteName = Lessons + RouteName(LessonID)
+	NewLesson   RouteName = Lessons + "/new"
+	EditLesson  RouteName = Lesson + "/edit"
+	Slides      RouteName = Lesson + "/slides"
+	LessonFiles RouteName = Lesson + "/files/*"
+	EditSlides  RouteName = Slides + "/edit"
 )
 
 const (
@@ -35,6 +38,8 @@ const (
 	ShowEditLesson   = RouteHandlerName(GET + EditLesson)
 	PostEditLesson   = RouteHandlerName(POST + EditLesson)
 	ViewLessonSlides = RouteHandlerName(GET + Slides)
+	ShowLessonFiles  = RouteHandlerName(GET + LessonFiles)
+	PostLessonFile   = RouteHandlerName(POST + LessonFiles)
 	ShowEditSlides   = RouteHandlerName(GET + EditSlides)
 	PostEditSlides   = RouteHandlerName(POST + EditSlides)
 	DeleteLesson     = RouteHandlerName(DELETE + Lesson)
@@ -49,6 +54,8 @@ func (h CourseHandler) LessonHandlers() []RouteHandler {
 		{EditLesson, ShowEditLesson, GET, h.ShowEditLesson},
 		{EditLesson, PostEditLesson, POST, h.PostEditLesson},
 		{Slides, ViewLessonSlides, GET, h.ViewLessonSlides},
+		{LessonFiles, ShowLessonFiles, GET, h.ShowLessonFiles},
+		{LessonFiles, PostLessonFile, POST, h.PostLessonFile},
 		{EditSlides, ShowEditSlides, GET, h.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, h.PostEditSlides},
 		{Lesson, DeleteLesson, DELETE, h.DeleteLesson},
@@ -92,38 +99,17 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 
 func (h CourseHandler) LessonDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	termID, err := TermIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	log.Println("termID:", termID)
-	courseID, err := CourseIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	unitID, err := UnitIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	lessonID, err := LessonIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	lesson, err := h.svc.GetLesson(lessonID)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
 	if err != nil {
 		log.Println("error getting lesson:", err)
 		return err
 	}
-	unit, err := h.svc.GetUnit(unitID)
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
 	if err != nil {
 		log.Println("error getting unit:", err)
 		return err
 	}
-	course, err := h.svc.GetCourse(courseID)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
 	if err != nil {
 		log.Println("error getting course:", err)
 		return err
@@ -136,29 +122,19 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          false,
 	}
+
+	var idParams = params.ToIntSlice()
+	var pathParam interface{} = ""
+	var withPath = append(idParams, pathParam)
+
 	lessonDetails := mt.LessonDetailsPage{
 		NodeDetailsPage: nodeDetails,
 		GetSlidesURL:    h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:   h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
-		FilesURL:        string(templates.LessonFilesURL(*lesson, *unit, *course)),
+		GithubFilesURL:  string(templates.LessonFilesURL(*lesson, *unit, *course)),
+		ServerFilesURL:  h.e.Reverse(ShowLessonFiles.String(), withPath...),
 	}
 	template := mt.LessonDetailsComponent(lessonDetails)
-	//old stuff begins here
-	// editor := mt.NewLessonEditor(params, string(ShowEditLesson), string(PostEditLesson), h.e, *lesson)
-	// template := mt.LessonDetailsTemplate(
-	// 	params,
-	// 	lesson,
-	// 	unit,
-	// 	course,
-	// 	ViewLessonSlides.String(),
-	// 	ShowEditSlides.String(),
-	// 	ShowEditLesson.String(),
-	// 	PostEditLesson.String(),
-	// 	ListUnitLessons.String(),
-	// 	editor,
-	// 	h.e,
-	// )
-	// old stuff ends here
 	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
@@ -287,6 +263,94 @@ func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 	}
 	template := mt.Slides(string(slidesContent))
 	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), template, nil)
+}
+
+func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	var lessonID int
+	if params.LessonID.Valid {
+		lessonID = params.LessonID.Value
+	} else {
+		return fmt.Errorf("invalid lesson id")
+	}
+	isDir, err := h.svc.IsDir(lessonID, path)
+	if err != nil {
+		return err
+	}
+	if !isDir {
+		c.Attachment(h.svc.LessonFilePath(lessonID, path), filepath.Base(path))
+	}
+	files, err := h.svc.LessonFiles(lessonID, path)
+	for _, file := range files {
+		log.Println(file.Path)
+	}
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	log.Println(files)
+	page := mt.FilesPage{
+		Node:        lesson,
+		Params:      params,
+		CurrentPath: path,
+		OpenFileRHN: ShowLessonFiles.String(),
+		Files:       files,
+		E:           h.e,
+	}
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) PostLessonFile(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	var lessonID int
+	if params.LessonID.Valid {
+		lessonID = params.LessonID.Value
+	} else {
+		return fmt.Errorf("invalid lesson id")
+	}
+	log.Println("lessonID:", lessonID)
+	lessonDirPath := data.LessonFilesDirPath(lessonID)
+	path = filepath.Join(lessonDirPath, path)
+	// Parse the form to retrieve the file
+	err := c.Request().ParseMultipartForm(10 << 20)
+	if err != nil {
+		return err
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to open file")
+	}
+	defer src.Close()
+
+	// Create a destination file
+	dst, err := os.Create(filepath.Join(path, file.Filename))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
+	}
+	defer dst.Close()
+
+	// Copy the content of the uploaded file to the destination
+	if _, err := io.Copy(dst, src); err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to save file")
+	}
+
+	// Respond to the client
+	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
+
 }
 
 func (h CourseHandler) ShowEditSlides(c echo.Context) error {

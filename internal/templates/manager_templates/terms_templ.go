@@ -128,7 +128,7 @@ func AddNonInstructDayComponent(page AddNonInstructDayPage) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><label for=\"date\">Date</label> <input type=\"date\" id=\"date\" name=\"date\" required> <button type=\"submit\">Add</button></form><ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><label for=\"date\">Date</label> <input type=\"date\" id=\"date\" name=\"date\" class=\"bg-black\" required> <button type=\"submit\">Add</button></form><ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

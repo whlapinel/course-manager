@@ -52,11 +52,11 @@ type ShowCalendarButton struct {
 
 func (data ShowCalendarButton) Component() templ.Component {
 	button := HXButton{
-		Text:       "Calendar",
-		Method:     HxGet,
-		URL:        data.ShowCalendarURL,
-		HxTargetID: pageElementID.Selector(),
-		PushURL:    true,
+		Text:     "Calendar",
+		Method:   HxGet,
+		URL:      data.ShowCalendarURL,
+		HxTarget: pageElementID.Selector(),
+		PushURL:  true,
 	}
 	return button.Component()
 }

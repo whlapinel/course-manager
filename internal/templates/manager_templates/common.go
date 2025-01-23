@@ -17,13 +17,13 @@ type ComponentData interface {
 const pageElementID ElementID = "page"
 
 type CourseIDParams struct {
-	TermID   IDParam
-	CourseID IDParam
-	UnitID   IDParam
-	LessonID IDParam
+	TermID   NodeIDParam
+	CourseID NodeIDParam
+	UnitID   NodeIDParam
+	LessonID NodeIDParam
 }
 
-type IDParam struct {
+type NodeIDParam struct {
 	Valid bool
 	Value int
 }
@@ -83,13 +83,13 @@ func AddQueryParam(path, key, value string) string {
 }
 
 type HXButton struct {
-	Text       string
-	HxConfirm  string
-	Method     HXMethod
-	URL        string
-	HxTargetID string
-	PushURL    bool
-	HxSwap     HxSwap
+	Text      string
+	HxConfirm string
+	Method    HXMethod
+	URL       string
+	HxTarget  string
+	PushURL   bool
+	HxSwap    HxSwap
 }
 
 type HxSwap string
@@ -103,11 +103,11 @@ func (button HXButton) Component() templ.Component {
 }
 func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL bool) HXButton {
 	return HXButton{
-		Method:     method,
-		URL:        url,
-		HxTargetID: hxTargetID,
-		PushURL:    pushURL,
-		HxSwap:     hxSwap,
+		Method:   method,
+		URL:      url,
+		HxTarget: hxTargetID,
+		PushURL:  pushURL,
+		HxSwap:   hxSwap,
 	}
 }
 

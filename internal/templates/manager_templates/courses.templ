@@ -10,6 +10,7 @@ templ CourseDetailsComponent(props CourseDetailsPage) {
 	@NodeDetailsComponent(props.NodeDetailsPage) {
 		<button
 			hx-get={ props.GetCopyCourseURL }
+			hx-swap="outerHTML"
 		>
 			Copy Course To Term
 		</button>
@@ -32,6 +33,8 @@ templ CopyCourseComponent(props CopyCourseData) {
 		<button
 			hx-post={ props.E.Reverse(props.PostCopyCourseToTermRHN, props.TermID, props.CourseID) }
 			hx-include="#copy-course-form"
+			type="submit"
+			hx-target="#page"
 		>Copy Course</button>
 	</form>
 }

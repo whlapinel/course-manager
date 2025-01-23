@@ -1,0 +1,16 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'components/head.html' %}
+</head>
+
+<body>
+    {% include 'components/header.html' %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

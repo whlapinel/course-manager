@@ -62,34 +62,11 @@ templ NodeListComponent(props NodeListPage) {
 					<li
 						id={ props.ListItemElementID(node).String() }
 					>
-						@NewHXButton(
-							HxDelete,
-							"",
-							props.E.Reverse(props.DeleteChildRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
-							props.ListItemElementID(node).Selector(), false).Component() {
-							Delete 
-						}
+						@props.DeleteNodeButton(node)
 						if node.ChildTypeName() != "" {
-							@NewHXButton(
-								HxGet,
-								"",
-								props.E.Reverse(props.ChildChildrenRHN,
-									AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
-								pageElementID.Selector(),
-								true,
-							).Component() {
-								{ node.ChildTypeName() + "s" }
-							}
+							@props.NodeChildrenButton(node)
 						}
-						@NewHXButton(
-							HxGet,
-							"",
-							props.E.Reverse(props.ChildDetailsRHN, AddNodeChildIDToParams(props.Params, node.GetID()).ToIntSlice()...),
-							pageElementID.Selector(),
-							true,
-						).Component() {
-							Details
-						}
+						@props.NodeDetailsButton(node)
 						if props.ChildUI != nil && props.ChildUI[i] != nil {
 							@props.ChildUI[i].Component()
 						}
@@ -98,9 +75,7 @@ templ NodeListComponent(props NodeListPage) {
 				</ul>
 			}
 		}
-		@NewHXButton(HxGet, "", props.E.Reverse(props.CreateChildRHN, props.Params.ToIntSlice()...), "#page", true).Component() {
-			Add { props.ParentNode.ChildTypeName() }
-		}
+		@props.NodeCreateButton()
 	}
 }
 
@@ -112,4 +87,8 @@ templ NodeDetailsComponent(props NodeDetailsPage) {
 			{ children... }
 		</div>
 	}
+}
+
+templ NodeImageComponent(props NodeDetailsPage) {
+	<img hx-get={ props.NodeImageURL() }/>
 }

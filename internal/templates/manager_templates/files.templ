@@ -1,0 +1,26 @@
+package managertemplates
+
+import "path/filepath"
+
+templ FilesComponent(page FilesPage) {
+	<div class="grid grid-cols-2">
+		<form hx-post={ page.E.Reverse(page.UploadFileRHN, append(page.Params.ToIntSlice(), filepath.Join(page.CurrentPath))) } enctype="multipart/form-data">
+			<label for="file">Choose a file:</label>
+			<input type="file" name="file" id="file"/>
+			<button type="submit">Upload</button>
+		</form>
+		for _, item := range page.Files {
+			if !item.IsDir {
+				<a href={ templ.SafeURL(page.E.Reverse(page.OpenFileRHN, append(page.Params.ToIntSlice(), filepath.Join(page.CurrentPath, item.Path))...)) }>{ item.Path }</a>
+			} else {
+				<button
+					hx-get={ page.E.Reverse(page.OpenFileRHN, append(page.Params.ToIntSlice(), filepath.Join(page.CurrentPath, item.Path))...) }
+					hx-target="#page"
+					hx-push-url="true"
+				>
+					{ item.Path }
+				</button>
+			}
+		}
+	</div>
+}

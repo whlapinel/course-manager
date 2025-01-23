@@ -47,6 +47,7 @@ type NodeDetailsPage struct {
 	PostEditNodeURL string
 	UpNavURL        string
 	IsEdit          bool
+	NodeImageURL    func() string
 }
 
 func (page NodeDetailsPage) Component() templ.Component {
@@ -69,9 +70,10 @@ func (page NodeDetailsPage) PageTitle() string {
 }
 
 func (page NodeDetailsPage) upNavText() string {
-	parentPageText := page.Node.ParentTypeName()
+	parentPageText := page.Node.TypeName()
 	if page.Node.ParentTypeName() == string(domain.RootTypeName) {
 		parentPageText = "Home"
+		return fmt.Sprintf("Up to %s", parentPageText)
 	}
 	return fmt.Sprintf("Up to %ss", parentPageText)
 }
@@ -91,6 +93,46 @@ type NodeListPage struct {
 
 type NodeDeleteButton struct {
 	DeleteChildRHN string
+}
+
+func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
+	return HXButton{
+		Text:      "Delete",
+		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
+		Method:    HxDelete,
+		URL:       page.E.Reverse(page.DeleteChildRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToIntSlice()...),
+		HxTarget:  page.ListItemElementID(node).Selector(),
+	}.Component()
+}
+
+func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Component {
+	return HXButton{
+		Text:     node.ChildTypeName() + "s",
+		Method:   HxGet,
+		URL:      page.E.Reverse(page.ChildChildrenRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToIntSlice()...),
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
+func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Component {
+	return HXButton{
+		Text:     "Details",
+		Method:   HxGet,
+		URL:      page.E.Reverse(page.ChildDetailsRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToIntSlice()...),
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
+func (page NodeListPage) NodeCreateButton() templ.Component {
+	return HXButton{
+		Text:     fmt.Sprintf("Add %s", page.ParentNode.ChildTypeName()),
+		Method:   HxGet,
+		URL:      page.E.Reverse(page.CreateChildRHN, page.Params.ToIntSlice()...),
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
 }
 
 func (page NodeListPage) Component() templ.Component {

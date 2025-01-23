@@ -20,7 +20,7 @@ templ AddNonInstructDayComponent(page AddNonInstructDayPage) {
 	<p>Note: Weekends are automatically excluded from instructional days.</p>
 	<form hx-post={ page.PostAddDayURL } hx-target={ string(pageElementID.Selector()) }>
 		<label for="date">Date</label>
-		<input type="date" id="date" name="date" required/>
+		<input type="date" id="date" name="date" class="bg-black" required/>
 		<button type="submit">Add</button>
 	</form>
 	<ul>

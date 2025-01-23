@@ -16,6 +16,7 @@ import (
 const (
 	Courses          RouteName = Term + "/courses"
 	Course           RouteName = Courses + RouteName(CourseID)
+	CourseImage      RouteName = Course + "/image"
 	NewCourse        RouteName = Courses + "/new"
 	EditCourse       RouteName = Course + "/edit"
 	CopyCourse       RouteName = Course + "/copy-to-term"
