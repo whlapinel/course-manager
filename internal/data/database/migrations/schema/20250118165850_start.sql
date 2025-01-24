@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS lesson_objectives (
     FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
 );
 
+
 -- +goose StatementEnd
 
 -- +goose Down

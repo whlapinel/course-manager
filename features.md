@@ -3,11 +3,15 @@
 
 ## Pending (keep in priority order)
 
-- 1/22/25 User can do [all the things] for course and unit files
-- 1/22/25 User can delete lesson files
-- 1/22/25 User can rename lesson files
-- 1/22/25 User can move lesson files
-- 1/22/25 User can duplicate lesson files
+- 1/23/25 In calendar, user can add and remove lessons from a date
+  - Add: new screen to select lesson from course
+  - Remove: remove date from lesson dates
+
+- CourseNode files capabilities:
+  - 1/22/25 User can delete node files
+  - 1/22/25 User can rename node files
+  - 1/22/25 User can move node files
+  - 1/22/25 User can duplicate node files
 
 ## Complete
 

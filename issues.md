@@ -2,6 +2,8 @@
 
 ## Pending
 
+- 1/23/25 (minor) Deleting a course (unit, lesson may take a while as well) takes a long time. Maybe after a course row itself is deleted we should go ahead and return the response to the user and do the rest in the background. If child elements and files are not deleted we should log an error but the user doesn't need to wait on all of that, maybe?
+
 - 1/21/25 (minor) I don't see any reason why CourseRepo.GetCourses() should also fetch the children. Moreover it doesn't appear that any of the current callers even use this data. Should only fetch course information.
 
 - 1/18/25 (major) Error when user attempts to view slides that haven't been generated yet. Need to generate slides when file doesn't exist.
