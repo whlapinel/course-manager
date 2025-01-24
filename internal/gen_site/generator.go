@@ -88,6 +88,10 @@ func Generate(courseRepo data.CourseRepo) error {
 		if err != nil {
 			return fmt.Errorf("failed to render pages: %v", err)
 		}
+		err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.CoursePath(*course, false))
+		if err != nil {
+			return err
+		}
 		err = CopyCourseImage(*course)
 		if err != nil {
 			return err

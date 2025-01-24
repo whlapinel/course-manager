@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"log"
 	"net/url"
@@ -19,6 +20,26 @@ const (
 // Student-facing site
 func KebabCase(str string) string {
 	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
+}
+
+func NodePath(nodes ...domain.CourseNode) string {
+	path := StaticSiteRootDir
+	for _, node := range nodes {
+		path = strings.ToLower(filepath.Join(path, node.TypeName()))
+		path = strings.ToLower(filepath.Join(
+			path,
+			fmt.Sprintf("%s_%d", node.TypeName(), node.GetID()),
+		))
+
+	}
+	return path
+}
+
+func NodePage(nodes ...domain.CourseNode) string {
+	leafNode := nodes[len(nodes)-1]
+	path := NodePath(nodes...)
+	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", leafNode.TypeName(), leafNode.GetID()))
+	return path
 }
 
 // Student-facing site

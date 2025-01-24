@@ -71,6 +71,14 @@ func NewCoursePage(course domain.Course) Page {
 	}
 }
 
+func NodePage(nodes ...domain.CourseNode) Page {
+	leafNode := nodes[len(nodes)-1]
+	return Page{
+		Title: leafNode.GetName(),
+		Path:  templates.NodePage(nodes...),
+	}
+}
+
 func NewCourseCalendarPage(course domain.Course) Page {
 	pageTitle := course.Name + " Calendar"
 	return Page{
