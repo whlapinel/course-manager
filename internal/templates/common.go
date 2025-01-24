@@ -25,7 +25,7 @@ func KebabCase(str string) string {
 func NodePath(nodes ...domain.CourseNode) string {
 	path := StaticSiteRootDir
 	for _, node := range nodes {
-		path = strings.ToLower(filepath.Join(path, node.TypeName()))
+		path = strings.ToLower(filepath.Join(path, node.TypeName()+"s"))
 		path = strings.ToLower(filepath.Join(
 			path,
 			fmt.Sprintf("%s_%d", node.TypeName(), node.GetID()),
@@ -38,17 +38,16 @@ func NodePath(nodes ...domain.CourseNode) string {
 func NodePage(nodes ...domain.CourseNode) string {
 	leafNode := nodes[len(nodes)-1]
 	path := NodePath(nodes...)
-	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", leafNode.TypeName(), leafNode.GetID()))
+	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", strings.ToLower(leafNode.TypeName()), leafNode.GetID()))
 	return path
 }
 
 // Student-facing site
 func CoursePath(course domain.Course, page bool) string {
-	dirPath := filepath.Join(StaticSiteCoursesDir, KebabCase(course.Name))
 	if page {
-		return filepath.Join(dirPath, KebabCase(course.Name+".html"))
+		return NodePage(course)
 	}
-	return dirPath
+	return NodePath(course)
 }
 
 // Student-facing site
@@ -59,11 +58,10 @@ func CourseImagePath(course domain.Course) string {
 
 // Student-facing site
 func UnitPath(unit domain.Unit, course domain.Course, page bool) string {
-	dirPath := filepath.Join(CoursePath(course, false), KebabCase(unit.Name))
 	if page {
-		return filepath.Join(dirPath, KebabCase(unit.Name+".html"))
+		return NodePage(course, unit)
 	}
-	return dirPath
+	return NodePath(course, unit)
 }
 
 // Student-facing site
@@ -74,11 +72,10 @@ func UnitImagePath(unit domain.Unit, course domain.Course) string {
 
 // Student-facing site
 func LessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, page bool) string {
-	dirPath := filepath.Join(UnitPath(unit, course, false), KebabCase(lesson.Name))
 	if page {
-		return filepath.Join(dirPath, KebabCase(lesson.Name+".html"))
+		return NodePage(course, unit, lesson)
 	}
-	return dirPath
+	return NodePath(course, unit, lesson)
 }
 
 // Student-facing site

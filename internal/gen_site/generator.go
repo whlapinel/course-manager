@@ -55,7 +55,7 @@ func Generate(courseRepo data.CourseRepo) error {
 	}
 	var currentTerm domain.Term
 	for _, term := range terms {
-		if term.Start.Before(time.Now()) && term.End.After(time.Now()) {
+		if term.Start.Before(time.Now().AddDate(0, 0, 7)) && term.End.After(time.Now()) {
 			currentTerm = term
 		}
 	}
@@ -74,6 +74,10 @@ func Generate(courseRepo data.CourseRepo) error {
 		return fmt.Errorf("failed to render pages: %v", err)
 	}
 	for _, course := range courses {
+		err = data.CopyNodeDir(data.NodeDirPath(currentTerm), templates.StaticSiteRootDir)
+		if err != nil {
+			return err
+		}
 		if course.Term.Start.IsZero() {
 			return fmt.Errorf("main(): instance.Term.Start is zero")
 		}
@@ -88,39 +92,27 @@ func Generate(courseRepo data.CourseRepo) error {
 		if err != nil {
 			return fmt.Errorf("failed to render pages: %v", err)
 		}
-		err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.CoursePath(*course, false))
-		if err != nil {
-			return err
-		}
-		err = CopyCourseImage(*course)
-		if err != nil {
-			return err
-		}
+		// err = CopyCourseImage(*course)
+		// if err != nil {
+		// 	return err
+		// }
 		// Generate page for each unit
 		for _, unit := range course.Units {
-			err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.UnitPath(*unit, *course, false))
-			if err != nil {
-				return err
-			}
 			unitPage := sst.NewUnitPage(*unit, *course)
 			err = RenderPage(unitPage)
 			if err != nil {
 				return fmt.Errorf("failed to render pages: %v", err)
 			}
-			err = CopyUnitImage(*unit, *course)
-			if err != nil {
-				return fmt.Errorf("failed to copy unit image: %s", err)
-			}
+			// err = CopyUnitImage(*unit, *course)
+			// if err != nil {
+			// 	return fmt.Errorf("failed to copy unit image: %s", err)
+			// }
 			lessons, err := courseRepo.GetLessons(unit.ID)
 			if err != nil {
 				return fmt.Errorf("failed to get lessons: %s", err)
 			}
 			// Generate page for each lesson
 			for _, lesson := range lessons {
-				err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.LessonPath(*lesson, *unit, *course, false))
-				if err != nil {
-					return err
-				}
 				// log.Println("start of loop for:", lesson.Name, "id:", lesson.ID)
 				// _, err := os.Stat(data.SlidesMarkdownFilePath(lesson.ID))
 				// hasSlides := err == nil

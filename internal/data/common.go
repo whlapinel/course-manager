@@ -49,6 +49,7 @@ func InitDB(fileName string) (*database.Queries, *sql.DB, error) {
 
 // for copying all files in the lesson, unit, or course directory
 func CopyNodeDir(srcRoot, destRoot string) error {
+	log.Println("copying", srcRoot, "to", destRoot)
 	// if directory doesn't exist, early return
 	_, err := os.Stat(srcRoot)
 	if err != nil {
