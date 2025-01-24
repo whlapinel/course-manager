@@ -249,13 +249,24 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 
 func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	lessonID, err := ParseRouteParam(c, LessonID)
+	term, err := h.svc.GetTerm(params.TermID.Value)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	sitegenerator.GenerateSlides(lessonID)
-	slidesPath := data.SlidesHTMLFilePath(lessonID)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+	sitegenerator.GenerateSlides(term, course, unit, lesson)
+	slidesPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
 	log.Println(slidesPath)
 	slidesContent, err := os.ReadFile(slidesPath)
 	if err != nil {
@@ -269,27 +280,33 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
-	var lessonID int
-	if params.LessonID.Valid {
-		lessonID = params.LessonID.Value
-	} else {
-		return fmt.Errorf("invalid lesson id")
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return err
 	}
-	isDir, err := h.svc.IsDir(lessonID, path)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+	isDir, err := h.svc.IsDir(path, term, course, unit, lesson)
 	if err != nil {
 		return err
 	}
 	if !isDir {
-		c.Attachment(h.svc.LessonFilePath(lessonID, path), filepath.Base(path))
+		c.Attachment(h.svc.LessonFilePath(path, term, course, unit, lesson), filepath.Base(path))
 	}
-	files, err := h.svc.LessonFiles(lessonID, path)
+	files, err := h.svc.LessonFiles(path, term, course, unit, lesson)
 	for _, file := range files {
 		log.Println(file.Path)
 	}
-	if err != nil {
-		return err
-	}
-	lesson, err := h.svc.GetLesson(lessonID)
 	if err != nil {
 		return err
 	}
@@ -311,17 +328,26 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
-	var lessonID int
-	if params.LessonID.Valid {
-		lessonID = params.LessonID.Value
-	} else {
-		return fmt.Errorf("invalid lesson id")
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return err
 	}
-	log.Println("lessonID:", lessonID)
-	lessonDirPath := data.LessonFilesDirPath(lessonID)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+	lessonDirPath := data.NodeFilesDirPath(term, course, unit, lesson)
 	path = filepath.Join(lessonDirPath, path)
 	// Parse the form to retrieve the file
-	err := c.Request().ParseMultipartForm(10 << 20)
+	err = c.Request().ParseMultipartForm(10 << 20)
 	if err != nil {
 		return err
 	}
@@ -332,7 +358,7 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 	// Open the file
 	src, err := file.Open()
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to open file")
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
 	}
 	defer src.Close()
 
@@ -355,12 +381,24 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 
 func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	lessonID, err := LessonIDParam(params)
+	term, err := h.svc.GetTerm(params.TermID.Value)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	markdownPath, err := h.svc.CreateSlidesIfNotExist(lessonID, h.svc.GetLesson)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+
+	markdownPath, err := h.svc.CreateSlidesIfNotExist(term, course, unit, lesson)
 	if err != nil {
 		return err
 	}
@@ -386,12 +424,24 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	log.Println(params)
 	content := c.FormValue(string(mt.EditSlidesTextAreaID))
-	lessonID, err := LessonIDParam(params)
+	term, err := h.svc.GetTerm(params.TermID.Value)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	path := data.SlidesMarkdownFilePath(lessonID)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+
+	path := data.SlidesMarkdownFilePath(term, course, unit, lesson)
 	file, err := os.Create(path)
 	if err != nil {
 		log.Println(err)

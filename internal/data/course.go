@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
@@ -85,18 +84,6 @@ func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 			Name:        dbCourse.CourseName,
 			Description: dbCourse.CourseDescr.String,
 			Term:        term,
-		}
-		dbImage, err := cr.queries.GetCourseImage(context.Background(), dbCourse.CourseID)
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				return nil, err
-			}
-		}
-		course.Image = domain.Image{
-			ID:          int(dbImage.ID),
-			Name:        dbImage.Name,
-			Description: dbImage.Description.String,
-			BasePath:    dbImage.BasePath,
 		}
 		units, err := cr.GetUnits(course.ID)
 		if err != nil {

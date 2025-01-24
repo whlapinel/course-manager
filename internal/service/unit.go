@@ -1,8 +1,6 @@
 package service
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/domain"
 )
@@ -17,14 +15,6 @@ func (svc CourseService) GetUnit(unitID int) (*domain.Unit, error) {
 		return nil, fmt.Errorf("CourseService.repo.GetLessons: %s", err)
 	}
 	unit.Lessons = lessons
-	image, err := svc.repo.GetUnitImage(unitID)
-	if err != nil {
-		if !errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("CourseService.repo.GetUnitImage")
-		}
-	} else if image != nil {
-		unit.Image = *image
-	}
 	return unit, nil
 }
 func (svc CourseService) GetUnits(courseID int) ([]*domain.Unit, error) {

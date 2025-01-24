@@ -2,6 +2,16 @@
 
 ## Progress Log
 
+### 1/24/2025
+
+Went a bit nuts today with the scale of changes.
+
+Changed the filesystem to a nested one so that deleting a node (term, course, unit, lesson) will delete all of its children. For deleting things, I have a confirmation on the UI but maybe it's still a bit too easy to delete a lot of work, potentially forever!
+
+Major change to static site in that I changed the directory names to match the server's new file structure so that I can simply copy the entire directory over once, including slides, images, and files, and then just render the pages. Vastly simpler than what I was doing before.
+
+Removed images from DB, previously removed slides and files. So now a lot of things I had to register in the DB is simply housed within the node directory.
+
 ### 1/23/2025
 
 Didn't accomplish as much today due to time constraints. Cleaned up NodeList and NodeDetails components code by adding corresponding methods to the PageData structs.

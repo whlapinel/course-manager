@@ -5,7 +5,6 @@ sql:
       - "internal/data/database/courses.sql"
       - "internal/data/database/units.sql"
       - "internal/data/database/lessons.sql"
-      - "internal/data/database/images.sql"
       - "internal/data/database/dates.sql"
       - "internal/data/database/terms.sql"
 

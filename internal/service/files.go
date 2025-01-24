@@ -2,19 +2,20 @@ package service
 
 import (
 	"gh_static_portfolio/internal/data"
+	"gh_static_portfolio/internal/domain"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"os"
 	"path/filepath"
 )
 
-func (svc CourseService) LessonFilePath(lessonID int, path string) string {
-	root := data.LessonFilesDirPath(lessonID)
+func (svc CourseService) LessonFilePath(path string, nodes ...domain.CourseNode) string {
+	root := data.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	return path
 }
 
-func (svc CourseService) IsDir(lessonID int, path string) (bool, error) {
-	root := data.LessonFilesDirPath(lessonID)
+func (svc CourseService) IsDir(path string, nodes ...domain.CourseNode) (bool, error) {
+	root := data.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	info, err := os.Stat(path)
 	if err != nil {
@@ -26,8 +27,8 @@ func (svc CourseService) IsDir(lessonID int, path string) (bool, error) {
 	return false, nil
 }
 
-func (svc CourseService) LessonFiles(lessonID int, path string) ([]mt.FilesPageItem, error) {
-	root := data.LessonFilesDirPath(lessonID)
+func (svc CourseService) LessonFiles(path string, nodes ...domain.CourseNode) ([]mt.FilesPageItem, error) {
+	root := data.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	_, err := os.Stat(path)
 	if err != nil {

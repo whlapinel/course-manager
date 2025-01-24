@@ -13,8 +13,8 @@ type fetchLesson func(int) (*domain.Lesson, error)
 
 // This check to see if the file already exists. if not, should create a new markdown file, write the template to it,
 // and generate the html file. Returns the file path
-func (svc CourseService) CreateSlidesIfNotExist(lessonID int, fetchLesson fetchLesson) (string, error) {
-	markdownPath := data.SlidesMarkdownFilePath(lessonID)
+func (svc CourseService) CreateSlidesIfNotExist(nodes ...domain.CourseNode) (string, error) {
+	markdownPath := data.SlidesMarkdownFilePath(nodes...)
 	_, err := os.Stat(markdownPath)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(filepath.Dir(markdownPath), os.ModePerm)
@@ -26,7 +26,7 @@ func (svc CourseService) CreateSlidesIfNotExist(lessonID int, fetchLesson fetchL
 			return "", err
 		}
 		// write template to file
-		templateFileContents, err := svc.SlidesTemplate(lessonID, fetchLesson)
+		templateFileContents, err := svc.SlidesTemplate(nodes[len(nodes)-1])
 		if err != nil {
 			return "", err
 		}
@@ -35,15 +35,11 @@ func (svc CourseService) CreateSlidesIfNotExist(lessonID int, fetchLesson fetchL
 			return "", err
 		}
 	}
-	sitegenerator.GenerateSlides(lessonID)
+	sitegenerator.GenerateSlides(nodes[0], nodes[1], nodes[2], nodes[3])
 	return markdownPath, nil
 }
 
-func (svc CourseService) SlidesTemplate(lessonID int, fetchLesson fetchLesson) ([]byte, error) {
-	lesson, err := fetchLesson(lessonID)
-	if err != nil {
-		return nil, err
-	}
+func (svc CourseService) SlidesTemplate(lesson domain.CourseNode) ([]byte, error) {
 	templateFileContents, err := os.ReadFile("./cmd/web_app/slide_template.md")
 	if err != nil {
 		return nil, err
@@ -58,7 +54,7 @@ func (svc CourseService) SlidesTemplate(lessonID int, fetchLesson fetchLesson) (
 		
 # **Looking ahead**`,
 
-		lesson.Name)
+		lesson.GetName())
 	templateFileContents = append(templateFileContents, []byte(templateOther)...)
 	return templateFileContents, nil
 }

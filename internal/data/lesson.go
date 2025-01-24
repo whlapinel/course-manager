@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
@@ -14,24 +13,16 @@ import (
 	"time"
 )
 
-func LessonDirPath(lessonID int) string {
-	return fmt.Sprintf("./internal/data/lessons/lesson_%d", lessonID)
+func LessonDirPath(nodes ...domain.CourseNode) string {
+	return NodeDirPath(nodes...)
 }
 
-func LessonFilesDirPath(lessonID int) string {
-	return filepath.Join(LessonDirPath(lessonID), "files")
+func SlidesMarkdownFilePath(nodes ...domain.CourseNode) string {
+	return filepath.Join(NodeDirPath(nodes...), "slides.md")
 }
 
-func LessonImagePath(lessonID int) string {
-	return filepath.Join(LessonDirPath(lessonID), "image.png")
-}
-
-func SlidesMarkdownFilePath(lessonID int) string {
-	return filepath.Join(LessonDirPath(lessonID), "slides.md")
-}
-
-func SlidesHTMLFilePath(lessonID int) string {
-	return filepath.Join(LessonDirPath(lessonID), "slides.html")
+func SlidesHTMLFilePath(nodes ...domain.CourseNode) string {
+	return filepath.Join(NodeDirPath(nodes...), "slides.html")
 }
 
 func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
@@ -65,14 +56,6 @@ func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
 		}
-		image, err := cr.GetLessonImage(lesson)
-		if err != nil {
-			if !errors.Is(err, sql.ErrNoRows) {
-				log.Fatal("error getting lesson images", err)
-				return nil, err
-			}
-		}
-		lesson.Image = image
 		dbLessonDates, err := cr.queries.GetLessonDates(context.Background(), int64(lesson.ID))
 		if err != nil {
 			return nil, err
@@ -269,12 +252,13 @@ func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
 	return nil
 }
 
-func (lr CourseRepo) DeleteLesson(lesson domain.Lesson) error {
-	err := lr.deleteLessonDir(lesson.ID)
+func (lr CourseRepo) DeleteLesson(nodes ...domain.CourseNode) error {
+	err := lr.deleteLessonDir(nodes...)
 	if err != nil {
 		return err
 	}
-	err = lr.queries.DeleteLesson(context.Background(), int64(lesson.ID))
+	lesson := nodes[len(nodes)-1]
+	err = lr.queries.DeleteLesson(context.Background(), int64(lesson.GetID()))
 	return err
 }
 
@@ -289,8 +273,8 @@ func (cr CourseRepo) DeleteDate(termID int, date time.Time) error {
 	return nil
 }
 
-func (cr CourseRepo) deleteLessonDir(lessonID int) error {
-	path := LessonDirPath(lessonID)
+func (cr CourseRepo) deleteLessonDir(nodes ...domain.CourseNode) error {
+	path := LessonDirPath(nodes...)
 	err := os.RemoveAll(path)
 	if err != nil {
 		return err

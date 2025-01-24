@@ -8,7 +8,6 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	sst "gh_static_portfolio/internal/templates/static_site_templates"
-	"io"
 	"io/fs"
 	"log"
 	"os"
@@ -92,179 +91,25 @@ func Generate(courseRepo data.CourseRepo) error {
 		if err != nil {
 			return fmt.Errorf("failed to render pages: %v", err)
 		}
-		// err = CopyCourseImage(*course)
-		// if err != nil {
-		// 	return err
-		// }
-		// Generate page for each unit
 		for _, unit := range course.Units {
 			unitPage := sst.NewUnitPage(*unit, *course)
 			err = RenderPage(unitPage)
 			if err != nil {
 				return fmt.Errorf("failed to render pages: %v", err)
 			}
-			// err = CopyUnitImage(*unit, *course)
-			// if err != nil {
-			// 	return fmt.Errorf("failed to copy unit image: %s", err)
-			// }
 			lessons, err := courseRepo.GetLessons(unit.ID)
 			if err != nil {
 				return fmt.Errorf("failed to get lessons: %s", err)
 			}
 			// Generate page for each lesson
 			for _, lesson := range lessons {
-				// log.Println("start of loop for:", lesson.Name, "id:", lesson.ID)
-				// _, err := os.Stat(data.SlidesMarkdownFilePath(lesson.ID))
-				// hasSlides := err == nil
-				// log.Println("has slides:", hasSlides)
-				// _, err = os.Stat(data.LessonFilesDirPath(lesson.ID))
-				// hasFiles := err == nil
-				// log.Println("has files:", hasFiles)
 				lessonPage := sst.NewLessonPage(*lesson, *unit, *course, true, true)
 				err = RenderPage(lessonPage)
 				if err != nil {
 					return fmt.Errorf("failed to render pages: %v", err)
 				}
-				// if hasSlides {
-				// 	log.Println("generating slides")
-				// 	GenerateSlides(lesson.ID)
-				// 	err = CopySlides(*lesson, *unit, *course)
-				// 	if err != nil {
-				// 		log.Println("failed to copy slides: ", err)
-				// 	}
-				// }
-				// if hasFiles {
-				// 	err = CopyFiles(*lesson, *unit, *course, courseRepo)
-				// 	if err != nil {
-				// 		log.Println("failed to copy files: ", err)
-				// 	}
-				// }
-				// err = CopyLessonImage(*lesson, *unit, *course)
-				// if err != nil {
-				// 	log.Println("failed to copy image: ", err)
-				// }
 			}
 		}
-	}
-	return nil
-}
-
-func CopyFiles(lesson domain.Lesson, unit domain.Unit, course domain.Course, cr data.CourseRepo) error {
-	srcRoot := data.LessonFilesDirPath(lesson.ID)
-	// if directory doesn't exist, early return
-	_, err := os.Stat(srcRoot)
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil
-		} else {
-			return err
-		}
-	}
-	files, err := os.ReadDir(srcRoot)
-	if err != nil {
-		return err
-	}
-	if len(files) == 0 {
-		return nil
-	}
-	log.Println("Source ", srcRoot)
-	destRoot := templates.LessonFilesPath(lesson, unit, course)
-	log.Println("Dest ", destRoot)
-	return filepath.WalkDir(srcRoot, func(srcPath string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		relPath, err := filepath.Rel(srcRoot, srcPath)
-		if err != nil {
-			return err
-		}
-		destPath := filepath.Join(destRoot, relPath)
-		if d.IsDir() {
-			return os.MkdirAll(destPath, os.ModePerm)
-		}
-		return copyFile(srcPath, destPath)
-	})
-}
-
-func copyFile(srcPath, destPath string) error {
-	src, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-	dst, err := os.Create(destPath)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-	_, err = io.Copy(dst, src)
-	return err
-}
-
-func CopyCourseImage(course domain.Course) error {
-	srcPath := data.OldImagesPath(course.Image)
-	if !FileExists(srcPath) {
-		return nil
-	}
-	src, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	dstPath := templates.CourseImagePath(course)
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func CopyUnitImage(unit domain.Unit, course domain.Course) error {
-	if unit.Image.ID == 0 {
-		return nil
-	}
-	srcPath := data.OldImagesPath(unit.Image)
-	if !FileExists(srcPath) {
-		return fmt.Errorf("file not found: %s", srcPath)
-	}
-	src, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	dstPath := templates.UnitImagePath(unit, course)
-	err = os.MkdirAll(filepath.Dir(dstPath), os.ModePerm)
-	if err != nil {
-		return err
-	}
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func CopyLessonImage(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
-	srcPath := data.OldImagesPath(lesson.Image)
-	if !FileExists(srcPath) {
-		return nil
-	}
-	src, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	dstPath := templates.LessonImagePath(lesson, unit, course)
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
 	}
 	return nil
 }
@@ -322,12 +167,12 @@ func RenderPage(page sst.Page) error {
 }
 
 // compares the last time the files were modified. if markdown was modified after html, regenerates html
-func GenerateSlides(lessonID int) {
+func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
 	log.Println("GenerateSlides(): generating slides")
 	// File paths
-	markdownPath := data.SlidesMarkdownFilePath(lessonID)
+	markdownPath := data.SlidesMarkdownFilePath(term, course, unit, lesson)
 	log.Println("markdownPath:", markdownPath)
-	htmlPath := data.SlidesHTMLFilePath(lessonID)
+	htmlPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
 	log.Println("htmlPath:", htmlPath)
 
 	// Get file information
@@ -361,43 +206,6 @@ func GenerateSlides(lessonID int) {
 		regenerateHTML(markdownPath, htmlPath)
 	}
 	log.Println("reached end of GenerateSlides()")
-}
-
-func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return false
-		}
-		panic("this should not happen")
-	}
-	return true
-}
-
-// This will copy the html files from the ./internal/data/slides directory.
-// It should replace the generate slides function.
-// Slides will be generated by Fyne app rather than in Generator
-func CopySlides(lesson domain.Lesson, unit domain.Unit, course domain.Course) error {
-	srcPath := data.SlidesHTMLFilePath(lesson.ID)
-	dstPath := templates.SlidesPath(lesson, unit, course)
-	srcFile, err := os.Open(srcPath)
-	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil
-		}
-		return err
-	}
-	defer srcFile.Close()
-	dstFile, err := os.Create(dstPath)
-	if err != nil {
-		return err
-	}
-	defer dstFile.Close()
-	_, err = io.Copy(dstFile, srcFile)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // Regenerate HTML from the Markdown file

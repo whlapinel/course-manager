@@ -23,8 +23,8 @@ func (svc CourseService) SaveLesson(params SaveLessonParams) (*domain.Lesson, er
 	return lesson, nil
 }
 
-func (svc CourseService) CreateNewLessonSlides(lessonID int) error {
-	path := data.SlidesMarkdownFilePath(lessonID)
+func (svc CourseService) CreateNewLessonSlides(nodes ...domain.CourseNode) error {
+	path := data.SlidesMarkdownFilePath(nodes...)
 	// make sure file does not exist
 	_, err := os.Stat(path)
 	if err == nil {
@@ -37,8 +37,8 @@ func (svc CourseService) CreateNewLessonSlides(lessonID int) error {
 	return nil
 }
 
-func (svc CourseService) CreateNewLessonFileDir(lessonID int) error {
-	path := data.LessonFilesDirPath(lessonID)
+func (svc CourseService) CreateNewLessonFileDir(nodes ...domain.CourseNode) error {
+	path := data.NodeFilesDirPath(nodes...)
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		return err

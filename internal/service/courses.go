@@ -81,8 +81,8 @@ func (svc CourseService) DeleteCourse(courseID int) error {
 }
 
 func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Course, error) {
-	// get course
-	course, err := svc.GetCourse(courseID)
+	// get oldCourse
+	oldCourse, err := svc.GetCourse(courseID)
 	if err != nil {
 		return nil, err
 	}
@@ -99,58 +99,59 @@ func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Cou
 		}
 		// for each lesson append to unit.Lessons
 		unit.Lessons = append(unit.Lessons, lessons...)
-		course.Units = append(course.Units, unit)
+		oldCourse.Units = append(oldCourse.Units, unit)
 	}
+	oldTerm, err := svc.GetTerm(oldCourse.Term.ID)
 
-	// get term
-	term, err := svc.GetTerm(termID)
+	// get newTerm
+	newTerm, err := svc.GetTerm(termID)
 	if err != nil {
 		return nil, err
 	}
 	// fit course to term
-	newCourse := course.FitToTerm(term)
+	newCourse := oldCourse.FitToTerm(newTerm)
 
 	// save course
 	newCourse, err = svc.SaveCourse(SaveCourseParams{
-		TermID:      term.ID,
+		TermID:      newTerm.ID,
 		Name:        newCourse.Name,
 		Description: newCourse.Description,
 	})
 	if err != nil {
 		return nil, err
 	}
-	srcRoot := data.CourseDirPath(course.ID)
+	srcRoot := data.CourseDirPath(oldCourse.ID)
 	destRoot := data.CourseDirPath(newCourse.ID)
 	err = data.CopyNodeDir(srcRoot, destRoot)
 	if err != nil {
 		return nil, err
 	}
 	// save unit with modified CourseID
-	for _, unit := range course.Units {
-		unit.CourseID = newCourse.ID
+	for _, oldUnit := range oldCourse.Units {
+		oldUnit.CourseID = newCourse.ID
 		newUnit, err := svc.SaveUnit(SaveUnitParams{
-			Unit: *unit,
+			Unit: *oldUnit,
 		})
 		if err != nil {
 			return nil, err
 		}
-		srcRoot := data.UnitDirPath(unit.ID)
+		srcRoot := data.UnitDirPath(oldUnit.ID)
 		destRoot := data.UnitDirPath(newUnit.ID)
 		err = data.CopyNodeDir(srcRoot, destRoot)
 		if err != nil {
 			return nil, err
 		}
 		// save lesson with modified UnitID
-		for _, lesson := range unit.Lessons {
-			lesson.UnitID = newUnit.ID
+		for _, oldLesson := range oldUnit.Lessons {
+			oldLesson.UnitID = newUnit.ID
 			newLesson, err := svc.SaveLesson(SaveLessonParams{
-				Lesson: *lesson,
+				Lesson: *oldLesson,
 			})
 			if err != nil {
 				return nil, err
 			}
-			srcRoot := data.LessonDirPath(lesson.ID)
-			destRoot := data.LessonDirPath(newLesson.ID)
+			srcRoot := data.LessonDirPath(oldTerm, oldCourse, oldUnit, oldLesson)
+			destRoot := data.LessonDirPath(newTerm, newCourse, newUnit, newLesson)
 			err = data.CopyNodeDir(srcRoot, destRoot)
 			if err != nil {
 				return nil, err

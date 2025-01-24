@@ -15,22 +15,10 @@ type Course struct {
 	Description sql.NullString
 }
 
-type CourseImage struct {
-	CourseID int64
-	ImageID  int64
-}
-
 type Date struct {
 	ID     int64
 	TermID int64
 	Date   string
-}
-
-type Image struct {
-	ID          int64
-	Name        string
-	Description sql.NullString
-	BasePath    string
 }
 
 type Lesson struct {
@@ -44,11 +32,6 @@ type Lesson struct {
 type LessonDate struct {
 	LessonID int64
 	DateID   int64
-}
-
-type LessonImage struct {
-	LessonID int64
-	ImageID  int64
 }
 
 type LessonObjective struct {
@@ -86,11 +69,6 @@ type Unit struct {
 	Sequence    int64
 	Name        string
 	Description sql.NullString
-}
-
-type UnitImage struct {
-	UnitID  int64
-	ImageID int64
 }
 
 type UnitStandard struct {
