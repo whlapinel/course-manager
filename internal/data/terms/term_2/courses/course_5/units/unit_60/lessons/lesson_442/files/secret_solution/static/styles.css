@@ -1,0 +1,12 @@
+.completed {
+    text-decoration: line-through;
+}
+
+.not-completed {
+    text-decoration: none;
+}
+
+.list-item {
+    display: flex;
+    gap: 1rem;
+}

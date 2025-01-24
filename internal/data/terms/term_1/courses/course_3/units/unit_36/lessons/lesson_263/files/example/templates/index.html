@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Library</title>
+</head>
+
+<body>
+    <h1>Library Books</h1>
+    <ul>
+        {% for book in books %}
+        <li>{{ book[1] }} by {{ book[2] }} ({{ book[3] }})</li>
+        <form method="POST" action="{{ url_for('delete_book', book_id=book[0]) }}" style="display:inline;">
+            <button type="submit">Delete</button>
+        </form>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

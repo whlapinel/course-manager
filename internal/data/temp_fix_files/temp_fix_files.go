@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -38,7 +40,11 @@ func main() {
 				for _, lesson := range lessons {
 					err := CopyLessonFiles(data.LessonDirPath(lesson.ID), data.NodeDirPath(term, course, unit, lesson))
 					if err != nil {
-						log.Fatal(err)
+						if os.IsNotExist(err) {
+							log.Println("lesson directory does not exist", lesson.Name)
+						} else {
+							log.Fatal(err)
+						}
 					}
 				}
 			}
