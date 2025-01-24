@@ -98,6 +98,10 @@ func Generate(courseRepo data.CourseRepo) error {
 		}
 		// Generate page for each unit
 		for _, unit := range course.Units {
+			err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.UnitPath(*unit, *course, false))
+			if err != nil {
+				return err
+			}
 			unitPage := sst.NewUnitPage(*unit, *course)
 			err = RenderPage(unitPage)
 			if err != nil {
@@ -113,36 +117,40 @@ func Generate(courseRepo data.CourseRepo) error {
 			}
 			// Generate page for each lesson
 			for _, lesson := range lessons {
-				log.Println("start of loop for:", lesson.Name, "id:", lesson.ID)
-				_, err := os.Stat(data.SlidesMarkdownFilePath(lesson.ID))
-				hasSlides := err == nil
-				log.Println("has slides:", hasSlides)
-				_, err = os.Stat(data.LessonFilesDirPath(lesson.ID))
-				hasFiles := err == nil
-				log.Println("has files:", hasFiles)
-				lessonPage := sst.NewLessonPage(*lesson, *unit, *course, hasSlides, hasFiles)
+				err = data.CopyNodeDir(data.NodeDirPath(currentTerm, course), templates.LessonPath(*lesson, *unit, *course, false))
+				if err != nil {
+					return err
+				}
+				// log.Println("start of loop for:", lesson.Name, "id:", lesson.ID)
+				// _, err := os.Stat(data.SlidesMarkdownFilePath(lesson.ID))
+				// hasSlides := err == nil
+				// log.Println("has slides:", hasSlides)
+				// _, err = os.Stat(data.LessonFilesDirPath(lesson.ID))
+				// hasFiles := err == nil
+				// log.Println("has files:", hasFiles)
+				lessonPage := sst.NewLessonPage(*lesson, *unit, *course, true, true)
 				err = RenderPage(lessonPage)
 				if err != nil {
 					return fmt.Errorf("failed to render pages: %v", err)
 				}
-				if hasSlides {
-					log.Println("generating slides")
-					GenerateSlides(lesson.ID)
-					err = CopySlides(*lesson, *unit, *course)
-					if err != nil {
-						log.Println("failed to copy slides: ", err)
-					}
-				}
-				if hasFiles {
-					err = CopyFiles(*lesson, *unit, *course, courseRepo)
-					if err != nil {
-						log.Println("failed to copy files: ", err)
-					}
-				}
-				err = CopyLessonImage(*lesson, *unit, *course)
-				if err != nil {
-					log.Println("failed to copy image: ", err)
-				}
+				// if hasSlides {
+				// 	log.Println("generating slides")
+				// 	GenerateSlides(lesson.ID)
+				// 	err = CopySlides(*lesson, *unit, *course)
+				// 	if err != nil {
+				// 		log.Println("failed to copy slides: ", err)
+				// 	}
+				// }
+				// if hasFiles {
+				// 	err = CopyFiles(*lesson, *unit, *course, courseRepo)
+				// 	if err != nil {
+				// 		log.Println("failed to copy files: ", err)
+				// 	}
+				// }
+				// err = CopyLessonImage(*lesson, *unit, *course)
+				// if err != nil {
+				// 	log.Println("failed to copy image: ", err)
+				// }
 			}
 		}
 	}
