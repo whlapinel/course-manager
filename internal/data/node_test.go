@@ -19,8 +19,8 @@ func TestNodeDir(t *testing.T) {
 	lesson := domain.Lesson{
 		ID: 1,
 	}
-	unit.Lessons = append(unit.Lessons, &lesson)
-	course.Units = append(course.Units, &unit)
-	term.Courses = append(term.Courses, &course)
+	unit.Lessons = append(unit.Lessons, lesson)
+	course.Units = append(course.Units, unit)
+	term.Courses = append(term.Courses, course)
 	log.Println(NodeDirPath(term, course, unit))
 }

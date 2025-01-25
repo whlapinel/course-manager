@@ -12,6 +12,8 @@ paginate: true
 
 # Warmup Lesson 8.4
 
+# Nice
+
 Glance over lessons 8.1 - 8.3 to refresh your memory on web development
 
 - What is HTML?

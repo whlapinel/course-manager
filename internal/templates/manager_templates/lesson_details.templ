@@ -63,9 +63,45 @@ templ Slides(htmlContent string) {
 // 	/>
 // }
 templ EditSlidesTemplate(params CourseIDParams, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
-	<textarea id={ EditSlidesTextAreaID.String() } name={ EditSlidesTextAreaID.String() } class="bg-slate-900 min-w-full min-h-96 font-mono">
+	// <textarea
+	// 	id={ EditSlidesTextAreaID.String() }
+	// 	name={ EditSlidesTextAreaID.String() }
+	// 	class="bg-slate-900 min-w-full min-h-96 font-mono"
+	// >
+	// 	{ contents }
+	// </textarea>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"/>
+	<style>
+        .CodeMirror {
+            height: auto;
+            /* Adjusts the editor height dynamically */
+        }
+    </style>
+	<!-- CodeMirror Editor -->
+	<textarea
+		id={ "slides-editor-text-area" }
+		name={ "slides-editor-text-area" }
+		class="bg-slate-900 min-w-full min-h-96 font-mono p-2"
+		id="editor"
+	>
 		{ contents }
 	</textarea>
+	<!-- CodeMirror Scripts -->
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js"></script>
+	<script>
+
+		document.addEventListener("DOMContentLoaded", function () {
+			console.log("This runs after the DOM is fully loaded.");
+			// Initialize CodeMirror
+			const editor = CodeMirror.fromTextArea(document.getElementById("slides-editor-text-area"), {
+				lineNumbers: true,   // Display line numbers
+				mode: "markdown",      // Set syntax highlighting mode
+				theme: "default",    // Set theme (default in this example)
+				tabSize: 4           // Number of spaces for a tab
+			});
+		});
+    </script>
 	@ButtonContainer() {
 		@CancelEditButton()
 		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToIntSlice()...) } hx-include={ string(EditSlidesTextAreaID.Selector()) }>

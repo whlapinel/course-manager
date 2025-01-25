@@ -37,9 +37,31 @@ templ CourseManagerLayoutComponent(cml CourseManagerLayout) {
 }
 
 templ PageLayoutComponent(props Page) {
+	@BreadCrumbsComponent(props.BreadCrumbs())
 	@PageHeadingComponent(props.PageLayout().PageTitle)
 	@UpNavComponent(props.PageLayout().UpNav)
 	{ children... }
+}
+
+templ BreadCrumbsComponent(props BreadCrumbs) {
+	<p>
+		if props.Term.ID != 0 {
+			{ props.Term.Name }
+			>
+			if props.Course.ID != 0 {
+				{ props.Course.Name }
+				>
+				if props.Unit.ID != 0 {
+					{ props.Unit.Name }
+					>
+					if props.Lesson.ID != 0 {
+						{ props.Lesson.Name }
+						>
+					}
+				}
+			}
+		}
+	</p>
 }
 
 templ Confirm(msg string) {

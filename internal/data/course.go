@@ -63,7 +63,7 @@ func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 	return &course, nil
 
 }
-func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
+func (cr CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 	dbCourses, err := cr.queries.GetCourses(context.Background(), int64(termID))
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 		return nil, err
 	}
 	term.InstructionalDays = termWithDates.InstructionalDays
-	var courses []*domain.Course
+	var courses []domain.Course
 	for _, dbCourse := range dbCourses {
 		course := domain.Course{
 			ID:          int(dbCourse.CourseID),
@@ -96,7 +96,7 @@ func (cr CourseRepo) GetCourses(termID int) ([]*domain.Course, error) {
 			}
 		}
 		course.Units = units
-		courses = append(courses, &course)
+		courses = append(courses, course)
 
 	}
 	return courses, nil
@@ -121,9 +121,9 @@ func (c CourseRepo) UpdateCourse(instance domain.Course) error {
 func (cr CourseRepo) DeleteCourse(course domain.Course) error {
 	for _, unit := range course.Units {
 		for _, lesson := range unit.Lessons {
-			cr.DeleteLesson(*lesson)
+			cr.DeleteLesson(lesson)
 		}
-		cr.DeleteUnit(*unit)
+		cr.DeleteUnit(unit)
 	}
 	err := cr.deleteCourseDir(course.ID)
 	if err != nil {

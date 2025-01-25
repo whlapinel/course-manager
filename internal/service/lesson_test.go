@@ -25,7 +25,7 @@ func TestExtend(t *testing.T) {
 		t.Error(err)
 	}
 	lesson := courses[0].Units[0].Lessons[0]
-	extended, err := svc.Extend(*lesson, terms[0], domain.Right)
+	extended, err := svc.Extend(lesson, terms[0], domain.Right)
 	if err != nil {
 		t.Error(err)
 	}
@@ -49,7 +49,7 @@ func TestUpdateLesson(t *testing.T) {
 	lesson := courses[0].Units[0].Lessons[0]
 	log.Println(lesson)
 	lesson.Description = "TEST DESCRIPTION"
-	err = svc.UpdateLesson(*lesson)
+	err = svc.UpdateLesson(lesson)
 	if err != nil {
 		t.Error(err)
 	}

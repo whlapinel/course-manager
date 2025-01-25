@@ -143,7 +143,7 @@ func CalendarLessonContainer(sbf ShiftButtonFactory, lesson domain.Lesson, lesso
 }
 
 // CourseManager site
-func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName, shiftLessonRouteHandlerName, listTermCoursesRHN string, e *echo.Echo) templ.Component {
+func CourseCalendarTemplate(page CourseCalendar) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -161,14 +161,18 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = PageLayoutComponent(page).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(listTermCoursesRHN, course.Term.ID))
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(page.E.Reverse(page.ListTermCoursesRHN, page.Course.Term.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 44, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 45, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -181,7 +185,7 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(string(pageElementID.Selector()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 44, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 45, Col: 125}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -191,7 +195,7 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, day := range course.Term.TermMonths() {
+		for _, day := range page.Course.Term.TermMonths() {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-2xl text-center\">Month of ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -199,7 +203,7 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(day.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 49, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 50, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -212,7 +216,7 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(day.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 49, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 50, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -236,7 +240,7 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 						var templ_7745c5c3_Var11 string
 						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(calDate.Format("Mon 1/02/06"))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 56, Col: 40}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 57, Col: 40}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 						if templ_7745c5c3_Err != nil {
@@ -247,12 +251,12 @@ func CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName,
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if course.Term.IsInstructionDay(calDate) {
-						for _, unit := range course.Units {
+					if page.Course.Term.IsInstructionDay(calDate) {
+						for _, unit := range page.Course.Units {
 							for _, lesson := range unit.Lessons {
 								for _, lessonDate := range lesson.Dates {
 									if util.IsSameDate(lessonDate, calDate) {
-										templ_7745c5c3_Err = CalendarLessonContainer(NewShiftButtonFactory(course, shiftLessonRouteHandlerName, e), *lesson, lessonDetailsRouteHandlerName).Render(ctx, templ_7745c5c3_Buffer)
+										templ_7745c5c3_Err = CalendarLessonContainer(NewShiftButtonFactory(page.Course, page.ShiftLessonRouteHandlerName, page.E), lesson, page.LessonDetailsRouteHandlerName).Render(ctx, templ_7745c5c3_Buffer)
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}

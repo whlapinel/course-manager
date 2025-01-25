@@ -25,11 +25,11 @@ func SlidesHTMLFilePath(nodes ...domain.CourseNode) string {
 	return filepath.Join(NodeDirPath(nodes...), "slides.html")
 }
 
-func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
+func (cr CourseRepo) GetLesson(lessonID int) (domain.Lesson, error) {
 	log.Println("CourseRepo: GetLesson: lessonID:", lessonID)
 	dbLesson, err := cr.queries.GetLesson(context.Background(), int64(lessonID))
 	if err != nil {
-		return nil, err
+		return domain.Lesson{}, err
 	}
 	lesson := domain.Lesson{
 		ID:          lessonID,
@@ -38,16 +38,16 @@ func (cr CourseRepo) GetLesson(lessonID int) (*domain.Lesson, error) {
 		Name:        dbLesson.Name.String,
 		Description: dbLesson.Description.String,
 	}
-	return &lesson, nil
+	return lesson, nil
 }
 
-func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
+func (cr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 	dbLessons, err := cr.queries.GetLessons(context.Background(), int64(unitID))
 	if err != nil {
 		log.Fatal("error getting lessons", err)
 		return nil, err
 	}
-	var lessons []*domain.Lesson
+	var lessons []domain.Lesson
 	for _, dbLesson := range dbLessons {
 		lesson := domain.Lesson{
 			ID:          int(dbLesson.ID),
@@ -69,7 +69,7 @@ func (cr CourseRepo) GetLessons(unitID int) ([]*domain.Lesson, error) {
 			lessonDates = append(lessonDates, lessonDate)
 		}
 		lesson.Dates = lessonDates
-		lessons = append(lessons, &lesson)
+		lessons = append(lessons, lesson)
 	}
 	return lessons, nil
 }

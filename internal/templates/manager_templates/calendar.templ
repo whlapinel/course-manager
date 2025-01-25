@@ -40,12 +40,13 @@ templ CalendarLessonContainer(sbf ShiftButtonFactory, lesson domain.Lesson, less
 }
 
 // CourseManager site
-templ CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName, shiftLessonRouteHandlerName, listTermCoursesRHN string, e *echo.Echo) {
-	<button hx-get={ e.Reverse(listTermCoursesRHN, course.Term.ID) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
+templ CourseCalendarTemplate(page CourseCalendar) {
+	@PageLayoutComponent(page)
+	<button hx-get={ page.E.Reverse(page.ListTermCoursesRHN, page.Course.Term.ID) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
 		Back to Term Courses
 	</button>
 	<div id="calendar" class="flex flex-col gap-4">
-		for _, day := range course.Term.TermMonths() {
+		for _, day := range page.Course.Term.TermMonths() {
 			<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
 			<div id="month-container" class="flex flex-col border border-solid">
 				for _, week := range util.GetMonthDates(day) {
@@ -56,12 +57,12 @@ templ CourseCalendarTemplate(course domain.Course, lessonDetailsRouteHandlerName
 									{ calDate.Format("Mon 1/02/06") }
 								}
 								<ul>
-									if course.Term.IsInstructionDay(calDate) {
-										for _, unit := range course.Units {
+									if page.Course.Term.IsInstructionDay(calDate) {
+										for _, unit := range page.Course.Units {
 											for _, lesson := range unit.Lessons {
 												for _, lessonDate := range lesson.Dates {
 													if util.IsSameDate(lessonDate, calDate) {
-														@CalendarLessonContainer(NewShiftButtonFactory(course, shiftLessonRouteHandlerName, e), *lesson, lessonDetailsRouteHandlerName)
+														@CalendarLessonContainer(NewShiftButtonFactory(page.Course, page.ShiftLessonRouteHandlerName, page.E), lesson, page.LessonDetailsRouteHandlerName)
 													}
 												}
 											}

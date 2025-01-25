@@ -46,21 +46,21 @@ func (svc CourseService) CreateNewLessonFileDir(nodes ...domain.CourseNode) erro
 	return nil
 }
 
-func (svc CourseService) GetLesson(lessonID int) (*domain.Lesson, error) {
+func (svc CourseService) GetLesson(lessonID int) (domain.Lesson, error) {
 	lesson, err := svc.repo.GetLesson(lessonID)
 	if err != nil {
-		return nil, fmt.Errorf("CourseService.GetLesson: %d", lessonID)
+		return domain.Lesson{}, fmt.Errorf("CourseService.GetLesson: %d", lessonID)
 	}
 	lessonDates, err := svc.repo.GetLessonDates(lessonID)
 	if err != nil {
-		return nil, err
+		return domain.Lesson{}, err
 	}
 	lesson.Dates = lessonDates
 	return lesson, nil
 
 }
 
-func (svc CourseService) GetLessons(unitID int) ([]*domain.Lesson, error) {
+func (svc CourseService) GetLessons(unitID int) ([]domain.Lesson, error) {
 	lessons, err := svc.repo.GetLessons(unitID)
 	if err != nil {
 		return nil, err

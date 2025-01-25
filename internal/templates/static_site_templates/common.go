@@ -54,7 +54,7 @@ func NewContactPage() Page {
 	}
 }
 
-func NewCoursesListPage(instances []*domain.Course) Page {
+func NewCoursesListPage(instances []domain.Course) Page {
 	return Page{
 		Title:     "Courses",
 		Path:      filepath.Join(templates.StaticSiteCoursesDir, "courses.html"),

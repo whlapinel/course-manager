@@ -81,18 +81,18 @@ func Generate(courseRepo data.CourseRepo) error {
 			return fmt.Errorf("main(): instance.Term.Start is zero")
 		}
 		// Generate calendar page for each course
-		calendarPage := sst.NewCourseCalendarPage(*course)
+		calendarPage := sst.NewCourseCalendarPage(course)
 		err = RenderPage(calendarPage)
 		if err != nil {
 			return fmt.Errorf("failed to render pages: %v", err)
 		}
-		coursePage := sst.NewCoursePage(*course)
+		coursePage := sst.NewCoursePage(course)
 		err = RenderPage(coursePage)
 		if err != nil {
 			return fmt.Errorf("failed to render pages: %v", err)
 		}
 		for _, unit := range course.Units {
-			unitPage := sst.NewUnitPage(*unit, *course)
+			unitPage := sst.NewUnitPage(unit, course)
 			err = RenderPage(unitPage)
 			if err != nil {
 				return fmt.Errorf("failed to render pages: %v", err)
@@ -103,7 +103,7 @@ func Generate(courseRepo data.CourseRepo) error {
 			}
 			// Generate page for each lesson
 			for _, lesson := range lessons {
-				lessonPage := sst.NewLessonPage(*lesson, *unit, *course, true, true)
+				lessonPage := sst.NewLessonPage(lesson, unit, course, true, true)
 				err = RenderPage(lessonPage)
 				if err != nil {
 					return fmt.Errorf("failed to render pages: %v", err)

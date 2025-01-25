@@ -42,7 +42,7 @@ templ CourseCalendarComponent(course domain.Course) {
 															for _, lessonDate := range lesson.Dates {
 																if util.IsSameDate(lessonDate, calDate) {
 																	<li>
-																		@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(*lesson, *unit, course, true)), false) {
+																		@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, course, true)), false) {
 																			<p>{ lesson.Name } </p>
 																		}
 																	</li>

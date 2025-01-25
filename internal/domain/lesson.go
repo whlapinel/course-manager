@@ -18,6 +18,7 @@ func NewLesson(params NewLessonParams) Lesson {
 		Number:      params.Number,
 		UnitNum:     params.UnitNum,
 		Dates:       params.Dates,
+		Standards:   params.Standards,
 	}
 }
 
@@ -29,6 +30,7 @@ type Lesson struct {
 	Name        string
 	Description string
 	Dates       []time.Time
+	Standards   []Standard
 	Image       Image
 }
 
@@ -164,4 +166,9 @@ func (l Lesson) SortDates() Lesson {
 		return -1
 	})
 	return l
+}
+
+// returns designation e.g. Lesson 1.2
+func (l Lesson) Designation(unitNum int) string {
+	return fmt.Sprintf("Lesson %d.%d", unitNum, l.Number)
 }

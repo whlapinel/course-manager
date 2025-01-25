@@ -15,3 +15,7 @@ func (page HomePage) PageLayout() PageLayout {
 func (page HomePage) Component() templ.Component {
 	return HomePageComponent(page)
 }
+
+func (page HomePage) BreadCrumbs() BreadCrumbs {
+	return BreadCrumbs{}
+}

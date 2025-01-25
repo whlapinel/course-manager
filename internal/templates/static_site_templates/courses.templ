@@ -87,12 +87,12 @@ templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool) {
 }
 
 // Student-facing site
-templ CoursesListComponent(instances []*domain.Course) {
+templ CoursesListComponent(instances []domain.Course) {
 	@Layout(NewCoursesListPage(nil)) {
 		@CourseDivContainer(domain.Course{}, "", "") {
 			@CourseUnorderedList() {
 				for _, instance := range instances {
-					@ListedLinkItem(templates.CoursePath(*instance, true), false) {
+					@ListedLinkItem(templates.CoursePath(instance, true), false) {
 						<p>{ instance.Name }</p>
 					}
 				}
@@ -108,7 +108,7 @@ templ CourseComponent(instance domain.Course) {
 		@CourseDivContainer(instance, templates.StaticSiteCoursesDir+"courses.html", "Course List") {
 			@CourseUnorderedList() {
 				for _, unit := range instance.Units {
-					@ListedLinkItem(templates.UnitPath(*unit, instance, true), false) {
+					@ListedLinkItem(templates.UnitPath(unit, instance, true), false) {
 						if unit.Number < 0 {
 							{ unit.Description }
 						} else {
@@ -128,7 +128,7 @@ templ UnitComponent(unit domain.Unit, course domain.Course) {
 		@CourseDivContainer(course, templates.CoursePath(course, true), course.Name) {
 			@CourseUnorderedList() {
 				for _, lesson := range unit.Lessons {
-					@ListedLinkItem(templates.LessonPath(*lesson, unit, course, true), false) {
+					@ListedLinkItem(templates.LessonPath(lesson, unit, course, true), false) {
 						if unit.Number < 0 {
 							<strong>Day { strconv.Itoa(lesson.Number) }:</strong> { lesson.Description }
 						} else {

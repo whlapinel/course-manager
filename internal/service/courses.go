@@ -29,24 +29,24 @@ func (svc CourseService) SaveCourse(params SaveCourseParams) (domain.Course, err
 	course.ID = id
 	return course, nil
 }
-func (svc CourseService) GetCourseForCalendar(courseID int) (*domain.Course, error) {
+func (svc CourseService) GetCourseForCalendar(courseID int) (domain.Course, error) {
 	course, err := svc.repo.GetCourse(courseID)
 	if err != nil {
-		return nil, err
+		return domain.Course{}, err
 	}
 	units, err := svc.repo.GetUnits(courseID)
 	if err != nil {
-		return nil, err
+		return domain.Course{}, err
 	}
 	for i, unit := range units {
 		lessons, err := svc.repo.GetLessons(unit.ID)
 		if err != nil {
-			return nil, err
+			return domain.Course{}, err
 		}
 		units[i].Lessons = lessons
 	}
 	course.Units = units
-	return course, nil
+	return domain.Course{}, nil
 }
 
 func (svc CourseService) GetCourse(courseID int) (*domain.Course, error) {
@@ -130,7 +130,7 @@ func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Cou
 	for _, oldUnit := range oldCourse.Units {
 		oldUnit.CourseID = newCourse.ID
 		newUnit, err := svc.SaveUnit(SaveUnitParams{
-			Unit: *oldUnit,
+			Unit: oldUnit,
 		})
 		if err != nil {
 			return nil, err
@@ -145,7 +145,7 @@ func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Cou
 		for _, oldLesson := range oldUnit.Lessons {
 			oldLesson.UnitID = newUnit.ID
 			newLesson, err := svc.SaveLesson(SaveLessonParams{
-				Lesson: *oldLesson,
+				Lesson: oldLesson,
 			})
 			if err != nil {
 				return nil, err

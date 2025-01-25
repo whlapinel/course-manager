@@ -23,14 +23,14 @@ type Course struct {
 	ID          int
 	Name        string
 	Description string
-	Units       []*Unit
+	Units       []Unit
 	Image       Image
 	Term
 }
 
 type CourseType int
 
-type Courses []*Course
+type Courses []Course
 
 // takes a course and fits all lessons to dates in order, one lesson per day
 func (c Course) FitToTerm(term Term) Course {
@@ -89,5 +89,9 @@ func (c Course) ChildTypeName() string {
 }
 
 func (c *Course) AddUnit(unit Unit) {
-	c.Units = append(c.Units, &unit)
+	c.Units = append(c.Units, unit)
+}
+
+func (c Course) Designation(parentNum int) string {
+	return ""
 }

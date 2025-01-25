@@ -2,11 +2,11 @@ version: "2"
 sql:
   - engine: "sqlite"
     queries:
+      - "internal/data/database/terms.sql"
       - "internal/data/database/courses.sql"
       - "internal/data/database/units.sql"
       - "internal/data/database/lessons.sql"
       - "internal/data/database/dates.sql"
-      - "internal/data/database/terms.sql"
 
     schema: "internal/data/database/migrations/schema"
     gen:

@@ -3,6 +3,8 @@
 
 ## Pending (keep in priority order)
 
+- From lesson details page: next lesson or previous lesson (nice to have)
+
 - 1/23/25 In calendar, user can add and remove lessons from a date
   - Add: new screen to select lesson from course
   - Remove: remove date from lesson dates

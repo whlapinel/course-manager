@@ -3,80 +3,12 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	tpl "gh_static_portfolio/internal/templates"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
+
+	tpl "gh_static_portfolio/internal/templates"
 )
-
-type Page interface {
-	ComponentData
-	PageLayout() PageLayout
-}
-
-type NodeCreatePage struct {
-	ParentNode        domain.CourseNode
-	NodeType          domain.NodeTypeName
-	Params            CourseIDParams
-	PostCreateNodeURL string
-	CancelURL         string
-}
-
-func (page NodeCreatePage) Component() templ.Component {
-	return NodeCreateComponent(page)
-}
-
-func (page NodeCreatePage) PageLayout() PageLayout {
-	return PageLayout{
-		PageTitle: fmt.Sprintf("New %s for %s", page.NodeType.String(), page.ParentNode.GetName()),
-		UpNav: UpNav{
-			URL:  page.CancelURL,
-			Text: "Cancel",
-		},
-	}
-}
-
-func NodeCreateFormID(nodeType domain.NodeTypeName) string {
-	return tpl.KebabCase(nodeType.String()) + "-form"
-}
-
-type NodeDetailsPage struct {
-	Params          CourseIDParams
-	Node            domain.CourseNode
-	GetEditNodeURL  string
-	PostEditNodeURL string
-	UpNavURL        string
-	IsEdit          bool
-	NodeImageURL    func() string
-}
-
-func (page NodeDetailsPage) Component() templ.Component {
-	return NodeDetailsComponent(page)
-}
-
-func (page NodeDetailsPage) PageLayout() PageLayout {
-	return PageLayout{
-		PageTitle: page.PageTitle(),
-		UpNav: UpNav{
-			URL:  page.UpNavURL,
-			Text: page.upNavText(),
-		},
-	}
-}
-
-func (page NodeDetailsPage) PageTitle() string {
-	return fmt.Sprintf("%s Details: %s", page.Node.TypeName(), page.Node.GetName())
-
-}
-
-func (page NodeDetailsPage) upNavText() string {
-	parentPageText := page.Node.TypeName()
-	if page.Node.ParentTypeName() == string(domain.RootTypeName) {
-		parentPageText = "Home"
-		return fmt.Sprintf("Up to %s", parentPageText)
-	}
-	return fmt.Sprintf("Up to %ss", parentPageText)
-}
 
 type NodeListPage struct {
 	Params           CourseIDParams
@@ -89,10 +21,15 @@ type NodeListPage struct {
 	DeleteChildRHN   string
 	UpNavURL         string
 	E                *echo.Echo // for generating URLs from route handler name
+	BreadCrumbsData  BreadCrumbs
 }
 
 type NodeDeleteButton struct {
 	DeleteChildRHN string
+}
+
+func (page NodeListPage) BreadCrumbs() BreadCrumbs {
+	return page.BreadCrumbsData
 }
 
 func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
@@ -139,16 +76,6 @@ func (page NodeListPage) Component() templ.Component {
 	return NodeListComponent(page)
 }
 
-type UpNav struct {
-	URL  string
-	Text string
-}
-
-type PageLayout struct {
-	PageTitle string
-	UpNav     UpNav
-}
-
 func (list NodeListPage) PageLayout() PageLayout {
 	return PageLayout{
 		PageTitle: list.PageTitle(),
@@ -179,3 +106,4 @@ func (list NodeListPage) PageTitle() string {
 func (list NodeListPage) ListItemElementID(node domain.CourseNode) ElementID {
 	return ElementID(fmt.Sprintf("%s-%d", tpl.KebabCase(node.TypeName()), node.GetID()))
 }
+

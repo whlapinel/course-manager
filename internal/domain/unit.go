@@ -1,5 +1,7 @@
 package domain
 
+import "fmt"
+
 type NewUnitParams struct {
 	Unit
 }
@@ -61,10 +63,14 @@ type Unit struct {
 	SequenceNum int
 	Name        string
 	Description string
-	Lessons     []*Lesson
+	Lessons     []Lesson
 	Image       Image
 }
 
-func (u *Unit) AddLesson(lesson *Lesson) {
+func (u Unit) AddLesson(lesson Lesson) {
 	u.Lessons = append(u.Lessons, lesson)
+}
+
+func (u Unit) Designation(_ int) string {
+	return fmt.Sprintf("Unit %d", u.Number)
 }

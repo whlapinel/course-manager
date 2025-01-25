@@ -57,10 +57,10 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (domain.Unit, error) {
 
 }
 
-func (cr CourseRepo) GetUnit(unitID int) (*domain.Unit, error) {
+func (cr CourseRepo) GetUnit(unitID int) (domain.Unit, error) {
 	dbUnit, err := cr.queries.GetUnit(context.Background(), int64(unitID))
 	if err != nil {
-		return nil, err
+		return domain.Unit{}, err
 	}
 	unit := domain.Unit{
 		ID:          int(dbUnit.ID),
@@ -70,10 +70,10 @@ func (cr CourseRepo) GetUnit(unitID int) (*domain.Unit, error) {
 		Name:        dbUnit.Name,
 		Description: dbUnit.Description.String,
 	}
-	return &unit, nil
+	return unit, nil
 }
-func (cr CourseRepo) GetUnits(courseID int) ([]*domain.Unit, error) {
-	var units []*domain.Unit
+func (cr CourseRepo) GetUnits(courseID int) ([]domain.Unit, error) {
+	var units []domain.Unit
 	dbUnits, err := cr.queries.GetUnits(context.Background(), int64(courseID))
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (cr CourseRepo) GetUnits(courseID int) ([]*domain.Unit, error) {
 			Name:        dbUnit.Name,
 			Description: dbUnit.Description.String,
 		}
-		units = append(units, &unit)
+		units = append(units, unit)
 	}
 	return units, nil
 }

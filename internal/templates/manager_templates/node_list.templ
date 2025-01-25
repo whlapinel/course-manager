@@ -1,0 +1,33 @@
+package managertemplates
+
+import "gh_static_portfolio/internal/domain"
+
+templ NodeListComponent(props NodeListPage) {
+	@PageLayoutComponent(props) {
+		for i, node := range props.Children {
+			if node == nil {
+				<p>Node is nil!</p>
+			} else {
+				<ul>
+					<li
+						id={ props.ListItemElementID(node).String() }
+					>
+						@props.DeleteNodeButton(node)
+						if node.ChildTypeName() != "" {
+							@props.NodeChildrenButton(node)
+						}
+						@props.NodeDetailsButton(node)
+						if props.ChildUI != nil && props.ChildUI[i] != nil {
+							@props.ChildUI[i].Component()
+						}
+						if domain.NodeDesignation(node, props.ParentNode) != "" {
+							<span>{ domain.NodeDesignation(node, props.ParentNode) }</span>
+						}
+						<span>{ node.GetName() }</span>
+					</li>
+				</ul>
+			}
+		}
+		@props.NodeCreateButton()
+	}
+}

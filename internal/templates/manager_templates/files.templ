@@ -3,6 +3,8 @@ package managertemplates
 import "path/filepath"
 
 templ FilesComponent(page FilesPage) {
+	@BreadCrumbsComponent(page.BreadCrumbsData)
+	@PageLayoutComponent(page)
 	<div class="grid grid-cols-2">
 		<form hx-post={ page.E.Reverse(page.UploadFileRHN, append(page.Params.ToIntSlice(), filepath.Join(page.CurrentPath))) } enctype="multipart/form-data">
 			<label for="file">Choose a file:</label>

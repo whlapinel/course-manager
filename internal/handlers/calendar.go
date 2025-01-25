@@ -13,14 +13,14 @@ const (
 	ShiftLessonRouteName RouteName = Lesson + RouteName(ShiftDirection)
 )
 const (
-	ShowCourseCalendar          = RouteHandlerName(GET + Calendar)
-	ShiftLessonRouteHandlerName = RouteHandlerName(POST + ShiftLessonRouteName)
+	ShowCourseCalendar = RouteHandlerName(GET + Calendar)
+	ShiftLessonRHN     = RouteHandlerName(POST + ShiftLessonRouteName)
 )
 
 func (h CourseHandler) CalendarHandlers() []RouteHandler {
 	return []RouteHandler{
 		{Calendar, ShowCourseCalendar, GET, h.ShowCourseCalendar},
-		{ShiftLessonRouteName, ShiftLessonRouteHandlerName, POST, h.ShiftLesson},
+		{ShiftLessonRouteName, ShiftLessonRHN, POST, h.ShiftLesson},
 	}
 }
 
@@ -35,7 +35,14 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
+	calendarData := mt.CourseCalendar{
+		Course:                        course,
+		LessonDetailsRouteHandlerName: LessonDetails.String(),
+		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),
+		ListTermCoursesRHN:            string(ListTermCourses),
+		E:                             h.e,
+	}
+	template := mt.CourseCalendarTemplate(calendarData)
 	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }
@@ -72,7 +79,14 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	template := mt.CourseCalendarTemplate(*course, string(LessonDetails), string(ShiftLessonRouteHandlerName), ListTermCourses.String(), h.e)
+	calendarData := mt.CourseCalendar{
+		Course:                        course,
+		LessonDetailsRouteHandlerName: LessonDetails.String(),
+		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),
+		ListTermCoursesRHN:            string(ListTermCourses),
+		E:                             h.e,
+	}
+	template := mt.CourseCalendarTemplate(calendarData)
 	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", template, layout)
 }

@@ -71,6 +71,10 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		CreateChildRHN:   ShowNewUnit.String(),
 		UpNavURL:         h.e.Reverse(ListTermCourses.String(), termID),
 		E:                h.e,
+		BreadCrumbsData: mt.BreadCrumbs{
+			Term:   course.Term,
+			Course: *course,
+		},
 	}
 	// old begins here
 	// template := mt.UnitsListTemplate(termID, courseID, ListTermCourses.String(), ShowNewUnit.String(), units, ListUnitLessons.String(), UnitDetails.String(), h.e)
@@ -81,17 +85,30 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 
 func (h CourseHandler) UnitDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
 	unit, err := h.svc.GetUnit(params.UnitID.Value)
 	if err != nil {
 		return err
 	}
 	unitDetails := mt.NodeDetailsPage{
 		Params:          params,
-		Node:            *unit,
+		Node:            unit,
 		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
+		BreadCrumbsData: mt.BreadCrumbs{
+			Term:   term,
+			Course: *course,
+			Unit:   unit,
+		},
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
 	layout := h.CourseManagerLayout(template)
@@ -115,6 +132,14 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
 	unit, err := h.svc.GetUnit(unitID)
 	if err != nil {
 		log.Println(err)
@@ -126,11 +151,16 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 	}
 	details := mt.NodeDetailsPage{
 		Params:          params,
-		Node:            *unit,
+		Node:            unit,
 		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
+		BreadCrumbsData: mt.BreadCrumbs{
+			Term:   term,
+			Course: *course,
+			Unit:   unit,
+		},
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)
@@ -151,6 +181,14 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return err
+	}
 	unit, err := h.svc.GetUnit(unitID)
 	if err != nil {
 		return err
@@ -161,7 +199,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 	}
 	form := c.Request().Form
 	var updateUnit = func() error {
-		err := h.svc.UpdateUnit(*unit)
+		err := h.svc.UpdateUnit(unit)
 		if err != nil {
 			return err
 		}
@@ -169,7 +207,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		*unit = *updatedUnit
+		unit = updatedUnit
 		return nil
 	}
 	var pageData = func(unit domain.Unit) mt.NodeDetailsPage {
@@ -179,6 +217,11 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 			IsEdit:          false,
+			BreadCrumbsData: mt.BreadCrumbs{
+				Term:   term,
+				Course: *course,
+				Unit:   unit,
+			},
 		}
 	}
 	var template templ.Component
@@ -191,7 +234,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			if err != nil {
 				return err
 			}
-			details := pageData(*unit)
+			details := pageData(unit)
 			template = mt.EditDescriptionComponent(details)
 		case "name":
 			unit.Name = val[0]
@@ -199,7 +242,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			if err != nil {
 				return err
 			}
-			details := pageData(*unit)
+			details := pageData(unit)
 			template = mt.EditNameComponent(details)
 		default:
 			log.Println("form key:", key)
