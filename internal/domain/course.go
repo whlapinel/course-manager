@@ -18,12 +18,12 @@ func NewCourse(params NewCourseParams) Course {
 	}
 }
 
-// Courses I teach. this is the OOP version of CourseInstance. Bad wording I know.
 type Course struct {
 	ID          int
 	Name        string
 	Description string
 	Units       []Unit
+	Standards   []Standard
 	Image       Image
 	Term
 }

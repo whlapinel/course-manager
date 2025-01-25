@@ -1,8 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
-ALTER TABLE standards ADD COLUMN description TEXT; 
+ALTER TABLE lesson_standards RENAME COLUMN obj_id TO std_id;
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
+SELECT 'down SQL query';
 -- +goose StatementEnd

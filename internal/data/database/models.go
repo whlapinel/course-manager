@@ -34,24 +34,24 @@ type LessonDate struct {
 	DateID   int64
 }
 
-type LessonObjective struct {
+type LessonStandard struct {
 	ID       int64
-	ObjID    int64
+	StdID    int64
 	LessonID int64
 }
 
-type Objective struct {
-	ID     int64
-	StdID  int64
-	Number int64
-	Name   string
+type Standard struct {
+	ID          int64
+	Number      int64
+	Name        string
+	Description sql.NullString
+	SetID       int64
+	ParentID    sql.NullInt64
 }
 
-type Standard struct {
-	ID       int64
-	CourseID int64
-	Number   int64
-	Name     string
+type StandardSet struct {
+	ID         int64
+	CourseName string
 }
 
 type Term struct {
@@ -69,10 +69,4 @@ type Unit struct {
 	Sequence    int64
 	Name        string
 	Description sql.NullString
-}
-
-type UnitStandard struct {
-	ID         int64
-	CourseID   int64
-	StandardID int64
 }
