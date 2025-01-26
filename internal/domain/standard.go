@@ -5,8 +5,10 @@ import "fmt"
 type StandardSet struct {
 	ID         int
 	CourseName string
+	Standards  []Standard
 }
 type Standard struct {
+	ID          int
 	StdSet      StandardSet // all standards should be associated with a set id
 	ParentID    int         // negative if no parent
 	Number      int         // number should not include parent number

@@ -1,8 +1,10 @@
 package data
 
 import (
+	"context"
+	"database/sql"
 	"encoding/csv"
-	"fmt"
+	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
 	"os"
 	"strconv"
@@ -26,10 +28,32 @@ const (
 	Python2 = "Python Programming II Honors"
 )
 
-func (cr CourseRepo) ImportStandards(filename string, courseName string, setID int) ([]domain.Standard, error) {
-	if courseName != Python1 && courseName != Python2 {
-		return nil, fmt.Errorf("courseName does not match list")
+func (cr CourseRepo) SaveStandard(std domain.Standard) (domain.Standard, error) {
+	dbStandard, err := cr.queries.SaveStandard(context.Background(), database.SaveStandardParams{
+		ParentID: sql.NullInt64{
+			Valid: std.ParentID != 0,
+			Int64: int64(std.ParentID),
+		},
+		SetID:  int64(std.StdSet.ID),
+		Number: int64(std.Number),
+		Name:   std.Name,
+		Description: sql.NullString{
+			Valid:  std.Description != "",
+			String: std.Description,
+		},
+	})
+	if err != nil {
+		return domain.Standard{}, err
 	}
+	std.ID = int(dbStandard.ID)
+	return std, nil
+}
+func (cr CourseRepo) ImportStandards(filename string, setID int) ([]domain.Standard, error) {
+	set, err := cr.queries.GetStdSetByID(context.Background(), int64(setID))
+	if err != nil {
+		return nil, err
+	}
+	courseName := set.CourseName
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -63,4 +87,8 @@ func (cr CourseRepo) ImportStandards(filename string, courseName string, setID i
 		}
 	}
 	return standards, nil
+}
+
+func (cr CourseRepo) ImportObjectives(filename string, stdID int) ([]domain.Standard, error) {
+	return nil, nil
 }

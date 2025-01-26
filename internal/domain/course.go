@@ -23,7 +23,7 @@ type Course struct {
 	Name        string
 	Description string
 	Units       []Unit
-	Standards   []Standard
+	StandardSet StandardSet
 	Image       Image
 	Term
 }
