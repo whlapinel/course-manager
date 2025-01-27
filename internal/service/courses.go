@@ -46,10 +46,10 @@ func (svc CourseService) GetCourseForCalendar(courseID int) (domain.Course, erro
 		units[i].Lessons = lessons
 	}
 	course.Units = units
-	return domain.Course{}, nil
+	return course, nil
 }
 
-func (svc CourseService) GetCourse(courseID int) (*domain.Course, error) {
+func (svc CourseService) GetCourse(courseID int) (domain.Course, error) {
 	return svc.repo.GetCourse(courseID)
 }
 func (svc CourseService) GetCourses(termID int) (domain.Courses, error) {
@@ -77,7 +77,7 @@ func (svc CourseService) DeleteCourse(courseID int) error {
 		unit.Lessons = append(unit.Lessons, lessons...)
 	}
 	course.Units = append(course.Units, units...)
-	return svc.repo.DeleteCourse(*course)
+	return svc.repo.DeleteCourse(course)
 }
 
 func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Course, error) {
@@ -102,6 +102,9 @@ func (svc CourseService) CopyCourseToTerm(courseID int, termID int) (*domain.Cou
 		oldCourse.Units = append(oldCourse.Units, unit)
 	}
 	oldTerm, err := svc.GetTerm(oldCourse.Term.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	// get newTerm
 	newTerm, err := svc.GetTerm(termID)

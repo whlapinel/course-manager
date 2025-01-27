@@ -7,7 +7,14 @@ INSERT INTO standards (
 RETURNING *;
 
 -- name: GetCourseStandards :many
-SELECT * FROM standards WHERE set_id = ?;
+SELECT * FROM standards WHERE set_id = ? AND parent_id IS NULL;
+
+-- name: GetAllObjectives :many
+SELECT * FROM standards WHERE set_id = ? AND parent_id IS NOT NULL;
+
+-- name: GetStandardObjectives :many
+SELECT * FROM standards WHERE parent_id = ?;
+
 
 -- name: GetLessonStandards :many
 SELECT * FROM standards s

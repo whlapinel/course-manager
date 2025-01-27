@@ -101,7 +101,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		E:               h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 		},
 	}
@@ -139,7 +139,7 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 		IsEdit:          false,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 			Lesson: lesson,
 		},
@@ -153,7 +153,7 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 		NodeDetailsPage: nodeDetails,
 		GetSlidesURL:    h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:   h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
-		GithubFilesURL:  string(templates.LessonFilesURL(lesson, unit, *course)),
+		GithubFilesURL:  string(templates.LessonFilesURL(lesson, unit, course)),
 		ServerFilesURL:  h.e.Reverse(ShowLessonFiles.String(), withPath...),
 	}
 	template := mt.LessonDetailsComponent(lessonDetails)
@@ -200,7 +200,7 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 			Lesson: lesson,
 		},
@@ -269,7 +269,7 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:   term,
-				Course: *course,
+				Course: course,
 				Unit:   unit,
 				Lesson: lesson,
 			},
@@ -356,6 +356,10 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	err = h.svc.CreateNodeFilesDir(term, course, unit, lesson)
+	if err != nil {
+		return err
+	}
 	isDir, err := h.svc.IsDir(path, term, course, unit, lesson)
 	if err != nil {
 		return err
@@ -380,7 +384,7 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 		E:           h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 			Lesson: lesson,
 		},

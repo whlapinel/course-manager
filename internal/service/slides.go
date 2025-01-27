@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 )
 
-type fetchLesson func(int) (*domain.Lesson, error)
-
 // This check to see if the file already exists. if not, should create a new markdown file, write the template to it,
 // and generate the html file. Returns the file path
 func (svc CourseService) CreateSlidesIfNotExist(nodes ...domain.CourseNode) (string, error) {

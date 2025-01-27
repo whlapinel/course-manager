@@ -13,6 +13,7 @@ type Course struct {
 	TermID      int64
 	Name        string
 	Description sql.NullString
+	StdSetID    sql.NullInt64
 }
 
 type Date struct {

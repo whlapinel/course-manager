@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -36,6 +37,7 @@ func (svc CourseService) LessonFiles(path string, nodes ...domain.CourseNode) ([
 	}
 	entries, err := os.ReadDir(path)
 	if err != nil {
+		log.Println("error in CourseService.LessonFiles(): ReadDir", path)
 		return nil, err
 	}
 	var items []mt.FilesPageItem
@@ -48,6 +50,15 @@ func (svc CourseService) LessonFiles(path string, nodes ...domain.CourseNode) ([
 		items = append(items, item)
 	}
 	return items, nil
+}
+
+func (svc CourseService) CreateNodeFilesDir(nodes ...domain.CourseNode) error {
+	root := data.NodeFilesDirPath(nodes...)
+	err := os.MkdirAll(root, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 // func (svc CourseService) PostLessonFile(lessonID int, path string)

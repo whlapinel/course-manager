@@ -31,16 +31,20 @@ func (c CourseRepo) SaveCourse(course domain.Course) (id int, err error) {
 			String: course.Description,
 			Valid:  course.Description != "",
 		},
+		StdSetID: sql.NullInt64{
+			Valid: course.StandardSet.ID != 0,
+			Int64: int64(course.StandardSet.ID),
+		},
 	})
 	if err != nil {
 		return 0, fmt.Errorf("courseRepo.SaveCourse(): %s", err)
 	}
 	return int(savedCourse.ID), nil
 }
-func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
+func (cr CourseRepo) GetCourse(courseID int) (domain.Course, error) {
 	dbCourse, err := cr.queries.GetCourseByCourseID(context.Background(), int64(courseID))
 	if err != nil {
-		return nil, err
+		return domain.Course{}, err
 	}
 	course := domain.Course{
 		ID:          int(dbCourse.ID),
@@ -49,22 +53,32 @@ func (cr CourseRepo) GetCourse(courseID int) (*domain.Course, error) {
 		Term: domain.Term{
 			ID: int(dbCourse.TermID),
 		},
+		StandardSet: domain.StandardSet{
+			ID: int(dbCourse.StdSetID.Int64),
+		},
 	}
 	term, err := cr.GetTermByID(course.Term.ID)
 	if err != nil {
-		return nil, err
+		return domain.Course{}, err
 	}
 	termWithDates, err := cr.GetTermWithDates(term.ID)
 	if err != nil {
-		return nil, err
+		return domain.Course{}, err
 	}
 	term.InstructionalDays = termWithDates.InstructionalDays
 	course.Term = term
-	return &course, nil
+	if course.StandardSet.ID != 0 {
+		standardSet, err := cr.GetStandardSetByID(course.StandardSet.ID)
+		if err != nil {
+			return domain.Course{}, err
+		}
+		course.StandardSet = standardSet
+	}
+	return course, nil
 
 }
 func (cr CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
-	dbCourses, err := cr.queries.GetCourses(context.Background(), int64(termID))
+	dbCourses, err := cr.queries.GetCoursesByTermID(context.Background(), int64(termID))
 	if err != nil {
 		return nil, err
 	}
@@ -80,9 +94,9 @@ func (cr CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 	var courses []domain.Course
 	for _, dbCourse := range dbCourses {
 		course := domain.Course{
-			ID:          int(dbCourse.CourseID),
-			Name:        dbCourse.CourseName,
-			Description: dbCourse.CourseDescr.String,
+			ID:          int(dbCourse.ID),
+			Name:        dbCourse.Name,
+			Description: dbCourse.Description.String,
 			Term:        term,
 		}
 		units, err := cr.GetUnits(course.ID)
@@ -102,13 +116,17 @@ func (cr CourseRepo) GetCourses(termID int) ([]domain.Course, error) {
 	return courses, nil
 }
 
-func (c CourseRepo) UpdateCourse(instance domain.Course) error {
+func (c CourseRepo) UpdateCourse(course domain.Course) error {
 	err := c.queries.UpdateCourse(context.Background(), database.UpdateCourseParams{
-		ID:   int64(instance.ID),
-		Name: instance.Name,
+		ID:   int64(course.ID),
+		Name: course.Name,
 		Description: sql.NullString{
-			Valid:  instance.Description != "",
-			String: instance.Description,
+			Valid:  course.Description != "",
+			String: course.Description,
+		},
+		StdSetID: sql.NullInt64{
+			Valid: course.StandardSet.ID != 0,
+			Int64: int64(course.StandardSet.ID),
 		},
 	})
 	if err != nil {

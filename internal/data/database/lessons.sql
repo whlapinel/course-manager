@@ -72,3 +72,14 @@ WHERE lesson_id = ? AND date_id = ?;
 -- name: DeleteAllLessonDates :exec
 DELETE FROM lesson_dates
 WHERE lesson_id = ?;
+
+-- name: SaveLessonStandard :exec
+INSERT INTO lesson_standards (
+  std_id, lesson_id
+) VALUES (
+  ?, ?
+);
+
+-- name: DeleteLessonStandard :exec
+DELETE FROM lesson_standards 
+WHERE std_id = ? AND lesson_id = ?;

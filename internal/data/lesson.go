@@ -201,6 +201,11 @@ func (c CourseRepo) SaveLesson(lesson domain.Lesson) (*domain.Lesson, error) {
 			return nil, err
 		}
 	}
+	if len(lesson.Standards) != 0 {
+		for _, standard := range lesson.Standards {
+			c.SaveLessonStandard(lesson, standard)
+		}
+	}
 	return &lesson, nil
 
 }
@@ -280,5 +285,20 @@ func (cr CourseRepo) deleteLessonDir(nodes ...domain.CourseNode) error {
 		return err
 	}
 	return nil
+
+}
+
+func (cr CourseRepo) SaveLessonStandard(lesson domain.Lesson, standard domain.Standard) error {
+	return cr.queries.SaveLessonStandard(context.Background(), database.SaveLessonStandardParams{
+		StdID:    int64(standard.ID),
+		LessonID: int64(lesson.ID),
+	})
+}
+
+func (cr CourseRepo) DeleteLessonStandard(lesson domain.Lesson, standard domain.Standard) error {
+	return cr.queries.DeleteLessonStandard(context.Background(), database.DeleteLessonStandardParams{
+		StdID:    int64(standard.ID),
+		LessonID: int64(lesson.ID),
+	})
 
 }

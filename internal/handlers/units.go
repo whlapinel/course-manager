@@ -73,7 +73,7 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		E:                h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   course.Term,
-			Course: *course,
+			Course: course,
 		},
 	}
 	// old begins here
@@ -106,7 +106,7 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		IsEdit:          false,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 		},
 	}
@@ -158,7 +158,7 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   term,
-			Course: *course,
+			Course: course,
 			Unit:   unit,
 		},
 	}
@@ -219,7 +219,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:   term,
-				Course: *course,
+				Course: course,
 				Unit:   unit,
 			},
 		}

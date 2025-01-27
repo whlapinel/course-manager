@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
+	"log"
 	"os"
 	"strconv"
 )
@@ -23,10 +24,48 @@ const (
 	ObjCourse
 )
 
-const (
-	Python1 = "Python Programming I Honors"
-	Python2 = "Python Programming II Honors"
-)
+func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.StandardSet) ([]domain.Standard, error) {
+	dbObjectives, err := cr.queries.GetStandardObjectives(context.Background(), sql.NullInt64{
+		Valid: standard.ID != 0,
+		Int64: int64(standard.ID),
+	})
+	if err != nil {
+		return nil, err
+	}
+	var objectives []domain.Standard
+	for _, dbObjective := range dbObjectives {
+		objective := domain.Standard{
+			ID:          int(dbObjective.ID),
+			StdSet:      set,
+			ParentID:    int(dbObjective.ParentID.Int64),
+			Number:      int(dbObjective.Number),
+			Name:        dbObjective.Name,
+			Description: dbObjective.Description.String,
+		}
+		objectives = append(objectives, objective)
+	}
+	return objectives, nil
+}
+
+func (cr CourseRepo) GetCourseStandards(set domain.StandardSet) ([]domain.Standard, error) {
+	dbStandards, err := cr.queries.GetCourseStandards(context.Background(), int64(set.ID))
+	if err != nil {
+		return nil, err
+	}
+	var standards []domain.Standard
+	for _, dbStandard := range dbStandards {
+		standard := domain.Standard{
+			ID:          int(dbStandard.ID),
+			StdSet:      set,
+			Number:      int(dbStandard.Number),
+			Name:        dbStandard.Name,
+			Description: dbStandard.Description.String,
+		}
+		standards = append(standards, standard)
+	}
+	return standards, nil
+}
+
 
 func (cr CourseRepo) SaveStandard(std domain.Standard) (domain.Standard, error) {
 	dbStandard, err := cr.queries.SaveStandard(context.Background(), database.SaveStandardParams{
@@ -48,11 +87,8 @@ func (cr CourseRepo) SaveStandard(std domain.Standard) (domain.Standard, error) 
 	std.ID = int(dbStandard.ID)
 	return std, nil
 }
-func (cr CourseRepo) ImportStandards(filename string, setID int) ([]domain.Standard, error) {
-	set, err := cr.queries.GetStdSetByID(context.Background(), int64(setID))
-	if err != nil {
-		return nil, err
-	}
+
+func (cr CourseRepo) ImportStandards(filename string, set domain.StandardSet) ([]domain.Standard, error) {
 	courseName := set.CourseName
 	file, err := os.Open(filename)
 	if err != nil {
@@ -68,27 +104,107 @@ func (cr CourseRepo) ImportStandards(filename string, setID int) ([]domain.Stand
 		if i == 0 {
 			continue
 		}
+		stdCourse := record[StdCourse]
+		if stdCourse != courseName {
+			continue
+		}
 		stdNum, err := strconv.Atoi(record[StdNo])
 		if err != nil {
 			return nil, err
 		}
 		stdDesc := record[StdDescr]
-		stdCourse := record[StdCourse]
 		standard := domain.Standard{
 			StdSet: domain.StandardSet{
-				ID:         setID,
+				ID:         set.ID,
 				CourseName: courseName,
 			},
 			Number: stdNum,
 			Name:   stdDesc,
 		}
-		if stdCourse == courseName {
-			standards = append(standards, standard)
-		}
+		standards = append(standards, standard)
 	}
 	return standards, nil
 }
 
-func (cr CourseRepo) ImportObjectives(filename string, stdID int) ([]domain.Standard, error) {
-	return nil, nil
+func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, standard domain.Standard) ([]domain.Standard, error) {
+	courseName := set.CourseName
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	var objectives []domain.Standard
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		objCourse := record[ObjCourse]
+		if objCourse != courseName {
+			continue
+		}
+		stdNum, err := strconv.Atoi(record[ObjNo][:1])
+		if err != nil {
+			return nil, err
+		}
+		if stdNum != standard.Number {
+			continue
+		}
+		objNum, err := strconv.Atoi(record[ObjNo][2:])
+		if err != nil {
+			return nil, err
+		}
+		if objNum == 0 {
+			continue
+		}
+		objDescr := record[ObjDescr]
+		objective := domain.Standard{
+			ParentID: standard.ID,
+			StdSet: domain.StandardSet{
+				ID:         set.ID,
+				CourseName: courseName,
+			},
+			Number: objNum,
+			Name:   objDescr,
+		}
+		objectives = append(objectives, objective)
+	}
+	log.Println(objectives)
+	return objectives, nil
+
+}
+
+func (cr CourseRepo) CreateStandardSets(filename string) ([]domain.StandardSet, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	var courseNames = make(map[string]struct{})
+	var sets []domain.StandardSet
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		courseName := record[StdCourse]
+		courseNames[courseName] = struct{}{}
+	}
+	for name := range courseNames {
+		set, err := cr.SaveStandardSet(domain.StandardSet{
+			CourseName: name,
+		})
+		if err != nil {
+			return nil, err
+		}
+		sets = append(sets, set)
+	}
+	return sets, nil
+
 }

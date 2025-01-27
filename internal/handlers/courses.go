@@ -21,17 +21,19 @@ const (
 	EditCourse       RouteName = Course + "/edit"
 	CopyCourse       RouteName = Course + "/copy-to-term"
 	CopyCourseToTerm RouteName = CopyCourse
+	StandardSet      RouteName = Course + "/standard-set"
 )
 const (
-	ListTermCourses      = RouteHandlerName(GET + Courses)
-	CourseDetails        = RouteHandlerName(GET + Course)
-	ShowEditCourse       = RouteHandlerName(GET + EditCourse)
-	PostEditCourse       = RouteHandlerName(POST + EditCourse)
-	ShowNewCourse        = RouteHandlerName(GET + NewCourse)
-	PostNewCourse        = RouteHandlerName(POST + NewCourse)
-	DeleteCourse         = RouteHandlerName(DELETE + Course)
-	GetCopyCourse        = RouteHandlerName(GET + CopyCourse)
-	PostCopyCourseToTerm = RouteHandlerName(POST + CopyCourseToTerm)
+	ListTermCourses       = RouteHandlerName(GET + Courses)
+	CourseDetails         = RouteHandlerName(GET + Course)
+	ShowEditCourse        = RouteHandlerName(GET + EditCourse)
+	PostEditCourse        = RouteHandlerName(POST + EditCourse)
+	ShowNewCourse         = RouteHandlerName(GET + NewCourse)
+	PostNewCourse         = RouteHandlerName(POST + NewCourse)
+	DeleteCourse          = RouteHandlerName(DELETE + Course)
+	GetCopyCourse         = RouteHandlerName(GET + CopyCourse)
+	PostCopyCourseToTerm  = RouteHandlerName(POST + CopyCourseToTerm)
+	PostSelectStandardSet = RouteHandlerName(POST + StandardSet)
 )
 
 func (h CourseHandler) CourseHandlers() []RouteHandler {
@@ -46,6 +48,7 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 		{Course, DeleteCourse, DELETE, h.DeleteCourse},
 		{CopyCourse, GetCopyCourse, GET, h.GetCopyCourse},
 		{CopyCourseToTerm, PostCopyCourseToTerm, POST, h.PostCopyCourseToTerm},
+		{StandardSet, PostSelectStandardSet, POST, h.PostSelectStandardSet},
 	}
 }
 
@@ -100,18 +103,24 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	sets, err := h.svc.GetStandardSets()
+	if err != nil {
+		return err
+	}
 	page := mt.CourseDetailsPage{
-		GetCopyCourseURL: h.e.Reverse(GetCopyCourse.String(), params.ToIntSlice()...),
+		GetCopyCourseURL:         h.e.Reverse(GetCopyCourse.String(), params.ToIntSlice()...),
+		StandardSets:             sets,
+		PostSelectStandardSetURL: h.e.Reverse(string(PostSelectStandardSet), params.ToIntSlice()...),
 		NodeDetailsPage: mt.NodeDetailsPage{
 			Params:          params,
-			Node:            *course,
+			Node:            course,
 			GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:   course.Term,
-				Course: *course,
+				Course: course,
 			},
 		},
 	}
@@ -195,13 +204,13 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 	}
 	details := mt.NodeDetailsPage{
 		Params:          params,
-		Node:            *course,
+		Node:            course,
 		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:   course.Term,
-			Course: *course,
+			Course: course,
 		},
 	}
 	respond := func(component templ.Component) error {
@@ -267,4 +276,23 @@ func (h CourseHandler) PostCopyCourseToTerm(c echo.Context) error {
 		return fmt.Errorf("params not valid: courseID: %d and termID: %d", params.CourseID.Value, params.TermID.Value)
 	}
 	return c.Redirect(302, h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...))
+}
+
+func (h CourseHandler) PostSelectStandardSet(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	standardSetParam := c.Request().Form.Get("standard-set")
+	setID, err := strconv.Atoi(standardSetParam)
+	if err != nil {
+		return err
+	}
+	log.Println("selected set: ", standardSetParam)
+	err = h.svc.SetStandardSet(params.CourseID.Value, setID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(302, h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...))
 }

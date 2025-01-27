@@ -1,6 +1,9 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type StandardSet struct {
 	ID         int
@@ -18,5 +21,8 @@ type Standard struct {
 }
 
 func (std Standard) Designation(standard, parent Standard) string {
+	if std.ParentID == 0 {
+		return strconv.Itoa(standard.Number)
+	}
 	return fmt.Sprintf("%d.%d", standard.Number, parent.Number)
 }

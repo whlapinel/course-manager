@@ -12,7 +12,7 @@ import (
 
 const deleteCourse = `-- name: DeleteCourse :one
 DELETE FROM courses WHERE id = ?
-RETURNING id, term_id, name, description
+RETURNING id, term_id, name, description, std_set_id
 `
 
 func (q *Queries) DeleteCourse(ctx context.Context, id int64) (Course, error) {
@@ -23,43 +23,13 @@ func (q *Queries) DeleteCourse(ctx context.Context, id int64) (Course, error) {
 		&i.TermID,
 		&i.Name,
 		&i.Description,
-	)
-	return i, err
-}
-
-const getCourse = `-- name: GetCourse :one
-SELECT
-  c.id as course_id,
-  c.name as course_name,
-  c.description as course_descr,
-  c.term_id
-FROM
-  courses c
-WHERE
-  c.term_id = ?
-`
-
-type GetCourseRow struct {
-	CourseID    int64
-	CourseName  string
-	CourseDescr sql.NullString
-	TermID      int64
-}
-
-func (q *Queries) GetCourse(ctx context.Context, termID int64) (GetCourseRow, error) {
-	row := q.db.QueryRowContext(ctx, getCourse, termID)
-	var i GetCourseRow
-	err := row.Scan(
-		&i.CourseID,
-		&i.CourseName,
-		&i.CourseDescr,
-		&i.TermID,
+		&i.StdSetID,
 	)
 	return i, err
 }
 
 const getCourseByCourseID = `-- name: GetCourseByCourseID :one
-SELECT id, term_id, name, description FROM courses c WHERE c.id = ?
+SELECT id, term_id, name, description, std_set_id FROM courses c WHERE c.id = ?
 `
 
 func (q *Queries) GetCourseByCourseID(ctx context.Context, id int64) (Course, error) {
@@ -70,53 +40,31 @@ func (q *Queries) GetCourseByCourseID(ctx context.Context, id int64) (Course, er
 		&i.TermID,
 		&i.Name,
 		&i.Description,
+		&i.StdSetID,
 	)
 	return i, err
 }
 
-const getCourseByID = `-- name: GetCourseByID :one
-SELECT id, term_id, name, description from courses WHERE id = ?
+const getCoursesByTermID = `-- name: GetCoursesByTermID :many
+SELECT id, term_id, name, description, std_set_id FROM courses c WHERE c.term_id = ?
 `
 
-func (q *Queries) GetCourseByID(ctx context.Context, id int64) (Course, error) {
-	row := q.db.QueryRowContext(ctx, getCourseByID, id)
-	var i Course
-	err := row.Scan(
-		&i.ID,
-		&i.TermID,
-		&i.Name,
-		&i.Description,
-	)
-	return i, err
-}
-
-const getCourses = `-- name: GetCourses :many
-SELECT
-  c.id as course_id,
-  c.name as course_name,
-  c.description as course_descr
-FROM 
-  courses c
-WHERE 
-  c.term_id = ?
-`
-
-type GetCoursesRow struct {
-	CourseID    int64
-	CourseName  string
-	CourseDescr sql.NullString
-}
-
-func (q *Queries) GetCourses(ctx context.Context, termID int64) ([]GetCoursesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getCourses, termID)
+func (q *Queries) GetCoursesByTermID(ctx context.Context, termID int64) ([]Course, error) {
+	rows, err := q.db.QueryContext(ctx, getCoursesByTermID, termID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetCoursesRow
+	var items []Course
 	for rows.Next() {
-		var i GetCoursesRow
-		if err := rows.Scan(&i.CourseID, &i.CourseName, &i.CourseDescr); err != nil {
+		var i Course
+		if err := rows.Scan(
+			&i.ID,
+			&i.TermID,
+			&i.Name,
+			&i.Description,
+			&i.StdSetID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -132,44 +80,57 @@ func (q *Queries) GetCourses(ctx context.Context, termID int64) ([]GetCoursesRow
 
 const saveCourse = `-- name: SaveCourse :one
 INSERT INTO courses (
-  term_id, name, description
+  term_id, name, description, std_set_id
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?
 )
-RETURNING id, term_id, name, description
+RETURNING id, term_id, name, description, std_set_id
 `
 
 type SaveCourseParams struct {
 	TermID      int64
 	Name        string
 	Description sql.NullString
+	StdSetID    sql.NullInt64
 }
 
 func (q *Queries) SaveCourse(ctx context.Context, arg SaveCourseParams) (Course, error) {
-	row := q.db.QueryRowContext(ctx, saveCourse, arg.TermID, arg.Name, arg.Description)
+	row := q.db.QueryRowContext(ctx, saveCourse,
+		arg.TermID,
+		arg.Name,
+		arg.Description,
+		arg.StdSetID,
+	)
 	var i Course
 	err := row.Scan(
 		&i.ID,
 		&i.TermID,
 		&i.Name,
 		&i.Description,
+		&i.StdSetID,
 	)
 	return i, err
 }
 
 const updateCourse = `-- name: UpdateCourse :exec
 UPDATE courses 
-SET name = ?, description = ?
+SET name = ?, description = ?, std_set_id = ?
 WHERE id = ?
 `
 
 type UpdateCourseParams struct {
 	Name        string
 	Description sql.NullString
+	StdSetID    sql.NullInt64
 	ID          int64
 }
 
 func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) error {
-	_, err := q.db.ExecContext(ctx, updateCourse, arg.Name, arg.Description, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateCourse,
+		arg.Name,
+		arg.Description,
+		arg.StdSetID,
+		arg.ID,
+	)
 	return err
 }

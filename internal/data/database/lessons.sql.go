@@ -44,6 +44,21 @@ func (q *Queries) DeleteLessonDate(ctx context.Context, arg DeleteLessonDatePara
 	return err
 }
 
+const deleteLessonStandard = `-- name: DeleteLessonStandard :exec
+DELETE FROM lesson_standards 
+WHERE std_id = ? AND lesson_id = ?
+`
+
+type DeleteLessonStandardParams struct {
+	StdID    int64
+	LessonID int64
+}
+
+func (q *Queries) DeleteLessonStandard(ctx context.Context, arg DeleteLessonStandardParams) error {
+	_, err := q.db.ExecContext(ctx, deleteLessonStandard, arg.StdID, arg.LessonID)
+	return err
+}
+
 const getDateID = `-- name: GetDateID :one
 SELECT
     d.id
@@ -269,6 +284,24 @@ func (q *Queries) SaveLessonDate(ctx context.Context, arg SaveLessonDateParams) 
 	var i LessonDate
 	err := row.Scan(&i.LessonID, &i.DateID)
 	return i, err
+}
+
+const saveLessonStandard = `-- name: SaveLessonStandard :exec
+INSERT INTO lesson_standards (
+  std_id, lesson_id
+) VALUES (
+  ?, ?
+)
+`
+
+type SaveLessonStandardParams struct {
+	StdID    int64
+	LessonID int64
+}
+
+func (q *Queries) SaveLessonStandard(ctx context.Context, arg SaveLessonStandardParams) error {
+	_, err := q.db.ExecContext(ctx, saveLessonStandard, arg.StdID, arg.LessonID)
+	return err
 }
 
 const updateLesson = `-- name: UpdateLesson :exec

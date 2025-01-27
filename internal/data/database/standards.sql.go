@@ -10,8 +10,42 @@ import (
 	"database/sql"
 )
 
+const getAllObjectives = `-- name: GetAllObjectives :many
+SELECT id, number, name, description, set_id, parent_id FROM standards WHERE set_id = ? AND parent_id IS NOT NULL
+`
+
+func (q *Queries) GetAllObjectives(ctx context.Context, setID int64) ([]Standard, error) {
+	rows, err := q.db.QueryContext(ctx, getAllObjectives, setID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Standard
+	for rows.Next() {
+		var i Standard
+		if err := rows.Scan(
+			&i.ID,
+			&i.Number,
+			&i.Name,
+			&i.Description,
+			&i.SetID,
+			&i.ParentID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCourseStandards = `-- name: GetCourseStandards :many
-SELECT id, number, name, description, set_id, parent_id FROM standards WHERE set_id = ?
+SELECT id, number, name, description, set_id, parent_id FROM standards WHERE set_id = ? AND parent_id IS NULL
 `
 
 func (q *Queries) GetCourseStandards(ctx context.Context, setID int64) ([]Standard, error) {
@@ -81,6 +115,40 @@ func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Get
 			&i.ID_2,
 			&i.StdID,
 			&i.LessonID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStandardObjectives = `-- name: GetStandardObjectives :many
+SELECT id, number, name, description, set_id, parent_id FROM standards WHERE parent_id = ?
+`
+
+func (q *Queries) GetStandardObjectives(ctx context.Context, parentID sql.NullInt64) ([]Standard, error) {
+	rows, err := q.db.QueryContext(ctx, getStandardObjectives, parentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Standard
+	for rows.Next() {
+		var i Standard
+		if err := rows.Scan(
+			&i.ID,
+			&i.Number,
+			&i.Name,
+			&i.Description,
+			&i.SetID,
+			&i.ParentID,
 		); err != nil {
 			return nil, err
 		}

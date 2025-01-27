@@ -39,7 +39,13 @@ func (data CopyCourseData) Component() templ.Component {
 
 type CourseDetailsPage struct {
 	NodeDetailsPage
-	GetCopyCourseURL string
+	GetCopyCourseURL         string
+	PostSelectStandardSetURL string
+	StandardSets             []domain.StandardSet
+}
+
+func (page CourseDetailsPage) Course() domain.Course {
+	return page.Node.(domain.Course)
 }
 
 func (page CourseDetailsPage) Component() templ.Component {

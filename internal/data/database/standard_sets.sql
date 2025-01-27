@@ -1,16 +1,16 @@
 -- name: SaveStandardSet :one
-INSERT INTO standard_set (
+INSERT INTO standard_sets (
     course_name
 ) VALUES (
     ?
 ) RETURNING *;
 
 -- name: GetAllStandardSets :many
-SELECT * FROM standard_set;
+SELECT * FROM standard_sets;
 
 -- name: GetStdSetByCourseName :one
-SELECT * FROM standard_set WHERE course_name = ?;
+SELECT * FROM standard_sets WHERE course_name = ?;
 
 -- name: GetStdSetByID :one
-SELECT * FROM standard_set WHERE id = ?;
+SELECT * FROM standard_sets WHERE id = ?;
 
