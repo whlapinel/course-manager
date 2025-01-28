@@ -51,6 +51,7 @@ const (
 	CourseID       RouteParam = "/:course-id"
 	UnitID         RouteParam = "/:unit-id"
 	LessonID       RouteParam = "/:lesson-id"
+	StandardID     RouteParam = "/:standard-id"
 	ShiftDirection RouteParam = "/:shift-direction" // string param
 )
 

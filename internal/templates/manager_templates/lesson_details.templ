@@ -3,11 +3,40 @@ package managertemplates
 import (
 	"gh_static_portfolio/internal/domain"
 	"github.com/labstack/echo/v4"
+	"strconv"
 	"time"
 )
 
 templ LessonDetailsComponent(props LessonDetailsPage) {
 	@NodeDetailsComponent(props.NodeDetailsPage) {
+		if props.Lesson().Standards != nil {
+			<ul>
+				for _, objective := range props.Lesson().Standards {
+					<li>
+						{ strconv.Itoa(objective.Number) } { objective.Name }
+						<button hx-delete={ props.DeleteStandardURL(objective.ID) }>Remove</button>
+					</li>
+				}
+			</ul>
+		} else {
+			<p>No standard selected</p>
+			<details>
+				<summary>Choose Standard</summary>
+				<ul>
+					for _, standard := range props.Standards {
+						<details>
+							<summary>{ standard.Name }</summary>
+							<select name="objective" id="objective-select">
+								for _, objective := range standard.Children {
+									<option value={ strconv.Itoa(objective.ID) }>{ strconv.Itoa(objective.Number) }{ objective.Name }</option>
+								}
+							</select>
+							<button hx-post={ props.PostLessonStandardURL } hx-include="#objective-select">Add</button>
+						</details>
+					}
+				</ul>
+			</details>
+		}
 		<div id={ EditSlidesContainerID.String() } class="flex flex-col min-w-screen">
 			@ButtonContainer() {
 				<a
@@ -39,6 +68,14 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 		}
 	}
 	<div id="slides" class="flex justify-center"></div>
+}
+
+templ ObjectiveSelectComponent(props ObjectiveSelect) {
+	<select id="objectives-select" name="objective">
+		for _, objective := range props.Objectives {
+			<option value={ strconv.Itoa(objective.ID) }>{ objective.Name }</option>
+		}
+	</select>
 }
 
 templ Slides(htmlContent string) {

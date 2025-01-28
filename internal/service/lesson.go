@@ -56,6 +56,11 @@ func (svc CourseService) GetLesson(lessonID int) (domain.Lesson, error) {
 		return domain.Lesson{}, err
 	}
 	lesson.Dates = lessonDates
+	objectives, err := svc.repo.GetLessonObjectives(lesson)
+	if err != nil {
+		return domain.Lesson{}, err
+	}
+	lesson.Standards = objectives
 	return lesson, nil
 
 }
@@ -114,4 +119,28 @@ func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, directio
 		return domain.Lesson{}, err
 	}
 	return shifted, nil
+}
+
+func (svc CourseService) SetLessonObjective(lessonID, stdID int) error {
+	lesson, err := svc.repo.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	objective, err := svc.repo.GetStandardByID(stdID)
+	if err != nil {
+		return err
+	}
+	return svc.repo.SaveLessonStandard(lesson, objective)
+}
+
+func (svc CourseService) DeleteLessonObjective(lessonID, stdID int) error {
+	lesson, err := svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	objective, err := svc.repo.GetStandardByID(stdID)
+	if err != nil {
+		return err
+	}
+	return svc.repo.DeleteLessonStandard(lesson, objective)
 }

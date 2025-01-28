@@ -295,6 +295,28 @@ func (cr CourseRepo) SaveLessonStandard(lesson domain.Lesson, standard domain.St
 	})
 }
 
+func (cr CourseRepo) GetLessonObjectives(lesson domain.Lesson) ([]domain.Standard, error) {
+	dbObjectives, err := cr.queries.GetLessonStandards(context.Background(), int64(lesson.ID))
+	if err != nil {
+		return nil, err
+	}
+	var objectives []domain.Standard
+	for _, dbObjective := range dbObjectives {
+		objective := domain.Standard{
+			ID: int(dbObjective.ID),
+			StdSet: domain.StandardSet{
+				ID: int(dbObjective.SetID),
+			},
+			ParentID:    int(dbObjective.ParentID.Int64),
+			Number:      int(dbObjective.Number),
+			Name:        dbObjective.Name,
+			Description: dbObjective.Description.String,
+		}
+		objectives = append(objectives, objective)
+	}
+	return objectives, nil
+}
+
 func (cr CourseRepo) DeleteLessonStandard(lesson domain.Lesson, standard domain.Standard) error {
 	return cr.queries.DeleteLessonStandard(context.Background(), database.DeleteLessonStandardParams{
 		StdID:    int64(standard.ID),

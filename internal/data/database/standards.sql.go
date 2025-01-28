@@ -79,32 +79,20 @@ func (q *Queries) GetCourseStandards(ctx context.Context, setID int64) ([]Standa
 }
 
 const getLessonStandards = `-- name: GetLessonStandards :many
-SELECT s.id, number, name, description, set_id, parent_id, ls.id, std_id, lesson_id FROM standards s
+SELECT s.id, s.number, s.name, s.description, s.set_id, s.parent_id FROM standards s
 JOIN lesson_standards ls 
 ON ls.std_id = s.id AND ls.lesson_id = ?
 `
 
-type GetLessonStandardsRow struct {
-	ID          int64
-	Number      int64
-	Name        string
-	Description sql.NullString
-	SetID       int64
-	ParentID    sql.NullInt64
-	ID_2        int64
-	StdID       int64
-	LessonID    int64
-}
-
-func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]GetLessonStandardsRow, error) {
+func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Standard, error) {
 	rows, err := q.db.QueryContext(ctx, getLessonStandards, lessonID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetLessonStandardsRow
+	var items []Standard
 	for rows.Next() {
-		var i GetLessonStandardsRow
+		var i Standard
 		if err := rows.Scan(
 			&i.ID,
 			&i.Number,
@@ -112,9 +100,6 @@ func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Get
 			&i.Description,
 			&i.SetID,
 			&i.ParentID,
-			&i.ID_2,
-			&i.StdID,
-			&i.LessonID,
 		); err != nil {
 			return nil, err
 		}
@@ -127,6 +112,24 @@ func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Get
 		return nil, err
 	}
 	return items, nil
+}
+
+const getStandardByID = `-- name: GetStandardByID :one
+SELECT id, number, name, description, set_id, parent_id FROM standards where id = ?
+`
+
+func (q *Queries) GetStandardByID(ctx context.Context, id int64) (Standard, error) {
+	row := q.db.QueryRowContext(ctx, getStandardByID, id)
+	var i Standard
+	err := row.Scan(
+		&i.ID,
+		&i.Number,
+		&i.Name,
+		&i.Description,
+		&i.SetID,
+		&i.ParentID,
+	)
+	return i, err
 }
 
 const getStandardObjectives = `-- name: GetStandardObjectives :many

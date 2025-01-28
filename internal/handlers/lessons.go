@@ -7,6 +7,7 @@ import (
 	"gh_static_portfolio/internal/templates"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -21,28 +22,32 @@ import (
 )
 
 const (
-	Lessons     RouteName = Unit + "/lessons"
-	Lesson      RouteName = Lessons + RouteName(LessonID)
-	NewLesson   RouteName = Lessons + "/new"
-	EditLesson  RouteName = Lesson + "/edit"
-	Slides      RouteName = Lesson + "/slides"
-	LessonFiles RouteName = Lesson + "/files/*"
-	EditSlides  RouteName = Slides + "/edit"
+	Lessons         RouteName = Unit + "/lessons"
+	Lesson          RouteName = Lessons + RouteName(LessonID)
+	NewLesson       RouteName = Lessons + "/new"
+	EditLesson      RouteName = Lesson + "/edit"
+	Slides          RouteName = Lesson + "/slides"
+	LessonFiles     RouteName = Lesson + "/files/*"
+	EditSlides      RouteName = Slides + "/edit"
+	LessonStandards RouteName = Lesson + "/standards"
+	LessonStandard  RouteName = LessonStandards + RouteName(StandardID)
 )
 
 const (
-	ListUnitLessons  = RouteHandlerName(GET + Lessons)
-	LessonDetails    = RouteHandlerName(GET + Lesson)
-	ShowNewLesson    = RouteHandlerName(GET + NewLesson)
-	PostNewLesson    = RouteHandlerName(POST + NewLesson)
-	ShowEditLesson   = RouteHandlerName(GET + EditLesson)
-	PostEditLesson   = RouteHandlerName(POST + EditLesson)
-	ViewLessonSlides = RouteHandlerName(GET + Slides)
-	ShowLessonFiles  = RouteHandlerName(GET + LessonFiles)
-	PostLessonFile   = RouteHandlerName(POST + LessonFiles)
-	ShowEditSlides   = RouteHandlerName(GET + EditSlides)
-	PostEditSlides   = RouteHandlerName(POST + EditSlides)
-	DeleteLesson     = RouteHandlerName(DELETE + Lesson)
+	ListUnitLessons      = RouteHandlerName(GET + Lessons)
+	LessonDetails        = RouteHandlerName(GET + Lesson)
+	ShowNewLesson        = RouteHandlerName(GET + NewLesson)
+	PostNewLesson        = RouteHandlerName(POST + NewLesson)
+	ShowEditLesson       = RouteHandlerName(GET + EditLesson)
+	PostEditLesson       = RouteHandlerName(POST + EditLesson)
+	ViewLessonSlides     = RouteHandlerName(GET + Slides)
+	ShowLessonFiles      = RouteHandlerName(GET + LessonFiles)
+	PostLessonFile       = RouteHandlerName(POST + LessonFiles)
+	ShowEditSlides       = RouteHandlerName(GET + EditSlides)
+	PostEditSlides       = RouteHandlerName(POST + EditSlides)
+	DeleteLesson         = RouteHandlerName(DELETE + Lesson)
+	PostLessonStandard   = RouteHandlerName(POST + LessonStandards)
+	DeleteLessonStandard = RouteHandlerName(DELETE + LessonStandard)
 )
 
 func (h CourseHandler) LessonHandlers() []RouteHandler {
@@ -59,6 +64,8 @@ func (h CourseHandler) LessonHandlers() []RouteHandler {
 		{EditSlides, ShowEditSlides, GET, h.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, h.PostEditSlides},
 		{Lesson, DeleteLesson, DELETE, h.DeleteLesson},
+		{LessonStandards, PostLessonStandard, POST, h.PostLessonStandard},
+		{LessonStandard, DeleteLessonStandard, DELETE, h.DeleteLessonStandard},
 	}
 }
 
@@ -150,11 +157,15 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 	var withPath = append(idParams, pathParam)
 
 	lessonDetails := mt.LessonDetailsPage{
-		NodeDetailsPage: nodeDetails,
-		GetSlidesURL:    h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
-		EditSlidesURL:   h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
-		GithubFilesURL:  string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:  h.e.Reverse(ShowLessonFiles.String(), withPath...),
+		E:                       h.e,
+		Standards:               course.StandardSet.Standards,
+		NodeDetailsPage:         nodeDetails,
+		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
+		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
+		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
+		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
+		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), withPath...),
 	}
 	template := mt.LessonDetailsComponent(lessonDetails)
 	layout := h.CourseManagerLayout(template)
@@ -554,4 +565,39 @@ func (h CourseHandler) PostNewLesson(c echo.Context) error {
 
 func (h CourseHandler) DeleteLesson(c echo.Context) error {
 	panic("not implemented")
+}
+
+func (h CourseHandler) PostLessonStandard(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	objectiveParam := c.Request().Form.Get("objective")
+	objID, err := strconv.Atoi(objectiveParam)
+	if err != nil {
+		return err
+	}
+	err = h.svc.SetLessonObjective(params.LessonID.Value, objID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(302, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+}
+
+func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	objectiveParam := ParseRouteStringParam(c, StandardID)
+	objID, err := strconv.Atoi(objectiveParam)
+	if err != nil {
+		return err
+	}
+	log.Println(params.ToIntSlice()...)
+	log.Println("deleting lesson standard ", objID)
+	h.svc
+	return nil
 }

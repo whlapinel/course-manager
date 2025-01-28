@@ -208,3 +208,5 @@ Write a program that:
   - IDLE
   - VS Code
   - CodeHS
+
+- Complete the problems in [practice.py](./files/practice.py)

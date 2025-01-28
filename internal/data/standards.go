@@ -24,6 +24,23 @@ const (
 	ObjCourse
 )
 
+func (cr CourseRepo) GetStandardByID(standardID int) (domain.Standard, error) {
+	dbStandard, err := cr.queries.GetStandardByID(context.Background(), int64(standardID))
+	if err != nil {
+		return domain.Standard{}, err
+	}
+	standard := domain.Standard{
+		ID: int(dbStandard.ID),
+		StdSet: domain.StandardSet{
+			ID: int(dbStandard.ID),
+		},
+		ParentID:    int(dbStandard.ParentID.Int64),
+		Number:      int(dbStandard.Number),
+		Name:        dbStandard.Name,
+		Description: dbStandard.Description.String,
+	}
+	return standard, nil
+}
 func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.StandardSet) ([]domain.Standard, error) {
 	dbObjectives, err := cr.queries.GetStandardObjectives(context.Background(), sql.NullInt64{
 		Valid: standard.ID != 0,
@@ -65,7 +82,6 @@ func (cr CourseRepo) GetCourseStandards(set domain.StandardSet) ([]domain.Standa
 	}
 	return standards, nil
 }
-
 
 func (cr CourseRepo) SaveStandard(std domain.Standard) (domain.Standard, error) {
 	dbStandard, err := cr.queries.SaveStandard(context.Background(), database.SaveStandardParams{
