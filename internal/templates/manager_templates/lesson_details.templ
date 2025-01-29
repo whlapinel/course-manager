@@ -44,17 +44,9 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 					href={ templ.SafeURL(props.GithubFilesURL) }
 					target="_blank"
 				>Files on GitHub</a>
-				<button
-					hx-get={ props.ServerFilesURL }
-					hx-target="#page"
-					hx-push-url="true"
-				>Files on Server</button>
-				@NewHXButton(HxGet, "", props.GetSlidesURL, "#slides", true).Component() {
-					View Slides
-				}
-				@NewHXButton(HxGet, "", props.EditSlidesURL, EditSlidesContainerID.Selector(), true).Component() {
-					Edit Slides
-				}
+				@props.ViewFilesButton()
+				@props.ViewSlidesButton()
+				@props.EditSlidesButton()
 			}
 		</div>
 		if lesson, ok := props.Node.(*domain.Lesson); ok {

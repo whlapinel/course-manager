@@ -42,6 +42,13 @@ func (page AddNonInstructDayPage) PageLayout() PageLayout {
 	}
 }
 
+func (page AddNonInstructDayPage) BreadCrumbs() BreadCrumbs {
+	return BreadCrumbs{
+		Term:           page.Term,
+		TermDetailsURL: page.TermDetailsURL,
+	}
+}
+
 func (page AddNonInstructDayPage) Component() templ.Component {
 	return AddNonInstructDayComponent(page)
 }

@@ -3,6 +3,7 @@ package managertemplates
 import (
 	"gh_static_portfolio/internal/domain"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,6 +26,38 @@ func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
 
 func (page LessonDetailsPage) Lesson() domain.Lesson {
 	return page.Node.(domain.Lesson)
+}
+
+func (page LessonDetailsPage) ViewSlidesButton() templ.Component {
+	return HXButton{
+		Text:     "View Slides",
+		Method:   HxGet,
+		URL:      page.GetSlidesURL,
+		HxTarget: "#slides",
+		PushURL:  true,
+	}.Component()
+
+}
+
+func (page LessonDetailsPage) EditSlidesButton() templ.Component {
+	return HXButton{
+		Text:     "Edit Slides",
+		Method:   HxGet,
+		URL:      page.EditSlidesURL,
+		HxTarget: EditSlidesContainerID.Selector(),
+		PushURL:  true,
+	}.Component()
+
+}
+
+func (page LessonDetailsPage) ViewFilesButton() templ.Component {
+	return HXButton{
+		Method:   HxGet,
+		URL:      page.ServerFilesURL,
+		Text:     "Files",
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
 }
 
 type ObjectiveSelect struct {

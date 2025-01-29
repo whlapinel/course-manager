@@ -72,8 +72,10 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		UpNavURL:         h.e.Reverse(ListTermCourses.String(), termID),
 		E:                h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
-			Term:   course.Term,
-			Course: course,
+			Term:             course.Term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	// old begins here
@@ -105,9 +107,10 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
 		BreadCrumbsData: mt.BreadCrumbs{
-			Term:   term,
-			Course: course,
-			Unit:   unit,
+			Term:             term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
@@ -157,9 +160,12 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
-			Term:   term,
-			Course: course,
-			Unit:   unit,
+			Term:             term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
+			Unit:             unit,
+			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	respond := func(component templ.Component) error {
@@ -218,9 +224,12 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
-				Term:   term,
-				Course: course,
-				Unit:   unit,
+				Term:             term,
+				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+				Course:           course,
+				CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
+				Unit:             unit,
+				UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
 			},
 		}
 	}

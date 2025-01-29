@@ -44,24 +44,43 @@ templ PageLayoutComponent(props Page) {
 }
 
 templ BreadCrumbsComponent(props BreadCrumbs) {
-	<p>
+	<div class="flex">
 		if props.Term.ID != 0 {
-			{ props.Term.Name }
 			>
+			@CrumbsButton(props.TermDetailsURL) {
+				{ props.Term.Name }
+			}
 			if props.Course.ID != 0 {
-				{ props.Course.Name }
 				>
+				@CrumbsButton(props.CourseDetailsURL) {
+					{ props.Course.Name }
+				}
 				if props.Unit.ID != 0 {
-					{ props.Unit.Name }
 					>
+					@CrumbsButton(props.UnitDetailsURL) {
+						{ props.Unit.Name }
+					}
 					if props.Lesson.ID != 0 {
-						{ props.Lesson.Name }
 						>
+						@CrumbsButton(props.LessonDetailsURL) {
+							{ props.Lesson.Name }
+						}
 					}
 				}
 			}
 		}
-	</p>
+	</div>
+}
+
+templ CrumbsButton(url string) {
+	<button
+		class="cursor-pointer"
+		hx-get={ url }
+		hx-target="#page"
+		hx-push-url="true"
+	>
+		{ children... }
+	</button>
 }
 
 templ Confirm(msg string) {

@@ -83,7 +83,8 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 			UpNavURL:         h.e.Reverse(ListTerms.String()),
 			E:                h.e,
 			BreadCrumbsData: mt.BreadCrumbs{
-				Term: term,
+				Term:           term,
+				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			},
 		},
 	}
@@ -119,8 +120,10 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
-				Term:   course.Term,
-				Course: course,
+				Term:             course.Term,
+				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+				Course:           course,
+				CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 			},
 		},
 	}
@@ -146,7 +149,8 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 		PostCreateNodeURL: h.e.Reverse(PostNewCourse.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 		BreadCrumbsData: mt.BreadCrumbs{
-			Term: term,
+			Term:           term,
+			TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
@@ -209,8 +213,10 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
-			Term:   course.Term,
-			Course: course,
+			Term:             course.Term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	respond := func(component templ.Component) error {

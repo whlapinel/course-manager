@@ -15,10 +15,14 @@ type CourseManagerLayout struct {
 }
 
 type BreadCrumbs struct {
-	Term   domain.Term
-	Course domain.Course
-	Unit   domain.Unit
-	Lesson domain.Lesson
+	Term             domain.Term
+	Course           domain.Course
+	Unit             domain.Unit
+	Lesson           domain.Lesson
+	TermDetailsURL   string
+	CourseDetailsURL string
+	UnitDetailsURL   string
+	LessonDetailsURL string
 }
 
 func (data BreadCrumbs) Component() templ.Component {

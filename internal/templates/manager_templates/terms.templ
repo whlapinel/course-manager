@@ -16,7 +16,7 @@ templ TermDetailsComponent(page TermDetailsPage) {
 }
 
 templ AddNonInstructDayComponent(page AddNonInstructDayPage) {
-	<h1>Hello</h1>
+	@PageLayoutComponent(page)
 	<p>Note: Weekends are automatically excluded from instructional days.</p>
 	<form hx-post={ page.PostAddDayURL } hx-target={ string(pageElementID.Selector()) }>
 		<label for="date">Date</label>

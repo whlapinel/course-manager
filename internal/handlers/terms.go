@@ -92,6 +92,10 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTerms.String()),
+			BreadCrumbsData: mt.BreadCrumbs{
+				Term:           term,
+				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			},
 		},
 		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), termID),
 	}
@@ -187,6 +191,10 @@ func (h CourseHandler) ShowEditTerm(c echo.Context) error {
 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 			IsEdit:          true,
+			BreadCrumbsData: mt.BreadCrumbs{
+				Term:           term,
+				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			},
 		},
 	}
 
@@ -239,6 +247,10 @@ func (h CourseHandler) PostEditTerm(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
 			IsEdit:          false,
+			BreadCrumbsData: mt.BreadCrumbs{
+				Term:           term,
+				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			},
 		}
 	}
 	var template templ.Component

@@ -106,4 +106,3 @@ func (list NodeListPage) PageTitle() string {
 func (list NodeListPage) ListItemElementID(node domain.CourseNode) ElementID {
 	return ElementID(fmt.Sprintf("%s-%d", tpl.KebabCase(node.TypeName()), node.GetID()))
 }
-
