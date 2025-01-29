@@ -12,9 +12,9 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 		if props.Lesson().Standards != nil {
 			<ul>
 				for _, objective := range props.Lesson().Standards {
-					<li>
+					<li id="objective">
 						{ strconv.Itoa(objective.Number) } { objective.Name }
-						<button hx-delete={ props.DeleteStandardURL(objective.ID) }>Remove</button>
+						<button hx-delete={ props.DeleteStandardURL(objective.ID) } hx-target="#objective">Remove</button>
 					</li>
 				}
 			</ul>
@@ -31,7 +31,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 									<option value={ strconv.Itoa(objective.ID) }>{ strconv.Itoa(objective.Number) }{ objective.Name }</option>
 								}
 							</select>
-							<button hx-post={ props.PostLessonStandardURL } hx-include="#objective-select">Add</button>
+							<button hx-post={ props.PostLessonStandardURL } hx-include="#objective-select" hx-target="#page">Add</button>
 						</details>
 					}
 				</ul>

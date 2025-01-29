@@ -598,6 +598,9 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	}
 	log.Println(params.ToIntSlice()...)
 	log.Println("deleting lesson standard ", objID)
-	h.svc
-	return nil
+	err = h.svc.DeleteLessonObjective(params.LessonID.Value, objID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(204, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
 }

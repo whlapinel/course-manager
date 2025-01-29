@@ -51,7 +51,7 @@ func LessonDetailsComponent(props LessonDetailsPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				for _, objective := range props.Lesson().Standards {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li id=\"objective\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -90,7 +90,7 @@ func LessonDetailsComponent(props LessonDetailsPage) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Remove</button></li>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#objective\">Remove</button></li>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -176,7 +176,7 @@ func LessonDetailsComponent(props LessonDetailsPage) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#objective-select\">Add</button></details>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#objective-select\" hx-target=\"#page\">Add</button></details>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
