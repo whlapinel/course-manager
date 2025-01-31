@@ -77,22 +77,38 @@ func (q *Queries) GetDateID(ctx context.Context, date string) (int64, error) {
 
 const getLesson = `-- name: GetLesson :one
 SELECT 
-  l.id, l.unit_id, l.number, l.name, l.description
+  l.id, l.unit_id, l.number, l.name, l.description,
+  u.number AS unit_num,
+  u.name AS unit_name
 FROM 
   lessons l
+JOIN
+  units u ON l.unit_id = u.id
 WHERE 
   l.id = ?
 `
 
-func (q *Queries) GetLesson(ctx context.Context, id int64) (Lesson, error) {
+type GetLessonRow struct {
+	ID          int64
+	UnitID      int64
+	Number      int64
+	Name        sql.NullString
+	Description sql.NullString
+	UnitNum     int64
+	UnitName    string
+}
+
+func (q *Queries) GetLesson(ctx context.Context, id int64) (GetLessonRow, error) {
 	row := q.db.QueryRowContext(ctx, getLesson, id)
-	var i Lesson
+	var i GetLessonRow
 	err := row.Scan(
 		&i.ID,
 		&i.UnitID,
 		&i.Number,
 		&i.Name,
 		&i.Description,
+		&i.UnitNum,
+		&i.UnitName,
 	)
 	return i, err
 }
@@ -136,9 +152,13 @@ SELECT
   l.id,
   l.number,
   l.name,
-  l.description
+  l.description,
+  u.number AS unit_num,
+  u.name AS unit_name
 FROM
   lessons l
+JOIN
+  units u ON l.unit_id = u.id
 WHERE
   l.unit_id = ?
 `
@@ -148,6 +168,8 @@ type GetLessonsRow struct {
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
+	UnitNum     int64
+	UnitName    string
 }
 
 func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow, error) {
@@ -164,6 +186,8 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 			&i.Number,
 			&i.Name,
 			&i.Description,
+			&i.UnitNum,
+			&i.UnitName,
 		); err != nil {
 			return nil, err
 		}

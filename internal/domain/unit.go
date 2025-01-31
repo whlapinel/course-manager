@@ -71,6 +71,6 @@ func (u Unit) AddLesson(lesson Lesson) {
 	u.Lessons = append(u.Lessons, lesson)
 }
 
-func (u Unit) Designation(_ int) string {
+func (u Unit) Designation() string {
 	return fmt.Sprintf("Unit %d", u.Number)
 }

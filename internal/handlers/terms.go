@@ -91,6 +91,7 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 			Node:            term,
 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+			ListChildrenURL: h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTerms.String()),
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:           term,

@@ -25,22 +25,10 @@ func (h CourseHandler) CalendarHandlers() []RouteHandler {
 }
 
 func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
-	courseID, err := ParseRouteParam(c, CourseID)
+	params := ParseCourseIDParams(c)
+	calendarData, err := h.calendarPage(params)
 	if err != nil {
-		log.Println(err)
 		return err
-	}
-	course, err := h.svc.GetCourseForCalendar(courseID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	calendarData := mt.CourseCalendar{
-		Course:                        course,
-		LessonDetailsRouteHandlerName: LessonDetails.String(),
-		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),
-		ListTermCoursesRHN:            string(ListTermCourses),
-		E:                             h.e,
 	}
 	template := mt.CourseCalendarTemplate(calendarData)
 	layout := h.CourseManagerLayout(template)
@@ -48,45 +36,41 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 }
 
 func (h CourseHandler) ShiftLesson(c echo.Context) error {
-	termID, err := ParseRouteParam(c, TermID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	courseID, err := ParseRouteParam(c, CourseID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	lessonID, err := ParseRouteParam(c, LessonID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
+	params := ParseCourseIDParams(c)
 	cdParam := ParseRouteStringParam(c, ShiftDirection)
 	cd, err := domain.ParseDirection(cdParam)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	err = h.svc.WebShift(termID, courseID, lessonID, cd)
+	err = h.svc.WebShift(params.TermID.Value, params.CourseID.Value, params.LessonID.Value, cd)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	course, err := h.svc.GetCourseForCalendar(courseID)
+	calendarData, err := h.calendarPage(params)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	calendarData := mt.CourseCalendar{
+	component := calendarData.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar, error) {
+	course, err := h.svc.GetCourseForCalendar(params.CourseID.Value)
+	if err != nil {
+		log.Println(err)
+		return mt.CourseCalendar{}, err
+	}
+	return mt.CourseCalendar{
 		Course:                        course,
 		LessonDetailsRouteHandlerName: LessonDetails.String(),
+		TermDetailsURL:                h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+		CourseDetailsURL:              h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),
 		ListTermCoursesRHN:            string(ListTermCourses),
 		E:                             h.e,
-	}
-	template := mt.CourseCalendarTemplate(calendarData)
-	layout := h.CourseManagerLayout(template)
-	return Respond(c, "", template, layout)
+	}, nil
+
 }

@@ -157,6 +157,6 @@ func (t Term) TermMonths() []time.Time {
 	return dates
 }
 
-func (t Term) Designation(_ int) string {
+func (t Term) Designation() string {
 	return ""
 }

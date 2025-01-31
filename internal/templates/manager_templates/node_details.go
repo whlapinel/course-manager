@@ -13,6 +13,7 @@ type NodeDetailsPage struct {
 	Node            domain.CourseNode
 	GetEditNodeURL  string
 	PostEditNodeURL string
+	ListChildrenURL string
 	UpNavURL        string
 	IsEdit          bool
 	NodeImageURL    func() string
@@ -38,7 +39,7 @@ func (page NodeDetailsPage) PageLayout() PageLayout {
 }
 
 func (page NodeDetailsPage) PageTitle() string {
-	desig := domain.NodeDesignation(page.Node, page.ParentNode)
+	desig := page.Node.Designation()
 	if desig != "" {
 		desig = fmt.Sprintf(" (%s)", desig)
 	}
@@ -53,4 +54,14 @@ func (page NodeDetailsPage) upNavText() string {
 		return fmt.Sprintf("Up to %s", parentPageText)
 	}
 	return fmt.Sprintf("Up to %ss", parentPageText)
+}
+
+func (page NodeDetailsPage) ListChildrenButton() templ.Component {
+	return HXButton{
+		Text:     fmt.Sprintf("%ss", page.Node.ChildTypeName()),
+		Method:   HxGet,
+		URL:      page.ListChildrenURL,
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
 }

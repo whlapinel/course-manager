@@ -92,6 +92,6 @@ func (c *Course) AddUnit(unit Unit) {
 	c.Units = append(c.Units, unit)
 }
 
-func (c Course) Designation(parentNum int) string {
+func (c Course) Designation() string {
 	return ""
 }

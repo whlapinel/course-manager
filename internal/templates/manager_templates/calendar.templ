@@ -32,7 +32,7 @@ templ CalendarLessonContainer(sbf ShiftButtonFactory, lesson domain.Lesson, less
 				hx-target="#page"
 				hx-push-url="true"
 			>
-				{ lesson.Name }
+				{ lesson.Designation() }
 			</div>
 			@sbf.ShiftButton(lesson.UnitID, lesson.ID, domain.Right)
 		</div>

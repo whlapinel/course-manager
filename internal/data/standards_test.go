@@ -32,7 +32,7 @@ func TestImportStandards(t *testing.T) {
 			}
 			for _, obj := range objectives {
 				log.Println(obj)
-				_, err := cr.SaveStandard(obj)
+				_, err := cr.SaveObjective(obj)
 				if err != nil {
 					t.Error(err)
 				}

@@ -47,3 +47,11 @@ func (svc CourseService) SaveUnit(params SaveUnitParams) (domain.Unit, error) {
 	return unit, nil
 
 }
+
+func (svc CourseService) DeleteUnit(unitID int) error {
+	unit, err := svc.GetUnit(unitID)
+	if err != nil {
+		return err
+	}
+	return svc.repo.DeleteUnit(unit)
+}

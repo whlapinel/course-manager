@@ -1,14 +1,12 @@
 package managertemplates
 
-import "gh_static_portfolio/internal/domain"
-
 templ NodeListComponent(props NodeListPage) {
 	@PageLayoutComponent(props) {
-		for i, node := range props.Children {
-			if node == nil {
-				<p>Node is nil!</p>
-			} else {
-				<ul>
+		<ul>
+			for i, node := range props.Children {
+				if node == nil {
+					<p>Node is nil!</p>
+				} else {
 					<li
 						id={ props.ListItemElementID(node).String() }
 					>
@@ -20,14 +18,14 @@ templ NodeListComponent(props NodeListPage) {
 						if props.ChildUI != nil && props.ChildUI[i] != nil {
 							@props.ChildUI[i].Component()
 						}
-						if domain.NodeDesignation(node, props.ParentNode) != "" {
-							<span>{ domain.NodeDesignation(node, props.ParentNode) }</span>
+						if node.Designation() != "" {
+							<span>{ node.Designation() }</span>
 						}
 						<span>{ node.GetName() }</span>
 					</li>
-				</ul>
+				}
 			}
-		}
+		</ul>
 		@props.NodeCreateButton()
 	}
 }

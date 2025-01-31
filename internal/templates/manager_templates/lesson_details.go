@@ -60,6 +60,10 @@ func (page LessonDetailsPage) ViewFilesButton() templ.Component {
 	}.Component()
 }
 
+func (page LessonDetailsPage) Component() templ.Component {
+	return LessonDetailsComponent(page)
+}
+
 type ObjectiveSelect struct {
 	Objectives []domain.Standard
 }

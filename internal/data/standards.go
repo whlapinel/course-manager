@@ -24,24 +24,34 @@ const (
 	ObjCourse
 )
 
+func (cr CourseRepo) GetObjectiveByID(objectiveID int) (domain.Objective, error) {
+	standard, err := cr.GetStandardByID(objectiveID)
+	if err != nil {
+		return domain.Objective{}, err
+	}
+	return standard.Objective, nil
+}
+
 func (cr CourseRepo) GetStandardByID(standardID int) (domain.Standard, error) {
 	dbStandard, err := cr.queries.GetStandardByID(context.Background(), int64(standardID))
 	if err != nil {
 		return domain.Standard{}, err
 	}
 	standard := domain.Standard{
-		ID: int(dbStandard.ID),
 		StdSet: domain.StandardSet{
 			ID: int(dbStandard.ID),
 		},
-		ParentID:    int(dbStandard.ParentID.Int64),
-		Number:      int(dbStandard.Number),
-		Name:        dbStandard.Name,
-		Description: dbStandard.Description.String,
+		Objective: domain.Objective{
+			ID:          int(dbStandard.ID),
+			ParentID:    int(dbStandard.ParentID.Int64),
+			Number:      int(dbStandard.Number),
+			Name:        dbStandard.Name,
+			Description: dbStandard.Description.String,
+		},
 	}
 	return standard, nil
 }
-func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.StandardSet) ([]domain.Standard, error) {
+func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.StandardSet) ([]domain.Objective, error) {
 	dbObjectives, err := cr.queries.GetStandardObjectives(context.Background(), sql.NullInt64{
 		Valid: standard.ID != 0,
 		Int64: int64(standard.ID),
@@ -49,11 +59,10 @@ func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.
 	if err != nil {
 		return nil, err
 	}
-	var objectives []domain.Standard
+	var objectives []domain.Objective
 	for _, dbObjective := range dbObjectives {
-		objective := domain.Standard{
+		objective := domain.Objective{
 			ID:          int(dbObjective.ID),
-			StdSet:      set,
 			ParentID:    int(dbObjective.ParentID.Int64),
 			Number:      int(dbObjective.Number),
 			Name:        dbObjective.Name,
@@ -72,15 +81,28 @@ func (cr CourseRepo) GetCourseStandards(set domain.StandardSet) ([]domain.Standa
 	var standards []domain.Standard
 	for _, dbStandard := range dbStandards {
 		standard := domain.Standard{
-			ID:          int(dbStandard.ID),
-			StdSet:      set,
-			Number:      int(dbStandard.Number),
-			Name:        dbStandard.Name,
-			Description: dbStandard.Description.String,
+			StdSet: set,
+			Objective: domain.Objective{
+				ID:          int(dbStandard.ID),
+				Number:      int(dbStandard.Number),
+				Name:        dbStandard.Name,
+				Description: dbStandard.Description.String,
+			},
 		}
 		standards = append(standards, standard)
 	}
 	return standards, nil
+}
+
+func (cr CourseRepo) SaveObjective(obj domain.Objective) (domain.Objective, error) {
+	standard := domain.Standard{
+		Objective: obj,
+	}
+	standard, err := cr.SaveStandard(standard)
+	if err != nil {
+		return domain.Objective{}, err
+	}
+	return standard.Objective, nil
 }
 
 func (cr CourseRepo) SaveStandard(std domain.Standard) (domain.Standard, error) {
@@ -134,15 +156,17 @@ func (cr CourseRepo) ImportStandards(filename string, set domain.StandardSet) ([
 				ID:         set.ID,
 				CourseName: courseName,
 			},
-			Number: stdNum,
-			Name:   stdDesc,
+			Objective: domain.Objective{
+				Number: stdNum,
+				Name:   stdDesc,
+			},
 		}
 		standards = append(standards, standard)
 	}
 	return standards, nil
 }
 
-func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, standard domain.Standard) ([]domain.Standard, error) {
+func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, standard domain.Standard) ([]domain.Objective, error) {
 	courseName := set.CourseName
 	file, err := os.Open(filename)
 	if err != nil {
@@ -153,7 +177,7 @@ func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, s
 	if err != nil {
 		return nil, err
 	}
-	var objectives []domain.Standard
+	var objectives []domain.Objective
 	for i, record := range records {
 		if i == 0 {
 			continue
@@ -177,14 +201,11 @@ func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, s
 			continue
 		}
 		objDescr := record[ObjDescr]
-		objective := domain.Standard{
+		objective := domain.Objective{
+
 			ParentID: standard.ID,
-			StdSet: domain.StandardSet{
-				ID:         set.ID,
-				CourseName: courseName,
-			},
-			Number: objNum,
-			Name:   objDescr,
+			Number:   objNum,
+			Name:     objDescr,
 		}
 		objectives = append(objectives, objective)
 	}

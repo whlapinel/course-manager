@@ -9,6 +9,8 @@ import (
 
 type CourseCalendar struct {
 	Course                        domain.Course
+	TermDetailsURL                string
+	CourseDetailsURL              string
 	LessonDetailsRouteHandlerName string
 	ShiftLessonRouteHandlerName   string
 	ListTermCoursesRHN            string
@@ -31,7 +33,9 @@ func (data CourseCalendar) PageLayout() PageLayout {
 
 func (data CourseCalendar) BreadCrumbs() BreadCrumbs {
 	return BreadCrumbs{
-		Term:   data.Course.Term,
-		Course: data.Course,
+		Term:             data.Course.Term,
+		TermDetailsURL:   data.TermDetailsURL,
+		Course:           data.Course,
+		CourseDetailsURL: data.CourseDetailsURL,
 	}
 }

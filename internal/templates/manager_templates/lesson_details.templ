@@ -14,7 +14,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 				for _, objective := range props.Lesson().Standards {
 					<li id="objective">
 						{ strconv.Itoa(objective.Number) } { objective.Name }
-						<button hx-delete={ props.DeleteStandardURL(objective.ID) } hx-target="#objective">Remove</button>
+						<button hx-delete={ props.DeleteStandardURL(objective.ID) } hx-target="#page">Remove</button>
 					</li>
 				}
 			</ul>

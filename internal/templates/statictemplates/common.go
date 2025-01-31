@@ -1,4 +1,4 @@
-package templates
+package statictemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
@@ -127,4 +127,11 @@ func rootPages() []Page {
 		NewContactPage(),
 		NewCoursesListPage(nil),
 	}
+}
+
+type TitleDivData struct {
+	title, description, imgPath string
+	standards                   []string
+	showImg                     bool
+	lightBg                     bool
 }

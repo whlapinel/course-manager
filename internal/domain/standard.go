@@ -11,13 +11,17 @@ type StandardSet struct {
 	Standards  []Standard
 }
 type Standard struct {
+	Objective
+	Children []Objective // objectives, etc
+	StdSet   StandardSet // all standards should be associated with a set id
+}
+
+type Objective struct {
 	ID          int
-	StdSet      StandardSet // all standards should be associated with a set id
-	ParentID    int         // negative if no parent
-	Number      int         // number should not include parent number
-	Name        string      // official, from the state
-	Description string      // unofficial, teacher or PLC created
-	Children    []Standard  // objectives, etc
+	ParentID    int    // negative if no parent
+	Number      int    // number should not include parent number
+	Name        string // official, from the state
+	Description string // unofficial, teacher or PLC created
 }
 
 func (std Standard) Designation(standard, parent Standard) string {

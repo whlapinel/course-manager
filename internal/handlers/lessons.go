@@ -122,61 +122,13 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 
 func (h CourseHandler) LessonDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	page, err := h.lessonDetailsPage(params)
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
-	if err != nil {
-		return err
-	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
-	if err != nil {
-		return err
-	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
-	if err != nil {
-		log.Println("error getting lesson:", err)
-		return err
-	}
-	nodeDetails := mt.NodeDetailsPage{
-		Params:          params,
-		ParentNode:      unit,
-		Node:            lesson,
-		GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
-		IsEdit:          false,
-		BreadCrumbsData: mt.BreadCrumbs{
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-		},
-	}
-
-	var idParams = params.ToIntSlice()
-	var pathParam interface{} = ""
-	var withPath = append(idParams, pathParam)
-
-	lessonDetails := mt.LessonDetailsPage{
-		E:                       h.e,
-		Standards:               course.StandardSet.Standards,
-		NodeDetailsPage:         nodeDetails,
-		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
-		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
-		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
-		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
-		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), withPath...),
-	}
-	template := mt.LessonDetailsComponent(lessonDetails)
-	layout := h.CourseManagerLayout(template)
-	return Respond(c, "", template, layout)
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowEditLesson(c echo.Context) error {
@@ -639,5 +591,67 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(204, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	page, err := h.lessonDetailsPage(params)
+	if err != nil {
+		return err
+	}
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams) (mt.LessonDetailsPage, error) {
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value)
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	if err != nil {
+		log.Println("error getting lesson:", err)
+		return mt.LessonDetailsPage{}, err
+	}
+	nodeDetails := mt.NodeDetailsPage{
+		Params:          params,
+		ParentNode:      unit,
+		Node:            lesson,
+		GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
+		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+		IsEdit:          false,
+		BreadCrumbsData: mt.BreadCrumbs{
+			Term:             term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
+			Unit:             unit,
+			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
+			Lesson:           lesson,
+			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
+		},
+	}
+
+	var idParams = params.ToIntSlice()
+	var pathParam interface{} = ""
+	var withPath = append(idParams, pathParam)
+
+	lessonDetails := mt.LessonDetailsPage{
+		E:                       h.e,
+		Standards:               course.StandardSet.Standards,
+		NodeDetailsPage:         nodeDetails,
+		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
+		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
+		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
+		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
+		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), withPath...),
+	}
+	return lessonDetails, nil
 }

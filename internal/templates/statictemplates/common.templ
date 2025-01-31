@@ -1,0 +1,78 @@
+package statictemplates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"strconv"
+)
+
+// Student-facing site
+templ ListedLinkItem(path string, newTab bool) {
+	<a href={ FilePathToURL(path) } target={ targetAttrVal(newTab) }>
+		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
+			{ children... }
+		</li>
+	</a>
+}
+
+// Student-facing site
+templ ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) {
+	<a href={ path } target={ targetAttrVal(newTab) }>
+		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
+			{ children... }
+		</li>
+	</a>
+}
+
+// Student-facing site
+templ BackButton(path, text string) {
+	<a href={ FilePathToURL(path) }>
+		<li class="flex gap-2 text-lg mb-10 items-center bg-green-600 p-3 rounded hover:bg-green-500">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"></path></svg>
+			<p>Up to { text }</p>
+		</li>
+	</a>
+}
+
+// Student-facing site
+// Title for page. Path allows checking for image
+templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, standards ...domain.Standard) {
+	<div class="flex flex-col gap-6 max-w-3xl">
+		<h1 class=" text-4xl">{ title }</h1>
+		<p class="text-2xl">{ description }</p>
+		if len(standards) != 0 {
+			<details>
+				<summary class="text-xl">Standards/Objectives</summary>
+				<ul>
+					for _, standard := range standards {
+						<li>{ strconv.Itoa(standard.Number) }: { standard.Name }</li>
+					}
+				</ul>
+			</details>
+		}
+		if showImg == true {
+			if lightBg {
+				<img src={ string(FilePathToURL(imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300"/>
+			} else {
+				<img src={ string(FilePathToURL(imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400"/>
+			}
+		}
+	</div>
+}
+
+templ TitleDivNew(data TitleDivData) {
+	<div class="flex flex-col gap-6 max-w-3xl">
+		<h1 class=" text-4xl">{ data.title }</h1>
+		<h3>Standards/Objectives:</h3>
+		for _, standard := range data.standards {
+			<p>{ standard }</p>
+		}
+		<p class="text-2xl">{ data.description }</p>
+		if data.showImg == true {
+			if data.lightBg {
+				<img src={ string(FilePathToURL(data.imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300"/>
+			} else {
+				<img src={ string(FilePathToURL(data.imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400"/>
+			}
+		}
+	</div>
+}

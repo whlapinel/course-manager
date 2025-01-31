@@ -1,0 +1,32 @@
+package statictemplates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates"
+	"path/filepath"
+	"strconv"
+)
+
+// Student-facing site
+templ UnitComponent(unit domain.Unit, course domain.Course) {
+	@Layout(Page{Title: course.Name}) {
+		@CourseDivContainer(course, templates.CoursePath(course, true), course.Name) {
+			@CourseUnorderedList() {
+				for _, lesson := range unit.Lessons {
+					@ListedLinkItem(templates.LessonPath(lesson, unit, course, true), false) {
+						if unit.Number < 0 {
+							<strong>Day { strconv.Itoa(lesson.Number) }:</strong> { lesson.Description }
+						} else {
+							if lesson.Name != "" {
+								<strong>Lesson { strconv.Itoa(lesson.Number) }:</strong> { lesson.Name }
+							} else {
+								<strong>Lesson { strconv.Itoa(lesson.Number) }</strong>
+							}
+						}
+					}
+				}
+			}
+			@TitleDiv(unit.Name, unit.Description, filepath.Join(templates.UnitPath(unit, course, false), unit.Image.BasePath), unit.Image.ID != 0, false)
+		}
+	}
+}

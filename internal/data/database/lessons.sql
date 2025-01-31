@@ -11,9 +11,13 @@ RETURNING *;
 
 -- name: GetLesson :one
 SELECT 
-  l.*
+  l.*,
+  u.number AS unit_num,
+  u.name AS unit_name
 FROM 
   lessons l
+JOIN
+  units u ON l.unit_id = u.id
 WHERE 
   l.id = ?;
 
@@ -22,9 +26,13 @@ SELECT
   l.id,
   l.number,
   l.name,
-  l.description
+  l.description,
+  u.number AS unit_num,
+  u.name AS unit_name
 FROM
   lessons l
+JOIN
+  units u ON l.unit_id = u.id
 WHERE
   l.unit_id = ?;
 

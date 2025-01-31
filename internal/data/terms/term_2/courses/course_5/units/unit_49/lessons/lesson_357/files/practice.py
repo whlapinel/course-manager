@@ -12,3 +12,9 @@
 
 # Problem 5: Check Positive, Negative, or Zero
 # Write a program that takes a number as input and determines if it is positive, negative, or zero.
+
+# Problem 6: Greet
+# Write a function greet(name) that takes a name and prints "Hello, [name]!"
+
+# Problem 7: Add
+# Write a function add(a, b) that returns the sum of two numbers.

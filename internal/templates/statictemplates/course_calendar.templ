@@ -1,4 +1,4 @@
-package templates
+package statictemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
@@ -43,7 +43,7 @@ templ CourseCalendarComponent(course domain.Course) {
 																if util.IsSameDate(lessonDate, calDate) {
 																	<li>
 																		@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, course, true)), false) {
-																			<p>{ lesson.Name } </p>
+																			<p>{ lesson.Designation() } </p>
 																		}
 																	</li>
 																}

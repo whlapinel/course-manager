@@ -96,11 +96,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 
 func (h CourseHandler) CourseDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	courseID, err := CourseIDParam(params)
-	if err != nil {
-		return err
-	}
-	course, err := h.svc.GetCourse(courseID)
+	course, err := h.svc.GetCourse(params.CourseID.Value)
 	if err != nil {
 		return err
 	}
@@ -117,6 +113,7 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 			Node:            course,
 			GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
+			ListChildrenURL: h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
@@ -211,6 +208,7 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 		Node:            course,
 		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
+		ListChildrenURL: h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:             course.Term,

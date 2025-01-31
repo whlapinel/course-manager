@@ -26,6 +26,7 @@ type Lesson struct {
 	ID          int
 	UnitID      int
 	UnitNum     int
+	UnitName    string
 	Number      int
 	Name        string
 	Description string
@@ -169,6 +170,9 @@ func (l Lesson) SortDates() Lesson {
 }
 
 // returns designation e.g. Lesson 1.2
-func (l Lesson) Designation(unitNum int) string {
-	return fmt.Sprintf("Lesson %d.%d", unitNum, l.Number)
+func (l Lesson) Designation() string {
+	if l.UnitNum >= 0 {
+		return fmt.Sprintf("Lesson %d.%d", l.UnitNum, l.Number)
+	}
+	return fmt.Sprintf("%s: Day %d", l.UnitName, l.Number)
 }

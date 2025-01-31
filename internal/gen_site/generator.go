@@ -7,7 +7,7 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
-	sst "gh_static_portfolio/internal/templates/static_site_templates"
+	sst "gh_static_portfolio/internal/templates/statictemplates"
 	"io/fs"
 	"log"
 	"os"
@@ -98,11 +98,26 @@ func Generate(courseRepo data.CourseRepo) error {
 				return fmt.Errorf("failed to render pages: %v", err)
 			}
 			lessons, err := courseRepo.GetLessons(unit.ID)
+			for i, lesson := range lessons {
+				lessonDates, err := courseRepo.GetLessonDates(lesson.ID)
+				if err != nil {
+					return err
+				}
+				lesson.Dates = lessonDates
+				objectives, err := courseRepo.GetLessonObjectives(lesson)
+				if err != nil {
+					return err
+				}
+				lesson.Standards = objectives
+				lessons[i] = lesson
+			}
+
 			if err != nil {
 				return fmt.Errorf("failed to get lessons: %s", err)
 			}
 			// Generate page for each lesson
 			for _, lesson := range lessons {
+				GenerateSlides(currentTerm, course, unit, lesson)
 				lessonPage := sst.NewLessonPage(lesson, unit, course, true, true)
 				err = RenderPage(lessonPage)
 				if err != nil {

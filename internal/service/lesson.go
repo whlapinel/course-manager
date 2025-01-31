@@ -70,6 +70,19 @@ func (svc CourseService) GetLessons(unitID int) ([]domain.Lesson, error) {
 	if err != nil {
 		return nil, err
 	}
+	for i, lesson := range lessons {
+		lessonDates, err := svc.repo.GetLessonDates(lesson.ID)
+		if err != nil {
+			return nil, err
+		}
+		lesson.Dates = lessonDates
+		objectives, err := svc.repo.GetLessonObjectives(lesson)
+		if err != nil {
+			return nil, err
+		}
+		lesson.Standards = objectives
+		lessons[i] = lesson
+	}
 	return lessons, nil
 }
 

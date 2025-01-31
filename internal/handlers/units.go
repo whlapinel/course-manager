@@ -104,6 +104,7 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		Node:            unit,
 		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
+		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
 		BreadCrumbsData: mt.BreadCrumbs{
@@ -130,11 +131,6 @@ func (h CourseHandler) PostNewUnit(c echo.Context) error {
 func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	queryParam := c.QueryParam("field")
-	unitID, err := UnitIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
 	term, err := h.svc.GetTerm(params.TermID.Value)
 	if err != nil {
 		return err
@@ -143,7 +139,7 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(unitID)
+	unit, err := h.svc.GetUnit(params.UnitID.Value)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -157,6 +153,7 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		Node:            unit,
 		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
+		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
@@ -222,6 +219,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			Params:          params,
 			GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
+			ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:             term,
@@ -267,5 +265,6 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 }
 
 func (h CourseHandler) DeleteUnit(c echo.Context) error {
-	panic("not implemented")
+	params := ParseCourseIDParams(c)
+	return h.svc.DeleteUnit(params.UnitID.Value)
 }

@@ -2,6 +2,9 @@ package managertemplates
 
 templ NodeDetailsComponent(props NodeDetailsPage) {
 	@PageLayoutComponent(props) {
+		if props.Node.ChildTypeName() != "" {
+			@props.ListChildrenButton()
+		}
 		<div class="flex flex-col gap-2">
 			@EditNameComponent(props)
 			@EditDescriptionComponent(props)

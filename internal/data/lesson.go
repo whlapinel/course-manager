@@ -37,6 +37,8 @@ func (cr CourseRepo) GetLesson(lessonID int) (domain.Lesson, error) {
 		Number:      int(dbLesson.Number),
 		Name:        dbLesson.Name.String,
 		Description: dbLesson.Description.String,
+		UnitNum:     int(dbLesson.UnitNum),
+		UnitName:    dbLesson.UnitName,
 	}
 	return lesson, nil
 }
@@ -55,6 +57,8 @@ func (cr CourseRepo) GetLessons(unitID int) ([]domain.Lesson, error) {
 			Number:      int(dbLesson.Number),
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
+			UnitNum:     int(dbLesson.UnitNum),
+			UnitName:    dbLesson.UnitName,
 		}
 		dbLessonDates, err := cr.queries.GetLessonDates(context.Background(), int64(lesson.ID))
 		if err != nil {
@@ -303,14 +307,16 @@ func (cr CourseRepo) GetLessonObjectives(lesson domain.Lesson) ([]domain.Standar
 	var objectives []domain.Standard
 	for _, dbObjective := range dbObjectives {
 		objective := domain.Standard{
-			ID: int(dbObjective.ID),
 			StdSet: domain.StandardSet{
 				ID: int(dbObjective.SetID),
 			},
-			ParentID:    int(dbObjective.ParentID.Int64),
-			Number:      int(dbObjective.Number),
-			Name:        dbObjective.Name,
-			Description: dbObjective.Description.String,
+			Objective: domain.Objective{
+				ID:          int(dbObjective.ID),
+				ParentID:    int(dbObjective.ParentID.Int64),
+				Number:      int(dbObjective.Number),
+				Name:        dbObjective.Name,
+				Description: dbObjective.Description.String,
+			},
 		}
 		objectives = append(objectives, objective)
 	}
