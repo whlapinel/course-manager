@@ -8,6 +8,17 @@ import (
 	"database/sql"
 )
 
+type Assessment struct {
+	ID           int64
+	LessonID     int64
+	Name         string
+	Instructions string
+	Category     int64
+	DateAssigned string
+	DateDue      string
+	Dropped      int64
+}
+
 type Course struct {
 	ID          int64
 	TermID      int64

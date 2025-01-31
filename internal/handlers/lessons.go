@@ -505,7 +505,7 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	return nil
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
 }
 
 func (h CourseHandler) ShowNewLesson(c echo.Context) error {
@@ -648,6 +648,7 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams) (mt.LessonDet
 		NodeDetailsPage:         nodeDetails,
 		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
 		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		PostAssessmentURL:       h.e.Reverse(PostAssessment.String(), params.ToIntSlice()...),
 		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
 		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),

@@ -2,6 +2,8 @@
 
 ## Pending
 
+- (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column
+
 - (major) attempting to view lesson files returns a server error rather than a simple message stating that no files exist for the lesson
 - (major) similarly, attempting to view lesson slides returns a server error
 

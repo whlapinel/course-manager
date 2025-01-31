@@ -3,6 +3,10 @@
 
 ## Pending (keep in priority order)
 
+- Static site should show assessments for lesson along with assessment details
+
+- From lesson details page, user can edit assessment details
+
 - From lesson details page: next lesson or previous lesson (nice to have)
 
 - 1/23/25 In calendar, user can add and remove lessons from a date

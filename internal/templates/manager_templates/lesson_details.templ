@@ -37,6 +37,48 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 				</ul>
 			</details>
 		}
+		if props.Lesson().Assessments != nil {
+			<ul>
+				for _, assessment := range props.Lesson().Assessments {
+					<li id="assessment">
+						<details>
+							<summary>
+								{ assessment.Name }
+							</summary>
+							<p>{ DisplayCategory(assessment.Category) }</p>
+							<p>Due: { assessment.DateDue.Format(time.DateOnly) }</p>
+							<p>{ assessment.Instructions }</p>
+						</details>
+						<button hx-delete={ props.DeleteAssessmentURL(assessment.ID) } hx-target="#page">Remove</button>
+					</li>
+				}
+			</ul>
+		} else {
+			<p>No Assessment</p>
+		}
+		<details>
+			<summary>Add Assessment</summary>
+			<form id="add-assignment-form">
+				<label for="name">Name</label>
+				<input id="name" name="name" type="text" class="bg-black"/>
+				<label for="date-assigned">Assigned</label>
+				<input class="bg-black" id="date-assigned" name="date-assigned" type="date" value={ props.Lesson().Dates[0].Format(time.DateOnly) }/>
+				<label for="date-due">Due</label>
+				<input class="bg-black" id="date-due" name="date-due" type="date"/>
+				<label for="category">Category</label>
+				<select name="category" class="bg-black">
+					<option value={ strconv.Itoa(int(domain.Prepare)) }>Prepare</option>
+					<option value={ strconv.Itoa(int(domain.Rehearse)) }>Rehearse</option>
+					<option value={ strconv.Itoa(int(domain.Perform)) }>Perform</option>
+					<option value={ strconv.Itoa(int(domain.Midterm)) }>Midterm</option>
+					<option value={ strconv.Itoa(int(domain.Final)) }>Final</option>
+				</select>
+				<label for="instructions">Instructions</label>
+				<textarea class="bg-black" name="instructions"></textarea>
+				<input type="hidden" name="lesson-id" value={ strconv.Itoa(props.Lesson().ID) }/>
+				<button hx-post={ props.PostAssessmentURL } hx-target="#page" hx-push-url="true">Submit</button>
+			</form>
+		</details>
 		<div id={ EditSlidesContainerID.String() } class="flex flex-col min-w-screen">
 			@ButtonContainer() {
 				<a
@@ -71,7 +113,7 @@ templ ObjectiveSelectComponent(props ObjectiveSelect) {
 }
 
 templ Slides(htmlContent string) {
-	<iframe srcdoc={ htmlContent } class="w-full h-[35rem]"></iframe>
+	<iframe srcdoc={ htmlContent } class="w-full h-[40rem]"></iframe>
 }
 
 // templ DescriptionInput(inputID ElementID, description string) {
@@ -133,7 +175,7 @@ templ EditSlidesTemplate(params CourseIDParams, contents string, editSlidesPostR
     </script>
 	@ButtonContainer() {
 		@CancelEditButton()
-		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToIntSlice()...) } hx-include={ string(EditSlidesTextAreaID.Selector()) }>
+		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToIntSlice()...) } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
 			Submit
 		</button>
 	}

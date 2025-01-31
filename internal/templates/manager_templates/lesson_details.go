@@ -1,7 +1,9 @@
 package managertemplates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
+	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -13,6 +15,7 @@ type LessonDetailsPage struct {
 	Standards                                                   []domain.Standard
 	GetObjectivesURL                                            string
 	PostLessonStandardURL, DeleteLessonStandardRHN              string
+	PostAssessmentURL, DeleteAssessmentRHN                      string
 	GetSlidesURL, EditSlidesURL, GithubFilesURL, ServerFilesURL string
 }
 
@@ -22,6 +25,11 @@ func AddParam(params CourseIDParams, param interface{}) []interface{} {
 func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
 	params := AddParam(page.Params, stdID)
 	return page.E.Reverse(page.DeleteLessonStandardRHN, params...)
+}
+
+func (page LessonDetailsPage) DeleteAssessmentURL(assessmentID int) string {
+	params := AddParam(page.Params, assessmentID)
+	return page.E.Reverse(page.DeleteAssessmentRHN, params...)
 }
 
 func (page LessonDetailsPage) Lesson() domain.Lesson {
@@ -66,4 +74,9 @@ func (page LessonDetailsPage) Component() templ.Component {
 
 type ObjectiveSelect struct {
 	Objectives []domain.Standard
+}
+
+// capitalizes first letter
+func DisplayCategory(cat domain.AssessmentCategory) string {
+	return fmt.Sprintf("%s%s", strings.ToUpper(cat.String()[:1]), cat.String()[1:])
 }

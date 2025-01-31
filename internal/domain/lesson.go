@@ -32,6 +32,7 @@ type Lesson struct {
 	Description string
 	Dates       []time.Time
 	Standards   []Standard
+	Assessments []Assessment
 	Image       Image
 }
 

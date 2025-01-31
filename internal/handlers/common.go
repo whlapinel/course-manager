@@ -52,6 +52,7 @@ const (
 	UnitID         RouteParam = "/:unit-id"
 	LessonID       RouteParam = "/:lesson-id"
 	StandardID     RouteParam = "/:standard-id"
+	AssessmentID   RouteParam = "/:assessment-id"
 	ShiftDirection RouteParam = "/:shift-direction" // string param
 )
 
@@ -142,6 +143,7 @@ func (h CourseHandler) Mount() {
 	h.mountHandlers(h.CourseHandlers())
 	h.mountHandlers(h.UnitHandlers())
 	h.mountHandlers(h.LessonHandlers())
+	h.mountHandlers(h.AssessmentHandlers())
 	h.mountHandlers(h.CalendarHandlers())
 	h.mountHandlers(h.HomeHandlers())
 
