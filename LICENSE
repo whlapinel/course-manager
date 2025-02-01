@@ -1,0 +1,32 @@
+Copyright (c) 2025 Will Lapinel
+
+Apache License
+Version 2.0, January 2004
+<http://www.apache.org/licenses/>
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+   "License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+   "Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+   "Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity.
+   "You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+   "Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+   "Object" form shall mean any form resulting from mechanical transformation or translation of a Source form.
+   "Work" shall mean the work of authorship, whether in Source or Object form, made available under the License.
+   "Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work.
+   "Contribution" shall mean any work that is intentionally submitted to the Licensor for inclusion in the Work.
+   "Contributor" shall mean any individual or entity that submits a Contribution to the Work.
+
+2. Grant of License.
+   Subject to the terms and conditions of this License, the Licensor grants You a worldwide, royalty-free, non-exclusive, irrevocable license to use, reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work.
+
+3. Conditions.
+   - You must **include attribution** to the original author in any copies or substantial portions of the Work.
+   - You must **include a copy of this license** with the distributed Work.
+   - You may not use the name, trademarks, or branding of the Licensor without explicit permission.
+
+4. Disclaimer.
+   THE WORK IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+For full details, see: <http://www.apache.org/licenses/LICENSE-2.0>

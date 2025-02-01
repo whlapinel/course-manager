@@ -507,7 +507,7 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...))
 }
 
 func (h CourseHandler) ShowNewLesson(c echo.Context) error {
