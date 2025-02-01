@@ -6,6 +6,8 @@ import (
 	"gh_static_portfolio/internal/handlers"
 	"gh_static_portfolio/internal/service"
 	"log"
+	"os"
+	"os/exec"
 
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
@@ -19,6 +21,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	startMarp := exec.Command("marp", "-s", "internal/data/terms")
+	err = startMarp.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		startMarp.Process.Signal(os.Interrupt)
+	}()
 	defer db.Close()
 	courseRepo := data.NewCourseRepo(queries)
 	courseHandler := handlers.NewCourseHandler(e, service.NewCourseService(courseRepo))

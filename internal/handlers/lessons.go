@@ -11,8 +11,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	sitegenerator "gh_static_portfolio/internal/gen_site"
-
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"io"
 	"log"
@@ -287,26 +285,30 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 
 func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
-	if err != nil {
-		return err
-	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
-	if err != nil {
-		return err
-	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
-	if err != nil {
-		return err
-	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
-	if err != nil {
-		return err
-	}
-	sitegenerator.GenerateSlides(term, course, unit, lesson)
-	slidesPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
-	log.Println(slidesPath)
-	slidesContent, err := os.ReadFile(slidesPath)
+	// term, err := h.svc.GetTerm(params.TermID.Value)
+	// if err != nil {
+	// 	return err
+	// }
+	// course, err := h.svc.GetCourse(params.CourseID.Value)
+	// if err != nil {
+	// 	return err
+	// }
+	// unit, err := h.svc.GetUnit(params.UnitID.Value)
+	// if err != nil {
+	// 	return err
+	// }
+	// lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	// if err != nil {
+	// 	return err
+	// }
+	// sitegenerator.GenerateSlides(term, course, unit, lesson)
+	// slidesPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
+	// log.Println(slidesPath)
+	// slidesContent, err := os.ReadFile(slidesPath)
+	// if err != nil {
+	// 	return err
+	// }
+	slidesContent, err := h.svc.GetSlides(params)
 	if err != nil {
 		return err
 	}
