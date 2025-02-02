@@ -6,10 +6,50 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"log"
 	"os"
+	"time"
 )
 
 type SaveLessonParams struct {
 	domain.Lesson
+}
+
+func (svc CourseService) AddLessonDate(lessonID, termID int, dateToAdd time.Time) error {
+	lesson, err := svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	term, err := svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	// make sure date is an instructional day
+	isValidDate := false
+	for _, date := range term.InstructionalDays {
+		if domain.IsSameDate(date, dateToAdd) {
+			isValidDate = true
+		}
+	}
+	if isValidDate {
+		lesson.Dates = append(lesson.Dates, dateToAdd)
+		svc.UpdateLesson(lesson)
+	} else {
+		return fmt.Errorf("attempt to add date not in term instructional days: %s, instructional days: %s", dateToAdd, term.InstructionalDays)
+	}
+	return nil
+}
+
+func (svc CourseService) RemoveLessonDate(lessonID int, dateToRemove time.Time) error {
+	lesson, err := svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	for i, date := range lesson.Dates {
+		if domain.IsSameDate(date, dateToRemove) {
+			lesson.Dates = append(lesson.Dates[:i], lesson.Dates[i+1:]...)
+		}
+	}
+	err = svc.UpdateLesson(lesson)
+	return nil
 }
 
 func (svc CourseService) SaveLesson(params SaveLessonParams) (*domain.Lesson, error) {
@@ -127,16 +167,30 @@ func (svc CourseService) WebShift(termID, courseID, lessonID int, cd domain.Cale
 	return err
 }
 
-func (svc CourseService) Extend(lesson domain.Lesson, term domain.Term, direction domain.CalendarDirection) (domain.Lesson, error) {
-	shifted, err := lesson.Extend(direction, term)
+func (svc CourseService) Extend(termID, courseID, lessonID int, cd domain.CalendarDirection) error {
+	lesson, err := svc.GetLesson(lessonID)
 	if err != nil {
-		return domain.Lesson{}, err
+		return err
+	}
+	term, err := svc.repo.GetTermByID(termID)
+	if err != nil {
+		return err
+	}
+	termWithDates, err := svc.repo.GetTermWithDates(termID)
+	if err != nil {
+		return err
+	}
+	term.InstructionalDays = termWithDates.InstructionalDays
+
+	_, err = lesson.Extend(cd, term)
+	if err != nil {
+		return err
 	}
 	err = svc.UpdateLesson(lesson)
 	if err != nil {
-		return domain.Lesson{}, err
+		return err
 	}
-	return shifted, nil
+	return nil
 }
 
 func (svc CourseService) SetLessonObjective(lessonID, stdID int) error {

@@ -95,3 +95,7 @@ func (c *Course) AddUnit(unit Unit) {
 func (c Course) Designation() string {
 	return ""
 }
+
+func (c Course) GetNumber() int {
+	return -1
+}

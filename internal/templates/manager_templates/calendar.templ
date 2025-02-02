@@ -3,48 +3,74 @@ package managertemplates
 import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/util"
-	"github.com/labstack/echo/v4"
 	"strconv"
+	"time"
 )
 
-templ ShiftButtonTemplate(termID, courseID, unitID, lessonID int, shiftLessonRouteHandlerName string, cd domain.CalendarDirection, e *echo.Echo) {
-	<button hx-post={ e.Reverse(shiftLessonRouteHandlerName, termID, courseID, unitID, lessonID, cd) } hx-target="#page">
-		if cd == domain.Right {
+templ ShiftButtonComponent(data ShiftButton) {
+	<button hx-post={ data.ShiftLessonURL } hx-target="#page">
+		if data.Direction == domain.Right {
 			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"></path></svg>
-		} else if cd == domain.Left {
+		} else if data.Direction == domain.Left {
 			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"></path></svg>
 		}
 	</button>
 }
 
-templ CalendarLessonContainer(sbf ShiftButtonFactory, lesson domain.Lesson, lessonDetailsRouteHandlerName string) {
+templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 	<li>
 		<div class="flex">
-			@sbf.ShiftButton(lesson.UnitID, lesson.ID, domain.Left)
-			<div
-				class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
-				hx-get={ sbf.e.Reverse(lessonDetailsRouteHandlerName, 
-															sbf.TermID, 
-															sbf.CourseID, 
-															lesson.UnitID, 
-															lesson.ID,
-															) }
-				hx-target="#page"
-				hx-push-url="true"
-			>
-				{ lesson.Designation() }
+			@data.ShiftButton(domain.Left)
+			<div>
+				<div class="flex flex-col gap-1 items-center">
+					<button
+						class="bg-red-700 p-1 rounded"
+						hx-confirm={ "Are you sure you want to remove this lesson date? The lesson itself will not be deleted." }
+						hx-delete={ data.RemoveLessonDateURL }
+						hx-target="#page"
+					>
+						Remove Lesson
+					</button>
+					<div
+						class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+						hx-get={ data.LessonDetailsURL }
+						hx-target="#page"
+						hx-push-url="true"
+					>
+						<span>
+							{ data.lesson.Designation() }
+						</span>
+						<span>
+							{ data.lesson.Name }
+						</span>
+					</div>
+				</div>
 			</div>
-			@sbf.ShiftButton(lesson.UnitID, lesson.ID, domain.Right)
+			@data.ShiftButton(domain.Right)
 		</div>
 	</li>
+}
+
+templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
+	<h1>{ page.Course.Name }</h1>
+	<h2>{ page.Date.Format(time.DateOnly) }</h2>
+	<ul>
+		<details>
+			for _, unit := range page.Course.Units {
+				<summary>{ unit.Name }</summary>
+				<ul>
+					for _, lesson := range unit.Lessons {
+						<li>{ lesson.Name }</li>
+					}
+				</ul>
+			}
+		</details>
+	</ul>
 }
 
 // CourseManager site
 templ CourseCalendarTemplate(page CourseCalendar) {
 	@PageLayoutComponent(page)
-	<button hx-get={ page.E.Reverse(page.ListTermCoursesRHN, page.Course.Term.ID) } hx-target={ string(pageElementID.Selector()) } hx-push-url="true">
-		Back to Term Courses
-	</button>
 	<div id="calendar" class="flex flex-col gap-4">
 		for _, day := range page.Course.Term.TermMonths() {
 			<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
@@ -52,17 +78,22 @@ templ CourseCalendarTemplate(page CourseCalendar) {
 				for _, week := range util.GetMonthDates(day) {
 					<div id="week-container" class="grid grid-cols-5">
 						for _, calDate := range week[1:6] {
-							<div id="date-container">
+							<div id="date-container" class="justify-items-center">
 								if !calDate.IsZero() {
 									{ calDate.Format("Mon 1/02/06") }
 								}
-								<ul>
+								<ul class="justify-items-center">
 									if page.Course.Term.IsInstructionDay(calDate) {
+										<button
+											hx-get={ page.ShowAddLessonDatePageURL(calDate) }
+											hx-push-url="true"
+											hx-target="#page"
+										>Add Lesson</button>
 										for _, unit := range page.Course.Units {
 											for _, lesson := range unit.Lessons {
 												for _, lessonDate := range lesson.Dates {
 													if util.IsSameDate(lessonDate, calDate) {
-														@CalendarLessonContainer(NewShiftButtonFactory(page.Course, page.ShiftLessonRouteHandlerName, page.E), lesson, page.LessonDetailsRouteHandlerName)
+														@page.CalendarLessonContainer(lesson, lessonDate)
 													}
 												}
 											}

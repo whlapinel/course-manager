@@ -54,6 +54,7 @@ const (
 	StandardID     RouteParam = "/:standard-id"
 	AssessmentID   RouteParam = "/:assessment-id"
 	ShiftDirection RouteParam = "/:shift-direction" // string param
+	Date           RouteParam = "/:date"
 )
 
 // strips the '/:' off RouteParam

@@ -5,7 +5,11 @@ templ NodeDetailsComponent(props NodeDetailsPage) {
 		if props.Node.ChildTypeName() != "" {
 			@props.ListChildrenButton()
 		}
+		if props.CourseCalendarURL != "" {
+			@props.CalendarButton()
+		}
 		<div class="flex flex-col gap-2">
+			@EditNumberComponent(props)
 			@EditNameComponent(props)
 			@EditDescriptionComponent(props)
 			{ children... }

@@ -48,25 +48,17 @@ const (
 	EditSlidesTextAreaID  ElementID = "slides-editor-text-area"
 )
 
-type ShiftButtonFactory struct {
-	TermID                      int
-	CourseID                    int
-	ShiftLessonRouteHandlerName string
-	e                           *echo.Echo
+type ShiftButton struct {
+	Params         CourseIDParams
+	Direction      domain.CalendarDirection
+	TermID         int
+	CourseID       int
+	ShiftLessonURL string
+	e              *echo.Echo
 }
 
-func NewShiftButtonFactory(course domain.Course, shiftLessonHandlerName string, e *echo.Echo) ShiftButtonFactory {
-	return ShiftButtonFactory{
-		TermID:                      course.Term.ID,
-		CourseID:                    course.ID,
-		ShiftLessonRouteHandlerName: shiftLessonHandlerName,
-		e:                           e,
-	}
-
-}
-
-func (sbf ShiftButtonFactory) ShiftButton(unitID, lessonID int, cd domain.CalendarDirection) templ.Component {
-	return ShiftButtonTemplate(sbf.TermID, sbf.CourseID, unitID, lessonID, sbf.ShiftLessonRouteHandlerName, cd, sbf.e)
+func (data ShiftButton) Component() templ.Component {
+	return ShiftButtonComponent(data)
 }
 
 func AddQueryParam(path, key, value string) string {

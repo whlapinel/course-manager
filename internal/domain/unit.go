@@ -72,5 +72,12 @@ func (u Unit) AddLesson(lesson Lesson) {
 }
 
 func (u Unit) Designation() string {
+	if u.Number < 0 {
+		return "N/A"
+	}
 	return fmt.Sprintf("Unit %d", u.Number)
+}
+
+func (u Unit) GetNumber() int {
+	return u.Number
 }

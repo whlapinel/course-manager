@@ -8,16 +8,18 @@ import (
 )
 
 type NodeDetailsPage struct {
-	Params          CourseIDParams
-	ParentNode      domain.CourseNode
-	Node            domain.CourseNode
-	GetEditNodeURL  string
-	PostEditNodeURL string
-	ListChildrenURL string
-	UpNavURL        string
-	IsEdit          bool
-	NodeImageURL    func() string
-	BreadCrumbsData BreadCrumbs
+	Params            CourseIDParams
+	ParentNode        domain.CourseNode
+	Node              domain.CourseNode
+	GetEditNodeURL    string
+	PostEditNodeURL   string
+	ListChildrenURL   string
+	UpNavURL          string
+	IsEdit            bool
+	Slides            string
+	NodeImageURL      func() string
+	BreadCrumbsData   BreadCrumbs
+	CourseCalendarURL string
 }
 
 func (page NodeDetailsPage) BreadCrumbs() BreadCrumbs {
@@ -38,12 +40,22 @@ func (page NodeDetailsPage) PageLayout() PageLayout {
 	}
 }
 
+func (page NodeDetailsPage) CalendarButton() templ.Component {
+	return HXButton{
+		Text:     "Calendar",
+		Method:   HxGet,
+		URL:      page.CourseCalendarURL,
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
 func (page NodeDetailsPage) PageTitle() string {
 	desig := page.Node.Designation()
 	if desig != "" {
-		desig = fmt.Sprintf(" (%s)", desig)
+		return fmt.Sprintf("%s (%s)", desig, page.Node.GetName())
 	}
-	return fmt.Sprintf("%s Details: %s%s", page.Node.TypeName(), page.Node.GetName(), desig)
+	return page.Node.GetName()
 
 }
 

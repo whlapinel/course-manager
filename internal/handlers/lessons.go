@@ -120,7 +120,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 
 func (h CourseHandler) LessonDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	page, err := h.lessonDetailsPage(params)
+	page, err := h.lessonDetailsPage(params, "")
 	if err != nil {
 		return err
 	}
@@ -184,6 +184,8 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		return respond(mt.EditDescriptionComponent(details))
 	} else if queryParam == templates.KebabCase(string(Name)) {
 		return respond(mt.EditNameComponent(details))
+	} else if queryParam == "number" {
+		return respond(mt.EditNumberComponent(details))
 	}
 	errText := "field value is not expected"
 	log.Println(errText)
@@ -271,6 +273,18 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			}
 			details := lessonDetails(lesson)
 			template = mt.EditNameComponent(details)
+		case "number":
+			num, err := strconv.Atoi(val[0])
+			if err != nil {
+				return err
+			}
+			lesson.Number = num
+			err = updateLesson()
+			if err != nil {
+				return err
+			}
+			details := lessonDetails(lesson)
+			template = mt.EditNumberComponent(details)
 		default:
 			log.Println("form key:", key)
 			panic("form key not expected!")
@@ -312,8 +326,12 @@ func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	template := mt.Slides(string(slidesContent))
-	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), template, nil)
+	page, err := h.lessonDetailsPage(params, slidesContent)
+	if err != nil {
+		return err
+	}
+	component := page.Component()
+	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), component, nil)
 }
 
 func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
@@ -593,7 +611,7 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page, err := h.lessonDetailsPage(params)
+	page, err := h.lessonDetailsPage(params, "")
 	if err != nil {
 		return err
 	}
@@ -602,7 +620,7 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	return Respond(c, "", component, layout)
 }
 
-func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams) (mt.LessonDetailsPage, error) {
+func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string) (mt.LessonDetailsPage, error) {
 	term, err := h.svc.GetTerm(params.TermID.Value)
 	if err != nil {
 		return mt.LessonDetailsPage{}, err
@@ -638,6 +656,9 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams) (mt.LessonDet
 			Lesson:           lesson,
 			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
 		},
+		Slides: slides,
+		CourseCalendarURL:       h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
+
 	}
 
 	var idParams = params.ToIntSlice()

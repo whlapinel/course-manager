@@ -88,6 +88,10 @@ func (d CalendarDirection) String() string {
 	return dirStringList[d]
 }
 
+func (l Lesson) GetNumber() int {
+	return l.Number
+}
+
 func ParseDirection(cd string) (CalendarDirection, error) {
 	for i, word := range dirStringList {
 		if cd == word {

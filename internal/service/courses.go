@@ -52,6 +52,26 @@ func (svc CourseService) GetCourseForCalendar(courseID int) (domain.Course, erro
 func (svc CourseService) GetCourse(courseID int) (domain.Course, error) {
 	return svc.repo.GetCourse(courseID)
 }
+
+func (svc CourseService) GetCourseWithChildren(courseID int) (domain.Course, error) {
+	course, err := svc.GetCourse(courseID)
+	if err != nil {
+		return domain.Course{}, err
+	}
+	units, err := svc.GetUnits(courseID)
+	if err != nil {
+		return domain.Course{}, err
+	}
+	for i, unit := range units {
+		lesson, err := svc.GetLessons(unit.ID)
+		if err != nil {
+			return domain.Course{}, err
+		}
+		units[i].Lessons = append(units[i].Lessons, lesson...)
+	}
+	course.Units = units
+	return course, nil
+}
 func (svc CourseService) GetCourses(termID int) (domain.Courses, error) {
 	return svc.repo.GetCourses(termID)
 }

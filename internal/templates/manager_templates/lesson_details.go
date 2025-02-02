@@ -41,7 +41,7 @@ func (page LessonDetailsPage) ViewSlidesButton() templ.Component {
 		Text:     "View Slides",
 		Method:   HxGet,
 		URL:      page.GetSlidesURL,
-		HxTarget: "#slides",
+		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
 

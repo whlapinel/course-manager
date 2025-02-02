@@ -1,6 +1,9 @@
 package managertemplates
 
-import "gh_static_portfolio/internal/domain"
+import (
+	"gh_static_portfolio/internal/domain"
+	"strconv"
+)
 
 // places buttons side by side
 templ ButtonContainer() {
@@ -93,6 +96,20 @@ templ EditNameComponent(props NodeDetailsPage) {
 	})
 }
 
+templ EditNumberComponent(props NodeDetailsPage) {
+	if props.Node.GetNumber() > 0 {
+		@EditFieldComponent(EditField{
+			FieldName:        "Number",
+			IsEdit:           props.IsEdit,
+			Content:          strconv.Itoa(props.Node.GetNumber()),
+			GetEditFieldURL:  props.GetEditNodeURL,
+			Params:           props.Params,
+			PostEditFieldURL: props.PostEditNodeURL,
+			InputComponent:   NumInputComponent("number", props.Node.GetNumber()),
+		})
+	}
+}
+
 templ EditDescriptionComponent(props NodeDetailsPage) {
 	@EditFieldComponent(EditField{
 		FieldName:        "Description",
@@ -139,6 +156,16 @@ templ InputComponent(inputID string, value string) {
 		name={ inputID }
 		id={ inputID }
 		value={ value }
+	/>
+}
+
+templ NumInputComponent(inputID string, value int) {
+	<input
+		class="bg-black"
+		type="number"
+		name={ inputID }
+		id={ inputID }
+		value={ strconv.Itoa(value) }
 	/>
 }
 

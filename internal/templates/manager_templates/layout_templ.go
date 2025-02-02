@@ -277,9 +277,9 @@ func BreadCrumbsComponent(props BreadCrumbs) templ.Component {
 						}
 						ctx = templ.InitializeContext(ctx)
 						var templ_7745c5c3_Var13 string
-						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(props.Unit.Name)
+						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(props.Unit.Designation())
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/layout.templ`, Line: 61, Col: 23}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/layout.templ`, Line: 61, Col: 32}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
@@ -313,9 +313,9 @@ func BreadCrumbsComponent(props BreadCrumbs) templ.Component {
 							}
 							ctx = templ.InitializeContext(ctx)
 							var templ_7745c5c3_Var15 string
-							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(props.Lesson.Name)
+							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(props.Lesson.Designation())
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/layout.templ`, Line: 66, Col: 26}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/layout.templ`, Line: 66, Col: 35}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 							if templ_7745c5c3_Err != nil {

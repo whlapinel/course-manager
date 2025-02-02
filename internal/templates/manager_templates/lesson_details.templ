@@ -20,23 +20,23 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			</ul>
 		} else {
 			<p>No standard selected</p>
-			<details>
-				<summary>Choose Standard</summary>
-				<ul>
-					for _, standard := range props.Standards {
-						<details>
-							<summary>{ standard.Name }</summary>
-							<select name="objective" id="objective-select">
-								for _, objective := range standard.Children {
-									<option value={ strconv.Itoa(objective.ID) }>{ strconv.Itoa(objective.Number) }{ objective.Name }</option>
-								}
-							</select>
-							<button hx-post={ props.PostLessonStandardURL } hx-include="#objective-select" hx-target="#page">Add</button>
-						</details>
-					}
-				</ul>
-			</details>
 		}
+		<details>
+			<summary>Choose Standard</summary>
+			<ul>
+				for _, standard := range props.Standards {
+					<details>
+						<summary>{ standard.Name }</summary>
+						<select name="objective" id={ "objective-select-" + strconv.Itoa(standard.ID) } class="bg-black">
+							for _, objective := range standard.Children {
+								<option value={ strconv.Itoa(objective.ID) }>{ strconv.Itoa(objective.Number) }{ objective.Name }</option>
+							}
+						</select>
+						<button hx-post={ props.PostLessonStandardURL } hx-include={ "#objective-select-" + strconv.Itoa(standard.ID) } hx-target="#page">Add</button>
+					</details>
+				}
+			</ul>
+		</details>
 		if props.Lesson().Assessments != nil {
 			<ul>
 				for _, assessment := range props.Lesson().Assessments {
@@ -101,7 +101,11 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			}
 		}
 	}
-	<div id="slides" class="flex justify-center"></div>
+	<div id="slides" class="flex justify-center">
+		if props.Slides != "" {
+			@Slides(props.Slides)
+		}
+	</div>
 }
 
 templ ObjectiveSelectComponent(props ObjectiveSelect) {

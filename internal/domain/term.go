@@ -47,6 +47,10 @@ func (t Term) GetName() string {
 	return t.Name
 }
 
+func (t Term) GetNumber() int {
+	return -1
+}
+
 func (t Term) GetDescription() string {
 	return t.Description
 }

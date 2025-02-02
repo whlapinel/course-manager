@@ -58,12 +58,12 @@ templ BreadCrumbsComponent(props BreadCrumbs) {
 				if props.Unit.ID != 0 {
 					>
 					@CrumbsButton(props.UnitDetailsURL) {
-						{ props.Unit.Name }
+						{ props.Unit.Designation() }
 					}
 					if props.Lesson.ID != 0 {
 						>
 						@CrumbsButton(props.LessonDetailsURL) {
-							{ props.Lesson.Name }
+							{ props.Lesson.Designation() }
 						}
 					}
 				}
