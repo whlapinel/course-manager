@@ -104,9 +104,11 @@ func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 		return err
 	}
 	page := mt.AddLessonToDatePage{
-		Date:   date,
-		Params: params,
-		Course: course,
+		Date:             date,
+		Params:           params,
+		Course:           course,
+		E:                h.e,
+		AddLessonDateRHN: string(PostAddLessonDate),
 	}
 	component := page.Component()
 	layout := h.CourseManagerLayout(component)
@@ -136,7 +138,7 @@ func (h CourseHandler) AddLessonDate(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...))
 }
 
 func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar, error) {

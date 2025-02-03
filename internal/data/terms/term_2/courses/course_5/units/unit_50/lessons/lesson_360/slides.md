@@ -12,7 +12,7 @@ paginate: true
 
 # Lesson 1.1
 
-testing testing
+Here is a changed slide
 
 # Warmup
 

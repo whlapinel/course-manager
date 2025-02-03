@@ -314,6 +314,7 @@ func (cr CourseRepo) GetLessonObjectives(lesson domain.Lesson) ([]domain.Standar
 				ID:          int(dbObjective.ID),
 				ParentID:    int(dbObjective.ParentID.Int64),
 				Number:      int(dbObjective.Number),
+				ParentNum:   int(dbObjective.ParentNum),
 				Name:        dbObjective.Name,
 				Description: dbObjective.Description.String,
 			},

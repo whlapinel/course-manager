@@ -13,7 +13,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			<ul>
 				for _, objective := range props.Lesson().Standards {
 					<li id="objective">
-						{ strconv.Itoa(objective.Number) } { objective.Name }
+						{ strconv.Itoa(objective.ParentNum) }.{ strconv.Itoa(objective.Number) } { objective.Name }
 						<button hx-delete={ props.DeleteStandardURL(objective.ID) } hx-target="#page">Remove</button>
 					</li>
 				}
@@ -29,7 +29,9 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 						<summary>{ standard.Name }</summary>
 						<select name="objective" id={ "objective-select-" + strconv.Itoa(standard.ID) } class="bg-black">
 							for _, objective := range standard.Children {
-								<option value={ strconv.Itoa(objective.ID) }>{ strconv.Itoa(objective.Number) }{ objective.Name }</option>
+								<option value={ strconv.Itoa(objective.ID) }>
+									{ strconv.Itoa(objective.ParentNum) }{ "." }{ strconv.Itoa(objective.Number) }{ " " }{ objective.Name }
+								</option>
 							}
 						</select>
 						<button hx-post={ props.PostLessonStandardURL } hx-include={ "#objective-select-" + strconv.Itoa(standard.ID) } hx-target="#page">Add</button>

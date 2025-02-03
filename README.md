@@ -19,3 +19,5 @@ It features a Go server on the backend, generating HTML with Templ, and HTMX on
 ![screenshot 1](screenshot1.png)
 
 ![screenshot 2](screenshot2.png)
+
+![Demo](./course-mgr-demo.gif)

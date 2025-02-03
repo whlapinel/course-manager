@@ -7,7 +7,9 @@ INSERT INTO standards (
 RETURNING *;
 
 -- name: GetStandardByID :one
-SELECT * FROM standards where id = ?;
+SELECT o.*, s.number as parent_num FROM standards o
+JOIN standards s ON s.id = o.parent_id
+WHERE o.id = ?;
 
 -- name: GetCourseStandards :many
 SELECT * FROM standards WHERE set_id = ? AND parent_id IS NULL;
@@ -16,9 +18,13 @@ SELECT * FROM standards WHERE set_id = ? AND parent_id IS NULL;
 SELECT * FROM standards WHERE set_id = ? AND parent_id IS NOT NULL;
 
 -- name: GetStandardObjectives :many
-SELECT * FROM standards WHERE parent_id = ?;
+SELECT o.*, s.number as parent_num
+FROM standards o
+JOIN standards s ON s.id = o.parent_id 
+WHERE o.parent_id = ?;
 
 -- name: GetLessonStandards :many
-SELECT s.* FROM standards s
+SELECT o.*, s.number as parent_num FROM standards o
+JOIN standards s ON s.id = o.parent_id 
 JOIN lesson_standards ls 
-ON ls.std_id = s.id AND ls.lesson_id = ?;
+ON ls.std_id = o.id AND ls.lesson_id = ?;

@@ -111,5 +111,6 @@ func (page AddLessonToDatePage) Component() templ.Component {
 func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
 	data.Params.UnitID.Value = unitID
 	data.Params.LessonID.Value = lessonID
-	return data.E.Reverse(data.AddLessonDateRHN, data.Params.ToIntSlice()...)
+	params := AddParam(data.Params, data.Date.Format(time.DateOnly))
+	return data.E.Reverse(data.AddLessonDateRHN, params...)
 }

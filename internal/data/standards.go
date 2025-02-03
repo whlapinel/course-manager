@@ -45,6 +45,7 @@ func (cr CourseRepo) GetStandardByID(standardID int) (domain.Standard, error) {
 			ID:          int(dbStandard.ID),
 			ParentID:    int(dbStandard.ParentID.Int64),
 			Number:      int(dbStandard.Number),
+			ParentNum:   int(dbStandard.ParentNum),
 			Name:        dbStandard.Name,
 			Description: dbStandard.Description.String,
 		},
@@ -65,6 +66,7 @@ func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.
 			ID:          int(dbObjective.ID),
 			ParentID:    int(dbObjective.ParentID.Int64),
 			Number:      int(dbObjective.Number),
+			ParentNum:   int(dbObjective.ParentNum),
 			Name:        dbObjective.Name,
 			Description: dbObjective.Description.String,
 		}

@@ -19,14 +19,15 @@ type Standard struct {
 type Objective struct {
 	ID          int
 	ParentID    int    // negative if no parent
+	ParentNum   int    // 0 if no parent
 	Number      int    // number should not include parent number
 	Name        string // official, from the state
 	Description string // unofficial, teacher or PLC created
 }
 
-func (std Standard) Designation(standard, parent Standard) string {
+func (std Standard) Designation(standard Standard) string {
 	if std.ParentID == 0 {
 		return strconv.Itoa(standard.Number)
 	}
-	return fmt.Sprintf("%d.%d", standard.Number, parent.Number)
+	return fmt.Sprintf("%d.%d", standard.Number, standard.ParentNum)
 }

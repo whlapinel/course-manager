@@ -79,20 +79,31 @@ func (q *Queries) GetCourseStandards(ctx context.Context, setID int64) ([]Standa
 }
 
 const getLessonStandards = `-- name: GetLessonStandards :many
-SELECT s.id, s.number, s.name, s.description, s.set_id, s.parent_id FROM standards s
+SELECT o.id, o.number, o.name, o.description, o.set_id, o.parent_id, s.number as parent_num FROM standards o
+JOIN standards s ON s.id = o.parent_id 
 JOIN lesson_standards ls 
-ON ls.std_id = s.id AND ls.lesson_id = ?
+ON ls.std_id = o.id AND ls.lesson_id = ?
 `
 
-func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Standard, error) {
+type GetLessonStandardsRow struct {
+	ID          int64
+	Number      int64
+	Name        string
+	Description sql.NullString
+	SetID       int64
+	ParentID    sql.NullInt64
+	ParentNum   int64
+}
+
+func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]GetLessonStandardsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getLessonStandards, lessonID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Standard
+	var items []GetLessonStandardsRow
 	for rows.Next() {
-		var i Standard
+		var i GetLessonStandardsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Number,
@@ -100,6 +111,7 @@ func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Sta
 			&i.Description,
 			&i.SetID,
 			&i.ParentID,
+			&i.ParentNum,
 		); err != nil {
 			return nil, err
 		}
@@ -115,12 +127,24 @@ func (q *Queries) GetLessonStandards(ctx context.Context, lessonID int64) ([]Sta
 }
 
 const getStandardByID = `-- name: GetStandardByID :one
-SELECT id, number, name, description, set_id, parent_id FROM standards where id = ?
+SELECT o.id, o.number, o.name, o.description, o.set_id, o.parent_id, s.number as parent_num FROM standards o
+JOIN standards s ON s.id = o.parent_id
+WHERE o.id = ?
 `
 
-func (q *Queries) GetStandardByID(ctx context.Context, id int64) (Standard, error) {
+type GetStandardByIDRow struct {
+	ID          int64
+	Number      int64
+	Name        string
+	Description sql.NullString
+	SetID       int64
+	ParentID    sql.NullInt64
+	ParentNum   int64
+}
+
+func (q *Queries) GetStandardByID(ctx context.Context, id int64) (GetStandardByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getStandardByID, id)
-	var i Standard
+	var i GetStandardByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Number,
@@ -128,23 +152,37 @@ func (q *Queries) GetStandardByID(ctx context.Context, id int64) (Standard, erro
 		&i.Description,
 		&i.SetID,
 		&i.ParentID,
+		&i.ParentNum,
 	)
 	return i, err
 }
 
 const getStandardObjectives = `-- name: GetStandardObjectives :many
-SELECT id, number, name, description, set_id, parent_id FROM standards WHERE parent_id = ?
+SELECT o.id, o.number, o.name, o.description, o.set_id, o.parent_id, s.number as parent_num
+FROM standards o
+JOIN standards s ON s.id = o.parent_id 
+WHERE o.parent_id = ?
 `
 
-func (q *Queries) GetStandardObjectives(ctx context.Context, parentID sql.NullInt64) ([]Standard, error) {
+type GetStandardObjectivesRow struct {
+	ID          int64
+	Number      int64
+	Name        string
+	Description sql.NullString
+	SetID       int64
+	ParentID    sql.NullInt64
+	ParentNum   int64
+}
+
+func (q *Queries) GetStandardObjectives(ctx context.Context, parentID sql.NullInt64) ([]GetStandardObjectivesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getStandardObjectives, parentID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Standard
+	var items []GetStandardObjectivesRow
 	for rows.Next() {
-		var i Standard
+		var i GetStandardObjectivesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Number,
@@ -152,6 +190,7 @@ func (q *Queries) GetStandardObjectives(ctx context.Context, parentID sql.NullIn
 			&i.Description,
 			&i.SetID,
 			&i.ParentID,
+			&i.ParentNum,
 		); err != nil {
 			return nil, err
 		}

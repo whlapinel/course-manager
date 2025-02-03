@@ -60,7 +60,10 @@ templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
 				<summary>{ unit.Name }</summary>
 				<ul>
 					for _, lesson := range unit.Lessons {
-						<li>{ lesson.Name }</li>
+						<li
+							hx-post={ page.AddLessonDateURL(unit.ID, lesson.ID) }
+							hx-target="#page"
+						>{ lesson.Name }</li>
 					}
 				</ul>
 			}
