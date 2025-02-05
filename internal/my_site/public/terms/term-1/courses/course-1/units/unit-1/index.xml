@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Unit 1 on My New Hugo Site</title>
+    <link>http://localhost:1313/terms/term-1/courses/course-1/units/unit-1/</link>
+    <description>Recent content in Unit 1 on My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 05 Feb 2025 13:28:11 -0500</lastBuildDate>
+    <atom:link href="http://localhost:1313/terms/term-1/courses/course-1/units/unit-1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lesson 1</title>
+      <link>http://localhost:1313/terms/term-1/courses/course-1/units/unit-1/lessons/lesson-1/</link>
+      <pubDate>Wed, 05 Feb 2025 13:28:11 -0500</pubDate>
+      <guid>http://localhost:1313/terms/term-1/courses/course-1/units/unit-1/lessons/lesson-1/</guid>
+      <description>&lt;p&gt;This is a Lesson Page&lt;/p&gt;&#xA;&lt;h1 id=&#34;what&#34;&gt;what&lt;/h1&gt;&#xA;&lt;h2 id=&#34;how&#34;&gt;how&lt;/h2&gt;&#xA;&lt;h3 id=&#34;when&#34;&gt;when&lt;/h3&gt;&#xA;&lt;h4 id=&#34;why&#34;&gt;why&lt;/h4&gt;&#xA;&lt;h5 id=&#34;where&#34;&gt;where&lt;/h5&gt;&#xA;&lt;h6 id=&#34;who&#34;&gt;who&lt;/h6&gt;</description>
+    </item>
+  </channel>
+</rss>

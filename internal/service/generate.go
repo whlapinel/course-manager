@@ -1,12 +1,21 @@
 package service
 
 import (
+	genhugosite "gh_static_portfolio/internal/gen_hugo_site"
 	sitegenerator "gh_static_portfolio/internal/gen_site"
 	"os/exec"
 )
 
-func (svc CourseService) GenerateSite() {
-	sitegenerator.Generate(svc.repo)
+func (svc CourseService) GenerateSite() error {
+	err := sitegenerator.Generate(svc.repo)
+	if err != nil {
+		return err
+	}
+	err = genhugosite.Generate(svc.repo)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (svc CourseService) SyncSite() error {
