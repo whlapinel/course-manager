@@ -32,6 +32,7 @@ func NewTerm(params NewTermParams) (Term, error) {
 type TermType string
 
 type Term struct {
+	UserID               int
 	Start                time.Time
 	End                  time.Time
 	NonInstructionalDays []time.Time
@@ -60,7 +61,7 @@ func (t Term) GetID() int {
 }
 
 func (t Term) GetParentID() int {
-	return 0
+	return t.UserID
 }
 
 func (t Term) Children() []CourseNode {
@@ -76,7 +77,7 @@ func (t Term) TypeName() string {
 }
 
 func (t Term) ParentTypeName() string {
-	return RootTypeName.String()
+	return UserTypeName.String()
 }
 
 func (t Term) ChildTypeName() string {

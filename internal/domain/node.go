@@ -18,6 +18,7 @@ type NodeTypeName string
 
 const (
 	RootTypeName   NodeTypeName = "Root"
+	UserTypeName   NodeTypeName = "User"
 	TermTypeName   NodeTypeName = "Term"
 	CourseTypeName NodeTypeName = "Course"
 	UnitTypeName   NodeTypeName = "Unit"
@@ -29,7 +30,7 @@ func (n NodeTypeName) String() string {
 }
 
 type RootCourseNode struct {
-	Terms []Term
+	Users []User
 }
 
 func (root RootCourseNode) GetNumber() int {
@@ -50,8 +51,13 @@ func (r RootCourseNode) GetDescription() string {
 	return ""
 }
 func (r RootCourseNode) Children() []CourseNode {
-	return []CourseNode{}
+	var nodes []CourseNode
+	for _, user := range r.Users {
+		nodes = append(nodes, &user)
+	}
+	return nodes
 }
+
 func (r RootCourseNode) TypeName() string {
 	return RootTypeName.String()
 

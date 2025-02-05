@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/assets"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/handlers"
@@ -9,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -34,6 +36,26 @@ func main() {
 	courseHandler := handlers.NewCourseHandler(e, service.NewCourseService(courseRepo))
 	courseHandler.Mount()
 	assets.RegisterStatic(e)
-	e.Logger.Fatal(e.Start(":1323"))
+	LoadEnvironment()
+	host := os.Getenv("HOST")
+	log.Println("Host:", host)
+	port := os.Getenv("PORT")
+	log.Println("Port:", port)
+	startString := fmt.Sprintf("%s:%s", host, port)
+	e.Logger.Fatal(e.Start(startString))
 
+}
+
+func LoadEnvironment() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Println(err)
+		log.Fatal("Error loading .env file")
+	}
+	if os.Getenv("ENV") == "development" {
+		godotenv.Load(".env.development")
+	}
+	if os.Getenv("ENV") == "production" {
+		godotenv.Load(".env.production")
+	}
 }

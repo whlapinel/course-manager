@@ -29,3 +29,6 @@ Here is a changed slide
 - Assignment 1.2: Practice with `for` loops
 
 [Assignment 1.2](../files/py2assignment1_2.py)
+
+- If you finish early, enroll in the CodeHS course and begin working on the unit on Classes and Objects
+[CodeHS link](https://codehs.com/go/0351E)
