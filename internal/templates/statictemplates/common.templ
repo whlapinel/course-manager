@@ -62,11 +62,17 @@ templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, s
 templ TitleDivNew(data TitleDivData) {
 	<div class="flex flex-col gap-6 max-w-3xl">
 		<h1 class=" text-4xl">{ data.title }</h1>
-		<h3>Standards/Objectives:</h3>
-		for _, standard := range data.standards {
-			<p>{ standard }</p>
-		}
 		<p class="text-2xl">{ data.description }</p>
+		if len(data.standards) != 0 {
+			<details>
+				<summary class="text-xl">Standards/Objectives</summary>
+				<ul>
+					for _, standard := range data.standards {
+						<li>{ strconv.Itoa(standard.Number) }: { standard.Name }</li>
+					}
+				</ul>
+			</details>
+		}
 		if data.showImg == true {
 			if data.lightBg {
 				<img src={ string(FilePathToURL(data.imgPath)) } class="max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300"/>

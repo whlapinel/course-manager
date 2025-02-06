@@ -1,17 +1,31 @@
 package genhugosite
 
 import (
+	"bytes"
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
+	"time"
 )
 
 func Generate(repo data.CourseRepo) error {
-	err := os.RemoveAll("./internal/my_site/content")
+	contentPath := "./internal/my_site/content"
+	err := os.RemoveAll(contentPath)
+	if err != nil {
+		return err
+	}
+	publicPath := "./internal/my_site/public"
+	err = os.RemoveAll(publicPath)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(contentPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -19,15 +33,73 @@ func Generate(repo data.CourseRepo) error {
 	if err != nil {
 		return err
 	}
+	var nodes []domain.CourseNode
 	for _, term := range terms {
-		path := NodeDirPath(term)
-		workingDir := "./internal/my_site"
-		err = os.Chdir(workingDir)
+		nodes = append(nodes, term)
+	}
+	err = GenerateHugo(nodes)
+	if err != nil {
+		return err
+	}
+	for _, term := range terms {
+		courses, err := repo.GetCourses(term.ID)
 		if err != nil {
 			return err
 		}
-		cmd := exec.Command("hugo", "new", "content", path)
-		err = cmd.Run()
+		var nodes []domain.CourseNode
+		for _, course := range courses {
+			nodes = append(nodes, course)
+		}
+		err = GenerateHugo(nodes, term)
+		if err != nil {
+			return err
+		}
+		for _, course := range courses {
+			units, err := repo.GetUnits(course.ID)
+			if err != nil {
+				return err
+			}
+			var nodes []domain.CourseNode
+			for _, unit := range units {
+				nodes = append(nodes, unit)
+			}
+			err = GenerateHugo(nodes, term, course)
+			if err != nil {
+				return err
+			}
+			for _, unit := range units {
+				lessons, err := repo.GetLessons(unit.ID)
+				if err != nil {
+					return err
+				}
+				var nodes []domain.CourseNode
+				for _, lesson := range lessons {
+					nodes = append(nodes, lesson)
+				}
+				err = GenerateHugo(nodes, term, course, unit)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+	return nil
+
+}
+
+func GenerateHugo(children []domain.CourseNode, parents ...domain.CourseNode) error {
+	listParents := append(parents, children[0])
+	listPath := NodeListDirPath(listParents...)
+	listIndexPath := BranchBundlePage(listPath)
+	err := CreateHugoContent(listIndexPath)
+	if err != nil {
+		return err
+	}
+	for _, child := range children {
+		nodePath := NodeDirPath(listPath, child)
+		nodePath = BranchBundlePage(nodePath)
+		err = CreateHugoContent(nodePath)
 		if err != nil {
 			return err
 		}
@@ -36,15 +108,87 @@ func Generate(repo data.CourseRepo) error {
 
 }
 
-func NodeDirPath(nodes ...domain.CourseNode) string {
+func CreateHugoContent(path string) error {
+	cmd := exec.Command("hugo", "new", "content", path)
+	cmd.Dir = "./internal/my_site/"
+	var outBuf, errBuf bytes.Buffer
+	cmd.Stdout = &outBuf
+	cmd.Stderr = &errBuf
+
+	err := cmd.Run()
+
+	// Print the full output
+	fmt.Println("STDOUT:", outBuf.String())
+	fmt.Println("STDERR:", errBuf.String())
+
+	if err != nil {
+		fmt.Println("Hugo command failed:", err)
+		return fmt.Errorf("hugo error: %v\nSTDOUT: %s\nSTDERR: %s", err, outBuf.String(), errBuf.String())
+	}
+	return nil
+
+}
+
+func BranchBundlePage(path string) string {
+	return filepath.Join(path, "_index.md")
+}
+
+func NodeListDirPath(nodes ...domain.CourseNode) string {
 	var path = "content"
-	for _, node := range nodes {
+	for i, node := range nodes {
 		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
+		if i == len(nodes)-1 {
+			break
+		}
 		path = filepath.Join(
 			path,
 			fmt.Sprintf("%s-%d", strings.ToLower(node.TypeName()), node.GetID()),
 		)
-		path = filepath.Join(path, "_index.md")
 	}
 	return path
+}
+
+func NodeDirPath(listPath string, node domain.CourseNode) string {
+	path := filepath.Join(
+		listPath,
+		fmt.Sprintf("%s-%d", strings.ToLower(node.TypeName()), node.GetID()),
+	)
+	return path
+}
+
+func WriteNodeListPageToMarkdown(node domain.CourseNode, path string) error {
+	tpl := template.Must(template.ParseFiles("internal/gen_hugo_site/node_list.md"))
+	file, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("error in creating file: %v", err)
+	}
+	err = tpl.Execute(file, node)
+	if err != nil {
+		return fmt.Errorf("error in executing template: %v", err)
+	}
+	return nil
+
+}
+
+func WriteNodePageToMarkdown(node domain.CourseNode, path string) error {
+	tpl := template.Must(template.ParseFiles("internal/gen_hugo_site/node.md"))
+	log.Println(os.Getwd())
+	file, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("error in creating file: %v", err)
+	}
+	data := NodePageData{
+		Date: time.Now(),
+		Node: node,
+	}
+	err = tpl.Execute(file, data)
+	if err != nil {
+		return fmt.Errorf("error in executing template: %v", err)
+	}
+	return nil
+}
+
+type NodePageData struct {
+	Date time.Time
+	Node domain.CourseNode
 }

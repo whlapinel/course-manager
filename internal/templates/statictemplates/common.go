@@ -131,7 +131,8 @@ func rootPages() []Page {
 
 type TitleDivData struct {
 	title, description, imgPath string
-	standards                   []string
+	standards                   []domain.Standard
+	Assessments                 []domain.Assessment
 	showImg                     bool
 	lightBg                     bool
 }
