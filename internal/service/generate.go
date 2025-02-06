@@ -10,10 +10,6 @@ func (svc CourseService) GenerateSite() error {
 	if err != nil {
 		return err
 	}
-	// err = genhugosite.Generate(svc.repo)
-	// if err != nil {
-	// 	return err
-	// }
 	return nil
 }
 
