@@ -1,6 +1,7 @@
 +++
-date = "2025-02-06T11:20:52-05:00"
+date = "2025-02-06T13:57:39-05:00"
 draft = true
+type = "node"
 title = "Begin reviewing Python 1"
 name = "Begin reviewing Python 1"
 designation = "Lesson 0.2"

@@ -6,12 +6,17 @@
 </head>
 
 <body>
-    <h1>{{ .Title }}</h1>
+    <h1>{{ .Title }} for {{ .Params.name }}</h1>
     <ul>
         {{ range .Pages }}
+        {{ if .Params.designation }}
+        <li><a href="{{ .RelPermalink }}">{{.Params.designation}} : {{ .Title }}</a></li>
+        {{ else }}
         <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
         {{ end }}
+        {{ end }}
     </ul>
+
 </body>
 
 </html>

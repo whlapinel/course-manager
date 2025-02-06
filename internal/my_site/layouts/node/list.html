@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{ .Title }}</title>
+</head>
+
+<body>
+    <h1>{{ .Title }}</h1>
+    <ul>
+        {{ range .Pages }}
+        {{ if .Params.designation }}
+        <li><a href="{{ .RelPermalink }}">{{.Params.designation}} : {{ .Title }}</a></li>
+        {{ else }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{ end }}
+        {{ end }}
+    </ul>
+    <ul>
+        <li>Name: {{ .Params.name }}</li>
+        <li>Designation: {{ .Params.designation }}</li>
+        <li>Type Name: {{ .Params.type_name }}</li>
+        <li>ID: {{ .Params.id }}</li>
+        <li>Number: {{ .Params.number }}</li>
+        <li>Parent ID: {{ .Params.parent_id }}</li>
+        <li>Description: {{ .Params.description }}</li>
+        <li>Parent Type Name: {{ .Params.parent_type_name }}</li>
+        <li>Child Type Name: {{ .Params.child_type_name }}</li>
+    </ul>
+</body>
+
+</html>
