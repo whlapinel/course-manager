@@ -1,5 +1,5 @@
 +++
-date = {{ .Date }}
+date = "{{ .Date }}"
 draft = true
-title = {{ .Node.TypeName }}s
+title = "{{ .Node.TypeName }}s"
 +++

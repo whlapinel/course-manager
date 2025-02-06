@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:47-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Lesson 364'
+title = "Practice with dictionaries and list comprehensions"
+name = "Practice with dictionaries and list comprehensions"
+designation = "Lesson 1.5"
+type_name = "Lesson"
+id = 364
+number = 5
+parent_id = 50
+description = ""
+parent_type_name = "Unit"
+child_type_name = ""
 +++

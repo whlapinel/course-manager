@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:57-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Lesson 402'
+title = "Midterm Review and exam Day 8"
+name = "Midterm Review and exam Day 8"
+designation = "Midterm Review and exam: Day 8"
+type_name = "Lesson"
+id = 402
+number = 8
+parent_id = 55
+description = "Makeup and remediation"
+parent_type_name = "Unit"
+child_type_name = ""
 +++

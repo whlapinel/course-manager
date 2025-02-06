@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestPath(t *testing.T) {
+func TestGenerate(t *testing.T) {
 	err := Generate(repo)
 	if err != nil {
 		t.Error(err)

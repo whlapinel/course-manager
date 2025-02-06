@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:14-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Unit 40'
+title = "Unit 3"
+name = "Unit 3"
+designation = "Unit 3"
+type_name = "Unit"
+id = 40
+number = 3
+parent_id = 4
+description = "Basic Python and Console Interaction"
+parent_type_name = "Course"
+child_type_name = "Lesson"
 +++

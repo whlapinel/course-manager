@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:45-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Lesson 358'
+title = "Begin reviewing Python 1"
+name = "Begin reviewing Python 1"
+designation = "Lesson 0.2"
+type_name = "Lesson"
+id = 358
+number = 2
+parent_id = 49
+description = "Begin reviewing Python 1 concepts starting with If statements, do some practice problems to knock off the rust."
+parent_type_name = "Unit"
+child_type_name = ""
 +++

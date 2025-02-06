@@ -1,12 +1,10 @@
 package genhugosite
 
 import (
-	"bytes"
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -109,33 +107,12 @@ func GenerateHugo(children []domain.CourseNode, parents ...domain.CourseNode) er
 
 }
 
-func CreateHugoContent(path string) error {
-	cmd := exec.Command("hugo", "new", "content", path)
-	cmd.Dir = "./internal/my_site/"
-	var outBuf, errBuf bytes.Buffer
-	cmd.Stdout = &outBuf
-	cmd.Stderr = &errBuf
-
-	err := cmd.Run()
-
-	// Print the full output
-	fmt.Println("STDOUT:", outBuf.String())
-	fmt.Println("STDERR:", errBuf.String())
-
-	if err != nil {
-		fmt.Println("Hugo command failed:", err)
-		return fmt.Errorf("hugo error: %v\nSTDOUT: %s\nSTDERR: %s", err, outBuf.String(), errBuf.String())
-	}
-	return nil
-
-}
-
 func BranchBundlePage(path string) string {
 	return filepath.Join(path, "_index.md")
 }
 
 func NodeListDirPath(nodes ...domain.CourseNode) string {
-	var path = "content"
+	var path = "./internal/my_site/content"
 	for i, node := range nodes {
 		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
 		if i == len(nodes)-1 {
@@ -190,8 +167,9 @@ func WriteNodePageToMarkdown(node domain.CourseNode, path string) error {
 		return fmt.Errorf("error in creating file: %v", err)
 	}
 	data := NodePageData{
-		Date: time.Now().Format("2006-01-02T15:04:05-07:00"),
-		Node: node,
+		Date:                 time.Now().Format("2006-01-02T15:04:05-07:00"),
+		Node:                 node,
+		SanitizedDescription: strings.ReplaceAll(node.GetDescription(), "\n", " "),
 	}
 	err = tpl.Execute(file, data)
 	if err != nil {
@@ -201,8 +179,9 @@ func WriteNodePageToMarkdown(node domain.CourseNode, path string) error {
 }
 
 type NodePageData struct {
-	Date string
-	Node domain.CourseNode
+	Date                 string
+	Node                 domain.CourseNode
+	SanitizedDescription string
 }
 
 type NodeListPageData struct {

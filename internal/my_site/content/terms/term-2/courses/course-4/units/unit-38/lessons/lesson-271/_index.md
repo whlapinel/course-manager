@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:17-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Lesson 271'
+title = "Data types"
+name = "Data types"
+designation = "Lesson 1.1"
+type_name = "Lesson"
+id = 271
+number = 1
+parent_id = 38
+description = "Brief lecture to introduce Python data types, complete CodeHS 2.5 and 2.6 and Assignment 1.1 on Python Data Types."
+parent_type_name = "Unit"
+child_type_name = ""
 +++

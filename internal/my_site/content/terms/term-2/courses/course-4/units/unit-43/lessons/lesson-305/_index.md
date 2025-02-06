@@ -1,5 +1,14 @@
 +++
-date = '2025-02-05T22:00:27-05:00'
+date = "2025-02-06T11:20:52-05:00"
 draft = true
-title = 'Lesson 305'
+title = "Lesson 6.7"
+name = "Lesson 6.7"
+designation = "Lesson 6.7"
+type_name = "Lesson"
+id = 305
+number = 7
+parent_id = 43
+description = ""
+parent_type_name = "Unit"
+child_type_name = ""
 +++

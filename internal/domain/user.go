@@ -17,7 +17,7 @@ func (u *User) ChildTypeName() string {
 func (u *User) Children() []CourseNode {
 	var nodes []CourseNode
 	for _, term := range u.Terms {
-		nodes = append(nodes, term)
+		nodes = append(nodes, &term)
 	}
 	return nodes
 }
