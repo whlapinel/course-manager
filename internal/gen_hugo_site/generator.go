@@ -7,104 +7,185 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 	"time"
 )
 
 func Generate(repo data.CourseRepo) error {
 	contentPath := "./internal/my_site/content"
-	err := os.RemoveAll(contentPath)
-	if err != nil {
-		return err
-	}
 	publicPath := "./internal/my_site/public"
-	err = os.RemoveAll(publicPath)
-	if err != nil {
+
+	// Cleanup old content
+	if err := os.RemoveAll(contentPath); err != nil {
 		return err
 	}
-	err = os.MkdirAll(contentPath, os.ModePerm)
-	if err != nil {
+	if err := os.RemoveAll(publicPath); err != nil {
 		return err
 	}
+	if err := os.MkdirAll(contentPath, os.ModePerm); err != nil {
+		return err
+	}
+
 	terms, err := repo.GetTerms()
 	if err != nil {
 		return err
 	}
-	var nodes []domain.CourseNode
-	for _, term := range terms {
-		nodes = append(nodes, term)
-	}
-	err = GenerateHugo(nodes)
-	if err != nil {
-		return err
-	}
-	for _, term := range terms {
-		courses, err := repo.GetCourses(term.ID)
-		if err != nil {
-			return err
-		}
-		var nodes []domain.CourseNode
-		for _, course := range courses {
-			nodes = append(nodes, course)
-		}
-		err = GenerateHugo(nodes, term)
-		if err != nil {
-			return err
-		}
-		for _, course := range courses {
-			units, err := repo.GetUnits(course.ID)
-			if err != nil {
-				return err
-			}
-			var nodes []domain.CourseNode
-			for _, unit := range units {
-				nodes = append(nodes, unit)
-			}
-			err = GenerateHugo(nodes, term, course)
-			if err != nil {
-				return err
-			}
-			for _, unit := range units {
-				lessons, err := repo.GetLessons(unit.ID)
-				if err != nil {
-					return err
-				}
-				var nodes []domain.CourseNode
-				for _, lesson := range lessons {
-					nodes = append(nodes, lesson)
-				}
-				err = GenerateHugo(nodes, term, course, unit)
-				if err != nil {
-					return err
-				}
 
+	var wg sync.WaitGroup
+	errChan := make(chan error, 100) // Buffered channel for error handling
+
+	// Process terms in parallel
+	for _, term := range terms {
+		wg.Add(1)
+		go func(term domain.CourseNode) {
+			defer wg.Done()
+			if err := processTerm(repo, term, errChan); err != nil {
+				errChan <- err
 			}
+		}(term)
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+	close(errChan)
+
+	// Collect any errors
+	for err := range errChan {
+		if err != nil {
+			return err
 		}
 	}
 	return nil
+}
 
+func processTerm(repo data.CourseRepo, term domain.CourseNode, errChan chan error) error {
+	err := GenerateHugo([]domain.CourseNode{term})
+	if err != nil {
+		return err
+	}
+
+	courses, err := repo.GetCourses(term.GetID())
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	for _, course := range courses {
+		wg.Add(1)
+		go func(course domain.CourseNode) {
+			defer wg.Done()
+			if err := processCourse(repo, term, course, errChan); err != nil {
+				errChan <- err
+			}
+		}(course)
+	}
+	wg.Wait()
+	return nil
+}
+
+func processCourse(repo data.CourseRepo, term, course domain.CourseNode, errChan chan error) error {
+	err := GenerateHugo([]domain.CourseNode{course}, term)
+	if err != nil {
+		return err
+	}
+
+	units, err := repo.GetUnits(course.GetID())
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	for _, unit := range units {
+		wg.Add(1)
+		go func(unit domain.CourseNode) {
+			defer wg.Done()
+			if err := processUnit(repo, term, course, unit, errChan); err != nil {
+				errChan <- err
+			}
+		}(unit)
+	}
+	wg.Wait()
+	return nil
+}
+
+func processUnit(repo data.CourseRepo, term, course, unit domain.CourseNode, errChan chan error) error {
+	err := GenerateHugo([]domain.CourseNode{unit}, term, course)
+	if err != nil {
+		return err
+	}
+
+	lessons, err := repo.GetLessons(unit.GetID())
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	for _, lesson := range lessons {
+		wg.Add(1)
+		go func(lesson domain.CourseNode) {
+			defer wg.Done()
+			if err := GenerateHugo([]domain.CourseNode{lesson}, term, course, unit); err != nil {
+				errChan <- err
+			}
+		}(lesson)
+	}
+	wg.Wait()
+	return nil
 }
 
 func GenerateHugo(children []domain.CourseNode, parents ...domain.CourseNode) error {
 	listParents := append(parents, children[0])
 	listPath := NodeListDirPath(listParents...)
 	listIndexPath := BranchBundlePage(listPath)
-	err := WriteNodeListPageToMarkdown(children[0], listIndexPath)
-	// err := CreateHugoContent(listIndexPath)
+	var parentNode domain.CourseNode
+	if parents != nil {
+		parentNode = parents[len(parents)-1]
+	} else {
+		parentNode = &domain.User{
+			FirstName: "Billy",
+			LastName:  "Bob",
+		}
+	}
+
+	// Use Mutex to prevent concurrent file writing issues
+	var mu sync.Mutex
+	mu.Lock()
+	err := WriteNodeListPageToMarkdown(children[0], parentNode, listIndexPath)
+	mu.Unlock()
 	if err != nil {
 		return err
 	}
+
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(children))
+
 	for _, child := range children {
-		nodePath := NodeDirPath(listPath, child)
-		nodePath = BranchBundlePage(nodePath)
-		err := WriteNodePageToMarkdown(child, nodePath)
-		// err = CreateHugoContent(nodePath)
+		wg.Add(1)
+		go func(child domain.CourseNode) {
+			defer wg.Done()
+			nodePath := NodeDirPath(listPath, child)
+			nodePath = BranchBundlePage(nodePath)
+
+			mu.Lock()
+			err := WriteNodePageToMarkdown(child, nodePath)
+			mu.Unlock()
+
+			if err != nil {
+				errChan <- err
+			}
+		}(child)
+	}
+
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
 		if err != nil {
 			return err
 		}
 	}
 	return nil
-
 }
 
 func BranchBundlePage(path string) string {
@@ -134,7 +215,7 @@ func NodeDirPath(listPath string, node domain.CourseNode) string {
 	return path
 }
 
-func WriteNodeListPageToMarkdown(node domain.CourseNode, path string) error {
+func WriteNodeListPageToMarkdown(node, parentNode domain.CourseNode, path string) error {
 	tpl := template.Must(template.ParseFiles("internal/gen_hugo_site/node_list.md"))
 	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
@@ -145,8 +226,9 @@ func WriteNodeListPageToMarkdown(node domain.CourseNode, path string) error {
 		return fmt.Errorf("error in creating file: %v", err)
 	}
 	data := NodeListPageData{
-		Date: time.Now().Format("2006-01-02T15:04:05-07:00"),
-		Node: node,
+		Date:       time.Now().Format("2006-01-02T15:04:05-07:00"),
+		Node:       node,
+		ParentName: parentNode.GetName(),
 	}
 	err = tpl.Execute(file, data)
 	if err != nil {
@@ -185,6 +267,7 @@ type NodePageData struct {
 }
 
 type NodeListPageData struct {
-	Date string
-	Node domain.CourseNode
+	Date       string
+	Node       domain.CourseNode
+	ParentName string
 }

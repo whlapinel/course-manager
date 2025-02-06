@@ -3,6 +3,7 @@ package genhugosite
 import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
+	"gh_static_portfolio/internal/domain"
 	"os"
 	"path/filepath"
 	"testing"
@@ -44,7 +45,7 @@ func TestWriteNodeToMarkdown(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = WriteNodeListPageToMarkdown(node, "./internal/gen_hugo_site/test_list_node.md")
+	err = WriteNodeListPageToMarkdown(node, &domain.User{}, "./internal/gen_hugo_site/test_list_node.md")
 	if err != nil {
 		t.Error(err)
 	}

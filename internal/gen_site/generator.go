@@ -14,40 +14,81 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Generate creates the static site using concurrent operations.
 func Generate(courseRepo data.CourseRepo) error {
 	log.Println("sitegenerator.Generate(): generating site")
-	GenerateTempl()
-	BuildTailwind()
-	BuildTypeScript()
-	directories := templates.DirectoriesClearList()
-	for _, directory := range directories {
-		ClearHTMLFiles(directory)
-	}
-	// delete ./python/docs/courses so there are no orphan files
-	for _, dir := range templates.DeleteDirList() {
-		err := os.RemoveAll(dir)
-		if err != nil {
-			return fmt.Errorf("failed to delete directory: %s: %v", dir, err)
-		}
+
+	// Run build commands concurrently.
+	g, ctx := errgroup.WithContext(context.Background())
+	g.Go(func() error {
+		GenerateTempl()
+		return nil
+	})
+	g.Go(func() error {
+		BuildTailwind()
+		return nil
+	})
+	g.Go(func() error {
+		BuildTypeScript()
+		return nil
+	})
+	if err := g.Wait(); err != nil {
+		return err
 	}
 
-	// Generate home page
+	// Clear HTML files concurrently in each directory.
+	clearDirs := templates.DirectoriesClearList()
+	g, ctx = errgroup.WithContext(ctx)
+	for _, dir := range clearDirs {
+		directory := dir // capture loop variable
+		g.Go(func() error {
+			return ClearHTMLFiles(directory)
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
+	// Delete directories concurrently.
+	deleteDirs := templates.DeleteDirList()
+	g, ctx = errgroup.WithContext(ctx)
+	for _, dir := range deleteDirs {
+		directory := dir
+		g.Go(func() error {
+			err := os.RemoveAll(directory)
+			if err != nil {
+				return fmt.Errorf("failed to delete directory %s: %v", directory, err)
+			}
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
+	// Render the home and contact pages concurrently.
 	homePage := sst.NewHomePage()
-	err := RenderPage(homePage)
-	if err != nil {
-		return fmt.Errorf("failed to render pages: %v", err)
-	}
-	// Generate contact page
 	contactPage := sst.NewContactPage()
-	err = RenderPage(contactPage)
-	if err != nil {
-		return fmt.Errorf("failed to render pages: %v", err)
+	g, ctx = errgroup.WithContext(ctx)
+	g.Go(func() error {
+		return RenderPage(homePage)
+	})
+	g.Go(func() error {
+		return RenderPage(contactPage)
+	})
+	if err := g.Wait(); err != nil {
+		return err
 	}
+
+	// Get the terms from the course repository and select the current term.
 	terms, err := courseRepo.GetTerms()
 	if err != nil {
 		return fmt.Errorf("error fetching term: %s", err)
@@ -58,92 +99,125 @@ func Generate(courseRepo data.CourseRepo) error {
 			currentTerm = term
 		}
 	}
-	log.Println()
 	if currentTerm.Start.IsZero() {
-		return fmt.Errorf("main(): term not initialized")
+		return errors.New("main(): term not initialized")
 	}
-	// Generate "courses I teach" list page
+
+	// Get courses for the current term.
 	courses, err := courseRepo.GetCourses(currentTerm.ID)
 	if err != nil {
-		return fmt.Errorf("error getting instances: %v", err)
+		return fmt.Errorf("error getting courses: %v", err)
 	}
+
+	// Render the courses list page concurrently.
 	coursesPage := sst.NewCoursesListPage(courses)
-	err = RenderPage(coursesPage)
-	if err != nil {
-		return fmt.Errorf("failed to render pages: %v", err)
-	}
+	g, ctx = errgroup.WithContext(ctx)
+	g.Go(func() error {
+		return RenderPage(coursesPage)
+	})
+
+	// Use sync.Once to ensure the node directory copy happens only once.
+	var copyOnce sync.Once
+	var copyErr error
+
+	// Process each course concurrently.
 	for _, course := range courses {
-		err = data.CopyNodeDir(data.NodeDirPath(currentTerm), templates.StaticSiteRootDir)
-		if err != nil {
-			return err
-		}
-		if course.Term.Start.IsZero() {
-			return fmt.Errorf("main(): instance.Term.Start is zero")
-		}
-		// Generate calendar page for each course
-		calendarPage := sst.NewCourseCalendarPage(course)
-		err = RenderPage(calendarPage)
-		if err != nil {
-			return fmt.Errorf("failed to render pages: %v", err)
-		}
-		coursePage := sst.NewCoursePage(course)
-		err = RenderPage(coursePage)
-		if err != nil {
-			return fmt.Errorf("failed to render pages: %v", err)
-		}
-		for _, unit := range course.Units {
-			unitPage := sst.NewUnitPage(unit, course)
-			err = RenderPage(unitPage)
-			if err != nil {
-				return fmt.Errorf("failed to render pages: %v", err)
+		course := course // capture loop variable
+		g.Go(func() error {
+			// Copy the node directory only once.
+			copyOnce.Do(func() {
+				copyErr = data.CopyNodeDir(data.NodeDirPath(currentTerm), templates.StaticSiteRootDir)
+			})
+			if copyErr != nil {
+				return copyErr
 			}
-			lessons, err := courseRepo.GetLessons(unit.ID)
-			for i, lesson := range lessons {
-				lessonDates, err := courseRepo.GetLessonDates(lesson.ID)
-				if err != nil {
-					return err
-				}
-				lesson.Dates = lessonDates
-				objectives, err := courseRepo.GetLessonObjectives(lesson)
-				if err != nil {
-					return err
-				}
-				lesson.Standards = objectives
-				lessons[i] = lesson
+			if course.Term.Start.IsZero() {
+				return errors.New("main(): instance.Term.Start is zero")
+			}
+			if err := RenderPage(sst.NewCourseCalendarPage(course)); err != nil {
+				return fmt.Errorf("failed to render calendar page: %v", err)
+			}
+			if err := RenderPage(sst.NewCoursePage(course)); err != nil {
+				return fmt.Errorf("failed to render course page: %v", err)
 			}
 
-			if err != nil {
-				return fmt.Errorf("failed to get lessons: %s", err)
+			// Process each unit in the course concurrently.
+			var unitGroup errgroup.Group
+			for _, unit := range course.Units {
+				unit := unit // capture loop variable
+				unitGroup.Go(func() error {
+					if err := RenderPage(sst.NewUnitPage(unit, course)); err != nil {
+						return fmt.Errorf("failed to render unit page: %v", err)
+					}
+					lessons, err := courseRepo.GetLessons(unit.ID)
+					if err != nil {
+						return fmt.Errorf("failed to get lessons for unit %v: %w", unit, err)
+					}
+					// Process each lesson concurrently.
+					var lessonGroup errgroup.Group
+					for _, lesson := range lessons {
+						lesson := lesson // capture loop variable
+						lessonGroup.Go(func() error {
+							lessonDates, err := courseRepo.GetLessonDates(lesson.ID)
+							if err != nil {
+								return fmt.Errorf("failed to get lesson dates: %v", err)
+							}
+							lesson.Dates = lessonDates
+
+							objectives, err := courseRepo.GetLessonObjectives(lesson)
+							if err != nil {
+								return fmt.Errorf("failed to get lesson objectives: %v", err)
+							}
+							lesson.Standards = objectives
+
+							// Generate slides for the lesson (this function logs internally).
+							GenerateSlides(currentTerm, course, unit, lesson)
+
+							if err := RenderPage(sst.NewLessonPage(lesson, unit, course, true, true)); err != nil {
+								return fmt.Errorf("failed to render lesson page: %v", err)
+							}
+							return nil
+						})
+					}
+					if err := lessonGroup.Wait(); err != nil {
+						return err
+					}
+					return nil
+				})
 			}
-			// Generate page for each lesson
-			for _, lesson := range lessons {
-				GenerateSlides(currentTerm, course, unit, lesson)
-				lessonPage := sst.NewLessonPage(lesson, unit, course, true, true)
-				err = RenderPage(lessonPage)
-				if err != nil {
-					return fmt.Errorf("failed to render pages: %v", err)
-				}
+			if err := unitGroup.Wait(); err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ClearHTMLFiles removes all .html files from the given directory.
+func ClearHTMLFiles(directory string) error {
+	files, err := os.ReadDir(directory)
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), ".html") {
+			// Use filepath.Join to build the path safely.
+			err := os.Remove(filepath.Join(directory, file.Name()))
+			if err != nil {
+				return fmt.Errorf("failed to delete file %s: %v", file.Name(), err)
 			}
 		}
 	}
 	return nil
 }
 
-func ClearHTMLFiles(directory string) {
-	files, err := os.ReadDir(directory)
-	if err != nil {
-		return
-	}
-	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".html") {
-			err := os.Remove(directory + file.Name())
-			if err != nil {
-				log.Fatalf("failed to delete file: %v", err)
-			}
-		}
-	}
-}
-
+// BuildTailwind runs the Tailwind build command.
 func BuildTailwind() {
 	err := exec.Command("npx", "tailwindcss", "-i", "./input.css", "-o", "./python/docs/styles/styles.css").Run()
 	if err != nil {
@@ -151,6 +225,7 @@ func BuildTailwind() {
 	}
 }
 
+// GenerateTempl runs the templating command.
 func GenerateTempl() {
 	err := exec.Command("templ", "generate").Run()
 	if err != nil {
@@ -158,6 +233,7 @@ func GenerateTempl() {
 	}
 }
 
+// BuildTypeScript runs the TypeScript build command.
 func BuildTypeScript() {
 	err := exec.Command("tsc", "--build").Run()
 	if err != nil {
@@ -165,32 +241,34 @@ func BuildTypeScript() {
 	}
 }
 
+// RenderPage creates the directory for the page, creates the file, and renders the page component.
 func RenderPage(page sst.Page) error {
 	err := os.MkdirAll(filepath.Dir(page.Path), os.ModePerm)
 	if err != nil {
-		log.Fatalf("failed to create directory: %v", err)
+		return fmt.Errorf("failed to create directory: %v", err)
 	}
 	f, err := os.Create(page.Path)
 	if err != nil {
-		log.Fatalf("failed to create output file: %v", err)
+		return fmt.Errorf("failed to create output file: %v", err)
 	}
+	defer f.Close()
 	err = page.Component.Render(context.Background(), f)
 	if err != nil {
-		log.Fatalf("failed to write output file: %v", err)
+		return fmt.Errorf("failed to write output file: %v", err)
 	}
 	return nil
 }
 
-// compares the last time the files were modified. if markdown was modified after html, regenerates html
+// GenerateSlides regenerates the slides HTML if the Markdown file has been updated.
 func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
 	log.Println("GenerateSlides(): generating slides")
-	// File paths
+	// File paths.
 	markdownPath := data.SlidesMarkdownFilePath(term, course, unit, lesson)
 	log.Println("markdownPath:", markdownPath)
 	htmlPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
 	log.Println("htmlPath:", htmlPath)
 
-	// Get file information
+	// Get file information.
 	mdInfo, err := os.Stat(markdownPath)
 	if err != nil {
 		log.Println("file not exists:", os.IsNotExist(err))
@@ -199,14 +277,13 @@ func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
 			log.Printf("Error: Could not access %s: %v\n", markdownPath, err)
 		}
 		return
-
 	}
 
 	htmlInfo, err := os.Stat(htmlPath)
 	log.Println("file not exists:", os.IsNotExist(err))
 	log.Println(err)
 	if os.IsNotExist(err) {
-		// If HTML file doesn't exist, regenerate it
+		// If HTML file doesn't exist, regenerate it.
 		regenerateHTML(markdownPath, htmlPath)
 		return
 	} else if err != nil {
@@ -214,7 +291,7 @@ func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
 		return
 	}
 
-	// Compare modification times
+	// Compare modification times.
 	mdModTime := mdInfo.ModTime()
 	htmlModTime := htmlInfo.ModTime()
 	if mdModTime.After(htmlModTime) {
@@ -223,7 +300,7 @@ func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
 	log.Println("reached end of GenerateSlides()")
 }
 
-// Regenerate HTML from the Markdown file
+// regenerateHTML runs the command to regenerate HTML from a Markdown file.
 func regenerateHTML(markdownFile, htmlFile string) {
 	cmd := exec.Command("marp", markdownFile, "-o", htmlFile)
 	err := cmd.Run()

@@ -1,6 +1,7 @@
 +++
 date = "{{ .Date }}"
 draft = true
+type = "node"
 title = "{{ .Node.GetName }}"
 name = "{{ .Node.GetName }}"
 designation = {{ with .Node.Designation }}"{{ . }}"{{ else }}""{{ end }}
