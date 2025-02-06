@@ -1,6 +1,6 @@
 +++
-draft = true
 date = {{ .Date }}
+draft = true
 title = {{ .Node.GetName }}
 name = {{ .Node.GetName }}
 designation = {{ .Node.Designation }} 

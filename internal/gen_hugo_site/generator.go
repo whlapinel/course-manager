@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -92,14 +91,16 @@ func GenerateHugo(children []domain.CourseNode, parents ...domain.CourseNode) er
 	listParents := append(parents, children[0])
 	listPath := NodeListDirPath(listParents...)
 	listIndexPath := BranchBundlePage(listPath)
-	err := CreateHugoContent(listIndexPath)
+	err := WriteNodeListPageToMarkdown(children[0], listIndexPath)
+	// err := CreateHugoContent(listIndexPath)
 	if err != nil {
 		return err
 	}
 	for _, child := range children {
 		nodePath := NodeDirPath(listPath, child)
 		nodePath = BranchBundlePage(nodePath)
-		err = CreateHugoContent(nodePath)
+		err := WriteNodePageToMarkdown(child, nodePath)
+		// err = CreateHugoContent(nodePath)
 		if err != nil {
 			return err
 		}
@@ -158,11 +159,19 @@ func NodeDirPath(listPath string, node domain.CourseNode) string {
 
 func WriteNodeListPageToMarkdown(node domain.CourseNode, path string) error {
 	tpl := template.Must(template.ParseFiles("internal/gen_hugo_site/node_list.md"))
+	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("error in creating file: %v", err)
 	}
-	err = tpl.Execute(file, node)
+	data := NodeListPageData{
+		Date: time.Now().Format("2006-01-02T15:04:05-07:00"),
+		Node: node,
+	}
+	err = tpl.Execute(file, data)
 	if err != nil {
 		return fmt.Errorf("error in executing template: %v", err)
 	}
@@ -172,13 +181,16 @@ func WriteNodeListPageToMarkdown(node domain.CourseNode, path string) error {
 
 func WriteNodePageToMarkdown(node domain.CourseNode, path string) error {
 	tpl := template.Must(template.ParseFiles("internal/gen_hugo_site/node.md"))
-	log.Println(os.Getwd())
+	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("error in creating file: %v", err)
 	}
 	data := NodePageData{
-		Date: time.Now(),
+		Date: time.Now().Format("2006-01-02T15:04:05-07:00"),
 		Node: node,
 	}
 	err = tpl.Execute(file, data)
@@ -189,6 +201,11 @@ func WriteNodePageToMarkdown(node domain.CourseNode, path string) error {
 }
 
 type NodePageData struct {
-	Date time.Time
+	Date string
+	Node domain.CourseNode
+}
+
+type NodeListPageData struct {
+	Date string
 	Node domain.CourseNode
 }

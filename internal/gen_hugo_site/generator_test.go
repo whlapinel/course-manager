@@ -44,6 +44,10 @@ func TestWriteNodeToMarkdown(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	err = WriteNodeListPageToMarkdown(node, "./internal/gen_hugo_site/test_list_node.md")
+	if err != nil {
+		t.Error(err)
+	}
 	err = WriteNodePageToMarkdown(node, "./internal/gen_hugo_site/test_node.md")
 	if err != nil {
 		t.Error(err)
