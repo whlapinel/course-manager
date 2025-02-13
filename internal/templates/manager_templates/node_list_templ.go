@@ -83,8 +83,8 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if props.ChildUI != nil && props.ChildUI[i] != nil {
-						templ_7745c5c3_Err = props.ChildUI[i].Component().Render(ctx, templ_7745c5c3_Buffer)
+					for _, data := range props.ChildUI {
+						templ_7745c5c3_Err = data[i].Component().Render(ctx, templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

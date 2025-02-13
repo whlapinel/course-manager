@@ -1,6 +1,7 @@
 package util
 
 import (
+	"strings"
 	"time"
 )
 
@@ -39,4 +40,8 @@ func IsSameDate(t1 time.Time, t2 time.Time) bool {
 		return true
 	}
 	return false
+}
+
+func Capitalize(s string) string {
+	return strings.Join([]string{strings.ToUpper(s[:1]), s[1:]}, "")
 }

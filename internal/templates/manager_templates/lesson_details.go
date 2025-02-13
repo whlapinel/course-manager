@@ -11,12 +11,12 @@ import (
 
 type LessonDetailsPage struct {
 	NodeDetailsPage
-	E                                                           *echo.Echo
-	Standards                                                   []domain.Standard
-	GetObjectivesURL                                            string
-	PostLessonStandardURL, DeleteLessonStandardRHN              string
-	PostAssessmentURL, DeleteAssessmentRHN                      string
-	GetSlidesURL, EditSlidesURL, GithubFilesURL, ServerFilesURL string
+	E                                                            *echo.Echo
+	Standards                                                    []domain.Standard
+	GetObjectivesURL                                             string
+	PostLessonStandardURL, DeleteLessonStandardRHN               string
+	GetEditAssessmentRHN, PostAssessmentURL, DeleteAssessmentRHN string
+	GetSlidesURL, EditSlidesURL, GithubFilesURL, ServerFilesURL  string
 }
 
 func AddParam(params CourseIDParams, param interface{}) []interface{} {
@@ -79,4 +79,15 @@ type ObjectiveSelect struct {
 // capitalizes first letter
 func DisplayCategory(cat domain.AssessmentCategory) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(cat.String()[:1]), cat.String()[1:])
+}
+
+type EditAssessmentForm struct {
+	Params                CourseIDParams
+	Assessment            domain.Assessment
+	PostEditAssessmentURL string
+	LessonDetailsURL      string
+}
+
+func (data EditAssessmentForm) Component() templ.Component {
+	return EditAssessmentFormComponent(data)
 }

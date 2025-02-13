@@ -23,3 +23,19 @@ JOIN lessons l ON a.lesson_id = l.id
 JOIN units u ON l.unit_id = u.id
 JOIN courses c ON u.course_id = c.id
 WHERE c.id = ? AND a.category = ?;
+
+-- name: GetCourseAssessments :many
+SELECT a.* FROM assessments a
+JOIN lessons l ON a.lesson_id = l.id
+JOIN units u ON l.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.id = ?;
+
+-- name: UpdateAssessment :exec
+UPDATE assessments SET 
+lesson_id = ?, name = ?, instructions = ?,
+category = ?, date_assigned = ?, date_due = ?, dropped = ?
+WHERE id = ?;
+
+-- name: DeleteAssessment :exec
+DELETE FROM assessments WHERE id = ?;

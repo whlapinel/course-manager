@@ -85,7 +85,7 @@ func (cr CourseRepo) fromDBAssessment(dbAssmt database.Assessment) (domain.Asses
 
 }
 
-func (cr CourseRepo) GetAssessmentByCategory(category domain.AssessmentCategory, courseID int) ([]domain.Assessment, error) {
+func (cr CourseRepo) GetAssessmentsByCategory(category domain.AssessmentCategory, courseID int) ([]domain.Assessment, error) {
 	dbAssessments, err := cr.queries.GetAssessmentsByCategory(context.Background(), database.GetAssessmentsByCategoryParams{
 		ID:       int64(courseID),
 		Category: int64(category),
@@ -102,4 +102,47 @@ func (cr CourseRepo) GetAssessmentByCategory(category domain.AssessmentCategory,
 		assessments = append(assessments, assessment)
 	}
 	return assessments, nil
+}
+
+func (cr CourseRepo)GetAllCourseAssessments(courseID int) ([]domain.Assessment, error){
+	dbAssessments, err := cr.queries.GetCourseAssessments(context.Background(), int64(courseID))
+	if err != nil {
+		return nil, err
+	}
+	var assessments []domain.Assessment
+	for _, dbassessment := range dbAssessments {
+		assessment, err := cr.fromDBAssessment(dbassessment)
+		if err != nil {
+			return nil, err
+		}
+		assessments = append(assessments, assessment)
+	}
+	return assessments, nil
+}
+
+func (cr CourseRepo) DeleteAssessment(assessmentID int) error {
+	return cr.queries.DeleteAssessment(context.Background(), int64(assessmentID))
+}
+
+func (cr CourseRepo) UpdateAssessment(assessment domain.Assessment) error {
+	var dropped int
+	if assessment.Dropped {
+		dropped = 1
+	} else {
+		dropped = 0
+	}
+	err := cr.queries.UpdateAssessment(context.Background(), database.UpdateAssessmentParams{
+		ID:           int64(assessment.ID),
+		LessonID:     int64(assessment.LessonID),
+		Name:         assessment.Name,
+		Instructions: assessment.Instructions,
+		Category:     int64(assessment.Category),
+		DateAssigned: assessment.DateAssigned.Format(time.DateOnly),
+		DateDue:      assessment.DateDue.Format(time.DateOnly),
+		Dropped:      int64(dropped),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

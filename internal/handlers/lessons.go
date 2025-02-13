@@ -656,9 +656,8 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 			Lesson:           lesson,
 			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
 		},
-		Slides: slides,
-		CourseCalendarURL:       h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
-
+		Slides:            slides,
+		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
 	}
 
 	var idParams = params.ToIntSlice()
@@ -671,6 +670,8 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		NodeDetailsPage:         nodeDetails,
 		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
 		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		GetEditAssessmentRHN:    GetEditAssessment.String(),
+		DeleteAssessmentRHN:     DeleteAssessment.String(),
 		PostAssessmentURL:       h.e.Reverse(PostAssessment.String(), params.ToIntSlice()...),
 		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),

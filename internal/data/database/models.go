@@ -72,6 +72,7 @@ type Term struct {
 	Start       string
 	End         string
 	Description sql.NullString
+	UserID      sql.NullInt64
 }
 
 type Unit struct {
@@ -81,4 +82,12 @@ type Unit struct {
 	Sequence    int64
 	Name        string
 	Description sql.NullString
+}
+
+type User struct {
+	ID        int64
+	FirstName string
+	LastName  string
+	Email     string
+	Picture   sql.NullString
 }

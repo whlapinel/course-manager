@@ -12,7 +12,7 @@ import (
 
 const deleteTerm = `-- name: DeleteTerm :one
 DELETE FROM terms WHERE id = ?
-RETURNING id, name, start, "end", description
+RETURNING id, name, start, "end", description, user_id
 `
 
 func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
@@ -24,6 +24,7 @@ func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
 		&i.Start,
 		&i.End,
 		&i.Description,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -68,7 +69,7 @@ func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) 
 }
 
 const getTermByID = `-- name: GetTermByID :one
-SELECT id, name, start, "end", description FROM terms WHERE id = ?
+SELECT id, name, start, "end", description, user_id FROM terms WHERE id = ?
 `
 
 func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
@@ -80,6 +81,7 @@ func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
 		&i.Start,
 		&i.End,
 		&i.Description,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -171,7 +173,7 @@ INSERT INTO terms (
 ) VALUES (
   ?, ?, ?, ?
 )
-RETURNING id, name, start, "end", description
+RETURNING id, name, start, "end", description, user_id
 `
 
 type SaveTermParams struct {
@@ -195,6 +197,7 @@ func (q *Queries) SaveTerm(ctx context.Context, arg SaveTermParams) (Term, error
 		&i.Start,
 		&i.End,
 		&i.Description,
+		&i.UserID,
 	)
 	return i, err
 }

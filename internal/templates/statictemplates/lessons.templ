@@ -1,31 +1,26 @@
 package statictemplates
 
-import (
-	"fmt"
-	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates"
-	"path/filepath"
-)
+import "gh_static_portfolio/internal/templates"
 
 // Student-facing site
-templ LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) {
-	@Layout(Page{Title: course.Name}) {
-		@CourseDivContainer(course, templates.UnitPath(unit, course, true), unit.Name) {
+templ LessonComponent(page LessonPage) {
+	@Layout(Page{Title: page.Course.Name}) {
+		@CourseDivContainer(page.Course, templates.UnitPath(page.Unit, page.Course, true), page.Unit.Name) {
 			@CourseUnorderedList() {
-				if hasSlides {
-					@ListedLinkItem(SlidesPath(lesson, unit, course), true) {
+				if page.HasSlides {
+					@ListedLinkItem(SlidesPath(page.Lesson, page.Unit, page.Course), true) {
 						Slides
 					}
 				} else {
 					<p>No content for this lesson yet!</p>
 				}
-				if hasFiles {
-					@ListedLinkItemAbsoluteURL((templates.LessonFilesURL(lesson, unit, course)), true) {
+				if page.HasFiles {
+					@ListedLinkItemAbsoluteURL((templates.LessonFilesURL(page.Lesson, page.Unit, page.Course)), true) {
 						Other Files
 					}
 				}
 			}
-			@TitleDiv(fmt.Sprintf("%s: %s", lesson.Designation(), lesson.Name), lesson.Description, filepath.Join(templates.LessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false, lesson.Standards...)
+			@page.TitleDivNew()
 		}
 	}
 }

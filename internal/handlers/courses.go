@@ -71,7 +71,8 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 	}
 	term.Courses = courses
 	page := mt.CourseListPage{
-		ShowCalendarRHN: string(ShowCourseCalendar),
+		ShowAssessmentsRHN: string(GetCourseAssessments),
+		ShowCalendarRHN:    string(ShowCourseCalendar),
 		NodeListPage: mt.NodeListPage{
 			Params:           params,
 			ParentNode:       term,

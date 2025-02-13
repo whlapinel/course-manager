@@ -1,6 +1,7 @@
 package statictemplates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	"path/filepath"
@@ -96,11 +97,35 @@ func NewUnitPage(unit domain.Unit, course domain.Course) Page {
 	}
 }
 
-func NewLessonPage(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) Page {
+type LessonPage struct {
+	Lesson              domain.Lesson
+	Unit                domain.Unit
+	Course              domain.Course
+	HasSlides, HasFiles bool
+}
+
+func (page LessonPage) Component() templ.Component {
+	return LessonComponent(page)
+}
+
+// 	@TitleDiv(fmt.Sprintf("%s: %s", page.Lesson.Designation(), page.Lesson.Name), page.Lesson.Description, filepath.Join(templates.LessonPath(page.Lesson, page.Unit, page.Course, false), page.Lesson.Image.BasePath), page.Lesson.Image.ID != 0, false, page.Lesson.Standards...)
+
+func (page LessonPage) TitleDivNew() templ.Component {
+	return TitleDivData{
+		title:       fmt.Sprintf("%s: %s", page.Lesson.Designation(), page.Lesson.Name),
+		description: page.Lesson.Description,
+		imgPath:     filepath.Join(templates.LessonPath(page.Lesson, page.Unit, page.Course, false), page.Lesson.Image.BasePath),
+		standards:   page.Lesson.Standards,
+		Assessments: page.Lesson.Assessments,
+	}.Component()
+
+}
+
+func NewLessonPage(page LessonPage) Page {
 	return Page{
-		Title:     lesson.Name,
-		Path:      templates.LessonPath(lesson, unit, course, true),
-		Component: LessonComponent(lesson, unit, course, hasSlides, hasFiles),
+		Title:     page.Lesson.Name,
+		Path:      templates.LessonPath(page.Lesson, page.Unit, page.Course, true),
+		Component: page.Component(),
 	}
 }
 
@@ -135,4 +160,8 @@ type TitleDivData struct {
 	Assessments                 []domain.Assessment
 	showImg                     bool
 	lightBg                     bool
+}
+
+func (data TitleDivData) Component() templ.Component {
+	return TitleDivNewComponent(data)
 }

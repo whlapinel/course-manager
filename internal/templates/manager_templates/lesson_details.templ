@@ -49,8 +49,14 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 							</summary>
 							<p>{ DisplayCategory(assessment.Category) }</p>
 							<p>Due: { assessment.DateDue.Format(time.DateOnly) }</p>
-							<p>{ assessment.Instructions }</p>
+							<pre>{ assessment.Instructions }</pre>
 						</details>
+						<button
+							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, AddParam(props.Params, assessment.ID)...) }
+							hx-target="#assessment"
+						>
+							Edit
+						</button>
 						<button hx-delete={ props.DeleteAssessmentURL(assessment.ID) } hx-target="#page">Remove</button>
 					</li>
 				}
@@ -76,7 +82,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 					<option value={ strconv.Itoa(int(domain.Final)) }>Final</option>
 				</select>
 				<label for="instructions">Instructions</label>
-				<textarea class="bg-black" name="instructions"></textarea>
+				<textarea class="bg-black font-mono p-1 w-full" name="instructions"></textarea>
 				<input type="hidden" name="lesson-id" value={ strconv.Itoa(props.Lesson().ID) }/>
 				<button hx-post={ props.PostAssessmentURL } hx-target="#page" hx-push-url="true">Submit</button>
 			</form>
@@ -108,6 +114,68 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			@Slides(props.Slides)
 		}
 	</div>
+}
+
+// type Assessment struct {
+//     ID           int
+//     LessonID     int
+//     Name         string
+//     Instructions string
+//     Category     AssessmentCategory
+//     DateAssigned time.Time
+//     DateDue      time.Time
+//     Dropped      bool
+// }
+templ EditAssessmentFormComponent(props EditAssessmentForm) {
+	<form id="edit-assessment-form">
+		<div class="grid grid-cols-2 gap-1">
+			<input type="hidden" class="bg-black" value={ strconv.Itoa(props.Assessment.ID) }/>
+			<label for="name">Name</label>
+			<input type="text" name="name" id="name" value={ props.Assessment.Name } class="bg-black"/>
+			<label for="instructions">Instructions</label>
+			<input type="text" name="instructions" id="instructions" value={ props.Assessment.Instructions } class="bg-black"/>
+			<label for="date-assigned">Assigned</label>
+			<input type="date" name="date-assigned" id="date-assigned" value={ props.Assessment.DateAssigned.Format(time.DateOnly) } class="bg-black"/>
+			<label for="date-due">Due</label>
+			<input type="date" name="date-due" id="date-due" value={ props.Assessment.DateDue.Format(time.DateOnly) } class="bg-black"/>
+			<label for="category">Category</label>
+			<select name="category" id="category" class="bg-black">
+				<option
+					value={ strconv.Itoa(int(domain.Prepare)) }
+					selected?={ props.Assessment.Category == domain.Prepare }
+				>Prepare</option>
+				<option
+					value={ strconv.Itoa(int(domain.Rehearse)) }
+					selected?={ props.Assessment.Category == domain.Rehearse }
+				>Rehearse</option>
+				<option
+					value={ strconv.Itoa(int(domain.Perform)) }
+					selected?={ props.Assessment.Category == domain.Perform }
+				>Perform</option>
+				<option
+					value={ strconv.Itoa(int(domain.Midterm)) }
+					selected?={ props.Assessment.Category == domain.Midterm }
+				>Midterm</option>
+				<option
+					value={ strconv.Itoa(int(domain.Final)) }
+					selected?={ props.Assessment.Category == domain.Final }
+				>Final</option>
+			</select>
+			<fieldset>
+				<legend>Status</legend>
+				<div>
+					<input type="radio" id="active" name="dropped" value="false" checked?={ !props.Assessment.Dropped }/>
+					<label for="active">Active</label>
+				</div>
+				<div>
+					<input type="radio" id="dropped" name="dropped" value="true" checked?={ props.Assessment.Dropped }/>
+					<label for="dropped">Dropped</label>
+				</div>
+			</fieldset>
+		</div>
+		<button hx-get={ props.LessonDetailsURL } hx-target="#page">Cancel</button>
+		<button type="submit" hx-post={ props.PostEditAssessmentURL } hx-target="#page">Submit</button>
+	</form>
 }
 
 templ ObjectiveSelectComponent(props ObjectiveSelect) {

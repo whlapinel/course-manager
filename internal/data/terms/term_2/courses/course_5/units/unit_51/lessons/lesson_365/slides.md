@@ -12,6 +12,18 @@ paginate: true
 
 # **Warmup**
 
+- Make a new directory `unit_2` in your `python` directory
+- Make a new directory `lesson_1` in the `unit_2` directory and open it in VS Code
+- Create a new file `lesson_1.py` and prepare to run example code from the slides.
+
+```text
+/python
+  /unit_2
+    /lesson_1
+      /lesson_1.py
+```
+
+
 # Lesson 2.1: Nested loops and complex conditionals
 
 # What Are Nested Loops?

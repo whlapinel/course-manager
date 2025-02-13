@@ -8,20 +8,28 @@ import (
 )
 
 type CourseListPage struct {
-	ShowCalendarRHN string
+	ShowCalendarRHN    string
+	ShowAssessmentsRHN string
 	NodeListPage
 }
 
 func (page CourseListPage) Component() templ.Component {
 	var calendarButtons []ComponentData
+	var assessmentButtons []ComponentData
+
 	for _, course := range page.Children {
 		button := ShowCalendarButton{
 			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, course.GetParentID(), course.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
+		button2 := ShowAssessmentsButton{
+			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, course.GetParentID(), course.GetID()),
+		}
+		assessmentButtons = append(assessmentButtons, button2)
 
 	}
-	page.ChildUI = calendarButtons
+	page.ChildUI = append(page.ChildUI, calendarButtons)
+	page.ChildUI = append(page.ChildUI, assessmentButtons)
 	return CourseListComponent(page)
 }
 
@@ -61,6 +69,21 @@ func (data ShowCalendarButton) Component() templ.Component {
 		Text:     "Calendar",
 		Method:   HxGet,
 		URL:      data.ShowCalendarURL,
+		HxTarget: pageElementID.Selector(),
+		PushURL:  true,
+	}
+	return button.Component()
+}
+
+type ShowAssessmentsButton struct {
+	ShowAssessmentsURL string
+}
+
+func (data ShowAssessmentsButton) Component() templ.Component {
+	button := HXButton{
+		Text:     "Assessments",
+		Method:   HxGet,
+		URL:      data.ShowAssessmentsURL,
 		HxTarget: pageElementID.Selector(),
 		PushURL:  true,
 	}

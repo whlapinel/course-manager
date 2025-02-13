@@ -9,6 +9,15 @@ import (
 	"context"
 )
 
+const deleteAssessment = `-- name: DeleteAssessment :exec
+DELETE FROM assessments WHERE id = ?
+`
+
+func (q *Queries) DeleteAssessment(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAssessment, id)
+	return err
+}
+
 const getAssessmentByID = `-- name: GetAssessmentByID :one
 SELECT id, lesson_id, name, instructions, category, date_assigned, date_due, dropped FROM assessments WHERE id = ?
 `
@@ -146,6 +155,46 @@ func (q *Queries) GetAssessmentsByLessonID(ctx context.Context, lessonID int64) 
 	return items, nil
 }
 
+const getCourseAssessments = `-- name: GetCourseAssessments :many
+SELECT a.id, a.lesson_id, a.name, a.instructions, a.category, a.date_assigned, a.date_due, a.dropped FROM assessments a
+JOIN lessons l ON a.lesson_id = l.id
+JOIN units u ON l.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.id = ?
+`
+
+func (q *Queries) GetCourseAssessments(ctx context.Context, id int64) ([]Assessment, error) {
+	rows, err := q.db.QueryContext(ctx, getCourseAssessments, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Assessment
+	for rows.Next() {
+		var i Assessment
+		if err := rows.Scan(
+			&i.ID,
+			&i.LessonID,
+			&i.Name,
+			&i.Instructions,
+			&i.Category,
+			&i.DateAssigned,
+			&i.DateDue,
+			&i.Dropped,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const saveAssessment = `-- name: SaveAssessment :one
 INSERT INTO assessments (
     lesson_id, name, instructions, category, date_assigned, date_due, dropped
@@ -187,4 +236,36 @@ func (q *Queries) SaveAssessment(ctx context.Context, arg SaveAssessmentParams) 
 		&i.Dropped,
 	)
 	return i, err
+}
+
+const updateAssessment = `-- name: UpdateAssessment :exec
+UPDATE assessments SET 
+lesson_id = ?, name = ?, instructions = ?,
+category = ?, date_assigned = ?, date_due = ?, dropped = ?
+WHERE id = ?
+`
+
+type UpdateAssessmentParams struct {
+	LessonID     int64
+	Name         string
+	Instructions string
+	Category     int64
+	DateAssigned string
+	DateDue      string
+	Dropped      int64
+	ID           int64
+}
+
+func (q *Queries) UpdateAssessment(ctx context.Context, arg UpdateAssessmentParams) error {
+	_, err := q.db.ExecContext(ctx, updateAssessment,
+		arg.LessonID,
+		arg.Name,
+		arg.Instructions,
+		arg.Category,
+		arg.DateAssigned,
+		arg.DateDue,
+		arg.Dropped,
+		arg.ID,
+	)
+	return err
 }

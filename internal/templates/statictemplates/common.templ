@@ -2,6 +2,7 @@ package statictemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/util"
 	"strconv"
 )
 
@@ -59,7 +60,7 @@ templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, s
 	</div>
 }
 
-templ TitleDivNew(data TitleDivData) {
+templ TitleDivNewComponent(data TitleDivData) {
 	<div class="flex flex-col gap-6 max-w-3xl">
 		<h1 class=" text-4xl">{ data.title }</h1>
 		<p class="text-2xl">{ data.description }</p>
@@ -72,6 +73,42 @@ templ TitleDivNew(data TitleDivData) {
 					}
 				</ul>
 			</details>
+			if len(data.Assessments)!=0 {
+				<details>
+					<summary class="text-xl">Assignments</summary>
+					<ul>
+						for _, assessment := range data.Assessments {
+							<li class="flex gap-1 flex-col">
+								<span>
+									{ assessment.Name }
+								</span>
+								<span>
+									{ util.Capitalize(assessment.Category.String()) }
+								</span>
+								if assessment.Instructions != "" {
+									<span class="border border-green-500 rounded bg-slate-900 text-green-500 p-2">
+										<pre>
+											{ assessment.Instructions }
+										</pre>
+									</span>
+								}
+								<span>
+									Due: { assessment.DateDue.Format("Mon 1/2/2006") }
+								</span>
+								if assessment.Dropped {
+									<span>
+										Status: Dropped
+									</span>
+								} else {
+									<span>
+										Status: Active
+									</span>
+								}
+							</li>
+						}
+					</ul>
+				</details>
+			}
 		}
 		if data.showImg == true {
 			if data.lightBg {

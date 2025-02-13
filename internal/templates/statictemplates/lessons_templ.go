@@ -8,15 +8,10 @@ package statictemplates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"fmt"
-	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates"
-	"path/filepath"
-)
+import "gh_static_portfolio/internal/templates"
 
 // Student-facing site
-func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Course, hasSlides, hasFiles bool) templ.Component {
+func LessonComponent(page LessonPage) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -73,7 +68,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					if hasSlides {
+					if page.HasSlides {
 						templ_7745c5c3_Var5 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -92,7 +87,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 							}
 							return nil
 						})
-						templ_7745c5c3_Err = ListedLinkItem(SlidesPath(lesson, unit, course), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItem(SlidesPath(page.Lesson, page.Unit, page.Course), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var5), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -106,7 +101,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if hasFiles {
+					if page.HasFiles {
 						templ_7745c5c3_Var6 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 							templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 							templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -125,7 +120,7 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 							}
 							return nil
 						})
-						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL((templates.LessonFilesURL(lesson, unit, course)), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = ListedLinkItemAbsoluteURL((templates.LessonFilesURL(page.Lesson, page.Unit, page.Course)), true).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -140,19 +135,19 @@ func LessonComponent(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = TitleDiv(fmt.Sprintf("%s: %s", lesson.Designation(), lesson.Name), lesson.Description, filepath.Join(templates.LessonPath(lesson, unit, course, false), lesson.Image.BasePath), lesson.Image.ID != 0, false, lesson.Standards...).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = page.TitleDivNew().Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = CourseDivContainer(course, templates.UnitPath(unit, course, true), unit.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CourseDivContainer(page.Course, templates.UnitPath(page.Unit, page.Course, true), page.Unit.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Layout(Page{Title: course.Name}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Layout(Page{Title: page.Course.Name}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
