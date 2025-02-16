@@ -215,7 +215,7 @@ func CoursesListComponent(instances []domain.Course) templ.Component {
 							var templ_7745c5c3_Var10 string
 							templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(instance.Name)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 51, Col: 24}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 52, Col: 24}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 							if templ_7745c5c3_Err != nil {
@@ -337,7 +337,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var16 string
 								templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 68, Col: 25}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 69, Col: 25}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 								if templ_7745c5c3_Err != nil {
@@ -351,7 +351,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var17 string
 								templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(unit.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 70, Col: 39}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 71, Col: 39}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 								if templ_7745c5c3_Err != nil {
@@ -364,7 +364,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var18 string
 								templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 70, Col: 61}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/statictemplates/courses.templ`, Line: 71, Col: 61}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 								if templ_7745c5c3_Err != nil {

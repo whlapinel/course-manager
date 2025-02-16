@@ -66,6 +66,11 @@ func (cr CourseRepo) GetCourse(courseID int) (domain.Course, error) {
 		return domain.Course{}, err
 	}
 	term.InstructionalDays = termWithDates.InstructionalDays
+	occasions, err := cr.GetTermOccasions(term.ID)
+	if err != nil {
+		return domain.Course{}, err
+	}
+	term.Occasions = occasions
 	course.Term = term
 	if course.StandardSet.ID != 0 {
 		standardSet, err := cr.GetStandardSetByID(course.StandardSet.ID)

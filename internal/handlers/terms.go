@@ -15,16 +15,23 @@ import (
 )
 
 const (
-	Terms     RouteName = "/terms"
-	Term      RouteName = Terms + RouteName(TermID)
-	TermDates RouteName = Term + "/dates"
-	EditTerm  RouteName = Term + "/edit"
-	NewTerm   RouteName = Terms + "/new"
+	Terms        RouteName = "/terms"
+	Term         RouteName = Terms + RouteName(TermID)
+	TermCalendar RouteName = Term + "/calendar"
+	Occasions    RouteName = Term + "/occasions"
+	Occasion     RouteName = Occasions + RouteName(OccasionID)
+	TermDates    RouteName = Term + "/dates"
+	EditTerm     RouteName = Term + "/edit"
+	NewTerm      RouteName = Terms + "/new"
 )
 
 const (
 	ListTerms         = RouteHandlerName(GET + Terms)
 	TermDetails       = RouteHandlerName(GET + Term)
+	ShowTermCalendar  = RouteHandlerName(GET + TermCalendar)
+	CreateOccasion    = RouteHandlerName(POST + Occasions)
+	ShowEditOccasion  = RouteHandlerName(GET + Occasion)
+	PostEditOccasion  = RouteHandlerName(POST + Occasion)
 	ShowEditTermDates = RouteHandlerName(GET + TermDates)
 	PostEditTermDates = RouteHandlerName(POST + TermDates)
 	ShowEditTerm      = RouteHandlerName(GET + EditTerm)
@@ -39,6 +46,10 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		// Terms handlers
 		{Terms, ListTerms, GET, h.ListTerms},
 		{Term, TermDetails, GET, h.TermDetails},
+		{TermCalendar, ShowTermCalendar, GET, h.ShowTermCalendar},
+		{Occasions, CreateOccasion, POST, h.CreateOccasion},
+		{Occasion, ShowEditOccasion, GET, h.ShowEditOccasion},
+		{Occasion, PostEditOccasion, POST, h.PostEditOccasion},
 		{TermDates, ShowEditTermDates, GET, h.ShowEditTermDates},
 		{TermDates, PostEditTermDates, POST, h.PostEditTermDates},
 		{NewTerm, ShowNewTerm, GET, h.ShowNewTerm},
@@ -59,20 +70,25 @@ func (h CourseHandler) ListTerms(c echo.Context) error {
 	for _, term := range terms {
 		termNodes = append(termNodes, term)
 	}
-	termsList := mt.NodeListPage{
-		Params:           params,
-		ParentNode:       domain.RootCourseNode{},
-		Children:         termNodes,
-		ChildDetailsRHN:  TermDetails.String(),
-		ChildChildrenRHN: ListTermCourses.String(),
-		CreateChildRHN:   ShowNewTerm.String(),
-		DeleteChildRHN:   DeleteTerm.String(),
-		UpNavURL:         h.e.Reverse(string(ShowHome)),
-		E:                h.e,
+	log.Println("RHN:", ShowTermCalendar.String())
+	log.Println(h.e.Reverse(ShowTermCalendar.String(), terms[0].GetID()))
+	page := mt.TermsListPage{
+		ShowTermCalendarRHN: ShowTermCalendar.String(),
+		NodeListPage: mt.NodeListPage{
+			Params:           params,
+			ParentNode:       domain.RootCourseNode{},
+			Children:         termNodes,
+			ChildDetailsRHN:  TermDetails.String(),
+			ChildChildrenRHN: ListTermCourses.String(),
+			CreateChildRHN:   ShowNewTerm.String(),
+			DeleteChildRHN:   DeleteTerm.String(),
+			UpNavURL:         h.e.Reverse(string(ShowHome)),
+			E:                h.e,
+		},
 	}
-	template := mt.NodeListComponent(termsList)
-	layout := h.CourseManagerLayout(template)
-	return Respond(c, "", template, layout)
+	component := page.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) TermDetails(c echo.Context) error {
@@ -103,6 +119,93 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 	template := pageData.Component()
 	layout := h.CourseManagerLayout(template)
 	return Respond(c, "", pageData.Component(), layout)
+}
+
+func (h CourseHandler) ShowTermCalendar(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	term, err := h.svc.GetTerm(params.TermID.Value)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println("create occasion URL: ", h.e.Reverse(CreateOccasion.String(), term.ID))
+	data := mt.TermCalendar{
+		Params:              params,
+		Term:                term,
+		GetEditOccasionRHN:  ShowEditOccasion.String(),
+		PostEditOccasionRHN: PostEditOccasion.String(),
+		ListTermsURL:        h.e.Reverse(ListTerms.String()),
+		TermDetailsURL:      h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+		CreateOccasionURL:   h.e.Reverse(CreateOccasion.String(), params.ToIntSlice()...),
+		E:                   h.e,
+	}
+
+	component := data.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
+
+}
+
+func (h CourseHandler) CreateOccasion(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+
+	name := form.Get("name")
+	dateParam := form.Get("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	log.Println("name and date:", name, dateParam)
+	occasion, err := h.svc.CreateOccasion(date, name, params.TermID.Value)
+	if err != nil {
+		return err
+	}
+	log.Println(occasion)
+	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToIntSlice()...))
+}
+
+func (h CourseHandler) ShowEditOccasion(c echo.Context) error {
+	occasionID, err := ParseRouteParam(c, OccasionID)
+	if err != nil {
+		return err
+	}
+	occasion, err := h.svc.GetOccasion(occasionID)
+	if err != nil {
+		return err
+	}
+	component := mt.TermOccasionEditor{
+		Occasion:            occasion,
+		IsEditing:           true,
+		GetEditOccasionURL:  h.e.Reverse(ShowEditOccasion.String(), occasion.TermID, occasion.ID),
+		PostEditOccasionURL: h.e.Reverse(PostEditOccasion.String(), occasion.TermID, occasion.ID),
+	}.Component()
+	layout := h.CourseManagerLayout(component)
+	return Respond(c, "", component, layout)
+
+}
+
+func (h CourseHandler) PostEditOccasion(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	occasionID, err := ParseRouteParam(c, OccasionID)
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	name := form.Get("name")
+	err = h.svc.UpdateOccasion(name, occasionID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToIntSlice()...))
 }
 
 func (h CourseHandler) ShowNewTerm(c echo.Context) error {

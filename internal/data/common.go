@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"gh_static_portfolio/internal/data/database"
+	"gh_static_portfolio/internal/domain"
 	"io"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	_ "embed"
 )
@@ -95,4 +97,16 @@ func copyFile(srcPath, destPath string) error {
 	defer dst.Close()
 	_, err = io.Copy(dst, src)
 	return err
+}
+
+func (repo CourseRepo) SaveOccasion(occasion domain.Occasion) (id int, err error) {
+	dbOccasion, err := repo.queries.SaveOccasion(context.Background(), database.SaveOccasionParams{
+		TermID: int64(occasion.TermID),
+		Date:   occasion.Date.Format(time.DateOnly),
+		Name:   occasion.Name,
+	})
+	if err != nil {
+		return 0, err
+	}
+	return int(dbOccasion.ID), nil
 }

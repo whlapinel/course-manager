@@ -61,7 +61,7 @@ func NodeCreateComponent(props NodeCreatePage) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if props.NodeType == domain.UnitTypeName || props.NodeType == domain.LessonTypeName {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<label for=\"number\">Number</label> <input type=\"number\" id=\"number\" name=\"number\" required> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<label for=\"number\">Number</label> <input type=\"number\" id=\"number\" name=\"number\" class=\"bg-black\" required> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

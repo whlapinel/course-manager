@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
+	managertemplates "gh_static_portfolio/internal/templates/manager_templates"
 	"path/filepath"
 	"strings"
 
@@ -83,9 +84,10 @@ func NodePage(nodes ...domain.CourseNode) Page {
 func NewCourseCalendarPage(course domain.Course) Page {
 	pageTitle := course.Name + " Calendar"
 	return Page{
-		Title:     pageTitle,
-		Path:      filepath.Join(templates.CoursePath(course, false), templates.KebabCase(pageTitle+".html")),
-		Component: CourseCalendarComponent(course),
+		Title: pageTitle,
+		Path:  filepath.Join(templates.CoursePath(course, false), templates.KebabCase(pageTitle+".html")),
+		// Component: CourseCalendarComponent(course),
+		Component: managertemplates.StaticSiteCourseCalendar(course).Component(),
 	}
 }
 

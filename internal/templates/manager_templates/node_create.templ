@@ -7,7 +7,7 @@ templ NodeCreateComponent(props NodeCreatePage) {
 		<form id={ NodeCreateFormID(props.NodeType) } class="grid grid-cols-2 gap-2">
 			if props.NodeType == domain.UnitTypeName || props.NodeType == domain.LessonTypeName {
 				<label for="number">Number</label>
-				<input type="number" id="number" name="number" required/>
+				<input type="number" id="number" name="number" class="bg-black" required/>
 			}
 			<label for="name">Name</label>
 			<input

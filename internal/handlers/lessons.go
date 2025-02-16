@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	"net/http"
 	"path/filepath"
@@ -542,10 +543,6 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
-	if err != nil {
-		return err
-	}
 	page := mt.NodeCreatePage{
 		ParentNode:        unit,
 		NodeType:          domain.LessonTypeName,
@@ -559,8 +556,6 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
 			Unit:             unit,
 			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
 		},
 	}
 	template := mt.NodeCreateComponent(page)
@@ -569,11 +564,44 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 }
 
 func (h CourseHandler) PostNewLesson(c echo.Context) error {
-	return nil
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println("key, val: ", key, val)
+	}
+	params := ParseCourseIDParams(c)
+	name := form.Get("name")
+	numberParam := form.Get("number")
+	number, err := strconv.Atoi(numberParam)
+	if err != nil {
+		return err
+	}
+	description := form.Get("description")
+	lesson, err := h.svc.SaveLesson(service.SaveLessonParams{
+		Lesson: domain.Lesson{
+			UnitID:      params.UnitID.Value,
+			Number:      number,
+			Name:        name,
+			Description: description,
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.TermID.Value, params.CourseID.Value, params.UnitID.Value, lesson.ID))
 }
 
 func (h CourseHandler) DeleteLesson(c echo.Context) error {
-	panic("not implemented")
+	params := ParseCourseIDParams(c)
+	err := h.svc.DeleteLesson(params.LessonID.Value)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (h CourseHandler) PostLessonStandard(c echo.Context) error {

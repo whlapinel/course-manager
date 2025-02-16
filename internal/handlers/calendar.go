@@ -148,6 +148,7 @@ func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar
 		return mt.CourseCalendar{}, err
 	}
 	return mt.CourseCalendar{
+		Admin:                         true,
 		Params:                        params,
 		Course:                        course,
 		LessonDetailsRouteHandlerName: LessonDetails.String(),

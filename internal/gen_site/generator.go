@@ -8,7 +8,7 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
-	sst "gh_static_portfolio/internal/templates/statictemplates"
+	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"io/fs"
 	"log"
 	"os"
@@ -82,8 +82,8 @@ func Generate(courseRepo data.CourseRepo) error {
 	}
 
 	// Render the home and contact pages concurrently.
-	homePage := sst.NewHomePage()
-	contactPage := sst.NewContactPage()
+	homePage := mt.StaticNewHomePage()
+	contactPage := mt.StaticNewContactPage()
 	g, ctx = errgroup.WithContext(ctx)
 	g.Go(func() error {
 		return RenderPage(homePage)
@@ -109,7 +109,11 @@ func Generate(courseRepo data.CourseRepo) error {
 	if currentTerm.Start.IsZero() {
 		return errors.New("main(): term not initialized")
 	}
-
+	occasions, err := courseRepo.GetTermOccasions(currentTerm.ID)
+	if err != nil {
+		return err
+	}
+	currentTerm.Occasions = occasions
 	// Get courses for the current term.
 	courses, err := courseRepo.GetCourses(currentTerm.ID)
 	if err != nil {
@@ -117,7 +121,7 @@ func Generate(courseRepo data.CourseRepo) error {
 	}
 
 	// Render the courses list page concurrently.
-	coursesPage := sst.NewCoursesListPage(courses)
+	coursesPage := mt.StaticNewCoursesListPage(courses)
 	g, ctx = errgroup.WithContext(ctx)
 	g.Go(func() error {
 		return RenderPage(coursesPage)
@@ -130,6 +134,7 @@ func Generate(courseRepo data.CourseRepo) error {
 	// Process each course concurrently.
 	for _, course := range courses {
 		course := course // capture loop variable
+		course.Term = currentTerm
 		g.Go(func() error {
 			// Copy the node directory only once.
 			copyOnce.Do(func() {
@@ -141,10 +146,10 @@ func Generate(courseRepo data.CourseRepo) error {
 			if course.Term.Start.IsZero() {
 				return errors.New("main(): instance.Term.Start is zero")
 			}
-			if err := RenderPage(sst.NewCourseCalendarPage(course)); err != nil {
+			if err := RenderPage(mt.StaticNewCourseCalendarPage(course)); err != nil {
 				return fmt.Errorf("failed to render calendar page: %v", err)
 			}
-			if err := RenderPage(sst.NewCoursePage(course)); err != nil {
+			if err := RenderPage(mt.StaticNewCoursePage(course)); err != nil {
 				return fmt.Errorf("failed to render course page: %v", err)
 			}
 
@@ -153,7 +158,7 @@ func Generate(courseRepo data.CourseRepo) error {
 			for _, unit := range course.Units {
 				unit := unit // capture loop variable
 				unitGroup.Go(func() error {
-					if err := RenderPage(sst.NewUnitPage(unit, course)); err != nil {
+					if err := RenderPage(mt.StaticNewUnitPage(unit, course)); err != nil {
 						return fmt.Errorf("failed to render unit page: %v", err)
 					}
 					lessons, err := courseRepo.GetLessons(unit.ID)
@@ -185,7 +190,7 @@ func Generate(courseRepo data.CourseRepo) error {
 
 							// Generate slides for the lesson (this function logs internally).
 							GenerateSlides(currentTerm, course, unit, lesson)
-							page := sst.LessonPage{
+							page := mt.LessonPage{
 								Lesson:    lesson,
 								Unit:      unit,
 								Course:    course,
@@ -194,9 +199,9 @@ func Generate(courseRepo data.CourseRepo) error {
 							}
 
 							filesDir := templates.LessonFilesPath(lesson, unit, course)
-							RenderMarkdownFiles(filesDir)
+							RenderMarkdownFiles(lesson.Name, filesDir)
 
-							if err := RenderPage(sst.NewLessonPage(page)); err != nil {
+							if err := RenderPage(mt.StaticNewLessonPage(page)); err != nil {
 								return fmt.Errorf("failed to render lesson page: %v", err)
 							}
 							return nil
@@ -265,7 +270,7 @@ func BuildTypeScript() {
 }
 
 // RenderPage creates the directory for the page, creates the file, and renders the page component.
-func RenderPage(page sst.Page) error {
+func RenderPage(page mt.StaticPage) error {
 	err := os.MkdirAll(filepath.Dir(page.Path), os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to create directory: %v", err)
@@ -283,7 +288,7 @@ func RenderPage(page sst.Page) error {
 }
 
 // this will generate html from all markdown files within the files directory
-func RenderMarkdownFiles(filesPath string) error {
+func RenderMarkdownFiles(title, filesPath string) error {
 	dirEntries, err := os.ReadDir(filesPath)
 	if os.IsNotExist(err) {
 		return err
@@ -295,6 +300,9 @@ func RenderMarkdownFiles(filesPath string) error {
 	// Filter out non-Markdown files
 	var mdFiles []os.DirEntry
 	for _, entry := range dirEntries {
+		if entry.IsDir() {
+			continue
+		}
 		if filepath.Ext(entry.Name()) == ".md" {
 			mdFiles = append(mdFiles, entry)
 		}
@@ -317,9 +325,7 @@ func RenderMarkdownFiles(filesPath string) error {
 	)
 	var markdownGroup errgroup.Group
 	for _, entry := range mdFiles {
-		if entry.IsDir() {
-			continue
-		}
+		log.Println("rendering markdown for:", entry.Name())
 
 		inputPath := filepath.Join(filesPath, entry.Name())
 		markdownGroup.Go(func() error {
@@ -342,7 +348,7 @@ func RenderMarkdownFiles(filesPath string) error {
 			defer output.Close()
 
 			log.Println("Writing:", outputPath)
-			err = DocLayout(buf.String()).Render(context.Background(), output)
+			err = DocLayout(title, buf.String()).Render(context.Background(), output)
 			if err != nil {
 				return err
 			}

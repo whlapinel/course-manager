@@ -43,6 +43,12 @@ func (svc CourseService) GetTerm(termID int) (domain.Term, error) {
 	if err != nil {
 		return term, err
 	}
+	occasions, err := svc.repo.GetTermOccasions(termID)
+	if err != nil {
+		return domain.Term{}, err
+	}
+	term.Occasions = occasions
+	term.SortOccasions()
 	return term, nil
 }
 
@@ -101,4 +107,32 @@ func (svc CourseService) ShiftLessonsOnDate(termID int, date time.Time) error {
 		svc.repo.SaveLessonDate(lesson)
 	}
 	return nil
+}
+
+func (svc CourseService) CreateOccasion(date time.Time, name string, termID int) (domain.Occasion, error) {
+	occasion := domain.Occasion{
+		TermID: termID,
+		Date:   date,
+		Name:   name,
+	}
+	id, err := svc.repo.SaveOccasion(occasion)
+	if err != nil {
+		return domain.Occasion{}, err
+	}
+	occasion.ID = id
+	return occasion, nil
+
+}
+
+func (svc CourseService) GetOccasion(occasionID int) (domain.Occasion, error) {
+	return svc.repo.GetOccasionByID(occasionID)
+}
+
+func (svc CourseService) UpdateOccasion(name string, id int) error {
+	occasion, err := svc.repo.GetOccasionByID(id)
+	if err != nil {
+		return err
+	}
+	occasion.Name = name
+	return svc.repo.UpdateOccasion(occasion)
 }

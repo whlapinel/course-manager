@@ -3,14 +3,10 @@ package data
 import (
 	"context"
 	"database/sql"
-	"encoding/csv"
 	"fmt"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
 	"log"
-	"os"
-	"slices"
-	"strconv"
 	"time"
 )
 
@@ -127,7 +123,8 @@ func (cr CourseRepo) GetTermWithDates(termID int) (domain.Term, error) {
 	currDate := term.Start
 	currInstructIndex := 0
 	for !currDate.After(term.End) {
-		if currDate.Weekday() != time.Saturday && currDate.Weekday() != time.Sunday {
+		if currDate.Weekday() != time.Saturday && currDate.Weekday() != time.Sunday &&
+			!(currInstructIndex > len(dbDates)-1) {
 			dbDate := dbDates[currInstructIndex]
 			date, err := time.Parse(time.DateOnly, dbDate.Date)
 			if err != nil {
@@ -144,6 +141,55 @@ func (cr CourseRepo) GetTermWithDates(termID int) (domain.Term, error) {
 	}
 
 	return term, nil
+}
+
+func (cr CourseRepo) GetTermOccasions(termID int) ([]domain.Occasion, error) {
+	dbOccasions, err := cr.queries.GetTermOccasions(context.Background(), int64(termID))
+	if err != nil {
+		return nil, err
+	}
+	var occasions []domain.Occasion
+	for _, dbOccasion := range dbOccasions {
+		date, err := time.Parse(time.DateOnly, dbOccasion.Date)
+		if err != nil {
+			return nil, err
+		}
+		occasion := domain.Occasion{
+			ID:     int(dbOccasion.ID),
+			TermID: termID,
+			Date:   date,
+			Name:   dbOccasion.Name,
+		}
+		occasions = append(occasions, occasion)
+
+	}
+	return occasions, nil
+
+}
+
+func (cr CourseRepo) GetOccasionByID(occasionID int) (domain.Occasion, error) {
+	dbOccasion, err := cr.queries.GetOccasionByID(context.Background(), int64(occasionID))
+	if err != nil {
+		return domain.Occasion{}, err
+	}
+	date, err := time.Parse(time.DateOnly, dbOccasion.Date)
+	if err != nil {
+		return domain.Occasion{}, err
+	}
+	return domain.Occasion{
+		ID:     int(dbOccasion.ID),
+		TermID: int(dbOccasion.TermID),
+		Date:   date,
+		Name:   dbOccasion.Name,
+	}, nil
+}
+
+func (cr CourseRepo) UpdateOccasion(occasion domain.Occasion) error {
+	return cr.queries.UpdateOccasion(context.Background(), database.UpdateOccasionParams{
+		ID:   int64(occasion.ID),
+		Name: occasion.Name,
+	})
+
 }
 
 func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
@@ -187,61 +233,6 @@ func (r CourseRepo) UpdateTerm(term domain.Term) error {
 	return nil
 }
 
-const termsPath = "/home/whlapinel/personal_projects/course_manager/internal/data/csv_files/terms.csv"
-const nonIDaysPath = "/home/whlapinel/personal_projects/course_manager/internal/data/csv_files/non_instruct_days.csv"
-
-const (
-	termIDCol = iota
-	termStartCol
-	termEndCol
-	termTypeCol
-	termNameCol
-)
-
-const (
-	nonInstructionalDateCol = 1
-)
-
-func nonInstructionalDaysLoader() (*domain.NonInstructionalDays, error) {
-	dates := domain.NonInstructionalDays{}
-	file, err := os.Open(nonIDaysPath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	for i, record := range records {
-		if i == 0 {
-			continue
-		}
-		termID, err := strconv.Atoi(record[termIDCol])
-		if err != nil {
-			return nil, err
-		}
-		dates.TermID = append(dates.TermID, termID)
-		date, err := time.Parse(time.DateOnly, record[nonInstructionalDateCol])
-		if err != nil {
-			return nil, err
-		}
-		dates.Dates = append(dates.Dates, date)
-	}
-	return &dates, nil
-}
-
-func filterNonInstructionalDates(termID int, dates *domain.NonInstructionalDays) []time.Time {
-	filtered := []time.Time{}
-	for i, date := range dates.Dates {
-		if dates.TermID[i] == termID {
-			filtered = append(filtered, date)
-		}
-	}
-	return filtered
-}
-
 func (c CourseRepo) DeleteTerm(termID int) error {
 	_, err := c.queries.DeleteTerm(context.Background(), int64(termID))
 	if err != nil {
@@ -272,17 +263,4 @@ func parseDates(dateStrings []string) ([]time.Time, error) {
 
 	}
 	return dates, nil
-}
-
-func sortDates(dates []time.Time) []time.Time {
-	slices.SortFunc(dates, compare)
-	return dates
-}
-
-func compare(a time.Time, b time.Time) int {
-	if a.Before(b) {
-		return -1
-	} else {
-		return 1
-	}
 }

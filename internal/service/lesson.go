@@ -49,6 +49,9 @@ func (svc CourseService) RemoveLessonDate(lessonID int, dateToRemove time.Time) 
 		}
 	}
 	err = svc.UpdateLesson(lesson)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -60,6 +63,7 @@ func (svc CourseService) SaveLesson(params SaveLessonParams) (*domain.Lesson, er
 	if err != nil {
 		return &domain.Lesson{}, err
 	}
+	log.Println("CourseService.SaveLesson: lesson ID: ", lesson.ID)
 	return lesson, nil
 }
 
@@ -139,6 +143,14 @@ func (svc CourseService) UpdateLesson(l domain.Lesson) error {
 		return err
 	}
 	return nil
+}
+
+func (svc CourseService) DeleteLesson(lessonID int) error {
+	lesson, err := svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	return svc.repo.DeleteLesson(lesson)
 }
 
 // This version is for the web app

@@ -52,6 +52,13 @@ type LessonStandard struct {
 	LessonID int64
 }
 
+type Occasion struct {
+	ID     int64
+	TermID int64
+	Date   string
+	Name   string
+}
+
 type Standard struct {
 	ID          int64
 	Number      int64

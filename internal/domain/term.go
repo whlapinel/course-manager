@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 	"log"
+	"slices"
 	"time"
 )
 
@@ -37,6 +38,7 @@ type Term struct {
 	End                  time.Time
 	NonInstructionalDays []time.Time
 	InstructionalDays    []time.Time
+	Occasions            []Occasion
 	TermType             TermType
 	ID                   int
 	Name                 string
@@ -164,4 +166,18 @@ func (t Term) TermMonths() []time.Time {
 
 func (t Term) Designation() string {
 	return ""
+}
+
+// sorts in ascending order by date
+func (t Term) SortOccasions() {
+	slices.SortFunc(t.Occasions, func(a, b Occasion) int {
+		if IsSameDate(a.Date, b.Date) {
+			return 0
+		}
+		if a.Date.Before(b.Date) {
+			return -1
+		} else {
+			return 1
+		}
+	})
 }

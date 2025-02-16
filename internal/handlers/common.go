@@ -48,6 +48,7 @@ const (
 
 const (
 	TermID         RouteParam = "/:term-id"
+	OccasionID     RouteParam = "/:occasion-id"
 	CourseID       RouteParam = "/:course-id"
 	UnitID         RouteParam = "/:unit-id"
 	LessonID       RouteParam = "/:lesson-id"

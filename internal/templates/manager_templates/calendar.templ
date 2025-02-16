@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates"
 	"gh_static_portfolio/internal/util"
 	"strconv"
 	"time"
@@ -20,35 +21,54 @@ templ ShiftButtonComponent(data ShiftButton) {
 templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 	<li>
 		<div class="flex">
-			@data.ShiftButton(domain.Left)
+			if !data.Static {
+				@data.ShiftButton(domain.Left)
+			}
 			<div>
 				<div class="flex flex-col gap-1 items-center">
-					<button
-						class="bg-red-700 p-1 rounded"
-						hx-confirm={ "Are you sure you want to remove this lesson date? The lesson itself will not be deleted." }
-						hx-delete={ data.RemoveLessonDateURL }
-						hx-target="#page"
-					>
-						Remove Lesson
-					</button>
-					<div
-						class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
-						hx-get={ data.LessonDetailsURL }
-						hx-target="#page"
-						hx-push-url="true"
-					>
-						<span>
-							{ data.lesson.Designation() }
-						</span>
-						<span>
-							{ data.lesson.Name }
-						</span>
-					</div>
+					if !data.Static {
+						<button
+							class="bg-red-700 p-1 rounded"
+							hx-confirm={ "Are you sure you want to remove this lesson date? The lesson itself will not be deleted." }
+							hx-delete={ data.RemoveLessonDateURL }
+							hx-target="#page"
+						>
+							Remove Lesson
+						</button>
+					}
+					@data.LinkWithInfoDialog()
 				</div>
 			</div>
-			@data.ShiftButton(domain.Right)
+			if !data.Static {
+				@data.ShiftButton(domain.Right)
+			}
 		</div>
 	</li>
+}
+
+// parent of this component must have position relative
+templ InfoDialogComponent(text string) {
+	<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max">
+		{ text }
+	</p>
+}
+
+templ LinkWithInfoDialogComponent(data LinkWithInfoDialog) {
+	if !data.Static {
+		<div
+			class="group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group"
+			hx-get={ data.URL }
+			hx-target={ data.Target }
+			hx-push-url={ strconv.FormatBool(data.PushURL) }
+		>
+			<p>
+				{ data.Text }
+			</p>
+			<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max">
+				{ data.Details }
+			</p>
+		</div>
+	}
 }
 
 templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
@@ -72,42 +92,155 @@ templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
 }
 
 // CourseManager site
-templ CourseCalendarTemplate(page CourseCalendar) {
-	@PageLayoutComponent(page)
+templ CourseCalendarComponent(page CourseCalendar) {
+	@CalendarComponent(page)
+}
+
+templ CalendarLessonListComponent(date time.Time, page CalendarPage) {
+	if page, ok := page.(CourseCalendar); ok {
+		<ul class="justify-items-center">
+			if page.Course.Term.IsInstructionDay(date) {
+				if !page.Static && page.Admin {
+					<button
+						hx-get={ page.ShowAddLessonDatePageURL(date) }
+						hx-push-url="true"
+						hx-target="#page"
+					>Add Lesson</button>
+				}
+				for _, unit := range page.Course.Units {
+					for _, lesson := range unit.Lessons {
+						for _, lessonDate := range lesson.Dates {
+							if util.IsSameDate(lessonDate, date) {
+								if !page.Static {
+									@page.CalendarLessonContainer(lesson, lessonDate)
+								} else {
+									@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, page.Course, true)), false) {
+										// { lesson.Designation() }
+										<div
+											class="group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group"
+										>
+											<p>
+												{ lesson.Designation() }
+											</p>
+											<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max">
+												{ lesson.Name }
+											</p>
+										</div>
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		</ul>
+	}
+}
+
+templ DynamicCourseCalendarComponent(page CourseCalendar) {
+	@CourseCalendarComponent(page)
+}
+
+templ StaticCourseCalendarComponent(page CourseCalendar) {
+	@StaticLayout(StaticPage{Title: page.Course.Name}) {
+		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(templates.StaticSiteCoursesDir+"courses.html"), "Course List") {
+			@CourseUnorderedList() {
+				@CourseCalendarComponent(page)
+			}
+			@TitleDiv("Course Calendar", page.Course.Name+", "+page.Course.Term.Name, templates.CoursePath(page.Course, true), false, false)
+		}
+	}
+}
+
+templ TermCalendarComponent(page TermCalendar) {
+	@CalendarComponent(page)
+}
+
+templ CalendarComponent(page CalendarPage) {
+	if !page.IsStatic() {
+		@PageLayoutComponent(page)
+	}
 	<div id="calendar" class="flex flex-col gap-4">
-		for _, day := range page.Course.Term.TermMonths() {
-			<h1 class="text-2xl text-center">Month of { day.Month().String() } { strconv.Itoa(day.Year()) }</h1>
+		for _, day := range page.GetTerm().TermMonths() {
+			<h1
+				id={ util.KebabCase(day.Month().String()) }
+				class="text-2xl text-center"
+			>
+				Month of { day.Month().String() } { strconv.Itoa(day.Year()) }
+			</h1>
 			<div id="month-container" class="flex flex-col border border-solid">
 				for _, week := range util.GetMonthDates(day) {
-					<div id="week-container" class="grid grid-cols-5">
-						for _, calDate := range week[1:6] {
-							<div id="date-container" class="justify-items-center">
-								if !calDate.IsZero() {
-									{ calDate.Format("Mon 1/02/06") }
-								}
-								<ul class="justify-items-center">
-									if page.Course.Term.IsInstructionDay(calDate) {
-										<button
-											hx-get={ page.ShowAddLessonDatePageURL(calDate) }
-											hx-push-url="true"
-											hx-target="#page"
-										>Add Lesson</button>
-										for _, unit := range page.Course.Units {
-											for _, lesson := range unit.Lessons {
-												for _, lessonDate := range lesson.Dates {
-													if util.IsSameDate(lessonDate, calDate) {
-														@page.CalendarLessonContainer(lesson, lessonDate)
-													}
-												}
-											}
-										}
-									}
-								</ul>
-							</div>
-						}
-					</div>
+					if HasNonZeroWeekDay(week) && WithinTerm(week, page.GetTerm()) {
+						<div id="week-container" class="grid grid-cols-5">
+							for _, calDate := range week[time.Monday:time.Saturday] {
+								@CalendarDateComponent(calDate, page)
+							}
+						</div>
+					}
 				}
 			</div>
 		}
 	</div>
+}
+
+templ TermOccasionEditorComponent(data TermOccasionEditor) {
+	<div id={ data.ComponentID() }>
+		if data.IsEditing {
+			<form id={ data.ComponentID() }>
+				<input type="text" value={ data.Occasion.Name } name="name" class="bg-black"/>
+				<button hx-post={ data.PostEditOccasionURL } hx-target="#page">Submit</button>
+			</form>
+		} else {
+			<button
+				hx-get={ data.GetEditOccasionURL }
+				hx-target={ "#" + data.ComponentID() }
+			>
+				Edit
+			</button>
+		}
+	</div>
+}
+
+templ AddOccasionButtonComponent(button AddOccasionButton) {
+	<details>
+		<summary>Add Occasion</summary>
+		<form id={ button.FormID } class="bg-black">
+			<label for="name">Name</label>
+			<input type="text" class="bg-inherit" id={ button.FormID + "-name" } name="name"/>
+			<input type="hidden" id={ button.FormID + "-date" } name="date" value={ button.Date.Format(time.DateOnly) }/>
+			<button hx-post={ button.CreateOccasionURL } hx-include={ "#" + button.FormID } hx-target="#page">Submit</button>
+		</form>
+	</details>
+}
+
+templ CalendarDateComponent(date time.Time, page CalendarPage) {
+	<div id="date-container" class="justify-items-center border min-h-32">
+		if (!date.Before(page.GetTerm().Start) && 
+								!date.After(page.GetTerm().End)) ||
+								util.IsSameDate(date, page.GetTerm().Start) ||
+								util.IsSameDate(date, page.GetTerm().End) {
+			{ date.Format("Mon 1/02/06") }
+			if termCal, ok := page.(TermCalendar); ok {
+				@termCal.AddOccasionButton(date)
+				for _, occasion := range Occasions(date, termCal) {
+					@OccasionComponent(occasion)
+					@termCal.TermOccasionEditor(occasion)
+				}
+			} else if courseCal, ok := page.(CourseCalendar); ok {
+				for _, occasion := range Occasions(date, courseCal) {
+					@OccasionComponent(occasion)
+				}
+				@CalendarLessonListComponent(date, courseCal)
+			}
+			<ul class="justify-items-center">
+				if !page.GetTerm().IsInstructionDay(date) {
+					<p>No School</p>
+				}
+			</ul>
+		}
+	</div>
+}
+
+templ OccasionComponent(occasion domain.Occasion) {
+	<p class="text-lg text-blue-300 font-extrabold">{ occasion.Name }</p>
 }

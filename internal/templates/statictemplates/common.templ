@@ -25,16 +25,6 @@ templ ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) {
 }
 
 // Student-facing site
-templ BackButton(path, text string) {
-	<a href={ FilePathToURL(path) }>
-		<li class="flex gap-2 text-lg mb-10 items-center bg-green-600 p-3 rounded hover:bg-green-500">
-			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"></path></svg>
-			<p>Up to { text }</p>
-		</li>
-	</a>
-}
-
-// Student-facing site
 // Title for page. Path allows checking for image
 templ TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, standards ...domain.Standard) {
 	<div class="flex flex-col gap-6 max-w-3xl">
@@ -118,4 +108,14 @@ templ TitleDivNewComponent(data TitleDivData) {
 			}
 		}
 	</div>
+}
+
+// Student-facing site
+templ BackButton(path, text string) {
+	<a href={ FilePathToURL(path) }>
+		<li class="flex gap-2 text-lg mb-10 items-center bg-green-600 p-3 rounded hover:bg-green-500">
+			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"></path></svg>
+			<p>Up to { text }</p>
+		</li>
+	</a>
 }

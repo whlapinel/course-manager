@@ -9,7 +9,7 @@ import (
 
 templ LessonDetailsComponent(props LessonDetailsPage) {
 	@NodeDetailsComponent(props.NodeDetailsPage) {
-		if props.Lesson().Standards != nil {
+		if  props.Lesson().Standards != nil {
 			<ul>
 				for _, objective := range props.Lesson().Standards {
 					<li id="objective">
@@ -70,7 +70,15 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 				<label for="name">Name</label>
 				<input id="name" name="name" type="text" class="bg-black"/>
 				<label for="date-assigned">Assigned</label>
-				<input class="bg-black" id="date-assigned" name="date-assigned" type="date" value={ props.Lesson().Dates[0].Format(time.DateOnly) }/>
+				<input
+					class="bg-black"
+					id="date-assigned"
+					name="date-assigned"
+					type="date"
+					if props.Lesson().Dates != nil {
+						value={ props.Lesson().Dates[0].Format(time.DateOnly) }
+					}
+				/>
 				<label for="date-due">Due</label>
 				<input class="bg-black" id="date-due" name="date-due" type="date"/>
 				<label for="category">Category</label>
@@ -82,7 +90,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 					<option value={ strconv.Itoa(int(domain.Final)) }>Final</option>
 				</select>
 				<label for="instructions">Instructions</label>
-				<textarea class="bg-black font-mono p-1 w-full" name="instructions"></textarea>
+				<textarea class="bg-black font-mono p-1 w-full" id="instructions" name="instructions"></textarea>
 				<input type="hidden" name="lesson-id" value={ strconv.Itoa(props.Lesson().ID) }/>
 				<button hx-post={ props.PostAssessmentURL } hx-target="#page" hx-push-url="true">Submit</button>
 			</form>
@@ -100,12 +108,14 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			}
 		</div>
 		if lesson, ok := props.Node.(*domain.Lesson); ok {
-			for _, date := range lesson.Dates {
-				<ul>
-					<li>
-						{ date.Format(time.DateOnly) }
-					</li>
-				</ul>
+			if lesson.Dates != nil {
+				for _, date := range lesson.Dates {
+					<ul>
+						<li>
+							{ date.Format(time.DateOnly) }
+						</li>
+					</ul>
+				}
 			}
 		}
 	}
@@ -133,7 +143,7 @@ templ EditAssessmentFormComponent(props EditAssessmentForm) {
 			<label for="name">Name</label>
 			<input type="text" name="name" id="name" value={ props.Assessment.Name } class="bg-black"/>
 			<label for="instructions">Instructions</label>
-			<input type="text" name="instructions" id="instructions" value={ props.Assessment.Instructions } class="bg-black"/>
+			<textarea class="bg-black font-mono p-1 w-full" id="instructions" name="instructions">{ props.Assessment.Instructions }</textarea>
 			<label for="date-assigned">Assigned</label>
 			<input type="date" name="date-assigned" id="date-assigned" value={ props.Assessment.DateAssigned.Format(time.DateOnly) } class="bg-black"/>
 			<label for="date-due">Due</label>

@@ -45,3 +45,7 @@ func IsSameDate(t1 time.Time, t2 time.Time) bool {
 func Capitalize(s string) string {
 	return strings.Join([]string{strings.ToUpper(s[:1]), s[1:]}, "")
 }
+
+func KebabCase(str string) string {
+	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
+}

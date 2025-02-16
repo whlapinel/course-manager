@@ -17,10 +17,6 @@ tasks:
       - cd python && git add .
       - cd python && git commit -m "auto-sync"
       - cd python && git push
-      - cd python && git switch main
-      - cd python && git merge dev -m "auto"
-      - cd python && git push
-      - cd python && git switch dev
 
   run-fyne-manager:
     desc: Start Fyne course manager app locally

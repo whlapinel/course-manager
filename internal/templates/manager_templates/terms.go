@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"log"
 
 	"github.com/a-h/templ"
 )
@@ -23,6 +24,27 @@ func (page TermDetailsPage) PageLayout() PageLayout {
 
 func (page TermDetailsPage) Component() templ.Component {
 	return TermDetailsComponent(page)
+}
+
+type TermsListPage struct {
+	ShowTermCalendarRHN string
+	NodeListPage
+}
+
+func (page TermsListPage) Component() templ.Component {
+	var calendarButtons []ComponentData
+
+	for _, term := range page.Children {
+		log.Println("term ID: ", term.GetID())
+		button := ShowCalendarButton{
+			ShowCalendarURL: page.E.Reverse(page.ShowTermCalendarRHN, term.GetID()),
+		}
+		calendarButtons = append(calendarButtons, button)
+
+	}
+	page.ChildUI = append(page.ChildUI, calendarButtons)
+	return TermsListPageComponent(page)
+
 }
 
 type AddNonInstructDayPage struct {
