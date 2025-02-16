@@ -33,6 +33,13 @@ type Date struct {
 	Date   string
 }
 
+type GooseDbVersion struct {
+	ID        int64
+	VersionID int64
+	IsApplied int64
+	Tstamp    sql.NullTime
+}
+
 type Lesson struct {
 	ID          int64
 	UnitID      int64
@@ -59,6 +66,11 @@ type Occasion struct {
 	Name   string
 }
 
+type SqliteSequence struct {
+	Name interface{}
+	Seq  interface{}
+}
+
 type Standard struct {
 	ID          int64
 	Number      int64
@@ -79,7 +91,7 @@ type Term struct {
 	Start       string
 	End         string
 	Description sql.NullString
-	UserID      sql.NullInt64
+	UserID      int64
 }
 
 type Unit struct {
