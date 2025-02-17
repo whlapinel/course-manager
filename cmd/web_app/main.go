@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	startMarp := exec.Command("marp", "-s", "internal/data/terms")
+	startMarp := exec.Command("marp", "-s", "internal/data")
 	err = startMarp.Start()
 	if err != nil {
 		log.Fatal(err)

@@ -43,9 +43,9 @@ func AddCookieToHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-var JWTMiddleware = echojwt.WithConfig(config)
+var JWTMiddlewareProtected = echojwt.WithConfig(protectedConfig)
 
-var config = echojwt.Config{
+var protectedConfig = echojwt.Config{
 	NewClaimsFunc: func(c echo.Context) jwt.Claims {
 		return new(JwtCustomClaims)
 	},

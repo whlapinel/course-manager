@@ -7,44 +7,30 @@ import (
 )
 
 const (
-	Home     RouteName = "/"
-	Generate RouteName = "/generate"
-	Sync     RouteName = "/sync"
+	Home RouteName = "/"
 )
 
 const (
-	ShowHome     = RouteHandlerName(GET + Home)
-	GenerateSite = RouteHandlerName(POST + Generate)
-	SyncSite     = RouteHandlerName(POST + Sync)
+	ShowHome = RouteHandlerName(GET + Home)
 )
 
 func (h CourseHandler) HomeHandlers() []RouteHandler {
 	return []RouteHandler{
 		{Home, ShowHome, GET, h.ShowHome},
-		{Generate, GenerateSite, POST, h.GenerateSite},
-		{Sync, SyncSite, POST, h.SyncSite},
 	}
 }
 
 func (h CourseHandler) ShowHome(c echo.Context) error {
 	pageData := mt.HomePage{
-		ListTermsURL: h.e.Reverse(ListTerms.String()),
+		UsersURL:  h.e.Reverse(UserAuth.String()),
+		SigninURL: h.e.Reverse(GetSignin.String()),
+		SignupURL: h.e.Reverse(GetSignup.String()),
 	}
 	template := mt.HomePageComponent(pageData)
-	layout := h.CourseManagerLayout(template)
+	layout := mt.CourseManagerLayout{
+		PageTitle: "Home",
+		Page:      pageData.Component(),
+		E:         h.e,
+	}.Component()
 	return Respond(c, "", template, layout)
-}
-
-func (h CourseHandler) GenerateSite(c echo.Context) error {
-	userID := c.Get("id").(string)
-	h.svc.GenerateSite(userID)
-	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
-}
-
-func (h CourseHandler) SyncSite(c echo.Context) error {
-	err := h.svc.SyncSite()
-	if err != nil {
-		return err
-	}
-	return Respond(c, "/", mt.Confirm("Sync Complete!"), nil)
 }

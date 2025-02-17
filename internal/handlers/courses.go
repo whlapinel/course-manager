@@ -54,6 +54,11 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 
 func (h CourseHandler) ListTermCourses(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	termID := params.TermID.Value.(int)
 	term, err := h.svc.GetTerm(termID)
 	if err != nil {
@@ -86,12 +91,17 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 	}
 
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) CourseDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
@@ -121,12 +131,17 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 		},
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	termID, err := TermIDParam(params)
 	if err != nil {
 		return err
@@ -147,12 +162,18 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 		},
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) PostNewCourse(c echo.Context) error {
+	params := ParseCourseIDParams(c)
 	err := c.Request().ParseForm()
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	if err != nil {
 		return err
 	}
@@ -178,7 +199,7 @@ func (h CourseHandler) PostNewCourse(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListTermCourses.String(), termID),
 	}
 	template := page.Component()
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 

@@ -2,7 +2,7 @@
 package managertemplates
 
 // CourseManager site
-templ CourseManagerLayoutComponent(cml CourseManagerLayout) {
+templ CourseManagerLayoutComponent(props CourseManagerLayout) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -19,19 +19,11 @@ templ CourseManagerLayoutComponent(cml CourseManagerLayout) {
 			<header>
 				<div id="confirmation"></div>
 				<nav class="flex">
-					@NewHXButton(HxGet, "", cml.E.Reverse(cml.ListTermsRHN), "#page", true).Component() {
-						Course Terms
-					}
-					@NewHXButton(HxPost, "", cml.E.Reverse(cml.GenerateSiteRHN), "#confirmation", false).Component() {
-						Generate Site
-					}
-					@NewHXButton(HxPost, "", cml.E.Reverse(cml.SyncSiteRHN), "#confirmation", false).Component() {
-						Sync Site
-					}
+					Placeholder to remind me to put something here
 				</nav>
 			</header>
 			<main id={ string(pageElementID) } class="min-w-full min-h-screen">
-				@cml.Page
+				@props.Page
 			</main>
 		</body>
 	</html>
@@ -46,25 +38,31 @@ templ PageLayoutComponent(props Page) {
 
 templ BreadCrumbsComponent(props BreadCrumbs) {
 	<div class="flex">
-		if props.Term.ID != 0 {
+		if props.User.ID != "" {
 			>
-			@CrumbsButton(props.TermDetailsURL) {
-				{ props.Term.Name }
+			@CrumbsButton(props.UserDetailsURL) {
+				{ props.User.GetName() }
 			}
-			if props.Course.ID != 0 {
+			if props.Term.ID != 0 {
 				>
-				@CrumbsButton(props.CourseDetailsURL) {
-					{ props.Course.Name }
+				@CrumbsButton(props.TermDetailsURL) {
+					{ props.Term.Name }
 				}
-				if props.Unit.ID != 0 {
+				if props.Course.ID != 0 {
 					>
-					@CrumbsButton(props.UnitDetailsURL) {
-						{ props.Unit.Designation() }
+					@CrumbsButton(props.CourseDetailsURL) {
+						{ props.Course.Name }
 					}
-					if props.Lesson.ID != 0 {
+					if props.Unit.ID != 0 {
 						>
-						@CrumbsButton(props.LessonDetailsURL) {
-							{ props.Lesson.Designation() }
+						@CrumbsButton(props.UnitDetailsURL) {
+							{ props.Unit.Designation() }
+						}
+						if props.Lesson.ID != 0 {
+							>
+							@CrumbsButton(props.LessonDetailsURL) {
+								{ props.Lesson.Designation() }
+							}
 						}
 					}
 				}

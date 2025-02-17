@@ -15,8 +15,6 @@ import (
 )
 
 const (
-	Users        RouteName = "/users"
-	User         RouteName = Users + RouteName(UserID)
 	Terms        RouteName = User + "/terms"
 	Term         RouteName = Terms + RouteName(TermID)
 	TermCalendar RouteName = Term + "/calendar"
@@ -28,7 +26,6 @@ const (
 )
 
 const (
-	UserHome          = RouteHandlerName(GET + User)
 	ListTerms         = RouteHandlerName(GET + Terms)
 	TermDetails       = RouteHandlerName(GET + Term)
 	ShowTermCalendar  = RouteHandlerName(GET + TermCalendar)
@@ -62,23 +59,6 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		{EditTerm, PostEditTerm, POST, h.PostEditTerm},
 		{Term, DeleteTerm, DELETE, h.DeleteTerm},
 	}
-}
-
-func (h CourseHandler) UserHome(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	userIDParam, ok := params.UserID.Value.(string)
-	if !ok {
-		return fmt.Errorf("invalid userID")
-	}
-	if userIDParam != c.Get("id") {
-		return fmt.Errorf("mismatch between param userID and authenticated userID")
-	}
-	page := mt.HomePage{
-		ListTermsURL: h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
-	}
-	component := page.Component()
-	layout := h.CourseManagerLayout(component)
-	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ListTerms(c echo.Context) error {
@@ -120,12 +100,17 @@ func (h CourseHandler) ListTerms(c echo.Context) error {
 		},
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) TermDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	termID, err := TermIDParam(params)
 	if err != nil {
 		return err
@@ -150,12 +135,17 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), termID),
 	}
 	template := pageData.Component()
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", pageData.Component(), layout)
 }
 
 func (h CourseHandler) ShowTermCalendar(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	log.Println("termID", params.TermID.Value)
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
@@ -175,7 +165,7 @@ func (h CourseHandler) ShowTermCalendar(c echo.Context) error {
 	}
 
 	component := data.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 
 }
@@ -205,6 +195,11 @@ func (h CourseHandler) CreateOccasion(c echo.Context) error {
 
 func (h CourseHandler) ShowEditOccasion(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	occasionID, err := ParseRouteParam(c, OccasionID)
 	if err != nil {
 		return err
@@ -219,7 +214,7 @@ func (h CourseHandler) ShowEditOccasion(c echo.Context) error {
 		GetEditOccasionURL:  h.e.Reverse(ShowEditOccasion.String(), params.ToIntSlice(occasion.ID)...),
 		PostEditOccasionURL: h.e.Reverse(PostEditOccasion.String(), params.ToIntSlice(occasion.ID)...),
 	}.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 
 }
@@ -257,13 +252,19 @@ func (h CourseHandler) ShowNewTerm(c echo.Context) error {
 		CancelURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 
 }
 
 func (h CourseHandler) PostNewTerm(c echo.Context) error {
-	err := c.Request().ParseForm()
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -305,7 +306,7 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListTerms.String()),
 	}
 	template := page.Component()
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 
@@ -444,6 +445,11 @@ func (h CourseHandler) DeleteTerm(c echo.Context) error {
 
 func (h CourseHandler) ShowEditTermDates(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	termID, err := TermIDParam(params)
 	if err != nil {
 		return err
@@ -465,7 +471,7 @@ func (h CourseHandler) ShowEditTermDates(c echo.Context) error {
 		TermDetailsURL: h.e.Reverse(TermDetails.String(), termID),
 	}
 	template := pageData.Component()
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 

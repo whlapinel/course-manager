@@ -31,6 +31,9 @@ import (
 
 // Generate creates the static site using concurrent operations.
 func Generate(courseRepo data.CourseRepo, userID string) error {
+	user := domain.User{
+		ID: userID,
+	}
 	log.Println("sitegenerator.Generate(): generating site")
 
 	// Run build commands concurrently.
@@ -138,7 +141,7 @@ func Generate(courseRepo data.CourseRepo, userID string) error {
 		g.Go(func() error {
 			// Copy the node directory only once.
 			copyOnce.Do(func() {
-				copyErr = data.CopyNodeDir(data.NodeDirPath(currentTerm), templates.StaticSiteRootDir)
+				copyErr = data.CopyNodeDir(data.NodeDirPath(user, currentTerm), templates.StaticSiteRootDir)
 			})
 			if copyErr != nil {
 				return copyErr
@@ -363,12 +366,12 @@ func RenderMarkdownFiles(title, filesPath string) error {
 }
 
 // GenerateSlides regenerates the slides HTML if the Markdown file has been updated.
-func GenerateSlides(term, course, unit, lesson domain.CourseNode) {
+func GenerateSlides(nodes ...domain.CourseNode) {
 	log.Println("GenerateSlides(): generating slides")
 	// File paths.
-	markdownPath := data.SlidesMarkdownFilePath(term, course, unit, lesson)
+	markdownPath := data.SlidesMarkdownFilePath(nodes...)
 	log.Println("markdownPath:", markdownPath)
-	htmlPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
+	htmlPath := data.SlidesHTMLFilePath(nodes...)
 	log.Println("htmlPath:", htmlPath)
 
 	// Get file information.

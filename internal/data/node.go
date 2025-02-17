@@ -12,9 +12,15 @@ func NodeDirPath(nodes ...domain.CourseNode) string {
 	var path = "./internal/data"
 	for _, node := range nodes {
 		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
+		var dirName string
+		if id, ok := node.GetID().(string); ok {
+			dirName = fmt.Sprintf("%s_%s", strings.ToLower(node.TypeName()), id)
+		} else if id, ok := node.GetID().(int); ok {
+			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), id)
+		}
 		path = filepath.Join(
 			path,
-			fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), node.GetID()),
+			dirName,
 		)
 	}
 	return path

@@ -39,6 +39,11 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	var err error
 	var category domain.AssessmentCategory
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	categoryParam := c.QueryParam("category")
 	log.Println(categoryParam)
 	startDateParam := c.QueryParam("start")
@@ -94,7 +99,7 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,
 	}
-	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component()))
+	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), user))
 }
 func (h CourseHandler) PostAssessment(c echo.Context) error {
 	params := ParseCourseIDParams(c)
@@ -139,6 +144,11 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 
 func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	assessmentID, err := ParseRouteParam(c, AssessmentID)
 	if err != nil {
 		return err
@@ -153,7 +163,7 @@ func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToIntSlice(assessmentID)...),
 		LessonDetailsURL:      h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
 	}
-	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component()))
+	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component(), user))
 }
 
 func (h CourseHandler) PostEditAssessment(c echo.Context) error {

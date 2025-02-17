@@ -42,6 +42,11 @@ func (h CourseHandler) UnitHandlers() []RouteHandler {
 
 func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	courseID, err := ParseRouteParam(c, CourseID)
 	if err != nil {
 		log.Println(err)
@@ -76,12 +81,17 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 	// old begins here
 	// template := mt.UnitsListTemplate(termID, courseID, ListTermCourses.String(), ShowNewUnit.String(), units, ListUnitLessons.String(), UnitDetails.String(), h.e)
 	template := mt.NodeListComponent(unitList)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) UnitDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -110,7 +120,7 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		},
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 

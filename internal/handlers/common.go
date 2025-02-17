@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	auth "gh_static_portfolio/internal/authentication"
+	"gh_static_portfolio/internal/authorization"
+	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
@@ -148,7 +150,8 @@ type RouteHandler struct {
 func (h CourseHandler) Mount() {
 	h.MountHandlers(h.HomeHandlers())
 	h.MountHandlers(h.AuthenticationHandlers())
-	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddleware, auth.GetClaims)
+	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtected, auth.GetClaims, authorization.Authorization(h.svc.GetUser))
+	h.ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
@@ -215,13 +218,11 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 	return component.Render(context.Background(), c.Response())
 }
 
-func (h CourseHandler) CourseManagerLayout(page templ.Component) templ.Component {
+func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		Page:            page,
-		ListTermsRHN:    ListTerms.String(),
-		GenerateSiteRHN: GenerateSite.String(),
-		SyncSiteRHN:     SyncSite.String(),
-		E:               h.e,
+		Page: page,
+		User: user,
+		E:    h.e,
 	}
 	return mt.CourseManagerLayoutComponent(cml)
 

@@ -15,11 +15,12 @@ import (
 
 func marpSlidesPath(params managertemplates.CourseIDParams) (string, error) {
 	baseURL := "http://localhost:8080"
+	userParam := fmt.Sprintf("user_%s", params.UserID.Value)
 	termParam := fmt.Sprintf("term_%d", params.TermID.Value)
 	courseParam := fmt.Sprintf("course_%d", params.CourseID.Value)
 	unitParam := fmt.Sprintf("unit_%d", params.UnitID.Value)
 	lessonParam := fmt.Sprintf("lesson_%d", params.LessonID.Value)
-	return url.JoinPath(baseURL, termParam, "courses", courseParam, "units", unitParam, "lessons", lessonParam, "slides.md")
+	return url.JoinPath(baseURL, "users", userParam, "terms", termParam, "courses", courseParam, "units", unitParam, "lessons", lessonParam, "slides.md")
 }
 
 // This check to see if the file already exists. if not, should create a new markdown file, write the template to it,
@@ -46,7 +47,7 @@ func (svc CourseService) CreateSlidesIfNotExist(nodes ...domain.CourseNode) (str
 			return "", err
 		}
 	}
-	sitegenerator.GenerateSlides(nodes[0], nodes[1], nodes[2], nodes[3])
+	sitegenerator.GenerateSlides(nodes...)
 	return markdownPath, nil
 }
 

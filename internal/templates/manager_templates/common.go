@@ -147,9 +147,9 @@ func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL
 type HXMethod string
 
 const (
-	HxGet    = "hx-get"
-	HxPost   = "hx-post"
-	HxDelete = "hx-delete"
+	HxGet    HXMethod = "hx-get"
+	HxPost   HXMethod = "hx-post"
+	HxDelete HXMethod = "hx-delete"
 )
 
 type EditField struct {

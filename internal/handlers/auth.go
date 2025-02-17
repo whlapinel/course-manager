@@ -40,7 +40,7 @@ func (h CourseHandler) GetSignin(c echo.Context) error {
 		GoogleSigninURL: h.e.Reverse(PostSignin.String()),
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(page.Component())
+	layout := h.CourseManagerLayout(page.Component(), domain.User{})
 	return Respond(c, "", component, layout)
 
 }
@@ -68,20 +68,18 @@ func (h CourseHandler) PostSignin(c echo.Context) error {
 		return c.String(500, "Failed to issue token")
 	}
 	auth.WriteToken(c, t)
-	expirationTime := time.Now().Add(auth.SessionLifeSpan).UnixMilli()
-	expyString := strconv.Itoa(int(expirationTime))
-	msg := fmt.Sprintf("%s, %d, %s", "congrats you did it!", int(expirationTime), expyString)
-	return c.String(200, msg)
+	return c.Redirect(303, h.e.Reverse(UserHome.String(), user.ID))
 }
 
 func (h CourseHandler) GetSignup(c echo.Context) error {
+
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	page := mt.SignUpPage{
 		GoogleClientID:  clientID,
 		GoogleSignupURL: h.e.Reverse(GetSignup.String()),
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(page.Component())
+	layout := h.CourseManagerLayout(page.Component(), domain.User{})
 	return Respond(c, "", component, layout)
 }
 func (h CourseHandler) PostSignup(c echo.Context) error {

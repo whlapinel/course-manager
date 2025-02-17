@@ -40,17 +40,25 @@ func (h CourseHandler) CalendarHandlers() []RouteHandler {
 
 func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	calendarData, err := h.calendarPage(params)
 	if err != nil {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShiftLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	cdParam := ParseRouteStringParam(c, ShiftDirection)
 	cd, err := domain.ParseDirection(cdParam)
 	if err != nil {
@@ -67,12 +75,16 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ExtendLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	cdParam := ParseRouteStringParam(c, ShiftDirection)
 	cd, err := domain.ParseDirection(cdParam)
 	if err != nil {
@@ -89,12 +101,17 @@ func (h CourseHandler) ExtendLesson(c echo.Context) error {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	date, err := ParseDateParam(c)
 	if err != nil {
 		return err
@@ -111,7 +128,7 @@ func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 		AddLessonDateRHN: string(PostAddLessonDate),
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 

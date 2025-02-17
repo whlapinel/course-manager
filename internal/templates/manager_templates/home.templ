@@ -3,9 +3,10 @@ package managertemplates
 templ HomePageComponent(props HomePage) {
 	@PageLayoutComponent(props) {
 		<h1 class="text-xl">Welcome to Course Manager</h1>
-		@NewHXButton(HxGet, "", props.ListTermsURL, pageElementID.Selector(), true).Component() {
-			View Terms
-		}
+		@props.SigninButton()
+		@props.SignupButton()
+		@props.SignoutButton()
+		@props.UsersAuthButton()
 	}
 }
 

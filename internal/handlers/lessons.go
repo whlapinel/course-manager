@@ -70,6 +70,10 @@ func (h CourseHandler) LessonHandlers() []RouteHandler {
 
 func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	unitID, err := ParseRouteParam(c, UnitID)
 	if err != nil {
 		log.Println(err)
@@ -115,18 +119,23 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		},
 	}
 	template := mt.LessonListTemplate(lessonList)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 
 func (h CourseHandler) LessonDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	page, err := h.lessonDetailsPage(params, "")
 	if err != nil {
 		return err
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
@@ -300,29 +309,7 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 
 func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	// term, err := h.svc.GetTerm(params.TermID.Value)
-	// if err != nil {
-	// 	return err
-	// }
-	// course, err := h.svc.GetCourse(params.CourseID.Value)
-	// if err != nil {
-	// 	return err
-	// }
-	// unit, err := h.svc.GetUnit(params.UnitID.Value)
-	// if err != nil {
-	// 	return err
-	// }
-	// lesson, err := h.svc.GetLesson(params.LessonID.Value)
-	// if err != nil {
-	// 	return err
-	// }
-	// sitegenerator.GenerateSlides(term, course, unit, lesson)
-	// slidesPath := data.SlidesHTMLFilePath(term, course, unit, lesson)
-	// log.Println(slidesPath)
-	// slidesContent, err := os.ReadFile(slidesPath)
-	// if err != nil {
-	// 	return err
-	// }
+
 	slidesContent, err := h.svc.GetSlides(params)
 	if err != nil {
 		return err
@@ -343,6 +330,7 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -397,7 +385,7 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 		},
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
@@ -405,6 +393,10 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -421,7 +413,7 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	lessonDirPath := data.NodeFilesDirPath(term, course, unit, lesson)
+	lessonDirPath := data.NodeFilesDirPath(user, term, course, unit, lesson)
 	path = filepath.Join(lessonDirPath, path)
 	// Parse the form to retrieve the file
 	err = c.Request().ParseMultipartForm(10 << 20)
@@ -458,6 +450,10 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 
 func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -474,8 +470,7 @@ func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	markdownPath, err := h.svc.CreateSlidesIfNotExist(term, course, unit, lesson)
+	markdownPath, err := h.svc.CreateSlidesIfNotExist(user, term, course, unit, lesson)
 	if err != nil {
 		return err
 	}
@@ -535,6 +530,11 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 
 func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -563,7 +563,7 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 		},
 	}
 	template := mt.NodeCreateComponent(page)
-	layout := h.CourseManagerLayout(template)
+	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
 }
 
@@ -628,7 +628,12 @@ func (h CourseHandler) PostLessonStandard(c echo.Context) error {
 
 func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -648,7 +653,7 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 		return err
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component)
+	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
@@ -708,7 +713,7 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
 		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice()...),
+		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice("")...),
 	}
 	return lessonDetails, nil
 }

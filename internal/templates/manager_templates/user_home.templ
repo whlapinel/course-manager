@@ -1,0 +1,10 @@
+package managertemplates
+
+templ UserHomePageComponent(props UserHomePage) {
+	@PageLayoutComponent(props) {
+		<h1 class="text-xl">Welcome to Course Manager</h1>
+		@props.GenerateSiteButton()
+		@props.SyncButton()
+		@props.ViewTermsButton()
+	}
+}
