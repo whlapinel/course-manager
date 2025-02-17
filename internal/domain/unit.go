@@ -26,7 +26,7 @@ func (u Unit) GetDescription() string {
 	return u.Description
 }
 
-func (u Unit) GetID() int {
+func (u Unit) GetID() interface{} {
 	return u.ID
 }
 

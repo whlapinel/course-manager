@@ -52,8 +52,8 @@ func (svc CourseService) GetTerm(termID int) (domain.Term, error) {
 	return term, nil
 }
 
-func (svc CourseService) GetTerms() ([]domain.Term, error) {
-	terms, err := svc.repo.GetTerms()
+func (svc CourseService) GetTerms(userID string) ([]domain.Term, error) {
+	terms, err := svc.repo.GetTerms(userID)
 	if err != nil {
 		return nil, err
 	}

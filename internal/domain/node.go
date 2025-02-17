@@ -1,8 +1,10 @@
 package domain
 
+import "slices"
+
 // Tree node implemented by Term, Course, Unit, Lesson
 type CourseNode interface {
-	GetID() int
+	GetID() interface{} // could be string or int
 	GetName() string
 	GetNumber() int
 	GetParentID() int
@@ -12,6 +14,22 @@ type CourseNode interface {
 	ParentTypeName() string
 	ChildTypeName() string
 	Designation() string
+}
+type NodeSorter interface {
+	GetNumber() int
+}
+
+// Generic version that works with any slice of T where T implements NodeSorter
+func SortByNumber[T NodeSorter](nodes []T) {
+	slices.SortStableFunc(nodes, func(a, b T) int {
+		if a.GetNumber() == b.GetNumber() {
+			return 0
+		}
+		if a.GetNumber() < b.GetNumber() {
+			return -1
+		}
+		return 1
+	})
 }
 
 type NodeTypeName string

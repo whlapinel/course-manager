@@ -44,7 +44,7 @@ func (l Lesson) GetDescription() string {
 	return l.Description
 }
 
-func (l Lesson) GetID() int {
+func (l Lesson) GetID() interface{} {
 	return l.ID
 }
 

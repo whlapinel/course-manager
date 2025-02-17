@@ -61,26 +61,6 @@ templ HxButtonComponent(props HXButton) {
 	</button>
 }
 
-func AddNodeChildIDToParams(params CourseIDParams, childID int) CourseIDParams {
-	var newParams CourseIDParams
-	if params.TermID.Value == 0 {
-		newParams.TermID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.CourseID.Value == 0 {
-		newParams = params
-		newParams.CourseID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.UnitID.Value == 0 {
-		newParams = params
-		newParams.UnitID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.LessonID.Value == 0 {
-		newParams = params
-		newParams.LessonID = NodeIDParam{Value: childID}
-		return newParams
-	}
-	panic("no ID to add")
-}
 
 func upNavText(typeName string) string {
 	if typeName == string(domain.RootTypeName) {

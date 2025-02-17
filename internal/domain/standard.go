@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+
+
 type StandardSet struct {
 	ID         int
 	CourseName string
@@ -25,6 +27,18 @@ type Objective struct {
 	Description string // unofficial, teacher or PLC created
 }
 
+// implements node sorter
+func (obj Objective) GetNumber() int {
+	return obj.Number
+}
+
+type Objectives []Objective
+type Standards []Standard
+
+// implements node sorter
+func (std Standard) GetNumber() int {
+	return std.Number
+}
 func (std Standard) Designation(standard Standard) string {
 	if std.ParentID == 0 {
 		return strconv.Itoa(standard.Number)

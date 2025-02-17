@@ -91,7 +91,7 @@ type Term struct {
 	Start       string
 	End         string
 	Description sql.NullString
-	UserID      int64
+	UserID      string
 }
 
 type Unit struct {
@@ -104,7 +104,7 @@ type Unit struct {
 }
 
 type User struct {
-	ID        int64
+	ID        string
 	FirstName string
 	LastName  string
 	Email     string

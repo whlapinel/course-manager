@@ -588,6 +588,10 @@ video {
   }
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .visible {
   visibility: visible;
 }
@@ -1029,6 +1033,10 @@ video {
 
 .opacity-0 {
   opacity: 0;
+}
+
+.outline {
+  outline-style: solid;
 }
 
 .blur {

@@ -11,8 +11,9 @@ sql:
       - "internal/data/database/standard_sets.sql"
       - "internal/data/database/assignments.sql"
       - "internal/data/database/occasions.sql"
+      - "internal/data/database/users.sql"
 
-    schema: "internal/data/database/migrations/schema"
+    schema: "internal/data/database/schema.sql"
     gen:
       go:
         package: "database"

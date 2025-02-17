@@ -329,27 +329,6 @@ func HxButtonComponent(props HXButton) templ.Component {
 	})
 }
 
-func AddNodeChildIDToParams(params CourseIDParams, childID int) CourseIDParams {
-	var newParams CourseIDParams
-	if params.TermID.Value == 0 {
-		newParams.TermID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.CourseID.Value == 0 {
-		newParams = params
-		newParams.CourseID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.UnitID.Value == 0 {
-		newParams = params
-		newParams.UnitID = NodeIDParam{Value: childID}
-		return newParams
-	} else if params.LessonID.Value == 0 {
-		newParams = params
-		newParams.LessonID = NodeIDParam{Value: childID}
-		return newParams
-	}
-	panic("no ID to add")
-}
-
 func upNavText(typeName string) string {
 	if typeName == string(domain.RootTypeName) {
 		return "Home"
@@ -500,7 +479,7 @@ func EditFieldComponent(
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(FieldContainerID(props.FieldName))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 133, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 113, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -513,7 +492,7 @@ func EditFieldComponent(
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(props.FieldName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 134, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 114, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -543,7 +522,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditFieldURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 139, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 119, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -556,7 +535,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldContainerID(props.FieldName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 140, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 120, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -569,7 +548,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldInputID(props.FieldName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 141, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 121, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -587,7 +566,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.Content)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 144, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 124, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -600,7 +579,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(AddQueryParam(props.GetEditFieldURL, "field", FieldInputID(props.FieldName)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 146, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 126, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -613,7 +592,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs("outerHTML")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 148, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 128, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -626,7 +605,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldContainerID(props.FieldName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 149, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 129, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -673,7 +652,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 161, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 141, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -686,7 +665,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 162, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 142, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -699,7 +678,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 163, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 143, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -741,7 +720,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 171, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 151, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -754,7 +733,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 172, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 152, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -767,7 +746,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(value))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 173, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 153, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -809,7 +788,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 180, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 160, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
@@ -822,7 +801,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 181, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 161, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -835,7 +814,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 183, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 163, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -877,7 +856,7 @@ func PageHeadingComponent(pageTitle string) templ.Component {
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(pageTitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 188, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 168, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
@@ -929,7 +908,7 @@ func ListedLinkItem(path string, newTab bool) templ.Component {
 		var templ_7745c5c3_Var44 string
 		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 193, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 173, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 		if templ_7745c5c3_Err != nil {
@@ -1011,7 +990,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 		var templ_7745c5c3_Var46 string
 		templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 234, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 214, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 		if templ_7745c5c3_Err != nil {
@@ -1024,7 +1003,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 		var templ_7745c5c3_Var47 string
 		templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 235, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 215, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 		if templ_7745c5c3_Err != nil {
@@ -1047,7 +1026,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 				var templ_7745c5c3_Var48 string
 				templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(standard.Number))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 241, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 221, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 				if templ_7745c5c3_Err != nil {
@@ -1060,7 +1039,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 				var templ_7745c5c3_Var49 string
 				templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(standard.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 241, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 221, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 				if templ_7745c5c3_Err != nil {
@@ -1085,7 +1064,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 				var templ_7745c5c3_Var50 string
 				templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 248, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 228, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 				if templ_7745c5c3_Err != nil {
@@ -1103,7 +1082,7 @@ func TitleDiv(title, description, imgPath string, showImg bool, lightBg bool, st
 				var templ_7745c5c3_Var51 string
 				templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 250, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 230, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 				if templ_7745c5c3_Err != nil {
@@ -1190,7 +1169,7 @@ func StaticLayout(selectedPage StaticPage) templ.Component {
 				var templ_7745c5c3_Var55 string
 				templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs("nav-index")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 313, Col: 25}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 293, Col: 25}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 				if templ_7745c5c3_Err != nil {
@@ -1208,7 +1187,7 @@ func StaticLayout(selectedPage StaticPage) templ.Component {
 				var templ_7745c5c3_Var56 string
 				templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs("nav-" + strings.ToLower(page.Title))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 315, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 295, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 				if templ_7745c5c3_Err != nil {
@@ -1226,7 +1205,7 @@ func StaticLayout(selectedPage StaticPage) templ.Component {
 			var templ_7745c5c3_Var57 string
 			templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(page.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 318, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 298, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 			if templ_7745c5c3_Err != nil {
@@ -1296,7 +1275,7 @@ func CourseDivContainer(course domain.Course, upPath, text string) templ.Compone
 			var templ_7745c5c3_Var60 string
 			templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(course.Term.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 338, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 318, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 			if templ_7745c5c3_Err != nil {
@@ -1367,7 +1346,7 @@ func StaticBackButton(path, text string) templ.Component {
 		var templ_7745c5c3_Var63 string
 		templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 356, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 336, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var63))
 		if templ_7745c5c3_Err != nil {
@@ -1497,7 +1476,7 @@ func StaticCoursesListComponent(instances []domain.Course) templ.Component {
 							var templ_7745c5c3_Var70 string
 							templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(instance.Name)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 375, Col: 24}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 355, Col: 24}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 							if templ_7745c5c3_Err != nil {
@@ -1619,7 +1598,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var76 string
 								templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 392, Col: 25}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 372, Col: 25}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 								if templ_7745c5c3_Err != nil {
@@ -1633,7 +1612,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var77 string
 								templ_7745c5c3_Var77, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(unit.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 394, Col: 39}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 374, Col: 39}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var77))
 								if templ_7745c5c3_Err != nil {
@@ -1646,7 +1625,7 @@ func CourseComponent(instance domain.Course) templ.Component {
 								var templ_7745c5c3_Var78 string
 								templ_7745c5c3_Var78, templ_7745c5c3_Err = templ.JoinStringErrs(unit.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 394, Col: 61}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 374, Col: 61}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var78))
 								if templ_7745c5c3_Err != nil {
@@ -1817,7 +1796,7 @@ func StaticUnitComponent(unit domain.Unit, course domain.Course) templ.Component
 								var templ_7745c5c3_Var86 string
 								templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(lesson.Number))
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 422, Col: 48}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 402, Col: 48}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
 								if templ_7745c5c3_Err != nil {
@@ -1830,7 +1809,7 @@ func StaticUnitComponent(unit domain.Unit, course domain.Course) templ.Component
 								var templ_7745c5c3_Var87 string
 								templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Description)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 422, Col: 81}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 402, Col: 81}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 								if templ_7745c5c3_Err != nil {
@@ -1845,7 +1824,7 @@ func StaticUnitComponent(unit domain.Unit, course domain.Course) templ.Component
 									var templ_7745c5c3_Var88 string
 									templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(lesson.Number))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 425, Col: 52}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 405, Col: 52}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var88))
 									if templ_7745c5c3_Err != nil {
@@ -1858,7 +1837,7 @@ func StaticUnitComponent(unit domain.Unit, course domain.Course) templ.Component
 									var templ_7745c5c3_Var89 string
 									templ_7745c5c3_Var89, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Name)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 425, Col: 78}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 405, Col: 78}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var89))
 									if templ_7745c5c3_Err != nil {
@@ -1872,7 +1851,7 @@ func StaticUnitComponent(unit domain.Unit, course domain.Course) templ.Component
 									var templ_7745c5c3_Var90 string
 									templ_7745c5c3_Var90, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(lesson.Number))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 427, Col: 52}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 407, Col: 52}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var90))
 									if templ_7745c5c3_Err != nil {
@@ -2111,7 +2090,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 		var templ_7745c5c3_Var98 string
 		templ_7745c5c3_Var98, templ_7745c5c3_Err = templ.JoinStringErrs(data.title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 480, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 460, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var98))
 		if templ_7745c5c3_Err != nil {
@@ -2124,7 +2103,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 		var templ_7745c5c3_Var99 string
 		templ_7745c5c3_Var99, templ_7745c5c3_Err = templ.JoinStringErrs(data.description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 481, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 461, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var99))
 		if templ_7745c5c3_Err != nil {
@@ -2147,7 +2126,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var100 string
 				templ_7745c5c3_Var100, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(standard.Number))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 487, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 467, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var100))
 				if templ_7745c5c3_Err != nil {
@@ -2160,7 +2139,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var101 string
 				templ_7745c5c3_Var101, templ_7745c5c3_Err = templ.JoinStringErrs(standard.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 487, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 467, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var101))
 				if templ_7745c5c3_Err != nil {
@@ -2189,7 +2168,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var102 string
 				templ_7745c5c3_Var102, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 499, Col: 25}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 479, Col: 25}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var102))
 				if templ_7745c5c3_Err != nil {
@@ -2202,7 +2181,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var103 string
 				templ_7745c5c3_Var103, templ_7745c5c3_Err = templ.JoinStringErrs(util.Capitalize(assessment.Category.String()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 502, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 482, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var103))
 				if templ_7745c5c3_Err != nil {
@@ -2220,7 +2199,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 					var templ_7745c5c3_Var104 string
 					templ_7745c5c3_Var104, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.Instructions)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 507, Col: 35}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 487, Col: 35}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var104))
 					if templ_7745c5c3_Err != nil {
@@ -2238,7 +2217,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var105 string
 				templ_7745c5c3_Var105, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.DateDue.Format("Mon 1/2/2006"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 512, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 492, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var105))
 				if templ_7745c5c3_Err != nil {
@@ -2278,7 +2257,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var106 string
 				templ_7745c5c3_Var106, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(data.imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 530, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 510, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var106))
 				if templ_7745c5c3_Err != nil {
@@ -2296,7 +2275,7 @@ func TitleDivNewComponent(data TitleDivData) templ.Component {
 				var templ_7745c5c3_Var107 string
 				templ_7745c5c3_Var107, templ_7745c5c3_Err = templ.JoinStringErrs(string(FilePathToURL(data.imgPath)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 532, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 512, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var107))
 				if templ_7745c5c3_Err != nil {
@@ -2364,7 +2343,7 @@ func ListedLinkItemAbsoluteURL(path templ.SafeURL, newTab bool) templ.Component 
 		var templ_7745c5c3_Var110 string
 		templ_7745c5c3_Var110, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 550, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 530, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var110))
 		if templ_7745c5c3_Err != nil {

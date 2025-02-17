@@ -70,13 +70,13 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID.Value, start, end)
+		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID.Value.(int), start, end)
 		if err != nil {
 			return err
 		}
 	} else {
 		// no category filter
-		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID.Value)
+		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID.Value.(int))
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	}
 	_, err = h.svc.SaveAssessment(service.SaveAssessmentParams{
 		Assessment: domain.Assessment{
-			LessonID:     params.LessonID.Value,
+			LessonID:     params.LessonID.Value.(int),
 			Name:         name,
 			Instructions: instructions,
 			Category:     domain.AssessmentCategory(category),
@@ -150,7 +150,7 @@ func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 	data := mt.EditAssessmentForm{
 		Params:                params,
 		Assessment:            assessment,
-		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), mt.AddParam(params, assessmentID)...),
+		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToIntSlice(assessmentID)...),
 		LessonDetailsURL:      h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
 	}
 	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component()))
@@ -192,7 +192,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	updateParams := service.UpdateAssessmentParams{
 		Assessment: domain.Assessment{
 			ID:           assessmentID,
-			LessonID:     params.LessonID.Value,
+			LessonID:     params.LessonID.Value.(int),
 			Name:         name,
 			Instructions: instructions,
 			Category:     domain.AssessmentCategory(category),

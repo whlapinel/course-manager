@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"log"
 	"slices"
 	"time"
 )
@@ -58,7 +57,7 @@ func (t Term) GetDescription() string {
 	return t.Description
 }
 
-func (t Term) GetID() int {
+func (t Term) GetID() interface{} {
 	return t.ID
 }
 
@@ -149,9 +148,9 @@ func (t Term) IsInstructionDay(queryDate time.Time) bool {
 }
 
 // returns a slice consisting of the first of each month that is included in the term
-func (t Term) TermMonths() []time.Time {
+func (t Term) TermMonths() ([]time.Time, error) {
 	if t.Start.IsZero() || t.End.IsZero() {
-		log.Fatal("term not initialized")
+		return nil, fmt.Errorf("term not initialized")
 	}
 	var dates []time.Time
 
@@ -161,7 +160,7 @@ func (t Term) TermMonths() []time.Time {
 		dates = append(dates, first)
 		currDate = currDate.AddDate(0, 1, 0)
 	}
-	return dates
+	return dates, nil
 }
 
 func (t Term) Designation() string {

@@ -105,6 +105,7 @@ func (svc CourseService) GetLesson(lessonID int) (domain.Lesson, error) {
 		return domain.Lesson{}, err
 	}
 	lesson.Standards = objectives
+	domain.SortByNumber(lesson.Standards)
 	assessments, err := svc.repo.GetLessonAssessments(lessonID)
 	if err != nil {
 		return domain.Lesson{}, err

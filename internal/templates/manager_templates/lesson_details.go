@@ -19,17 +19,12 @@ type LessonDetailsPage struct {
 	GetSlidesURL, EditSlidesURL, GithubFilesURL, ServerFilesURL  string
 }
 
-func AddParam(params CourseIDParams, param interface{}) []interface{} {
-	return append(params.ToIntSlice(), param)
-}
 func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
-	params := AddParam(page.Params, stdID)
-	return page.E.Reverse(page.DeleteLessonStandardRHN, params...)
+	return page.E.Reverse(page.DeleteLessonStandardRHN, page.Params.ToIntSlice(stdID)...)
 }
 
 func (page LessonDetailsPage) DeleteAssessmentURL(assessmentID int) string {
-	params := AddParam(page.Params, assessmentID)
-	return page.E.Reverse(page.DeleteAssessmentRHN, params...)
+	return page.E.Reverse(page.DeleteAssessmentRHN, page.Params.ToIntSlice(assessmentID)...)
 }
 
 func (page LessonDetailsPage) Lesson() domain.Lesson {

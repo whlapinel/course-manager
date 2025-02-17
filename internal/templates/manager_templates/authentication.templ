@@ -1,0 +1,56 @@
+package managertemplates
+
+import "os"
+
+templ SignInPageComponent(data SigninPage) {
+	@SigninWithGoogleComponent(data)
+}
+
+templ SigninWithGoogleComponent(data SigninPage) {
+	<p>Please Sign In With Your Google Account</p>
+	<div
+		id="g_id_onload"
+		data-client_id={ os.Getenv("GOOGLE_CLIENT_ID") }
+		data-context="signin"
+		data-ux_mode="popup"
+		data-login_uri={ data.GoogleSigninURL }
+		data-auto_prompt="false"
+	></div>
+	<div
+		class="g_id_signin"
+		data-type="standard"
+		data-shape="rectangular"
+		data-theme="outline"
+		data-text="signin_with"
+		data-size="large"
+		data-logo_alignment="left"
+	></div>
+	<script src="https://accounts.google.com/gsi/client" onload="console.log('TODO: add onload function')" async defer></script>
+}
+
+templ SignupPageComponent(page SignUpPage) {
+	@SignupWithGoogleComponent(page)
+}
+
+templ SignupWithGoogleComponent(page SignUpPage) {
+	<p>Please Sign In With Your CMS Google Account</p>
+	<div
+		id="g_id_onload"
+		data-client_id={ page.GoogleClientID }
+		data-context="signup"
+		data-ux_mode="popup"
+		data-login_uri={ page.GoogleSignupURL }
+		data-nonce=""
+		data-auto_prompt="false"
+	></div>
+	<div
+		class="g_id_signin"
+		data-type="standard"
+		data-shape="rectangular"
+		data-theme="outline"
+		data-text="signup_with"
+		data-size="large"
+		data-logo_alignment="left"
+	></div>
+	<script src="https://accounts.google.com/gsi/client" onload="console.log('TODO: add onload function')" async defer></script>
+}

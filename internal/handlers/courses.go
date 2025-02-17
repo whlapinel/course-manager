@@ -54,12 +54,7 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 
 func (h CourseHandler) ListTermCourses(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	termID, err := ParseRouteParam(c, TermID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	log.Println("termID: ", termID)
+	termID := params.TermID.Value.(int)
 	term, err := h.svc.GetTerm(termID)
 	if err != nil {
 		return err
@@ -81,7 +76,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 			CreateChildRHN:   ShowNewCourse.String(),
 			ChildChildrenRHN: ListCourseUnits.String(),
 			DeleteChildRHN:   DeleteCourse.String(),
-			UpNavURL:         h.e.Reverse(ListTerms.String()),
+			UpNavURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 			E:                h.e,
 			BreadCrumbsData: mt.BreadCrumbs{
 				Term:           term,
@@ -97,7 +92,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 
 func (h CourseHandler) CourseDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -169,7 +164,7 @@ func (h CourseHandler) PostNewCourse(c echo.Context) error {
 	name := c.FormValue("name")
 	description := c.FormValue("description")
 	course, err := h.svc.SaveCourse(service.SaveCourseParams{
-		TermID:      termID.Value,
+		TermID:      termID.Value.(int),
 		Name:        name,
 		Description: description,
 	})
@@ -239,18 +234,18 @@ func (h CourseHandler) PostEditCourse(c echo.Context) error {
 func (h CourseHandler) DeleteCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	courseId := params.CourseID
-	return h.svc.DeleteCourse(courseId.Value)
+	return h.svc.DeleteCourse(courseId.Value.(int))
 }
 
 func (h CourseHandler) GetCopyCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	terms, err := h.svc.GetTerms()
+	terms, err := h.svc.GetTerms(params.UserID.Value.(string))
 	if err != nil {
 		return err
 	}
 	data := mt.CopyCourseData{
-		TermID:                  params.TermID.Value,
-		CourseID:                params.CourseID.Value,
+		TermID:                  params.TermID.Value.(int),
+		CourseID:                params.CourseID.Value.(int),
 		Terms:                   terms,
 		E:                       h.e,
 		PostCopyCourseToTermRHN: string(PostCopyCourseToTerm),
@@ -272,7 +267,7 @@ func (h CourseHandler) PostCopyCourseToTerm(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		_, err = h.svc.CopyCourseToTerm(params.CourseID.Value, termID)
+		_, err = h.svc.CopyCourseToTerm(params.CourseID.Value.(int), termID)
 		if err != nil {
 			return err
 		}
@@ -295,7 +290,7 @@ func (h CourseHandler) PostSelectStandardSet(c echo.Context) error {
 		return err
 	}
 	log.Println("selected set: ", standardSetParam)
-	err = h.svc.SetStandardSet(params.CourseID.Value, setID)
+	err = h.svc.SetStandardSet(params.CourseID.Value.(int), setID)
 	if err != nil {
 		return err
 	}

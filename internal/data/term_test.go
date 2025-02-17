@@ -19,7 +19,10 @@ func TestGetTerm(t *testing.T) {
 		}
 		log.Println(term.Name)
 		log.Println(term.ID)
-		monthDates := term.TermMonths()
+		monthDates, err := term.TermMonths()
+		if err != nil {
+			t.Error("error getting month dates")
+		}
 		for _, date := range monthDates {
 			log.Println(date.Format(time.DateOnly))
 		}
@@ -50,19 +53,4 @@ func TestGetTermWithDates(t *testing.T) {
 	} else {
 		log.Println("term id was 0")
 	}
-}
-
-func TestGetTerms(t *testing.T) {
-	terms, err := cr.GetTerms()
-	if err != nil {
-		t.Error("error fetching terms: ", err)
-	}
-	log.Println("term count: ", len(terms))
-	for _, term := range terms {
-		log.Println(term.Name)
-		for _, date := range term.InstructionalDays {
-			log.Println(date)
-		}
-	}
-
 }

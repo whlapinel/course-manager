@@ -36,7 +36,8 @@ func (h CourseHandler) ShowHome(c echo.Context) error {
 }
 
 func (h CourseHandler) GenerateSite(c echo.Context) error {
-	h.svc.GenerateSite()
+	userID := c.Get("id").(string)
+	h.svc.GenerateSite(userID)
 	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
 }
 

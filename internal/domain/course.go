@@ -60,7 +60,7 @@ func (c Course) GetDescription() string {
 	return c.Description
 }
 
-func (c Course) GetID() int {
+func (c Course) GetID() interface{} {
 	return c.ID
 }
 

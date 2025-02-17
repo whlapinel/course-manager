@@ -13,7 +13,11 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/acme/autocert"
 )
+
+const production = "production"
+const development = "development"
 
 func main() {
 	e := echo.New()
@@ -36,26 +40,38 @@ func main() {
 	courseHandler := handlers.NewCourseHandler(e, service.NewCourseService(courseRepo))
 	courseHandler.Mount()
 	assets.RegisterStatic(e)
-	LoadEnvironment()
+	environment, err := LoadEnvironment()
+	if err != nil {
+		log.Fatal("error loading environment")
+	}
 	host := os.Getenv("HOST")
 	log.Println("Host:", host)
 	port := os.Getenv("PORT")
 	log.Println("Port:", port)
 	startString := fmt.Sprintf("%s:%s", host, port)
-	e.Logger.Fatal(e.Start(startString))
+
+	if environment == development {
+		e.Logger.Fatal(e.Start(startString))
+	} else if environment == production {
+		e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
+		e.Logger.Fatal(e.StartAutoTLS(startString))
+	}
 
 }
 
-func LoadEnvironment() {
+func LoadEnvironment() (string, error) {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Println(err)
 		log.Fatal("Error loading .env file")
 	}
-	if os.Getenv("ENV") == "development" {
+	if os.Getenv("ENV") == development {
 		godotenv.Load(".env.development")
+		return development, nil
 	}
-	if os.Getenv("ENV") == "production" {
+	if os.Getenv("ENV") == production {
 		godotenv.Load(".env.production")
+		return production, nil
 	}
+	return "", fmt.Errorf("environment not expected:'%s'", os.Getenv("ENV"))
 }

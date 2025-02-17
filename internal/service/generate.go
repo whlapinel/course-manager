@@ -5,8 +5,8 @@ import (
 	"os/exec"
 )
 
-func (svc CourseService) GenerateSite() error {
-	err := sitegenerator.Generate(svc.repo)
+func (svc CourseService) GenerateSite(userID string) error {
+	err := sitegenerator.Generate(svc.repo, userID)
 	if err != nil {
 		return err
 	}

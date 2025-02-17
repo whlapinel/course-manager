@@ -267,7 +267,7 @@ func (lr CourseRepo) DeleteLesson(nodes ...domain.CourseNode) error {
 		return err
 	}
 	lesson := nodes[len(nodes)-1]
-	err = lr.queries.DeleteLesson(context.Background(), int64(lesson.GetID()))
+	err = lr.queries.DeleteLesson(context.Background(), int64(lesson.GetID().(int)))
 	return err
 }
 

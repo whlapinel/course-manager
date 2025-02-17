@@ -41,11 +41,11 @@ func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
 func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
 	dbTerm, err := cr.queries.GetTermByID(context.Background(), int64(termID))
 	if err != nil {
-		return domain.Term{}, nil
+		return domain.Term{}, err
 	}
 	dates, err := parseDates([]string{dbTerm.Start, dbTerm.End})
 	if err != nil {
-		return domain.Term{}, nil
+		return domain.Term{}, err
 	}
 	return domain.Term{
 		ID:          int(dbTerm.ID),
@@ -57,7 +57,7 @@ func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
 
 }
 
-func (cr CourseRepo) GetTerms() ([]domain.Term, error) {
+func (cr CourseRepo) GetTerms(userID string) ([]domain.Term, error) {
 	dbGetTermRows, err := cr.queries.GetTerms(context.Background())
 	if err != nil {
 		return nil, err

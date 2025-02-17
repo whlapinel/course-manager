@@ -279,7 +279,7 @@ func LinkWithInfoDialogComponent(data LinkWithInfoDialog) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -744,7 +744,7 @@ func CalendarComponent(page CalendarPage) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, day := range page.GetTerm().TermMonths() {
+		for _, day := range MonthDates(page.GetTerm()) {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<h1 id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

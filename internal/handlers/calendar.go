@@ -57,7 +57,7 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	err = h.svc.WebShift(params.TermID.Value, params.CourseID.Value, params.LessonID.Value, cd)
+	err = h.svc.WebShift(params.TermID.Value.(int), params.CourseID.Value.(int), params.LessonID.Value.(int), cd)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -79,7 +79,7 @@ func (h CourseHandler) ExtendLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	err = h.svc.Extend(params.TermID.Value, params.CourseID.Value, params.LessonID.Value, cd)
+	err = h.svc.Extend(params.TermID.Value.(int), params.CourseID.Value.(int), params.LessonID.Value.(int), cd)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -99,7 +99,7 @@ func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourseWithChildren(params.CourseID.Value)
+	course, err := h.svc.GetCourseWithChildren(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func (h CourseHandler) RemoveLessonDate(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = h.svc.RemoveLessonDate(params.LessonID.Value, date)
+	err = h.svc.RemoveLessonDate(params.LessonID.Value.(int), date)
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (h CourseHandler) AddLessonDate(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = h.svc.AddLessonDate(params.LessonID.Value, params.TermID.Value, date)
+	err = h.svc.AddLessonDate(params.LessonID.Value.(int), params.TermID.Value.(int), date)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (h CourseHandler) AddLessonDate(c echo.Context) error {
 }
 
 func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar, error) {
-	course, err := h.svc.GetCourseForCalendar(params.CourseID.Value)
+	course, err := h.svc.GetCourseForCalendar(params.CourseID.Value.(int))
 	if err != nil {
 		log.Println(err)
 		return mt.CourseCalendar{}, err

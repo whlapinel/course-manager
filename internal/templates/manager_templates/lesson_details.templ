@@ -52,7 +52,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 							<pre>{ assessment.Instructions }</pre>
 						</details>
 						<button
-							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, AddParam(props.Params, assessment.ID)...) }
+							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, props.Params.ToIntSlice(assessment.ID)...) }
 							hx-target="#assessment"
 						>
 							Edit

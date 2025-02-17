@@ -75,11 +75,11 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -133,15 +133,15 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	queryParam := c.QueryParam("field")
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -201,15 +201,15 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -339,34 +339,38 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
-	err = h.svc.CreateNodeFilesDir(term, course, unit, lesson)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
 	if err != nil {
 		return err
 	}
-	isDir, err := h.svc.IsDir(path, term, course, unit, lesson)
+	err = h.svc.CreateNodeFilesDir(user, term, course, unit, lesson)
+	if err != nil {
+		return err
+	}
+	isDir, err := h.svc.IsDir(path, user, term, course, unit, lesson)
 	if err != nil {
 		return err
 	}
 	if !isDir {
-		c.Attachment(h.svc.LessonFilePath(path, term, course, unit, lesson), filepath.Base(path))
+		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit, lesson), filepath.Base(path))
 	}
-	files, err := h.svc.LessonFiles(path, term, course, unit, lesson)
+	files, err := h.svc.LessonFiles(path, user, term, course, unit, lesson)
 	for _, file := range files {
 		log.Println(file.Path)
 	}
@@ -401,19 +405,19 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -454,19 +458,19 @@ func (h CourseHandler) PostLessonFile(c echo.Context) error {
 
 func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -497,19 +501,19 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	log.Println(params)
 	content := c.FormValue(string(mt.EditSlidesTextAreaID))
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -531,15 +535,15 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 
 func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -582,7 +586,7 @@ func (h CourseHandler) PostNewLesson(c echo.Context) error {
 	description := form.Get("description")
 	lesson, err := h.svc.SaveLesson(service.SaveLessonParams{
 		Lesson: domain.Lesson{
-			UnitID:      params.UnitID.Value,
+			UnitID:      params.UnitID.Value.(int),
 			Number:      number,
 			Name:        name,
 			Description: description,
@@ -597,7 +601,7 @@ func (h CourseHandler) PostNewLesson(c echo.Context) error {
 
 func (h CourseHandler) DeleteLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	err := h.svc.DeleteLesson(params.LessonID.Value)
+	err := h.svc.DeleteLesson(params.LessonID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -615,7 +619,7 @@ func (h CourseHandler) PostLessonStandard(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = h.svc.SetLessonObjective(params.LessonID.Value, objID)
+	err = h.svc.SetLessonObjective(params.LessonID.Value.(int), objID)
 	if err != nil {
 		return err
 	}
@@ -635,7 +639,7 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	}
 	log.Println(params.ToIntSlice()...)
 	log.Println("deleting lesson standard ", objID)
-	err = h.svc.DeleteLessonObjective(params.LessonID.Value, objID)
+	err = h.svc.DeleteLessonObjective(params.LessonID.Value.(int), objID)
 	if err != nil {
 		return err
 	}
@@ -649,19 +653,19 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 }
 
 func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string) (mt.LessonDetailsPage, error) {
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return mt.LessonDetailsPage{}, err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return mt.LessonDetailsPage{}, err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return mt.LessonDetailsPage{}, err
 	}
-	lesson, err := h.svc.GetLesson(params.LessonID.Value)
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
 	if err != nil {
 		log.Println("error getting lesson:", err)
 		return mt.LessonDetailsPage{}, err
@@ -688,9 +692,9 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
 	}
 
-	var idParams = params.ToIntSlice()
-	var pathParam interface{} = ""
-	var withPath = append(idParams, pathParam)
+	// var idParams = params.ToIntSlice()
+	// var pathParam interface{} = ""
+	// var withPath = append(idParams, pathParam)
 
 	lessonDetails := mt.LessonDetailsPage{
 		E:                       h.e,
@@ -704,7 +708,7 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
 		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
 		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), withPath...),
+		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice()...),
 	}
 	return lessonDetails, nil
 }

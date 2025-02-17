@@ -37,7 +37,7 @@ func (page TermsListPage) Component() templ.Component {
 	for _, term := range page.Children {
 		log.Println("term ID: ", term.GetID())
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.E.Reverse(page.ShowTermCalendarRHN, term.GetID()),
+			ShowCalendarURL: page.E.Reverse(page.ShowTermCalendarRHN, page.NodeListPage.ParentNode.GetID().(string), term.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
 

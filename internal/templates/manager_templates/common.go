@@ -18,6 +18,7 @@ type ComponentData interface {
 const pageElementID ElementID = "page"
 
 type CourseIDParams struct {
+	UserID   NodeIDParam
 	TermID   NodeIDParam
 	CourseID NodeIDParam
 	UnitID   NodeIDParam
@@ -26,11 +27,50 @@ type CourseIDParams struct {
 
 type NodeIDParam struct {
 	Valid bool
-	Value int
+	Value interface{}
 }
 
-func (params CourseIDParams) ToIntSlice() []interface{} {
-	return []interface{}{params.TermID.Value, params.CourseID.Value, params.UnitID.Value, params.LessonID.Value}
+func AddNodeChildIDToParams(params CourseIDParams, childID interface{}) CourseIDParams {
+	var newParams CourseIDParams
+	if params.UserID.Value.(string) == "" {
+		newParams.UserID = NodeIDParam{Value: childID.(string)}
+		return newParams
+	} else if params.TermID.Value == nil {
+		newParams = params
+		newParams.TermID = NodeIDParam{Value: childID}
+		return newParams
+	} else if params.CourseID.Value == nil {
+		newParams = params
+		newParams.CourseID = NodeIDParam{Value: childID}
+		return newParams
+	} else if params.UnitID.Value == nil {
+		newParams = params
+		newParams.UnitID = NodeIDParam{Value: childID}
+		return newParams
+	} else if params.LessonID.Value == nil {
+		newParams = params
+		newParams.LessonID = NodeIDParam{Value: childID}
+		return newParams
+	}
+	return params
+}
+
+// converts params into a slice of interfaces
+func (params CourseIDParams) ToIntSlice(additionalParams ...interface{}) []interface{} {
+	var base []interface{}
+	paramSlice := []interface{}{
+		params.UserID.Value,
+		params.TermID.Value,
+		params.CourseID.Value,
+		params.UnitID.Value,
+		params.LessonID.Value,
+	}
+	for _, param := range paramSlice {
+		if param != nil {
+			base = append(base, param)
+		}
+	}
+	return append(base, additionalParams...)
 }
 
 type ElementID string

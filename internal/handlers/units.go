@@ -42,11 +42,6 @@ func (h CourseHandler) UnitHandlers() []RouteHandler {
 
 func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	termID, err := ParseRouteParam(c, TermID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
 	courseID, err := ParseRouteParam(c, CourseID)
 	if err != nil {
 		log.Println(err)
@@ -69,7 +64,7 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		ChildDetailsRHN:  UnitDetails.String(),
 		ChildChildrenRHN: ListUnitLessons.String(),
 		CreateChildRHN:   ShowNewUnit.String(),
-		UpNavURL:         h.e.Reverse(ListTermCourses.String(), termID),
+		UpNavURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 		E:                h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
 			Term:             course.Term,
@@ -87,15 +82,15 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 
 func (h CourseHandler) UnitDetails(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -131,15 +126,15 @@ func (h CourseHandler) PostNewUnit(c echo.Context) error {
 func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	queryParam := c.QueryParam("field")
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
-	unit, err := h.svc.GetUnit(params.UnitID.Value)
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -184,11 +179,11 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	term, err := h.svc.GetTerm(params.TermID.Value)
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(params.CourseID.Value)
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
 	if err != nil {
 		return err
 	}
@@ -266,5 +261,5 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 
 func (h CourseHandler) DeleteUnit(c echo.Context) error {
 	params := ParseCourseIDParams(c)
-	return h.svc.DeleteUnit(params.UnitID.Value)
+	return h.svc.DeleteUnit(params.UnitID.Value.(int))
 }

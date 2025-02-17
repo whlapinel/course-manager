@@ -64,7 +64,7 @@ templ LinkWithInfoDialogComponent(data LinkWithInfoDialog) {
 			<p>
 				{ data.Text }
 			</p>
-			<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max">
+			<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none">
 				{ data.Details }
 			</p>
 		</div>
@@ -161,7 +161,7 @@ templ CalendarComponent(page CalendarPage) {
 		@PageLayoutComponent(page)
 	}
 	<div id="calendar" class="flex flex-col gap-4">
-		for _, day := range page.GetTerm().TermMonths() {
+		for _, day := range MonthDates(page.GetTerm()) {
 			<h1
 				id={ util.KebabCase(day.Month().String()) }
 				class="text-2xl text-center"

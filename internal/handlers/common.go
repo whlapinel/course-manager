@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	auth "gh_static_portfolio/internal/authentication"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
@@ -47,6 +48,7 @@ const (
 )
 
 const (
+	UserID         RouteParam = "/:user-id"
 	TermID         RouteParam = "/:term-id"
 	OccasionID     RouteParam = "/:occasion-id"
 	CourseID       RouteParam = "/:course-id"
@@ -66,6 +68,9 @@ func (p RouteParam) Name() string {
 
 func ParseCourseIDParams(c echo.Context) mt.CourseIDParams {
 	var params mt.CourseIDParams
+	userID := ParseRouteStringParam(c, UserID)
+	params.UserID.Valid = userID != ""
+	params.UserID.Value = userID
 	termID, err := ParseRouteParam(c, TermID)
 	if err == nil {
 		params.TermID.Valid = true
@@ -91,28 +96,28 @@ func ParseCourseIDParams(c echo.Context) mt.CourseIDParams {
 
 func CourseIDParam(params mt.CourseIDParams) (int, error) {
 	if params.CourseID.Valid {
-		return params.CourseID.Value, nil
+		return params.CourseID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
 func UnitIDParam(params mt.CourseIDParams) (int, error) {
 	if params.UnitID.Valid {
-		return params.UnitID.Value, nil
+		return params.UnitID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
 func LessonIDParam(params mt.CourseIDParams) (int, error) {
 	if params.LessonID.Valid {
-		return params.LessonID.Value, nil
+		return params.LessonID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
 func TermIDParam(params mt.CourseIDParams) (int, error) {
 	if params.TermID.Valid {
-		return params.TermID.Value, nil
+		return params.TermID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
@@ -120,10 +125,10 @@ func TermIDParam(params mt.CourseIDParams) (int, error) {
 
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
 	return strconv.Atoi(c.Param(param.Name()))
-
 }
 
 func ParseRouteStringParam(c echo.Context, param RouteParam) string {
+	log.Println("ParseRouteStringParam: ", c.Param(param.Name()))
 	return c.Param(param.Name())
 }
 
@@ -141,17 +146,34 @@ type RouteHandler struct {
 }
 
 func (h CourseHandler) Mount() {
-	h.mountHandlers(h.TermHandlers())
-	h.mountHandlers(h.CourseHandlers())
-	h.mountHandlers(h.UnitHandlers())
-	h.mountHandlers(h.LessonHandlers())
-	h.mountHandlers(h.AssessmentHandlers())
-	h.mountHandlers(h.CalendarHandlers())
-	h.mountHandlers(h.HomeHandlers())
-
+	h.MountHandlers(h.HomeHandlers())
+	h.MountHandlers(h.AuthenticationHandlers())
+	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddleware, auth.GetClaims)
+	h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
+	h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
+	h.ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
+	h.ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
+	h.ProtectRoutes(h.AssessmentHandlers(), ProtectedGroup)
+	h.ProtectRoutes(h.CalendarHandlers(), ProtectedGroup)
 }
 
-func (h CourseHandler) mountHandlers(newHandlers []RouteHandler) {
+func (h CourseHandler) ProtectRoutes(handlers []RouteHandler, group *echo.Group) {
+	for _, handler := range handlers {
+		switch handler.Method {
+		case GET:
+			group.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case POST:
+			group.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case DELETE:
+			group.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		default:
+			log.Fatal("http method in route handler not expected")
+		}
+
+	}
+}
+
+func (h CourseHandler) MountHandlers(newHandlers []RouteHandler) {
 	for _, handler := range newHandlers {
 		switch handler.Method {
 		case GET:
