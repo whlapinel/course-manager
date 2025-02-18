@@ -1,6 +1,10 @@
 version: "3"
 
 tasks:
+  export-secrets:
+    desc: Export all secret files in a separate folder for publishing elsewhere
+    cmds:
+      - go run ./cmd/export_secret
   hello:
     cmds:
       - echo 'Hello World from Task!'
