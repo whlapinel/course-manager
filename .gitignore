@@ -1,4 +1,5 @@
 python
+secret_files
 node_modules
 .vscode
 **/__pycache__/

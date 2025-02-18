@@ -84,3 +84,7 @@ pytest test_math.py
 ✔ **Use `assert` for quick tests**  
 ✔ **Use `pytest` for better test automation**  
 ✔ **Run `pytest` to check multiple test cases**  
+
+# Assignment 2.7
+
+[Assignment 2.7](./files/practice_problems_2_2_7.md)

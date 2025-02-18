@@ -11,4 +11,7 @@ paginate: true
 
 # Warmup
 
+# Assignment 3.6
+
+- [Assignment 3.6](./files/assignment_1_3_6.html)
 

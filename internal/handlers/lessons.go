@@ -110,6 +110,9 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		E:               h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:           user,
+			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 			Term:             term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,
@@ -141,6 +144,11 @@ func (h CourseHandler) LessonDetails(c echo.Context) error {
 
 func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	queryParam := c.QueryParam("field")
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
@@ -177,6 +185,9 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:           user,
+			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 			Term:             term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,
@@ -206,6 +217,11 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 // TODO: maybe the UpdateLesson functions should return an updated lesson instead of having to call GetLesson again
 func (h CourseHandler) PostEditLesson(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	lessonID, err := LessonIDParam(params)
 	if err != nil {
 		return err
@@ -252,6 +268,9 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 				Term:             term,
 				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 				Course:           course,
@@ -374,6 +393,8 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 		Files:       files,
 		E:           h.e,
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:             user,
+			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
 			Term:             term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,
@@ -496,6 +517,11 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	log.Println(params)
 	content := c.FormValue(string(mt.EditSlidesTextAreaID))
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return err
@@ -513,7 +539,7 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 		return err
 	}
 
-	path := data.SlidesMarkdownFilePath(term, course, unit, lesson)
+	path := data.SlidesMarkdownFilePath(user, term, course, unit, lesson)
 	file, err := os.Create(path)
 	if err != nil {
 		log.Println(err)
@@ -554,6 +580,9 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 		PostCreateNodeURL: h.e.Reverse(PostNewLesson.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:           user,
+			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 			Term:             term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,
@@ -658,6 +687,11 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 }
 
 func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string) (mt.LessonDetailsPage, error) {
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+
 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
 	if err != nil {
 		return mt.LessonDetailsPage{}, err
@@ -684,6 +718,9 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          false,
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:           user,
+			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 			Term:             term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,

@@ -84,6 +84,9 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 			UpNavURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 			E:                h.e,
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 				Term:           term,
 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			},
@@ -123,6 +126,9 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 				Term:             course.Term,
 				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 				Course:           course,
@@ -157,6 +163,9 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 		PostCreateNodeURL: h.e.Reverse(PostNewCourse.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:           user,
+			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 			Term:           term,
 			TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 		},
@@ -205,6 +214,10 @@ func (h CourseHandler) PostNewCourse(c echo.Context) error {
 
 func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 	queryParam := c.QueryParam("field")
 	courseID, err := CourseIDParam(params)
 	if err != nil {
@@ -228,6 +241,8 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 		ListChildrenURL: h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: mt.BreadCrumbs{
+			User:             user,
+			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
 			Term:             course.Term,
 			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			Course:           course,

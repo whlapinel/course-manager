@@ -128,6 +128,8 @@ func (h CourseHandler) TermDetails(c echo.Context) error {
 			ListChildrenURL: h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTerms.String()),
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
 				Term:           term,
 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			},
@@ -312,6 +314,11 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 
 func (h CourseHandler) ShowEditTerm(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	queryParam := c.QueryParam("field")
 	termID, err := TermIDParam(params)
 	if err != nil {
@@ -336,6 +343,9 @@ func (h CourseHandler) ShowEditTerm(c echo.Context) error {
 			UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 			IsEdit:          true,
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 				Term:           term,
 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			},
@@ -358,6 +368,11 @@ func (h CourseHandler) ShowEditTerm(c echo.Context) error {
 
 func (h CourseHandler) PostEditTerm(c echo.Context) error {
 	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
 	termID, err := TermIDParam(params)
 	if err != nil {
 		return err
@@ -392,6 +407,9 @@ func (h CourseHandler) PostEditTerm(c echo.Context) error {
 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: mt.BreadCrumbs{
+				User:           user,
+				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+
 				Term:           term,
 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
 			},
