@@ -61,7 +61,6 @@ templ HxButtonComponent(props HXButton) {
 	</button>
 }
 
-
 func upNavText(typeName string) string {
 	if typeName == string(domain.RootTypeName) {
 		return "Home"
@@ -172,6 +171,15 @@ templ PageHeadingComponent(pageTitle string) {
 templ ListedLinkItem(path string, newTab bool) {
 	<a href={ FilePathToURL(path) } target={ targetAttrVal(newTab) }>
 		<li class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none">
+			{ children... }
+		</li>
+	</a>
+}
+
+// created for course calendar so there wouldn't be double-styling
+templ UnstyledListedLinkItem(path string, newTab bool) {
+	<a href={ FilePathToURL(path) } target={ targetAttrVal(newTab) }>
+		<li>
 			{ children... }
 		</li>
 	</a>

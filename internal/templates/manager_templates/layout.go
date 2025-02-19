@@ -8,10 +8,13 @@ import (
 )
 
 type CourseManagerLayout struct {
-	PageTitle string
-	User      domain.User
-	Page      templ.Component
-	E         *echo.Echo
+	PageTitle  string
+	SigninURL  string
+	SignupURL  string
+	SignoutURL string
+	User       domain.User
+	Page       templ.Component
+	E          *echo.Echo
 }
 
 func (cml CourseManagerLayout) Component() templ.Component {
@@ -33,4 +36,35 @@ type BreadCrumbs struct {
 
 func (data BreadCrumbs) Component() templ.Component {
 	return BreadCrumbsComponent(data)
+}
+
+func (data CourseManagerLayout) SigninButton() templ.Component {
+	return HXButton{
+		Text:     "Sign In",
+		Method:   HxGet,
+		URL:      data.SigninURL,
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
+func (data CourseManagerLayout) SignupButton() templ.Component {
+	return HXButton{
+		Text:     "Sign Up",
+		Method:   HxGet,
+		URL:      data.SignupURL,
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
+func (data CourseManagerLayout) SignoutButton() templ.Component {
+	return HXButton{
+		Text:      "Sign Out",
+		HxConfirm: "Are you sure you want to sign out?",
+		Method:    HxPost,
+		URL:       data.SignoutURL,
+		HxTarget:  "#page",
+		PushURL:   true,
+	}.Component()
 }

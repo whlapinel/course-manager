@@ -6,20 +6,23 @@ import (
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
+	"path/filepath"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
 const (
-	Units    RouteName = Course + "/units"
-	Unit     RouteName = Units + RouteName(UnitID)
-	NewUnit  RouteName = Units + "/new"
-	EditUnit RouteName = Unit + "/edit"
+	Units     RouteName = Course + "/units"
+	Unit      RouteName = Units + RouteName(UnitID)
+	NewUnit   RouteName = Units + "/new"
+	EditUnit  RouteName = Unit + "/edit"
+	UnitFiles RouteName = Unit + "/files/*"
 )
 const (
 	ListCourseUnits = RouteHandlerName(GET + Units)
 	UnitDetails     = RouteHandlerName(GET + Unit)
+	ShowUnitFiles   = RouteHandlerName(GET + UnitFiles)
 	ShowEditUnit    = RouteHandlerName(GET + EditUnit)
 	PostEditUnit    = RouteHandlerName(POST + EditUnit)
 	ShowNewUnit     = RouteHandlerName(GET + NewUnit)
@@ -32,6 +35,7 @@ func (h CourseHandler) UnitHandlers() []RouteHandler {
 		// Units handlers
 		{Units, ListCourseUnits, GET, h.ListCourseUnits},
 		{Unit, UnitDetails, GET, h.UnitDetails},
+		{UnitFiles, ShowUnitFiles, GET, h.ShowUnitFiles},
 		{NewUnit, ShowNewUnit, GET, h.ShowNewUnit},
 		{NewUnit, PostNewUnit, POST, h.PostNewUnit},
 		{EditUnit, ShowEditUnit, GET, h.ShowEditUnit},
@@ -128,6 +132,71 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 	template := mt.UnitDetailsComponent(unitDetails)
 	layout := h.CourseManagerLayout(template, user)
 	return Respond(c, "", template, layout)
+}
+
+func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+	err = h.svc.CreateNodeFilesDir(user, term, course, unit)
+	if err != nil {
+		return err
+	}
+	isDir, err := h.svc.IsDir(path, user, term, course, unit)
+	if err != nil {
+		return err
+	}
+	if !isDir {
+		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit, lesson), filepath.Base(path))
+	}
+	files, err := h.svc.LessonFiles(path, user, term, course, unit, lesson)
+	for _, file := range files {
+		log.Println(file.Path)
+	}
+	if err != nil {
+		return err
+	}
+	log.Println(files)
+	page := mt.FilesPage{
+		Node:        lesson,
+		Params:      params,
+		CurrentPath: path,
+		OpenFileRHN: ShowLessonFiles.String(),
+		Files:       files,
+		E:           h.e,
+		BreadCrumbsData: mt.BreadCrumbs{
+			User:             user,
+			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+			Term:             term,
+			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+			Course:           course,
+			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
+			Unit:             unit,
+			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
+			Lesson:           lesson,
+			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
+		},
+	}
+	component := page.Component()
+	layout := h.CourseManagerLayout(component, user)
+	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowNewUnit(c echo.Context) error {

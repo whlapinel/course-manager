@@ -28,9 +28,12 @@ func (h CourseHandler) ShowHome(c echo.Context) error {
 	}
 	template := mt.HomePageComponent(pageData)
 	layout := mt.CourseManagerLayout{
-		PageTitle: "Home",
-		Page:      pageData.Component(),
-		E:         h.e,
+		PageTitle:  "Home",
+		SigninURL:  h.e.Reverse(GetSignin.String()),
+		SignupURL:  h.e.Reverse(GetSignup.String()),
+		SignoutURL: h.e.Reverse(PostSignout.String()),
+		Page:       pageData.Component(),
+		E:          h.e,
 	}.Component()
 	return Respond(c, "", template, layout)
 }

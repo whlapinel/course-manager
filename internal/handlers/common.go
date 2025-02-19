@@ -150,7 +150,7 @@ type RouteHandler struct {
 func (h CourseHandler) Mount() {
 	h.MountHandlers(h.HomeHandlers())
 	h.MountHandlers(h.AuthenticationHandlers())
-	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtected, auth.GetClaims, authorization.Authorization(h.svc.GetUser))
+	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(h.e, GetSignin.String()), auth.GetClaims, authorization.Authorization(h.svc.GetUser))
 	h.ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)

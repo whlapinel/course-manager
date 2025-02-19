@@ -43,49 +43,49 @@ func AddCookieToHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-var JWTMiddlewareProtected = echojwt.WithConfig(protectedConfig)
-
-var protectedConfig = echojwt.Config{
-	NewClaimsFunc: func(c echo.Context) jwt.Claims {
-		return new(JwtCustomClaims)
-	},
-	SigningKey: []byte(secret),
-	ErrorHandler: func(c echo.Context, err error) error {
-		// Redirect to login page on error
-		log.Println("Error: ", err)
-		reason := "error validating token"
-		return fmt.Errorf("%s, %s", reason, err)
-	},
-	SuccessHandler: func(c echo.Context) {
-		log.Println("SuccessHandler")
-		log.Println("Claims: ", c.Get("user"))
-		userToken := c.Get("user").(*jwt.Token)
-		claims := userToken.Claims.(*JwtCustomClaims)
-		log.Println("Email: ", claims.Email)
-		log.Println("ID: ", claims.ID)
-		log.Println("Name: ", claims.First, claims.Last)
-		log.Println("Picture: ", claims.Picture)
-		expiration := claims.ExpiresAt.Time
-		log.Println("Expiration: ", expiration)
-		if time.Until(expiration) <= cushionTime {
-			log.Println("less than a minute left")
-			t, err := IssueToken(TokenParams{User: domain.User{
-				ID:        claims.ID,
-				FirstName: claims.First,
-				LastName:  claims.Last,
-				Email:     claims.Email,
-				Picture:   claims.Picture,
-			}})
-			if err != nil {
-				log.Println("Failed to issue token: ", err)
+var JWTMiddlewareProtectedNew = func(router *echo.Echo, signinRedirectRHN string) echo.MiddlewareFunc {
+	var protectedConfig = echojwt.Config{
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return new(JwtCustomClaims)
+		},
+		SigningKey: []byte(secret),
+		ErrorHandler: func(c echo.Context, err error) error {
+			// Redirect to login page on error
+			log.Println("Error validating token: ", err)
+			return c.Redirect(303, router.Reverse(signinRedirectRHN))
+		},
+		SuccessHandler: func(c echo.Context) {
+			log.Println("SuccessHandler")
+			log.Println("Claims: ", c.Get("user"))
+			userToken := c.Get("user").(*jwt.Token)
+			claims := userToken.Claims.(*JwtCustomClaims)
+			log.Println("Email: ", claims.Email)
+			log.Println("ID: ", claims.ID)
+			log.Println("Name: ", claims.First, claims.Last)
+			log.Println("Picture: ", claims.Picture)
+			expiration := claims.ExpiresAt.Time
+			log.Println("Expiration: ", expiration)
+			if time.Until(expiration) <= cushionTime {
+				log.Println("less than a minute left")
+				t, err := IssueToken(TokenParams{User: domain.User{
+					ID:        claims.ID,
+					FirstName: claims.First,
+					LastName:  claims.Last,
+					Email:     claims.Email,
+					Picture:   claims.Picture,
+				}})
+				if err != nil {
+					log.Println("Failed to issue token: ", err)
+				}
+				WriteToken(c, t)
+				jsonString := fmt.Sprintf("{\"signin\":{\"expiration\":%d}}", time.Now().Add(SessionLifeSpan).UnixMilli())
+				c.Response().Header().Set("Hx-Trigger", jsonString)
+			} else {
+				log.Println("more than a minute left")
 			}
-			WriteToken(c, t)
-			jsonString := fmt.Sprintf("{\"signin\":{\"expiration\":%d}}", time.Now().Add(SessionLifeSpan).UnixMilli())
-			c.Response().Header().Set("Hx-Trigger", jsonString)
-		} else {
-			log.Println("more than a minute left")
-		}
-	},
+		},
+	}
+	return echojwt.WithConfig(protectedConfig)
 }
 
 func GetClaims(next echo.HandlerFunc) echo.HandlerFunc {

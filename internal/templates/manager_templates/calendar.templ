@@ -114,15 +114,14 @@ templ CalendarLessonListComponent(date time.Time, page CalendarPage) {
 								if !page.Static {
 									@page.CalendarLessonContainer(lesson, lessonDate)
 								} else {
-									@ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, page.Course, true)), false) {
-										// { lesson.Designation() }
+									@UnstyledListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, page.Course, true)), false) {
 										<div
 											class="group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group"
 										>
 											<p>
 												{ lesson.Designation() }
 											</p>
-											<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max">
+											<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none">
 												{ lesson.Name }
 											</p>
 										</div>

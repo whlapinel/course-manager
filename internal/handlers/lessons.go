@@ -625,7 +625,7 @@ func (h CourseHandler) PostNewLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.TermID.Value, params.CourseID.Value, params.UnitID.Value, lesson.ID))
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice(lesson.ID)...))
 }
 
 func (h CourseHandler) DeleteLesson(c echo.Context) error {

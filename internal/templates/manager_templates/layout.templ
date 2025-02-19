@@ -19,7 +19,9 @@ templ CourseManagerLayoutComponent(props CourseManagerLayout) {
 			<header>
 				<div id="confirmation"></div>
 				<nav class="flex">
-					Placeholder to remind me to put something here
+					@props.SignupButton()
+					@props.SigninButton()
+					@props.SignoutButton()
 				</nav>
 			</header>
 			<main id={ string(pageElementID) } class="min-w-full min-h-screen">

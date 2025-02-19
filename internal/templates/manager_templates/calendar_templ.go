@@ -513,27 +513,27 @@ func CalendarLessonListComponent(date time.Time, page CalendarPage) templ.Compon
 											}()
 										}
 										ctx = templ.InitializeContext(ctx)
-										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, " <div class=\"group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group\"><p>")
+										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group\"><p>")
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
 										var templ_7745c5c3_Var24 string
 										templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Designation())
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 123, Col: 34}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 122, Col: 34}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
-										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max\">")
+										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none\">")
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
 										var templ_7745c5c3_Var25 string
 										templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Name)
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 126, Col: 25}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 125, Col: 25}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 										if templ_7745c5c3_Err != nil {
@@ -545,7 +545,7 @@ func CalendarLessonListComponent(date time.Time, page CalendarPage) templ.Compon
 										}
 										return nil
 									})
-									templ_7745c5c3_Err = ListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, page.Course, true)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
+									templ_7745c5c3_Err = UnstyledListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, unit, page.Course, true)), false).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -752,7 +752,7 @@ func CalendarComponent(page CalendarPage) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(util.KebabCase(day.Month().String()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 166, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 165, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -765,7 +765,7 @@ func CalendarComponent(page CalendarPage) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(day.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 169, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 168, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -778,7 +778,7 @@ func CalendarComponent(page CalendarPage) templ.Component {
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(day.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 169, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 168, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -847,7 +847,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(data.ComponentID())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 187, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 186, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
@@ -865,7 +865,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(data.ComponentID())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 189, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 188, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -878,7 +878,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(data.Occasion.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 190, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 189, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -891,7 +891,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(data.PostEditOccasionURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 191, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 190, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 			if templ_7745c5c3_Err != nil {
@@ -909,7 +909,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(data.GetEditOccasionURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 195, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 194, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {
@@ -922,7 +922,7 @@ func TermOccasionEditorComponent(data TermOccasionEditor) templ.Component {
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs("#" + data.ComponentID())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 196, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 195, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -969,7 +969,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var44 string
 		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(button.FormID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 207, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 206, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 		if templ_7745c5c3_Err != nil {
@@ -982,7 +982,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var45 string
 		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(button.FormID + "-name")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 209, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 208, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {
@@ -995,7 +995,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var46 string
 		templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(button.FormID + "-date")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 210, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 209, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 		if templ_7745c5c3_Err != nil {
@@ -1008,7 +1008,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var47 string
 		templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(button.Date.Format(time.DateOnly))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 210, Col: 108}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 209, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 		if templ_7745c5c3_Err != nil {
@@ -1021,7 +1021,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(button.CreateOccasionURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 211, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 210, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 		if templ_7745c5c3_Err != nil {
@@ -1034,7 +1034,7 @@ func AddOccasionButtonComponent(button AddOccasionButton) templ.Component {
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs("#" + button.FormID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 211, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 210, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 		if templ_7745c5c3_Err != nil {
@@ -1080,7 +1080,7 @@ func CalendarDateComponent(date time.Time, page CalendarPage) templ.Component {
 			var templ_7745c5c3_Var51 string
 			templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("Mon 1/02/06"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 222, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 221, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 			if templ_7745c5c3_Err != nil {
@@ -1176,7 +1176,7 @@ func OccasionComponent(occasion domain.Occasion) templ.Component {
 		var templ_7745c5c3_Var53 string
 		templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(occasion.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 245, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/calendar.templ`, Line: 244, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 		if templ_7745c5c3_Err != nil {

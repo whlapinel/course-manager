@@ -1,29 +1,28 @@
 package handlers
 
 import (
-	"fmt"
 	auth "gh_static_portfolio/internal/authentication"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
 	"os"
-	"strconv"
-	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
 const (
-	Signin RouteName = "/signin"
-	Signup RouteName = "/signup"
+	Signin  RouteName = "/signin"
+	Signup  RouteName = "/signup"
+	Signout RouteName = "/signout"
 )
 
 const (
-	GetSignin  RouteHandlerName = RouteHandlerName(GET + Signin)
-	PostSignin RouteHandlerName = RouteHandlerName(POST + Signin)
-	GetSignup  RouteHandlerName = RouteHandlerName(GET + Signup)
-	PostSignup RouteHandlerName = RouteHandlerName(POST + Signup)
+	GetSignin   RouteHandlerName = RouteHandlerName(GET + Signin)
+	PostSignin  RouteHandlerName = RouteHandlerName(POST + Signin)
+	GetSignup   RouteHandlerName = RouteHandlerName(GET + Signup)
+	PostSignup  RouteHandlerName = RouteHandlerName(POST + Signup)
+	PostSignout RouteHandlerName = RouteHandlerName(POST + Signout)
 )
 
 func (h CourseHandler) AuthenticationHandlers() []RouteHandler {
@@ -32,6 +31,7 @@ func (h CourseHandler) AuthenticationHandlers() []RouteHandler {
 		{Signin, PostSignin, POST, h.PostSignin},
 		{Signup, GetSignup, GET, h.GetSignup},
 		{Signup, PostSignup, POST, h.PostSignup},
+		{Signout, PostSignout, POST, h.PostSignout},
 	}
 }
 
@@ -112,8 +112,11 @@ func (h CourseHandler) PostSignup(c echo.Context) error {
 		return c.String(500, "Failed to issue token")
 	}
 	auth.WriteToken(c, t)
-	expirationTime := time.Now().Add(auth.SessionLifeSpan).UnixMilli()
-	expyString := strconv.Itoa(int(expirationTime))
-	msg := fmt.Sprintf("%s, %d, %s", "congrats you did it!", int(expirationTime), expyString)
-	return c.String(200, msg)
+	return c.Redirect(303, h.e.Reverse(UserHome.String(), user.ID))
+}
+
+func (h CourseHandler) PostSignout(c echo.Context) error {
+	auth.WriteToken(c, "")
+	page := mt.SignoutPage{}
+	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), domain.User{}))
 }

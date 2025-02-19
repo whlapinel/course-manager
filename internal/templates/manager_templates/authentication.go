@@ -12,6 +12,13 @@ type SignUpPage struct {
 	GoogleSignupURL string
 }
 
+type SignoutPage struct {
+}
+
+func (page SignoutPage) Component() templ.Component {
+	return SignoutPageComponent(page)
+}
+
 func (page SigninPage) Component() templ.Component {
 	return SignInPageComponent(page)
 }
