@@ -41,6 +41,8 @@ const (
 	Description NodeFieldName = "Description"
 )
 
+type RouteMethod string
+
 const (
 	GET    = "GET: "
 	POST   = "POST: "

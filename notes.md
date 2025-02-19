@@ -2,6 +2,12 @@
 
 ## Progress Log
 
+### 2/19/25
+
+- Added the files capability to units and courses in the same way that it's available in lessons.
+- I am increasingly noticing there's a tremendous potential for consolidating code to accommodate CourseNode interface and replacing the particular functions and data for course, unit, lesson, etc...
+- This could cut down the total lines by at least 50%, if not more, and could make it more maintainable. I am very trepidatious about it though because it could be a lot of work and would have to be done with great care.
+
 ### 2/17/25
 
 - Something interesting happened to me today. Nasty bug because I accidentally returned nil instead of err when err != nil, so it took me a while to find:
