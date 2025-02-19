@@ -109,17 +109,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		DeleteChildRHN:  DeleteLesson.String(),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		E:               h.e,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
 	template := mt.LessonListTemplate(lessonList)
 	layout := h.CourseManagerLayout(template, user)
@@ -184,19 +174,7 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), component, nil)
@@ -267,19 +245,7 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 			GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
 			PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
 			IsEdit:          false,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-				Term:             term,
-				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-				Course:           course,
-				CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-				Unit:             unit,
-				UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-				Lesson:           lesson,
-				LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-			},
+			BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
 		}
 	}
 	var template templ.Component
@@ -386,24 +352,13 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	}
 	log.Println(files)
 	page := mt.FilesPage{
-		Node:        lesson,
-		Params:      params,
-		CurrentPath: path,
-		OpenFileRHN: ShowLessonFiles.String(),
-		Files:       files,
-		E:           h.e,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:             user,
-			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-		},
+		Node:            lesson,
+		Params:          params,
+		CurrentPath:     path,
+		OpenFileRHN:     ShowLessonFiles.String(),
+		Files:           files,
+		E:               h.e,
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
 	}
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
@@ -579,17 +534,7 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 		Params:            params,
 		PostCreateNodeURL: h.e.Reverse(PostNewLesson.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit),
 	}
 	template := mt.NodeCreateComponent(page)
 	layout := h.CourseManagerLayout(template, user)
@@ -710,26 +655,14 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		return mt.LessonDetailsPage{}, err
 	}
 	nodeDetails := mt.NodeDetailsPage{
-		Params:          params,
-		ParentNode:      unit,
-		Node:            lesson,
-		GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
-		IsEdit:          false,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-		},
+		Params:            params,
+		ParentNode:        unit,
+		Node:              lesson,
+		GetEditNodeURL:    h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
+		PostEditNodeURL:   h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
+		UpNavURL:          h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+		IsEdit:            false,
+		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit, lesson),
 		Slides:            slides,
 		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
 	}

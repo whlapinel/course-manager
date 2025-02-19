@@ -227,3 +227,27 @@ func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.Use
 	return mt.CourseManagerLayoutComponent(cml)
 
 }
+
+func (h CourseHandler) BreadCrumbs(params mt.CourseIDParams, nodes ...domain.CourseNode) mt.BreadCrumbs {
+	var breadCrumbs mt.BreadCrumbs
+	for _, node := range nodes {
+		if user, ok := node.(domain.User); ok {
+			breadCrumbs.User = user
+			breadCrumbs.UserDetailsURL = h.e.Reverse(UserHome.String(), params.ToIntSlice()...)
+		} else if term, ok := node.(domain.Term); ok {
+			breadCrumbs.Term = term
+			breadCrumbs.TermDetailsURL = h.e.Reverse(TermDetails.String(), params.ToIntSlice()...)
+		} else if course, ok := node.(domain.Course); ok {
+			breadCrumbs.Course = course
+			breadCrumbs.CourseDetailsURL = h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...)
+		} else if unit, ok := node.(domain.Unit); ok {
+			breadCrumbs.Unit = unit
+			breadCrumbs.UnitDetailsURL = h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...)
+		} else if lesson, ok := node.(domain.Lesson); ok {
+			breadCrumbs.Lesson = lesson
+			breadCrumbs.LessonDetailsURL = h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...)
+		}
+	}
+	return breadCrumbs
+
+}

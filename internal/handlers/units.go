@@ -75,15 +75,7 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		CreateChildRHN:   ShowNewUnit.String(),
 		UpNavURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 		E:                h.e,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             course.Term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData:  h.BreadCrumbs(params, user, course.Term, course),
 	}
 	// old begins here
 	// template := mt.UnitsListTemplate(termID, courseID, ListTermCourses.String(), ShowNewUnit.String(), units, ListUnitLessons.String(), UnitDetails.String(), h.e)
@@ -119,15 +111,7 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
 	layout := h.CourseManagerLayout(template, user)
@@ -164,9 +148,9 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 		return err
 	}
 	if !isDir {
-		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit, lesson), filepath.Base(path))
+		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit), filepath.Base(path))
 	}
-	files, err := h.svc.LessonFiles(path, user, term, course, unit, lesson)
+	files, err := h.svc.LessonFiles(path, user, term, course, unit)
 	for _, file := range files {
 		log.Println(file.Path)
 	}
@@ -175,24 +159,13 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 	}
 	log.Println(files)
 	page := mt.FilesPage{
-		Node:        lesson,
-		Params:      params,
-		CurrentPath: path,
-		OpenFileRHN: ShowLessonFiles.String(),
-		Files:       files,
-		E:           h.e,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:             user,
-			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			Lesson:           lesson,
-			LessonDetailsURL: h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
-		},
+		Node:            unit,
+		Params:          params,
+		CurrentPath:     path,
+		OpenFileRHN:     ShowUnitFiles.String(),
+		Files:           files,
+		E:               h.e,
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
@@ -241,17 +214,7 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:             term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			Unit:             unit,
-			UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)
@@ -314,17 +277,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
 			ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
 			IsEdit:          false,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-				Term:             term,
-				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-				Course:           course,
-				CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-				Unit:             unit,
-				UnitDetailsURL:   h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...),
-			},
+			BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 		}
 	}
 	var template templ.Component

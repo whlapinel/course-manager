@@ -83,13 +83,7 @@ func (h CourseHandler) ListTermCourses(c echo.Context) error {
 			DeleteChildRHN:   DeleteCourse.String(),
 			UpNavURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
 			E:                h.e,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-				Term:           term,
-				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			},
+			BreadCrumbsData:  h.BreadCrumbs(params, user, term),
 		},
 	}
 
@@ -125,15 +119,7 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 			ListChildrenURL: h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-				Term:             course.Term,
-				TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-				Course:           course,
-				CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-			},
+			BreadCrumbsData: h.BreadCrumbs(params, user, course.Term, course),
 		},
 	}
 	component := page.Component()
@@ -162,13 +148,7 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 		Params:            params,
 		PostCreateNodeURL: h.e.Reverse(PostNewCourse.String(), params.ToIntSlice()...),
 		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:           user,
-			UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-
-			Term:           term,
-			TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData:   h.BreadCrumbs(params, user, term),
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
 	layout := h.CourseManagerLayout(template, user)
@@ -178,14 +158,14 @@ func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 func (h CourseHandler) PostNewCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
 	user, err := h.svc.GetUser(params.UserID.Value.(string))
 	if err != nil {
 		return err
 	}
 
-	if err != nil {
-		return err
-	}
 	form := c.Request().Form
 	for key, val := range form {
 		log.Println("key, val: ", key, val)
@@ -240,14 +220,7 @@ func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), params.ToIntSlice()...),
 		ListChildrenURL: h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          true,
-		BreadCrumbsData: mt.BreadCrumbs{
-			User:             user,
-			UserDetailsURL:   h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-			Term:             course.Term,
-			TermDetailsURL:   h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			Course:           course,
-			CourseDetailsURL: h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
-		},
+		BreadCrumbsData: h.BreadCrumbs(params, user, course.Term, course),
 	}
 	respond := func(component templ.Component) error {
 		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)
