@@ -20,6 +20,8 @@ type NodeDetailsPage struct {
 	NodeImageURL      func() string
 	BreadCrumbsData   BreadCrumbs
 	CourseCalendarURL string
+	GithubFilesURL    string
+	ServerFilesURL    string
 }
 
 func (page NodeDetailsPage) BreadCrumbs() BreadCrumbs {
@@ -73,6 +75,16 @@ func (page NodeDetailsPage) ListChildrenButton() templ.Component {
 		Text:     fmt.Sprintf("%ss", page.Node.ChildTypeName()),
 		Method:   HxGet,
 		URL:      page.ListChildrenURL,
+		HxTarget: "#page",
+		PushURL:  true,
+	}.Component()
+}
+
+func (page NodeDetailsPage) ViewFilesButton() templ.Component {
+	return HXButton{
+		Method:   HxGet,
+		URL:      page.ServerFilesURL,
+		Text:     "Files",
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()

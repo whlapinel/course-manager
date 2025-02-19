@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func (svc CourseService) LessonFilePath(path string, nodes ...domain.CourseNode) string {
+func (svc CourseService) NodeFilePath(path string, nodes ...domain.CourseNode) string {
 	root := data.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	return path
@@ -28,7 +28,7 @@ func (svc CourseService) IsDir(path string, nodes ...domain.CourseNode) (bool, e
 	return false, nil
 }
 
-func (svc CourseService) LessonFiles(path string, nodes ...domain.CourseNode) ([]mt.FilesPageItem, error) {
+func (svc CourseService) NodeFiles(path string, nodes ...domain.CourseNode) ([]mt.FilesPageItem, error) {
 	root := data.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	_, err := os.Stat(path)

@@ -92,10 +92,34 @@ func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course
 	}
 	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
+func UnitFilesURL(unit domain.Unit, course domain.Course) templ.SafeURL {
+	filePath, err := url.JoinPath(GithubRoot, UnitFilesPath(unit, course))
+	if err != nil {
+		log.Println("error generating UnitFilesURL:", err)
+	}
+	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
+}
+func CourseFilesURL(course domain.Course) templ.SafeURL {
+	filePath, err := url.JoinPath(GithubRoot, CourseFilesPath(course))
+	if err != nil {
+		log.Println("error generating UnitFilesURL:", err)
+	}
+	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
+}
 
 // Student-facing site
 func LessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
 	return filepath.Join(LessonPath(lesson, unit, course, false), "files")
+}
+
+// Student-facing site
+func UnitFilesPath(unit domain.Unit, course domain.Course) string {
+	return filepath.Join(UnitPath(unit, course, false), "files")
+}
+
+// Student-facing site
+func CourseFilesPath(course domain.Course) string {
+	return filepath.Join(CoursePath(course, false), "files")
 }
 
 // Student-facing site

@@ -2,11 +2,16 @@ package handlers
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"io"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -16,6 +21,7 @@ import (
 const (
 	Courses          RouteName = Term + "/courses"
 	Course           RouteName = Courses + RouteName(CourseID)
+	CourseFiles      RouteName = Course + "/files/*"
 	CourseImage      RouteName = Course + "/image"
 	NewCourse        RouteName = Courses + "/new"
 	EditCourse       RouteName = Course + "/edit"
@@ -26,6 +32,8 @@ const (
 const (
 	ListTermCourses       = RouteHandlerName(GET + Courses)
 	CourseDetails         = RouteHandlerName(GET + Course)
+	ShowCourseFiles       = RouteHandlerName(GET + CourseFiles)
+	PostCourseFiles       = RouteHandlerName(POST + CourseFiles)
 	ShowEditCourse        = RouteHandlerName(GET + EditCourse)
 	PostEditCourse        = RouteHandlerName(POST + EditCourse)
 	ShowNewCourse         = RouteHandlerName(GET + NewCourse)
@@ -41,6 +49,8 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 		// Courses handlers
 		{Courses, ListTermCourses, GET, h.ListTermCourses},
 		{Course, CourseDetails, GET, h.CourseDetails},
+		{CourseFiles, ShowCourseFiles, GET, h.ShowCourseFiles},
+		{CourseFiles, PostCourseFiles, POST, h.PostCourseFile},
 		{NewCourse, ShowNewCourse, GET, h.ShowNewCourse},
 		{NewCourse, PostNewCourse, POST, h.PostNewCourse},
 		{EditCourse, ShowEditCourse, GET, h.ShowEditCourse},
@@ -120,13 +130,114 @@ func (h CourseHandler) CourseDetails(c echo.Context) error {
 			UpNavURL:        h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: h.BreadCrumbs(params, user, course.Term, course),
+			GithubFilesURL:  string(templates.CourseFilesURL(course)),
+			ServerFilesURL:  h.e.Reverse(ShowCourseFiles.String(), params.ToIntSlice("")...),
 		},
 	}
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
+func (h CourseHandler) ShowCourseFiles(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
 
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	err = h.svc.CreateNodeFilesDir(user, term, course)
+	if err != nil {
+		return err
+	}
+	isDir, err := h.svc.IsDir(path, user, term, course)
+	if err != nil {
+		return err
+	}
+	if !isDir {
+		c.Attachment(h.svc.NodeFilePath(path, user, term, course), filepath.Base(path))
+	}
+	files, err := h.svc.NodeFiles(path, user, term, course)
+	for _, file := range files {
+		log.Println(file.Path)
+	}
+	if err != nil {
+		return err
+	}
+	log.Println(files)
+	page := mt.FilesPage{
+		Node:            course,
+		Params:          params,
+		CurrentPath:     path,
+		OpenFileRHN:     ShowCourseFiles.String(),
+		Files:           files,
+		E:               h.e,
+		BreadCrumbsData: h.BreadCrumbs(params, user, term, course),
+	}
+	component := page.Component()
+	layout := h.CourseManagerLayout(component, user)
+	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) PostCourseFile(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	dirPath := data.NodeFilesDirPath(user, term, course)
+	path = filepath.Join(dirPath, path)
+	// Parse the form to retrieve the file
+	err = c.Request().ParseMultipartForm(10 << 20)
+	if err != nil {
+		return err
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
+	}
+	defer src.Close()
+
+	// Create a destination file
+	dst, err := os.Create(filepath.Join(path, file.Filename))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
+	}
+	defer dst.Close()
+
+	// Copy the content of the uploaded file to the destination
+	if _, err := io.Copy(dst, src); err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to save file")
+	}
+
+	// Respond to the client
+	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
+
+}
 func (h CourseHandler) ShowNewCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(params.UserID.Value.(string))

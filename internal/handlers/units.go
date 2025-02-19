@@ -2,10 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/a-h/templ"
@@ -23,11 +27,13 @@ const (
 	ListCourseUnits = RouteHandlerName(GET + Units)
 	UnitDetails     = RouteHandlerName(GET + Unit)
 	ShowUnitFiles   = RouteHandlerName(GET + UnitFiles)
-	ShowEditUnit    = RouteHandlerName(GET + EditUnit)
-	PostEditUnit    = RouteHandlerName(POST + EditUnit)
-	ShowNewUnit     = RouteHandlerName(GET + NewUnit)
-	PostNewUnit     = RouteHandlerName(POST + NewUnit)
-	DeleteUnit      = RouteHandlerName(DELETE + Unit)
+	PostUnitFile    = RouteHandlerName(POST + UnitFiles)
+
+	ShowEditUnit = RouteHandlerName(GET + EditUnit)
+	PostEditUnit = RouteHandlerName(POST + EditUnit)
+	ShowNewUnit  = RouteHandlerName(GET + NewUnit)
+	PostNewUnit  = RouteHandlerName(POST + NewUnit)
+	DeleteUnit   = RouteHandlerName(DELETE + Unit)
 )
 
 func (h CourseHandler) UnitHandlers() []RouteHandler {
@@ -36,6 +42,7 @@ func (h CourseHandler) UnitHandlers() []RouteHandler {
 		{Units, ListCourseUnits, GET, h.ListCourseUnits},
 		{Unit, UnitDetails, GET, h.UnitDetails},
 		{UnitFiles, ShowUnitFiles, GET, h.ShowUnitFiles},
+		{UnitFiles, PostUnitFile, POST, h.PostUnitFile},
 		{NewUnit, ShowNewUnit, GET, h.ShowNewUnit},
 		{NewUnit, PostNewUnit, POST, h.PostNewUnit},
 		{EditUnit, ShowEditUnit, GET, h.ShowEditUnit},
@@ -112,6 +119,8 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
 		IsEdit:          false,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
+		GithubFilesURL:  string(templates.UnitFilesURL(unit, course)),
+		ServerFilesURL:  h.e.Reverse(ShowUnitFiles.String(), params.ToIntSlice("")...),
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
 	layout := h.CourseManagerLayout(template, user)
@@ -148,9 +157,9 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 		return err
 	}
 	if !isDir {
-		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit), filepath.Base(path))
+		c.Attachment(h.svc.NodeFilePath(path, user, term, course, unit), filepath.Base(path))
 	}
-	files, err := h.svc.LessonFiles(path, user, term, course, unit)
+	files, err := h.svc.NodeFiles(path, user, term, course, unit)
 	for _, file := range files {
 		log.Println(file.Path)
 	}
@@ -170,6 +179,61 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) PostUnitFile(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unitDirPath := data.NodeFilesDirPath(user, term, course, unit)
+	path = filepath.Join(unitDirPath, path)
+	// Parse the form to retrieve the file
+	err = c.Request().ParseMultipartForm(10 << 20)
+	if err != nil {
+		return err
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
+	}
+	defer src.Close()
+
+	// Create a destination file
+	dst, err := os.Create(filepath.Join(path, file.Filename))
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
+	}
+	defer dst.Close()
+
+	// Copy the content of the uploaded file to the destination
+	if _, err := io.Copy(dst, src); err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to save file")
+	}
+
+	// Respond to the client
+	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
+
 }
 
 func (h CourseHandler) ShowNewUnit(c echo.Context) error {

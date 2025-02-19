@@ -341,9 +341,9 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 		return err
 	}
 	if !isDir {
-		c.Attachment(h.svc.LessonFilePath(path, user, term, course, unit, lesson), filepath.Base(path))
+		c.Attachment(h.svc.NodeFilePath(path, user, term, course, unit, lesson), filepath.Base(path))
 	}
-	files, err := h.svc.LessonFiles(path, user, term, course, unit, lesson)
+	files, err := h.svc.NodeFiles(path, user, term, course, unit, lesson)
 	for _, file := range files {
 		log.Println(file.Path)
 	}
@@ -665,6 +665,8 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit, lesson),
 		Slides:            slides,
 		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
+		GithubFilesURL:    string(templates.LessonFilesURL(lesson, unit, course)),
+		ServerFilesURL:    h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice("")...),
 	}
 
 	// var idParams = params.ToIntSlice()
