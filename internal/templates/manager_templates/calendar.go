@@ -56,8 +56,8 @@ func (page TermCalendar) TermOccasionEditor(occasion domain.Occasion) templ.Comp
 		Params:              page.Params,
 		Occasion:            occasion,
 		IsEditing:           false,
-		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, page.Params.ToIntSlice(occasion.ID)...),
-		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, page.Params.ToIntSlice(occasion.ID)...),
+		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, page.Params.ToSlice(occasion.ID)...),
+		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, page.Params.ToSlice(occasion.ID)...),
 	}.Component()
 
 }
@@ -190,10 +190,10 @@ func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date ti
 		Date:                date,
 		Params:              params,
 		lesson:              lesson,
-		LessonDetailsURL:    data.E.Reverse(data.LessonDetailsRouteHandlerName, params.ToIntSlice()...),
+		LessonDetailsURL:    data.E.Reverse(data.LessonDetailsRouteHandlerName, params.ToSlice()...),
 		Course:              data.Course,
 		ShiftLessonRHN:      data.ShiftLessonRouteHandlerName,
-		RemoveLessonDateURL: data.E.Reverse(data.RemoveLessonDateRHN, params.ToIntSlice(date.Format(time.DateOnly))...),
+		RemoveLessonDateURL: data.E.Reverse(data.RemoveLessonDateRHN, params.ToSlice(date.Format(time.DateOnly))...),
 		E:                   data.E,
 	}
 	if data.Static {
@@ -225,7 +225,7 @@ func (data CourseCalendar) PageLayout() PageLayout {
 	return PageLayout{
 		PageTitle: data.Course.Name + " Course Calendar",
 		UpNav: UpNav{
-			URL:  data.E.Reverse(data.ListTermCoursesRHN, data.Params.ToIntSlice()...),
+			URL:  data.E.Reverse(data.ListTermCoursesRHN, data.Params.ToSlice()...),
 			Text: "Back to Courses",
 		},
 	}
@@ -284,7 +284,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 	button := ShiftButton{
 		Direction:      cd,
 		Params:         data.Params,
-		ShiftLessonURL: data.E.Reverse(data.ShiftLessonRHN, data.Params.ToIntSlice(cd.String())...),
+		ShiftLessonURL: data.E.Reverse(data.ShiftLessonRHN, data.Params.ToSlice(cd.String())...),
 		e:              data.E,
 	}
 	return button.Component()
@@ -306,7 +306,7 @@ func (page AddLessonToDatePage) Component() templ.Component {
 func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
 	data.Params.UnitID.Value = unitID
 	data.Params.LessonID.Value = lessonID
-	return data.E.Reverse(data.AddLessonDateRHN, data.Params.ToIntSlice(data.Date.Format(time.DateOnly))...)
+	return data.E.Reverse(data.AddLessonDateRHN, data.Params.ToSlice(data.Date.Format(time.DateOnly))...)
 }
 
 func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {

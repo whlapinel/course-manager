@@ -2,6 +2,13 @@ package domain
 
 import "slices"
 
+type NodeRepository[T CourseNode] interface {
+	GetByID(id interface{}) (T, error)
+	GetByParentID(parentID interface{}) (T, error)
+	Save(node T) (id interface{}, err error)
+	Delete(id interface{}) error
+}
+
 // Tree node implemented by Term, Course, Unit, Lesson
 type CourseNode interface {
 	GetID() interface{} // could be string or int

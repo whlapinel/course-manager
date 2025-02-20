@@ -107,7 +107,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		ChildDetailsRHN: LessonDetails.String(),
 		CreateChildRHN:  ShowNewLesson.String(),
 		DeleteChildRHN:  DeleteLesson.String(),
-		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
+		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToSlice()...),
 		E:               h.e,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
@@ -170,14 +170,14 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 	details := mt.NodeDetailsPage{
 		Params:          params,
 		Node:            lesson,
-		GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+		GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToSlice()...),
+		UpNavURL:        h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
 	}
 	respond := func(component templ.Component) error {
-		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), component, nil)
+		return Respond(c, h.e.Reverse(string(LessonDetails), params.ToSlice()...), component, nil)
 	}
 	if queryParam == templates.KebabCase(string(Description)) {
 		return respond(mt.EditDescriptionComponent(details))
@@ -242,8 +242,8 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 		return mt.NodeDetailsPage{
 			Node:            lesson,
 			Params:          params,
-			GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
-			PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
+			GetEditNodeURL:  h.e.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditLesson.String(), params.ToSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
 		}
@@ -289,7 +289,7 @@ func (h CourseHandler) PostEditLesson(c echo.Context) error {
 	if template == nil {
 		panic("template is nil!")
 	}
-	return Respond(c, h.e.Reverse(string(LessonDetails), params.ToIntSlice()...), template, nil)
+	return Respond(c, h.e.Reverse(string(LessonDetails), params.ToSlice()...), template, nil)
 }
 
 func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
@@ -304,7 +304,7 @@ func (h CourseHandler) ViewLessonSlides(c echo.Context) error {
 		return err
 	}
 	component := page.Component()
-	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), component, nil)
+	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToSlice()...), component, nil)
 }
 
 func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
@@ -465,7 +465,7 @@ func (h CourseHandler) ShowEditSlides(c echo.Context) error {
 
 	log.Println(string(bytes))
 	template := mt.EditSlidesTemplate(params, string(bytes), string(PostEditSlides), h.e)
-	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...), template, nil)
+	return Respond(c, h.e.Reverse(LessonDetails.String(), params.ToSlice()...), template, nil)
 }
 
 func (h CourseHandler) PostEditSlides(c echo.Context) error {
@@ -506,7 +506,7 @@ func (h CourseHandler) PostEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ViewLessonSlides.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) ShowNewLesson(c echo.Context) error {
@@ -532,8 +532,8 @@ func (h CourseHandler) ShowNewLesson(c echo.Context) error {
 		ParentNode:        unit,
 		NodeType:          domain.LessonTypeName,
 		Params:            params,
-		PostCreateNodeURL: h.e.Reverse(PostNewLesson.String(), params.ToIntSlice()...),
-		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+		PostCreateNodeURL: h.e.Reverse(PostNewLesson.String(), params.ToSlice()...),
+		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
 		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit),
 	}
 	template := mt.NodeCreateComponent(page)
@@ -570,7 +570,7 @@ func (h CourseHandler) PostNewLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice(lesson.ID)...))
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice(lesson.ID)...))
 }
 
 func (h CourseHandler) DeleteLesson(c echo.Context) error {
@@ -597,7 +597,7 @@ func (h CourseHandler) PostLessonStandard(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(302, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	return c.Redirect(302, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
@@ -616,7 +616,7 @@ func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Println(params.ToIntSlice()...)
+	log.Println(params.ToSlice()...)
 	log.Println("deleting lesson standard ", objID)
 	err = h.svc.DeleteLessonObjective(params.LessonID.Value.(int), objID)
 	if err != nil {
@@ -658,15 +658,15 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		Params:            params,
 		ParentNode:        unit,
 		Node:              lesson,
-		GetEditNodeURL:    h.e.Reverse(ShowEditLesson.String(), params.ToIntSlice()...),
-		PostEditNodeURL:   h.e.Reverse(PostEditLesson.String(), params.ToIntSlice()...),
-		UpNavURL:          h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+		GetEditNodeURL:    h.e.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+		PostEditNodeURL:   h.e.Reverse(PostEditLesson.String(), params.ToSlice()...),
+		UpNavURL:          h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
 		IsEdit:            false,
 		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit, lesson),
 		Slides:            slides,
-		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...),
+		CourseCalendarURL: h.e.Reverse(ShowCourseCalendar.String(), params.ToSlice()...),
 		GithubFilesURL:    string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:    h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice("")...),
+		ServerFilesURL:    h.e.Reverse(ShowLessonFiles.String(), params.ToSlice("")...),
 	}
 
 	// var idParams = params.ToIntSlice()
@@ -677,15 +677,15 @@ func (h CourseHandler) lessonDetailsPage(params mt.CourseIDParams, slides string
 		E:                       h.e,
 		Standards:               course.StandardSet.Standards,
 		NodeDetailsPage:         nodeDetails,
-		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToIntSlice()...),
+		PostLessonStandardURL:   h.e.Reverse(PostLessonStandard.String(), params.ToSlice()...),
 		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
 		GetEditAssessmentRHN:    GetEditAssessment.String(),
 		DeleteAssessmentRHN:     DeleteAssessment.String(),
-		PostAssessmentURL:       h.e.Reverse(PostAssessment.String(), params.ToIntSlice()...),
-		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToIntSlice()...),
-		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToIntSlice()...),
+		PostAssessmentURL:       h.e.Reverse(PostAssessment.String(), params.ToSlice()...),
+		GetSlidesURL:            h.e.Reverse(ViewLessonSlides.String(), params.ToSlice()...),
+		EditSlidesURL:           h.e.Reverse(ShowEditSlides.String(), params.ToSlice()...),
 		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
-		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), params.ToIntSlice("")...),
+		ServerFilesURL:          h.e.Reverse(ShowLessonFiles.String(), params.ToSlice("")...),
 	}
 	return lessonDetails, nil
 }

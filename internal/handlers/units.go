@@ -80,7 +80,7 @@ func (h CourseHandler) ListCourseUnits(c echo.Context) error {
 		ChildDetailsRHN:  UnitDetails.String(),
 		ChildChildrenRHN: ListUnitLessons.String(),
 		CreateChildRHN:   ShowNewUnit.String(),
-		UpNavURL:         h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
+		UpNavURL:         h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
 		E:                h.e,
 		BreadCrumbsData:  h.BreadCrumbs(params, user, course.Term, course),
 	}
@@ -113,14 +113,14 @@ func (h CourseHandler) UnitDetails(c echo.Context) error {
 	unitDetails := mt.NodeDetailsPage{
 		Params:          params,
 		Node:            unit,
-		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
-		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
+		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToSlice()...),
+		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
+		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToSlice()...),
 		IsEdit:          false,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 		GithubFilesURL:  string(templates.UnitFilesURL(unit, course)),
-		ServerFilesURL:  h.e.Reverse(ShowUnitFiles.String(), params.ToIntSlice("")...),
+		ServerFilesURL:  h.e.Reverse(ShowUnitFiles.String(), params.ToSlice("")...),
 	}
 	template := mt.UnitDetailsComponent(unitDetails)
 	layout := h.CourseManagerLayout(template, user)
@@ -273,15 +273,15 @@ func (h CourseHandler) ShowEditUnit(c echo.Context) error {
 	details := mt.NodeDetailsPage{
 		Params:          params,
 		Node:            unit,
-		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
-		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
-		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
-		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToIntSlice()...),
+		GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToSlice()...),
+		PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToSlice()...),
+		ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
+		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToSlice()...),
 		IsEdit:          true,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 	}
 	respond := func(component templ.Component) error {
-		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToIntSlice()...), component, nil)
+		return Respond(c, h.e.Reverse(string(UnitDetails), params.ToSlice()...), component, nil)
 	}
 	if queryParam == templates.KebabCase(string(Description)) {
 		return respond(mt.EditDescriptionComponent(details))
@@ -337,9 +337,9 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 		return mt.NodeDetailsPage{
 			Node:            unit,
 			Params:          params,
-			GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToIntSlice()...),
-			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToIntSlice()...),
-			ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToIntSlice()...),
+			GetEditNodeURL:  h.e.Reverse(ShowEditUnit.String(), params.ToSlice()...),
+			PostEditNodeURL: h.e.Reverse(PostEditUnit.String(), params.ToSlice()...),
+			ListChildrenURL: h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
 			IsEdit:          false,
 			BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
 		}
@@ -373,7 +373,7 @@ func (h CourseHandler) PostEditUnit(c echo.Context) error {
 	if template == nil {
 		panic("template is nil!")
 	}
-	return Respond(c, h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...), template, nil)
+	return Respond(c, h.e.Reverse(UnitDetails.String(), params.ToSlice()...), template, nil)
 
 }
 

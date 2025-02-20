@@ -52,7 +52,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 							<pre>{ assessment.Instructions }</pre>
 						</details>
 						<button
-							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, props.Params.ToIntSlice(assessment.ID)...) }
+							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, props.Params.ToSlice(assessment.ID)...) }
 							hx-target="#assessment"
 						>
 							Edit
@@ -259,7 +259,7 @@ templ EditSlidesTemplate(params CourseIDParams, contents string, editSlidesPostR
     </script>
 	@ButtonContainer() {
 		@CancelEditButton()
-		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToIntSlice()...) } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
+		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToSlice()...) } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
 			Submit
 		</button>
 	}

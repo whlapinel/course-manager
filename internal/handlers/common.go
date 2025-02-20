@@ -193,6 +193,51 @@ func (h CourseHandler) MountHandlers(newHandlers []RouteHandler) {
 	}
 }
 
+func Mount(svc service.CourseService, router *echo.Echo) {
+	// MountHandlers(h.AuthenticationHandlers())
+	// MountHandlers(h.HomeHandlers())
+	ProtectedGroup := router.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(router, GetSignin.String()), auth.GetClaims, authorization.Authorization(svc.GetUser))
+	// ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
+	ProtectRoutes(UserHandlers(svc, router), ProtectedGroup)
+	ProtectRoutes(TermHandlers(svc, router), ProtectedGroup)
+	// ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
+	// ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
+	// ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
+	// ProtectRoutes(h.AssessmentHandlers(), ProtectedGroup)
+	// ProtectRoutes(h.CalendarHandlers(), ProtectedGroup)
+}
+
+func ProtectRoutes(handlers []RouteHandler, group *echo.Group) {
+	for _, handler := range handlers {
+		switch handler.Method {
+		case GET:
+			group.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case POST:
+			group.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case DELETE:
+			group.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		default:
+			log.Fatal("http method in route handler not expected")
+		}
+
+	}
+}
+
+func MountHandlers(newHandlers []RouteHandler, router *echo.Echo) {
+	for _, handler := range newHandlers {
+		switch handler.Method {
+		case GET:
+			router.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case POST:
+			router.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		case DELETE:
+			router.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+		default:
+			log.Fatal("http method in route handler not expected")
+		}
+	}
+}
+
 func IsHTMX(c echo.Context) bool {
 	// Check for "HX-Request" header
 	return c.Request().Header.Get("Hx-Request") != ""
@@ -235,19 +280,53 @@ func (h CourseHandler) BreadCrumbs(params mt.CourseIDParams, nodes ...domain.Cou
 	for _, node := range nodes {
 		if user, ok := node.(domain.User); ok {
 			breadCrumbs.User = user
-			breadCrumbs.UserDetailsURL = h.e.Reverse(UserHome.String(), params.ToIntSlice()...)
+			breadCrumbs.UserDetailsURL = h.e.Reverse(UserHome.String(), params.ToSlice()...)
 		} else if term, ok := node.(domain.Term); ok {
 			breadCrumbs.Term = term
-			breadCrumbs.TermDetailsURL = h.e.Reverse(TermDetails.String(), params.ToIntSlice()...)
+			breadCrumbs.TermDetailsURL = h.e.Reverse(TermDetails.String(), params.ToSlice()...)
 		} else if course, ok := node.(domain.Course); ok {
 			breadCrumbs.Course = course
-			breadCrumbs.CourseDetailsURL = h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...)
+			breadCrumbs.CourseDetailsURL = h.e.Reverse(CourseDetails.String(), params.ToSlice()...)
 		} else if unit, ok := node.(domain.Unit); ok {
 			breadCrumbs.Unit = unit
-			breadCrumbs.UnitDetailsURL = h.e.Reverse(UnitDetails.String(), params.ToIntSlice()...)
+			breadCrumbs.UnitDetailsURL = h.e.Reverse(UnitDetails.String(), params.ToSlice()...)
 		} else if lesson, ok := node.(domain.Lesson); ok {
 			breadCrumbs.Lesson = lesson
-			breadCrumbs.LessonDetailsURL = h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...)
+			breadCrumbs.LessonDetailsURL = h.e.Reverse(LessonDetails.String(), params.ToSlice()...)
+		}
+	}
+	return breadCrumbs
+
+}
+
+func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
+	cml := mt.CourseManagerLayout{
+		Page: page,
+		User: user,
+		E:    router,
+	}
+	return mt.CourseManagerLayoutComponent(cml)
+
+}
+
+func BreadCrumbs(router *echo.Echo, params mt.CourseIDParams, nodes ...domain.CourseNode) mt.BreadCrumbs {
+	var breadCrumbs mt.BreadCrumbs
+	for _, node := range nodes {
+		if user, ok := node.(domain.User); ok {
+			breadCrumbs.User = user
+			breadCrumbs.UserDetailsURL = router.Reverse(UserHome.String(), params.ToSlice()...)
+		} else if term, ok := node.(domain.Term); ok {
+			breadCrumbs.Term = term
+			breadCrumbs.TermDetailsURL = router.Reverse(TermDetails.String(), params.ToSlice()...)
+		} else if course, ok := node.(domain.Course); ok {
+			breadCrumbs.Course = course
+			breadCrumbs.CourseDetailsURL = router.Reverse(CourseDetails.String(), params.ToSlice()...)
+		} else if unit, ok := node.(domain.Unit); ok {
+			breadCrumbs.Unit = unit
+			breadCrumbs.UnitDetailsURL = router.Reverse(UnitDetails.String(), params.ToSlice()...)
+		} else if lesson, ok := node.(domain.Lesson); ok {
+			breadCrumbs.Lesson = lesson
+			breadCrumbs.LessonDetailsURL = router.Reverse(LessonDetails.String(), params.ToSlice()...)
 		}
 	}
 	return breadCrumbs

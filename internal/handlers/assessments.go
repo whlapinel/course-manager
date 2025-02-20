@@ -90,7 +90,7 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	queryParams["category"] = category.String()
 	queryParams["start"] = startDateParam
 	queryParams["end"] = endDateParam
-	baseURL := h.e.Reverse(GetCourseAssessments.String(), params.ToIntSlice()...)
+	baseURL := h.e.Reverse(GetCourseAssessments.String(), params.ToSlice()...)
 	urlWithParams, err := AddQueryParams(baseURL, queryParams)
 	if err != nil {
 		return err
@@ -139,7 +139,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) GetEditAssessment(c echo.Context) error {
@@ -160,8 +160,8 @@ func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 	data := mt.EditAssessmentForm{
 		Params:                params,
 		Assessment:            assessment,
-		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToIntSlice(assessmentID)...),
-		LessonDetailsURL:      h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...),
+		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToSlice(assessmentID)...),
+		LessonDetailsURL:      h.e.Reverse(LessonDetails.String(), params.ToSlice()...),
 	}
 	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component(), user))
 }
@@ -216,7 +216,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) DeleteAssessment(c echo.Context) error {
@@ -229,5 +229,5 @@ func (h CourseHandler) DeleteAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
 }

@@ -8,6 +8,6 @@ templ newLessonFormComponent(props newLessonForm) {
 		<input type="number" id="number"/>
 		<input type="text" id="name"/>
 		<textarea id="description"></textarea>
-		<button hx-post={ props.e.Reverse(props.postNewLessonRHN, props.params.ToIntSlice()...) } hx-target="#page" hx-include="#new-lesson">Submit</button>
+		<button hx-post={ props.e.Reverse(props.postNewLessonRHN, props.params.ToSlice()...) } hx-target="#page" hx-include="#new-lesson">Submit</button>
 	</form>
 }

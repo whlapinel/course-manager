@@ -142,7 +142,7 @@ func (h CourseHandler) RemoveLessonDate(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) AddLessonDate(c echo.Context) error {
@@ -155,7 +155,7 @@ func (h CourseHandler) AddLessonDate(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar, error) {
@@ -169,8 +169,8 @@ func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar
 		Params:                        params,
 		Course:                        course,
 		LessonDetailsRouteHandlerName: LessonDetails.String(),
-		TermDetailsURL:                h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-		CourseDetailsURL:              h.e.Reverse(CourseDetails.String(), params.ToIntSlice()...),
+		TermDetailsURL:                h.e.Reverse(TermDetails.String(), params.ToSlice()...),
+		CourseDetailsURL:              h.e.Reverse(CourseDetails.String(), params.ToSlice()...),
 		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),
 		ListTermCoursesRHN:            string(ListTermCourses),
 		ShowAddLessonDateRHN:          string(ShowAddLessonDatePage),

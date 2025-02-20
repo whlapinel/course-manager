@@ -3,10 +3,119 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"log"
 
 	"github.com/labstack/echo/v4"
 )
+
+type userHandler struct {
+	svc       service.CourseService
+	e         *echo.Echo
+	params    mt.CourseIDParams
+	node      domain.CourseNode
+	ancestors []domain.CourseNode
+}
+
+// AncestorPath implements NodeHandler.
+func (u *userHandler) AncestorPath() []domain.CourseNode {
+	panic("unimplemented")
+}
+
+// Delete implements NodeHandler.
+func (u *userHandler) Delete(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ListChildren implements NodeHandler.
+func (h *userHandler) ListChildren(c echo.Context) error {
+	h.params = ParseCourseIDParams(c)
+	userID := c.Get("id")
+	user, err := h.svc.GetUser(userID.(string))
+	if err != nil {
+		return err
+	}
+	log.Println("user ID:", h.params.UserID.Value.(string))
+	terms, err := h.svc.GetTerms(userID.(string))
+	if err != nil {
+		return fmt.Errorf("error in CourseHandler.ListTerms: %s", err)
+	}
+	user.Terms = terms
+	h.node = user
+	h.ancestors = []domain.CourseNode{}
+	page := mt.TermsListPage{
+		ShowTermCalendarRHN: ShowTermCalendar.String(),
+		NodeListPage:        NodeListPage(h),
+	}
+	var component = page.Component()
+	layout := CourseManagerLayout(h.Router(), component, user)
+	return Respond(c, "", component, layout)
+
+}
+
+// Node implements NodeHandler.
+func (u *userHandler) Node() domain.CourseNode {
+	panic("unimplemented")
+}
+
+// NodeSet implements NodeHandler.
+func (u *userHandler) NodeSet() []EmptyNode {
+	panic("unimplemented")
+}
+
+// Params implements NodeHandler.
+func (u *userHandler) Params() mt.CourseIDParams {
+	panic("unimplemented")
+}
+
+// PostEdit implements NodeHandler.
+func (u *userHandler) PostEdit(echo.Context) error {
+	panic("unimplemented")
+}
+
+// PostNewChild implements NodeHandler.
+func (u *userHandler) PostNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// Router implements NodeHandler.
+func (u *userHandler) Router() *echo.Echo {
+	panic("unimplemented")
+}
+
+// ShowDetails implements NodeHandler.
+func (u *userHandler) ShowDetails(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowEdit implements NodeHandler.
+func (u *userHandler) ShowEdit(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowFiles implements NodeHandler.
+func (u *userHandler) ShowFiles(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowNewChild implements NodeHandler.
+func (u *userHandler) ShowNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ViewFile implements NodeHandler.
+func (u *userHandler) ViewFile(echo.Context) error {
+	panic("unimplemented")
+}
+
+func NewUserHandler(svc service.CourseService, e *echo.Echo) NodeHandler {
+	return &userHandler{
+		svc: svc,
+		e:   e,
+	}
+
+}
 
 const (
 	Users    RouteName = "/users"
@@ -31,6 +140,13 @@ func (h CourseHandler) UserHomeHandlers() []RouteHandler {
 	}
 }
 
+func UserHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
+	handler := NewUserHandler(svc, router)
+	var routeHandlers []RouteHandler
+	routeHandlers = append(routeHandlers, NodeHandlers(handler, EmptyNodesTerm...)...)
+	return routeHandlers
+}
+
 func (h CourseHandler) UserAuth(c echo.Context) error {
 	userID := c.Get("id")
 	return c.Redirect(302, h.e.Reverse(UserHome.String(), userID))
@@ -46,9 +162,9 @@ func (h CourseHandler) UserHome(c echo.Context) error {
 		return fmt.Errorf("mismatch between param userID and authenticated userID")
 	}
 	page := mt.UserHomePage{
-		GenerateSiteURL: h.e.Reverse(GenerateSite.String(), params.ToIntSlice()...),
-		SyncSiteURL:     h.e.Reverse(SyncSite.String(), params.ToIntSlice()...),
-		ListTermsURL:    h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
+		GenerateSiteURL: h.e.Reverse(GenerateSite.String(), params.ToSlice()...),
+		SyncSiteURL:     h.e.Reverse(SyncSite.String(), params.ToSlice()...),
+		ListTermsURL:    h.e.Reverse(ListTerms.String(), params.ToSlice()...),
 		User: domain.User{
 			ID:        userIDParam,
 			FirstName: c.Get("first").(string),

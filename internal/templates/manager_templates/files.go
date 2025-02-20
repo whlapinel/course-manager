@@ -17,6 +17,7 @@ type FilesPage struct {
 	E                  *echo.Echo
 	PopRouteSegmentRHN string
 	BreadCrumbsData    BreadCrumbs
+	ViewMarkdownRHN    string
 }
 
 type FilesPageItem struct {
@@ -28,14 +29,31 @@ func (data FilesPage) BreadCrumbs() BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
+func (data FilesPage) FileURL(file FilesPageItem) string {
+	return data.E.Reverse(data.ViewMarkdownRHN, data.Params.ToSlice(file.Path)...)
+
+}
+
 func (data FilesPage) PageLayout() PageLayout {
 	return PageLayout{
 		PageTitle: "Files for " + data.Node.GetName(),
 		UpNav: UpNav{
-			URL:  data.E.Reverse(data.PopRouteSegmentRHN, data.Params.ToIntSlice()...),
+			URL:  data.E.Reverse(data.PopRouteSegmentRHN, data.Params.ToSlice()...),
 			Text: "Up one level",
 		},
 	}
+}
+
+// view as HTML
+func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
+	return HXButton{
+		Text:     "View As HTML",
+		Method:   HxGet,
+		HxTarget: "#markdown",
+		URL:      data.FileURL(file),
+		PushURL:  true,
+	}.Component()
+
 }
 func (data FilesPage) Component() templ.Component {
 	return FilesComponent(data)

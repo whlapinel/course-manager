@@ -19,13 +19,13 @@ func (page CourseListPage) Component() templ.Component {
 	var assessmentButtons []ComponentData
 
 	for _, course := range page.Children {
-		log.Println("CourseListPage.Component() params with course ID: ", page.Params.ToIntSlice(course.GetID()))
+		log.Println("CourseListPage.Component() params with course ID: ", page.Params.ToSlice(course.GetID()))
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, page.Params.ToIntSlice(course.GetID())...),
+			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, page.Params.ToSlice(course.GetID())...),
 		}
 		calendarButtons = append(calendarButtons, button)
 		button2 := ShowAssessmentsButton{
-			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, page.Params.ToIntSlice(course.GetID())...),
+			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, page.Params.ToSlice(course.GetID())...),
 		}
 		assessmentButtons = append(assessmentButtons, button2)
 

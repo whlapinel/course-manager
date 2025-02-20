@@ -14,6 +14,229 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type termHandler struct {
+	svc       service.CourseService
+	e         *echo.Echo
+	params    mt.CourseIDParams
+	node      domain.CourseNode
+	ancestors []domain.CourseNode
+}
+
+func NewTermHandler(svc service.CourseService, e *echo.Echo) NodeHandler {
+	return &termHandler{
+		svc: svc,
+		e:   e,
+	}
+
+}
+
+func (h *termHandler) AncestorPath() []domain.CourseNode {
+	return h.ancestors
+}
+
+func (h *termHandler) Node() domain.CourseNode {
+	return h.node
+}
+
+func (h *termHandler) NodeSet() []EmptyNode {
+	return EmptyNodesTerm
+}
+
+func (h *termHandler) Router() *echo.Echo {
+	return h.e
+}
+
+func (h *termHandler) Params() mt.CourseIDParams {
+	return h.params
+}
+
+// PostNewChild implements NodeHandler.
+func (h *termHandler) PostNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowNewChild implements NodeHandler.
+func (h *termHandler) ShowNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// Delete implements NodeHandler.
+func (h *termHandler) Delete(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ListChildren implements NodeHandler.
+func (h *termHandler) ListChildren(c echo.Context) error {
+	h.params = ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	termID := h.params.TermID.Value.(int)
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	courses, err := h.svc.GetCourses(termID)
+	if err != nil {
+		return err
+	}
+	term.Courses = courses
+	h.node = term
+	h.ancestors = []domain.CourseNode{user}
+	page := mt.CourseListPage{
+		ShowAssessmentsRHN: string(GetCourseAssessments),
+		ShowCalendarRHN:    string(ShowCourseCalendar),
+		NodeListPage:       NodeListPage(h),
+	}
+	component := page.Component()
+	layout := CourseManagerLayout(h.e, component, user)
+	return Respond(c, "", component, layout)
+}
+
+// NewChild implements NodeHandler.
+func (h *termHandler) NewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// PostEdit implements NodeHandler.
+func (h *termHandler) PostEdit(c echo.Context) error {
+	h.params = ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	h.node = term
+	h.ancestors = []domain.CourseNode{user}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	var updateTerm = func(term domain.Term) (domain.Term, error) {
+		log.Println("updating: ", term.ID, term.Name, term.Description)
+		err := h.svc.UpdateTerm(term)
+		if err != nil {
+			return domain.Term{}, err
+		}
+		updatedTerm, err := h.svc.GetTerm(h.params.TermID.Value.(int))
+		if err != nil {
+			return domain.Term{}, err
+		}
+		log.Println("retrieved term: ", updatedTerm.ID, updatedTerm.Name, updatedTerm.Description)
+		return updatedTerm, nil
+	}
+	var pageData = func() mt.NodeDetailsPage {
+		return NodeDetailsPage(h, false)
+	}
+	var template templ.Component
+	for key, val := range form {
+		log.Println(key, val)
+		switch key {
+		case "description":
+			term.Description = val[0]
+			term, err := updateTerm(term)
+			if err != nil {
+				return err
+			}
+			h.node = term
+			details := pageData()
+			template = mt.EditDescriptionComponent(details)
+		case "name":
+			term.Name = val[0]
+			term, err := updateTerm(term)
+			if err != nil {
+				return err
+			}
+			h.node = term
+			details := pageData()
+			template = mt.EditNameComponent(details)
+		default:
+			log.Println("form key:", key)
+			panic("form key not expected!")
+		}
+
+	}
+	if template == nil {
+		panic("template is nil!")
+	}
+	return Respond(c, ShowDetailsURL(h), template, nil)
+
+}
+
+// ShowDetails implements NodeHandler.
+func (h *termHandler) ShowDetails(c echo.Context) error {
+	h.params = ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	h.node = term
+	h.ancestors = []domain.CourseNode{user}
+	pageData := mt.TermDetailsPage{
+		NodeDetailsPage:      NodeDetailsPage(h, false),
+		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), h.params.ToSlice()...),
+	}
+	component := pageData.Component()
+	layout := CourseManagerLayout(h.e, component, user)
+	return Respond(c, "", component, layout)
+}
+
+// ShowEdit implements NodeHandler.
+func (h *termHandler) ShowEdit(c echo.Context) error {
+	h.params = ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	queryParam := c.QueryParam("field")
+	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	h.node = term
+	h.ancestors = []domain.CourseNode{user}
+	if queryParam == "" {
+		log.Println(err)
+		return fmt.Errorf("field query param is missing")
+	}
+	details := mt.TermDetailsPage{
+		NodeDetailsPage: NodeDetailsPage(h, true),
+	}
+
+	respond := func(component templ.Component) error {
+		return Respond(c, ShowDetailsURL(h), component, nil)
+	}
+	if queryParam == templates.KebabCase(string(Description)) {
+		return respond(mt.EditDescriptionComponent(details.NodeDetailsPage))
+	} else if queryParam == templates.KebabCase(string(Name)) {
+		return respond(mt.EditNameComponent(details.NodeDetailsPage))
+	}
+	errText := "field value is not expected"
+	log.Println(errText)
+	return fmt.Errorf("%s %s", errText, queryParam)
+
+}
+
+// ShowFiles implements NodeHandler.
+func (h *termHandler) ShowFiles(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ViewFile implements NodeHandler.
+func (h *termHandler) ViewFile(echo.Context) error {
+	panic("unimplemented")
+}
+
 const (
 	Terms        RouteName = User + "/terms"
 	Term         RouteName = Terms + RouteName(TermID)
@@ -46,7 +269,7 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		// Terms handlers
 		{User, UserHome, GET, h.UserHome},
 		{Terms, ListTerms, GET, h.ListTerms},
-		{Term, TermDetails, GET, h.TermDetails},
+		// {Term, TermDetails, GET, h.TermDetails},
 		{TermCalendar, ShowTermCalendar, GET, h.ShowTermCalendar},
 		{Occasions, CreateOccasion, POST, h.CreateOccasion},
 		{Occasion, ShowEditOccasion, GET, h.ShowEditOccasion},
@@ -55,10 +278,17 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		{TermDates, PostEditTermDates, POST, h.PostEditTermDates},
 		{NewTerm, ShowNewTerm, GET, h.ShowNewTerm},
 		{NewTerm, PostNewTerm, POST, h.PostNewTerm},
-		{EditTerm, ShowEditTerm, GET, h.ShowEditTerm},
-		{EditTerm, PostEditTerm, POST, h.PostEditTerm},
+		// {EditTerm, ShowEditTerm, GET, h.ShowEditTerm},
+		// {EditTerm, PostEditTerm, POST, h.PostEditTerm},
 		{Term, DeleteTerm, DELETE, h.DeleteTerm},
 	}
+}
+
+func TermHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
+	handler := NewTermHandler(svc, router)
+	var routeHandlers []RouteHandler
+	routeHandlers = append(routeHandlers, NodeHandlers(handler, EmptyNodesTerm...)...)
+	return routeHandlers
 }
 
 func (h CourseHandler) ListTerms(c echo.Context) error {
@@ -104,42 +334,42 @@ func (h CourseHandler) ListTerms(c echo.Context) error {
 	return Respond(c, "", component, layout)
 }
 
-func (h CourseHandler) TermDetails(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
+// func (h CourseHandler) TermDetails(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
+// 	if err != nil {
+// 		return err
+// 	}
 
-	termID, err := TermIDParam(params)
-	if err != nil {
-		return err
-	}
-	term, err := h.svc.GetTerm(termID)
-	if err != nil {
-		return err
-	}
-	pageData := mt.TermDetailsPage{
-		NodeDetailsPage: mt.NodeDetailsPage{
-			Params:          params,
-			Node:            term,
-			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
-			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
-			ListChildrenURL: h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
-			UpNavURL:        h.e.Reverse(ListTerms.String()),
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
-				Term:           term,
-				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			},
-		},
-		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), termID),
-	}
-	template := pageData.Component()
-	layout := h.CourseManagerLayout(template, user)
-	return Respond(c, "", pageData.Component(), layout)
-}
+// 	termID, err := TermIDParam(params)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	term, err := h.svc.GetTerm(termID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	pageData := mt.TermDetailsPage{
+// 		NodeDetailsPage: mt.NodeDetailsPage{
+// 			Params:          params,
+// 			Node:            term,
+// 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
+// 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
+// 			ListChildrenURL: h.e.Reverse(ListTermCourses.String(), params.ToIntSlice()...),
+// 			UpNavURL:        h.e.Reverse(ListTerms.String()),
+// 			BreadCrumbsData: mt.BreadCrumbs{
+// 				User:           user,
+// 				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+// 				Term:           term,
+// 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
+// 			},
+// 		},
+// 		ShowEditTermDatesURL: h.e.Reverse(ShowEditTermDates.String(), termID),
+// 	}
+// 	template := pageData.Component()
+// 	layout := h.CourseManagerLayout(template, user)
+// 	return Respond(c, "", pageData.Component(), layout)
+// }
 
 func (h CourseHandler) ShowTermCalendar(c echo.Context) error {
 	params := ParseCourseIDParams(c)
@@ -154,15 +384,15 @@ func (h CourseHandler) ShowTermCalendar(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	log.Println("create occasion URL: ", h.e.Reverse(CreateOccasion.String(), params.ToIntSlice()...))
+	log.Println("create occasion URL: ", h.e.Reverse(CreateOccasion.String(), params.ToSlice()...))
 	data := mt.TermCalendar{
 		Params:              params,
 		Term:                term,
 		GetEditOccasionRHN:  ShowEditOccasion.String(),
 		PostEditOccasionRHN: PostEditOccasion.String(),
-		ListTermsURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
-		TermDetailsURL:      h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-		CreateOccasionURL:   h.e.Reverse(CreateOccasion.String(), params.ToIntSlice()...),
+		ListTermsURL:        h.e.Reverse(ListTerms.String(), params.ToSlice()...),
+		TermDetailsURL:      h.e.Reverse(TermDetails.String(), params.ToSlice()...),
+		CreateOccasionURL:   h.e.Reverse(CreateOccasion.String(), params.ToSlice()...),
 		E:                   h.e,
 	}
 
@@ -192,7 +422,7 @@ func (h CourseHandler) CreateOccasion(c echo.Context) error {
 		return err
 	}
 	log.Println(occasion)
-	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) ShowEditOccasion(c echo.Context) error {
@@ -213,8 +443,8 @@ func (h CourseHandler) ShowEditOccasion(c echo.Context) error {
 	component := mt.TermOccasionEditor{
 		Occasion:            occasion,
 		IsEditing:           true,
-		GetEditOccasionURL:  h.e.Reverse(ShowEditOccasion.String(), params.ToIntSlice(occasion.ID)...),
-		PostEditOccasionURL: h.e.Reverse(PostEditOccasion.String(), params.ToIntSlice(occasion.ID)...),
+		GetEditOccasionURL:  h.e.Reverse(ShowEditOccasion.String(), params.ToSlice(occasion.ID)...),
+		PostEditOccasionURL: h.e.Reverse(PostEditOccasion.String(), params.ToSlice(occasion.ID)...),
 	}.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
@@ -237,7 +467,7 @@ func (h CourseHandler) PostEditOccasion(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToIntSlice()...))
+	return c.Redirect(303, h.e.Reverse(ShowTermCalendar.String(), params.ToSlice()...))
 }
 
 func (h CourseHandler) ShowNewTerm(c echo.Context) error {
@@ -250,8 +480,8 @@ func (h CourseHandler) ShowNewTerm(c echo.Context) error {
 		ParentNode:        user,
 		NodeType:          domain.TermTypeName,
 		Params:            params,
-		PostCreateNodeURL: h.e.Reverse(PostNewTerm.String(), params.ToIntSlice()...),
-		CancelURL:         h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
+		PostCreateNodeURL: h.e.Reverse(PostNewTerm.String(), params.ToSlice()...),
+		CancelURL:         h.e.Reverse(ListTerms.String(), params.ToSlice()...),
 	}
 	template := mt.NodeCreateComponent(nodeCreate)
 	layout := h.CourseManagerLayout(template, user)
@@ -312,141 +542,141 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 	return Respond(c, "", template, layout)
 }
 
-func (h CourseHandler) ShowEditTerm(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
+// func (h CourseHandler) ShowEditTerm(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
+// 	if err != nil {
+// 		return err
+// 	}
 
-	queryParam := c.QueryParam("field")
-	termID, err := TermIDParam(params)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	term, err := h.svc.GetTerm(termID)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
-	}
-	details := mt.TermDetailsPage{
-		NodeDetailsPage: mt.NodeDetailsPage{
-			Params:          params,
-			Node:            term,
-			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
-			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
-			UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToIntSlice()...),
-			IsEdit:          true,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+// 	queryParam := c.QueryParam("field")
+// 	termID, err := TermIDParam(params)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return err
+// 	}
+// 	term, err := h.svc.GetTerm(termID)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return err
+// 	}
+// 	if queryParam == "" {
+// 		log.Println(err)
+// 		return fmt.Errorf("field query param is missing")
+// 	}
+// 	details := mt.TermDetailsPage{
+// 		NodeDetailsPage: mt.NodeDetailsPage{
+// 			Params:          params,
+// 			Node:            term,
+// 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToSlice()...),
+// 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToSlice()...),
+// 			UpNavURL:        h.e.Reverse(ListTerms.String(), params.ToSlice()...),
+// 			IsEdit:          true,
+// 			BreadCrumbsData: mt.BreadCrumbs{
+// 				User:           user,
+// 				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToSlice()...),
 
-				Term:           term,
-				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			},
-		},
-	}
+// 				Term:           term,
+// 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToSlice()...),
+// 			},
+// 		},
+// 	}
 
-	respond := func(component templ.Component) error {
-		return Respond(c, h.e.Reverse(TermDetails.String(), params.ToIntSlice()...), component, nil)
-	}
-	if queryParam == templates.KebabCase(string(Description)) {
-		return respond(mt.EditDescriptionComponent(details.NodeDetailsPage))
-	} else if queryParam == templates.KebabCase(string(Name)) {
-		return respond(mt.EditNameComponent(details.NodeDetailsPage))
-	}
-	errText := "field value is not expected"
-	log.Println(errText)
-	return fmt.Errorf("%s %s", errText, queryParam)
+// 	respond := func(component templ.Component) error {
+// 		return Respond(c, h.e.Reverse(TermDetails.String(), params.ToSlice()...), component, nil)
+// 	}
+// 	if queryParam == templates.KebabCase(string(Description)) {
+// 		return respond(mt.EditDescriptionComponent(details.NodeDetailsPage))
+// 	} else if queryParam == templates.KebabCase(string(Name)) {
+// 		return respond(mt.EditNameComponent(details.NodeDetailsPage))
+// 	}
+// 	errText := "field value is not expected"
+// 	log.Println(errText)
+// 	return fmt.Errorf("%s %s", errText, queryParam)
 
-}
+// }
 
-func (h CourseHandler) PostEditTerm(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
+// func (h CourseHandler) PostEditTerm(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
+// 	if err != nil {
+// 		return err
+// 	}
 
-	termID, err := TermIDParam(params)
-	if err != nil {
-		return err
-	}
-	term, err := h.svc.GetTerm(termID)
-	if err != nil {
-		return err
-	}
-	err = c.Request().ParseForm()
-	if err != nil {
-		return err
-	}
-	form := c.Request().Form
-	var updateTerm = func(term domain.Term) (domain.Term, error) {
-		log.Println("updating: ", term.ID, term.Name, term.Description)
-		err := h.svc.UpdateTerm(term)
-		if err != nil {
-			return domain.Term{}, err
-		}
-		updatedTerm, err := h.svc.GetTerm(termID)
-		if err != nil {
-			return domain.Term{}, err
-		}
-		log.Println("retrieved term: ", updatedTerm.ID, updatedTerm.Name, updatedTerm.Description)
-		return updatedTerm, nil
-	}
-	var pageData = func(unit domain.Term) mt.NodeDetailsPage {
-		return mt.NodeDetailsPage{
-			Node:            unit,
-			Params:          params,
-			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToIntSlice()...),
-			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToIntSlice()...),
-			IsEdit:          false,
-			BreadCrumbsData: mt.BreadCrumbs{
-				User:           user,
-				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToIntSlice()...),
+// 	termID, err := TermIDParam(params)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	term, err := h.svc.GetTerm(termID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	err = c.Request().ParseForm()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	form := c.Request().Form
+// 	var updateTerm = func(term domain.Term) (domain.Term, error) {
+// 		log.Println("updating: ", term.ID, term.Name, term.Description)
+// 		err := h.svc.UpdateTerm(term)
+// 		if err != nil {
+// 			return domain.Term{}, err
+// 		}
+// 		updatedTerm, err := h.svc.GetTerm(termID)
+// 		if err != nil {
+// 			return domain.Term{}, err
+// 		}
+// 		log.Println("retrieved term: ", updatedTerm.ID, updatedTerm.Name, updatedTerm.Description)
+// 		return updatedTerm, nil
+// 	}
+// 	var pageData = func(unit domain.Term) mt.NodeDetailsPage {
+// 		return mt.NodeDetailsPage{
+// 			Node:            unit,
+// 			Params:          params,
+// 			GetEditNodeURL:  h.e.Reverse(ShowEditTerm.String(), params.ToSlice()...),
+// 			PostEditNodeURL: h.e.Reverse(PostEditTerm.String(), params.ToSlice()...),
+// 			IsEdit:          false,
+// 			BreadCrumbsData: mt.BreadCrumbs{
+// 				User:           user,
+// 				UserDetailsURL: h.e.Reverse(UserHome.String(), params.ToSlice()...),
 
-				Term:           term,
-				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToIntSlice()...),
-			},
-		}
-	}
-	var template templ.Component
-	for key, val := range form {
-		log.Println(key, val)
-		switch key {
-		case "description":
-			term.Description = val[0]
-			term, err := updateTerm(term)
-			if err != nil {
-				return err
-			}
-			details := pageData(term)
-			template = mt.EditDescriptionComponent(details)
-		case "name":
-			term.Name = val[0]
-			term, err := updateTerm(term)
-			if err != nil {
-				return err
-			}
-			details := pageData(term)
-			template = mt.EditNameComponent(details)
-		default:
-			log.Println("form key:", key)
-			panic("form key not expected!")
-		}
+// 				Term:           term,
+// 				TermDetailsURL: h.e.Reverse(TermDetails.String(), params.ToSlice()...),
+// 			},
+// 		}
+// 	}
+// 	var template templ.Component
+// 	for key, val := range form {
+// 		log.Println(key, val)
+// 		switch key {
+// 		case "description":
+// 			term.Description = val[0]
+// 			term, err := updateTerm(term)
+// 			if err != nil {
+// 				return err
+// 			}
+// 			details := pageData(term)
+// 			template = mt.EditDescriptionComponent(details)
+// 		case "name":
+// 			term.Name = val[0]
+// 			term, err := updateTerm(term)
+// 			if err != nil {
+// 				return err
+// 			}
+// 			details := pageData(term)
+// 			template = mt.EditNameComponent(details)
+// 		default:
+// 			log.Println("form key:", key)
+// 			panic("form key not expected!")
+// 		}
 
-	}
-	if template == nil {
-		panic("template is nil!")
-	}
-	return Respond(c, h.e.Reverse(string(TermDetails), params.ToIntSlice()...), template, nil)
+// 	}
+// 	if template == nil {
+// 		panic("template is nil!")
+// 	}
+// 	return Respond(c, h.e.Reverse(string(TermDetails), params.ToSlice()...), template, nil)
 
-}
+// }
 
 func (h CourseHandler) DeleteTerm(c echo.Context) error {
 	params := ParseCourseIDParams(c)
@@ -530,6 +760,6 @@ func (h CourseHandler) PostEditTermDates(c echo.Context) error {
 		TermDetailsURL: h.e.Reverse(TermDetails.String(), term.ID),
 	}
 	var template = pageData.Component()
-	return Respond(c, h.e.Reverse(string(TermDetails), params.ToIntSlice()...), template, nil)
+	return Respond(c, h.e.Reverse(string(TermDetails), params.ToSlice()...), template, nil)
 
 }

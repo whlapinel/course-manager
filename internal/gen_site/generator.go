@@ -351,7 +351,12 @@ func RenderMarkdownFiles(title, filesPath string) error {
 			defer output.Close()
 
 			log.Println("Writing:", outputPath)
-			err = DocLayout(title, buf.String()).Render(context.Background(), output)
+			data := mt.MarkdownDocument{
+				Title:   title,
+				Content: buf.String(),
+				Static:  true,
+			}
+			err = mt.DocLayout(data).Render(context.Background(), output)
 			if err != nil {
 				return err
 			}

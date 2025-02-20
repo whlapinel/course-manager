@@ -1,6 +1,7 @@
 package util
 
 import (
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -48,4 +49,8 @@ func Capitalize(s string) string {
 
 func KebabCase(str string) string {
 	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
+}
+
+func IsMarkdown(path string) bool {
+	return filepath.Ext(path) == ".md"
 }

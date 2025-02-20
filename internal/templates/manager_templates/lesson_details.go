@@ -20,11 +20,11 @@ type LessonDetailsPage struct {
 }
 
 func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
-	return page.E.Reverse(page.DeleteLessonStandardRHN, page.Params.ToIntSlice(stdID)...)
+	return page.E.Reverse(page.DeleteLessonStandardRHN, page.Params.ToSlice(stdID)...)
 }
 
 func (page LessonDetailsPage) DeleteAssessmentURL(assessmentID int) string {
-	return page.E.Reverse(page.DeleteAssessmentRHN, page.Params.ToIntSlice(assessmentID)...)
+	return page.E.Reverse(page.DeleteAssessmentRHN, page.Params.ToSlice(assessmentID)...)
 }
 
 func (page LessonDetailsPage) Lesson() domain.Lesson {

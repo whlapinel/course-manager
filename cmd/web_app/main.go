@@ -37,8 +37,10 @@ func main() {
 	}()
 	defer db.Close()
 	courseRepo := data.NewCourseRepo(queries)
-	courseHandler := handlers.NewCourseHandler(e, service.NewCourseService(courseRepo))
-	courseHandler.Mount()
+	service := service.NewCourseService(courseRepo)
+	courseHandler := handlers.NewCourseHandler(e, service)
+	handlers.Mount(service, e) // new way
+	courseHandler.Mount() // old way
 	assets.RegisterStatic(e)
 	environment, err := LoadEnvironment()
 	if err != nil {

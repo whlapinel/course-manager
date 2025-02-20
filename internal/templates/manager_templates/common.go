@@ -56,7 +56,7 @@ func AddNodeChildIDToParams(params CourseIDParams, childID interface{}) CourseID
 }
 
 // converts params into a slice of interfaces
-func (params CourseIDParams) ToIntSlice(additionalParams ...interface{}) []interface{} {
+func (params CourseIDParams) ToSlice(additionalParams ...interface{}) []interface{} {
 	var base []interface{}
 	paramSlice := []interface{}{
 		params.UserID.Value,
