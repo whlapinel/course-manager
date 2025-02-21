@@ -5,8 +5,6 @@ import (
 	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
-	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"io"
@@ -21,22 +19,22 @@ import (
 )
 
 const (
-	Courses          RouteName = Term + "/courses"
-	Course           RouteName = Courses + RouteName(CourseID)
-	CourseFiles      RouteName = Course + "/files/*"
-	ViewMarkdown     RouteName = Course + "/view-markdown/files/*"
-	CourseImage      RouteName = Course + "/image"
-	NewCourse        RouteName = Courses + "/new"
-	EditCourse       RouteName = Course + "/edit"
-	CopyCourse       RouteName = Course + "/copy-to-term"
-	CopyCourseToTerm RouteName = CopyCourse
-	StandardSet      RouteName = Course + "/standard-set"
+	Courses            RouteName = Term + "/courses"
+	Course             RouteName = Courses + RouteName(CourseID)
+	CourseFiles        RouteName = Course + "/files/*"
+	CourseViewMarkdown RouteName = Course + "/view-markdown/files/*"
+	CourseImage        RouteName = Course + "/image"
+	NewCourse          RouteName = Courses + "/new"
+	EditCourse         RouteName = Course + "/edit"
+	CopyCourse         RouteName = Course + "/copy-to-term"
+	CopyCourseToTerm   RouteName = CopyCourse
+	StandardSet        RouteName = Course + "/standard-set"
 )
 const (
 	ListTermCourses       = RouteHandlerName(GET + Courses)
 	CourseDetails         = RouteHandlerName(GET + Course)
 	ShowCourseFiles       = RouteHandlerName(GET + CourseFiles)
-	GetViewMarkdown       = RouteHandlerName(GET + ViewMarkdown)
+	GetCourseViewMarkdown = RouteHandlerName(GET + CourseViewMarkdown)
 	PostCourseFiles       = RouteHandlerName(POST + CourseFiles)
 	ShowEditCourse        = RouteHandlerName(GET + EditCourse)
 	PostEditCourse        = RouteHandlerName(POST + EditCourse)
@@ -54,10 +52,10 @@ func (h CourseHandler) CourseHandlers() []RouteHandler {
 		// {Courses, ListTermCourses, GET, h.ListTermCourses},
 		{Course, CourseDetails, GET, h.CourseDetails},
 		{CourseFiles, ShowCourseFiles, GET, h.ShowCourseFiles},
-		{ViewMarkdown, GetViewMarkdown, GET, h.GetViewMarkdown},
+		{CourseViewMarkdown, GetCourseViewMarkdown, GET, h.GetCourseViewMarkdown},
 		{CourseFiles, PostCourseFiles, POST, h.PostCourseFile},
-		{NewCourse, ShowNewCourse, GET, h.ShowNewCourse},
-		{NewCourse, PostNewCourse, POST, h.PostNewCourse},
+		// {NewCourse, ShowNewCourse, GET, h.ShowNewCourse},
+		// {NewCourse, PostNewCourse, POST, h.PostNewCourse},
 		{EditCourse, ShowEditCourse, GET, h.ShowEditCourse},
 		{EditCourse, PostEditCourse, POST, h.PostEditCourse},
 		{Course, DeleteCourse, DELETE, h.DeleteCourse},
@@ -187,14 +185,14 @@ func (h CourseHandler) ShowCourseFiles(c echo.Context) error {
 		Files:           files,
 		E:               h.e,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course),
-		ViewMarkdownRHN: GetViewMarkdown.String(),
+		ViewMarkdownRHN: GetCourseViewMarkdown.String(),
 	}
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
 }
 
-func (h CourseHandler) GetViewMarkdown(c echo.Context) error {
+func (h CourseHandler) GetCourseViewMarkdown(c echo.Context) error {
 	path := c.Param("*")
 	log.Println("path: ", path)
 	params := ParseCourseIDParams(c)
@@ -286,70 +284,71 @@ func (h CourseHandler) PostCourseFile(c echo.Context) error {
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
 
 }
-func (h CourseHandler) ShowNewCourse(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
 
-	termID, err := TermIDParam(params)
-	if err != nil {
-		return err
-	}
-	term, err := h.svc.GetTerm(termID)
-	if err != nil {
-		return err
-	}
-	nodeCreate := mt.NodeCreatePage{
-		ParentNode:        term,
-		NodeType:          domain.CourseTypeName,
-		Params:            params,
-		PostCreateNodeURL: h.e.Reverse(PostNewCourse.String(), params.ToSlice()...),
-		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
-		BreadCrumbsData:   h.BreadCrumbs(params, user, term),
-	}
-	template := mt.NodeCreateComponent(nodeCreate)
-	layout := h.CourseManagerLayout(template, user)
-	return Respond(c, "", template, layout)
-}
+// func (h CourseHandler) ShowNewCourse(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
+// 	if err != nil {
+// 		return err
+// 	}
 
-func (h CourseHandler) PostNewCourse(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
-	if err != nil {
-		return err
-	}
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
+// 	termID, err := TermIDParam(params)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	term, err := h.svc.GetTerm(termID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	nodeCreate := mt.NodeCreatePage{
+// 		ParentNode:        term,
+// 		NodeType:          domain.CourseTypeName,
+// 		Params:            params,
+// 		PostCreateNodeURL: h.e.Reverse(PostNewCourse.String(), params.ToSlice()...),
+// 		CancelURL:         h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
+// 		BreadCrumbsData:   h.BreadCrumbs(params, user, term),
+// 	}
+// 	template := mt.NodeCreateComponent(nodeCreate)
+// 	layout := h.CourseManagerLayout(template, user)
+// 	return Respond(c, "", template, layout)
+// }
 
-	form := c.Request().Form
-	for key, val := range form {
-		log.Println("key, val: ", key, val)
-	}
-	termID := ParseCourseIDParams(c).TermID
-	name := c.FormValue("name")
-	description := c.FormValue("description")
-	course, err := h.svc.SaveCourse(service.SaveCourseParams{
-		TermID:      termID.Value.(int),
-		Name:        name,
-		Description: description,
-	})
-	if err != nil {
-		return err
-	}
-	page := mt.NodeDetailsPage{
-		Node:            course,
-		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), course.ID),
-		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), course.ID),
-		UpNavURL:        h.e.Reverse(ListTermCourses.String(), termID),
-	}
-	template := page.Component()
-	layout := h.CourseManagerLayout(template, user)
-	return Respond(c, "", template, layout)
-}
+// func (h CourseHandler) PostNewCourse(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	err := c.Request().ParseForm()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	form := c.Request().Form
+// 	for key, val := range form {
+// 		log.Println("key, val: ", key, val)
+// 	}
+// 	termID := ParseCourseIDParams(c).TermID
+// 	name := c.FormValue("name")
+// 	description := c.FormValue("description")
+// 	course, err := h.svc.SaveCourse(service.SaveCourseParams{
+// 		TermID:      termID.Value.(int),
+// 		Name:        name,
+// 		Description: description,
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	page := mt.NodeDetailsPage{
+// 		Node:            course,
+// 		GetEditNodeURL:  h.e.Reverse(ShowEditCourse.String(), course.ID),
+// 		PostEditNodeURL: h.e.Reverse(PostEditCourse.String(), course.ID),
+// 		UpNavURL:        h.e.Reverse(ListTermCourses.String(), termID),
+// 	}
+// 	template := page.Component()
+// 	layout := h.CourseManagerLayout(template, user)
+// 	return Respond(c, "", template, layout)
+// }
 
 func (h CourseHandler) ShowEditCourse(c echo.Context) error {
 	params := ParseCourseIDParams(c)

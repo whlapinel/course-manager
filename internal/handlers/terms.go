@@ -50,22 +50,75 @@ func (h *termHandler) Params() mt.CourseIDParams {
 	return h.params
 }
 
-// PostNewChild implements NodeHandler.
-func (h *termHandler) PostNewChild(echo.Context) error {
-	panic("unimplemented")
+// PostNewChild implements NodeHandler. (implemented)
+func (h *termHandler) PostNewChild(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	err := c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println("key, val: ", key, val)
+	}
+	termID := params.TermID.Value
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	course, err := h.svc.SaveCourse(service.SaveCourseParams{
+		TermID:      termID.(int),
+		Name:        name,
+		Description: description,
+	})
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesCourse...)), params.ToSlice(course.ID)...))
 }
 
-// ShowNewChild implements NodeHandler.
-func (h *termHandler) ShowNewChild(echo.Context) error {
-	panic("unimplemented")
+// ShowNewChild implements NodeHandler. (implemented)
+func (h *termHandler) ShowNewChild(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(termID)
+	if err != nil {
+		return err
+	}
+	nodeCreate := mt.NodeCreatePage{
+		ParentNode:        term,
+		NodeType:          domain.CourseTypeName,
+		Params:            params,
+		PostCreateNodeURL: PostNewChildURL(h),
+		CancelURL:         ListChildrenURL(h),
+		BreadCrumbsData:   BreadCrumbs(h.e, params, user, term),
+	}
+	component := mt.NodeCreateComponent(nodeCreate)
+	layout := CourseManagerLayout(h.e, component, user)
+	return Respond(c, "", component, layout)
+
 }
 
-// Delete implements NodeHandler.
-func (h *termHandler) Delete(echo.Context) error {
-	panic("unimplemented")
+// Delete implements NodeHandler. (implemented)
+func (h *termHandler) Delete(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	termID, err := TermIDParam(params)
+	if err != nil {
+		return err
+	}
+	err = h.svc.DeleteTerm(termID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(http.StatusOK)
 }
 
-// ListChildren implements NodeHandler.
+// ListChildren implements NodeHandler. (implemented)
 func (h *termHandler) ListChildren(c echo.Context) error {
 	h.params = ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
@@ -94,12 +147,7 @@ func (h *termHandler) ListChildren(c echo.Context) error {
 	return Respond(c, "", component, layout)
 }
 
-// NewChild implements NodeHandler.
-func (h *termHandler) NewChild(echo.Context) error {
-	panic("unimplemented")
-}
-
-// PostEdit implements NodeHandler.
+// PostEdit implements NodeHandler. (implemented)
 func (h *termHandler) PostEdit(c echo.Context) error {
 	h.params = ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
@@ -168,7 +216,7 @@ func (h *termHandler) PostEdit(c echo.Context) error {
 
 }
 
-// ShowDetails implements NodeHandler.
+// ShowDetails implements NodeHandler. (implemented)
 func (h *termHandler) ShowDetails(c echo.Context) error {
 	h.params = ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
@@ -190,7 +238,7 @@ func (h *termHandler) ShowDetails(c echo.Context) error {
 	return Respond(c, "", component, layout)
 }
 
-// ShowEdit implements NodeHandler.
+// ShowEdit implements NodeHandler.  (implemented)
 func (h *termHandler) ShowEdit(c echo.Context) error {
 	h.params = ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
@@ -268,7 +316,7 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 	return []RouteHandler{
 		// Terms handlers
 		{User, UserHome, GET, h.UserHome},
-		{Terms, ListTerms, GET, h.ListTerms},
+		// {Terms, ListTerms, GET, h.ListTerms},
 		// {Term, TermDetails, GET, h.TermDetails},
 		{TermCalendar, ShowTermCalendar, GET, h.ShowTermCalendar},
 		{Occasions, CreateOccasion, POST, h.CreateOccasion},
@@ -280,7 +328,7 @@ func (h CourseHandler) TermHandlers() []RouteHandler {
 		{NewTerm, PostNewTerm, POST, h.PostNewTerm},
 		// {EditTerm, ShowEditTerm, GET, h.ShowEditTerm},
 		// {EditTerm, PostEditTerm, POST, h.PostEditTerm},
-		{Term, DeleteTerm, DELETE, h.DeleteTerm},
+		// {Term, DeleteTerm, DELETE, h.DeleteTerm},
 	}
 }
 
@@ -291,48 +339,48 @@ func TermHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 	return routeHandlers
 }
 
-func (h CourseHandler) ListTerms(c echo.Context) error {
-	userIDParam := c.Param("user-id")
-	log.Println("useridparam: ", userIDParam)
-	userID := c.Get("id")
-	user, err := h.svc.GetUser(userID.(string))
-	if err != nil {
-		return err
-	}
-	log.Println(userID)
-	params := ParseCourseIDParams(c)
-	if !params.UserID.Valid {
-		return fmt.Errorf("error parsing user ID: %s", params.UserID.Value)
-	}
-	log.Println("user ID:", params.UserID.Value.(string))
-	terms, err := h.svc.GetTerms(userID.(string))
-	if err != nil {
-		return fmt.Errorf("error in CourseHandler.ListTerms: %s", err)
-	}
-	var termNodes []domain.CourseNode
-	for _, term := range terms {
-		termNodes = append(termNodes, term)
-	}
-	log.Println("RHN:", ShowTermCalendar.String())
-	log.Println(h.e.Reverse(ShowTermCalendar.String(), terms[0].GetID()))
-	page := mt.TermsListPage{
-		ShowTermCalendarRHN: ShowTermCalendar.String(),
-		NodeListPage: mt.NodeListPage{
-			Params:           params,
-			ParentNode:       user,
-			Children:         termNodes,
-			ChildDetailsRHN:  TermDetails.String(),
-			ChildChildrenRHN: ListTermCourses.String(),
-			CreateChildRHN:   ShowNewTerm.String(),
-			DeleteChildRHN:   DeleteTerm.String(),
-			UpNavURL:         h.e.Reverse(UserHome.String(), userID),
-			E:                h.e,
-		},
-	}
-	component := page.Component()
-	layout := h.CourseManagerLayout(component, user)
-	return Respond(c, "", component, layout)
-}
+// func (h CourseHandler) ListTerms(c echo.Context) error {
+// 	userIDParam := c.Param("user-id")
+// 	log.Println("useridparam: ", userIDParam)
+// 	userID := c.Get("id")
+// 	user, err := h.svc.GetUser(userID.(string))
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.Println(userID)
+// 	params := ParseCourseIDParams(c)
+// 	if !params.UserID.Valid {
+// 		return fmt.Errorf("error parsing user ID: %s", params.UserID.Value)
+// 	}
+// 	log.Println("user ID:", params.UserID.Value.(string))
+// 	terms, err := h.svc.GetTerms(userID.(string))
+// 	if err != nil {
+// 		return fmt.Errorf("error in CourseHandler.ListTerms: %s", err)
+// 	}
+// 	var termNodes []domain.CourseNode
+// 	for _, term := range terms {
+// 		termNodes = append(termNodes, term)
+// 	}
+// 	log.Println("RHN:", ShowTermCalendar.String())
+// 	log.Println(h.e.Reverse(ShowTermCalendar.String(), terms[0].GetID()))
+// 	page := mt.TermsListPage{
+// 		ShowTermCalendarRHN: ShowTermCalendar.String(),
+// 		NodeListPage: mt.NodeListPage{
+// 			Params:           params,
+// 			ParentNode:       user,
+// 			Children:         termNodes,
+// 			ChildDetailsRHN:  TermDetails.String(),
+// 			ChildChildrenRHN: ListTermCourses.String(),
+// 			CreateChildRHN:   ShowNewTerm.String(),
+// 			DeleteChildRHN:   DeleteTerm.String(),
+// 			UpNavURL:         h.e.Reverse(UserHome.String(), userID),
+// 			E:                h.e,
+// 		},
+// 	}
+// 	component := page.Component()
+// 	layout := h.CourseManagerLayout(component, user)
+// 	return Respond(c, "", component, layout)
+// }
 
 // func (h CourseHandler) TermDetails(c echo.Context) error {
 // 	params := ParseCourseIDParams(c)
@@ -678,18 +726,18 @@ func (h CourseHandler) PostNewTerm(c echo.Context) error {
 
 // }
 
-func (h CourseHandler) DeleteTerm(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	termID, err := TermIDParam(params)
-	if err != nil {
-		return err
-	}
-	err = h.svc.DeleteTerm(termID)
-	if err != nil {
-		return err
-	}
-	return c.NoContent(http.StatusOK)
-}
+// func (h CourseHandler) DeleteTerm(c echo.Context) error {
+// 	params := ParseCourseIDParams(c)
+// 	termID, err := TermIDParam(params)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	err = h.svc.DeleteTerm(termID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return c.NoContent(http.StatusOK)
+// }
 
 func (h CourseHandler) ShowEditTermDates(c echo.Context) error {
 	params := ParseCourseIDParams(c)

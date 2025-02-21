@@ -243,6 +243,13 @@ func ListSiblingsURL(handler NodeHandler) string {
 	return handler.Router().Reverse(string(ListChildrenRHN(handler.NodeSet()[:len(handler.NodeSet())-1]...)), handler.Params().ToSlice()...)
 }
 
+func ShowNewChildURL(handler NodeHandler) string {
+	return handler.Router().Reverse(string(ShowNewChildRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+}
+func PostNewChildURL(handler NodeHandler) string {
+	return handler.Router().Reverse(string(PostNewChildRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+}
+
 func ShowFilesURL(handler NodeHandler) string {
 	return handler.Router().Reverse(string(ShowNodeFilesRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
 }

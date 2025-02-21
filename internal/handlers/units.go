@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
@@ -17,23 +19,24 @@ import (
 )
 
 const (
-	Units     RouteName = Course + "/units"
-	Unit      RouteName = Units + RouteName(UnitID)
-	NewUnit   RouteName = Units + "/new"
-	EditUnit  RouteName = Unit + "/edit"
-	UnitFiles RouteName = Unit + "/files/*"
+	Units            RouteName = Course + "/units"
+	Unit             RouteName = Units + RouteName(UnitID)
+	NewUnit          RouteName = Units + "/new"
+	EditUnit         RouteName = Unit + "/edit"
+	UnitFiles        RouteName = Unit + "/files/*"
+	UnitViewMarkdown RouteName = Unit + "/view-markdown/files/*"
 )
 const (
-	ListCourseUnits = RouteHandlerName(GET + Units)
-	UnitDetails     = RouteHandlerName(GET + Unit)
-	ShowUnitFiles   = RouteHandlerName(GET + UnitFiles)
-	PostUnitFile    = RouteHandlerName(POST + UnitFiles)
-
-	ShowEditUnit = RouteHandlerName(GET + EditUnit)
-	PostEditUnit = RouteHandlerName(POST + EditUnit)
-	ShowNewUnit  = RouteHandlerName(GET + NewUnit)
-	PostNewUnit  = RouteHandlerName(POST + NewUnit)
-	DeleteUnit   = RouteHandlerName(DELETE + Unit)
+	ListCourseUnits     = RouteHandlerName(GET + Units)
+	UnitDetails         = RouteHandlerName(GET + Unit)
+	ShowUnitFiles       = RouteHandlerName(GET + UnitFiles)
+	GetUnitViewMarkdown = RouteHandlerName(GET + UnitViewMarkdown)
+	PostUnitFile        = RouteHandlerName(POST + UnitFiles)
+	ShowEditUnit        = RouteHandlerName(GET + EditUnit)
+	PostEditUnit        = RouteHandlerName(POST + EditUnit)
+	ShowNewUnit         = RouteHandlerName(GET + NewUnit)
+	PostNewUnit         = RouteHandlerName(POST + NewUnit)
+	DeleteUnit          = RouteHandlerName(DELETE + Unit)
 )
 
 func (h CourseHandler) UnitHandlers() []RouteHandler {
@@ -42,6 +45,8 @@ func (h CourseHandler) UnitHandlers() []RouteHandler {
 		{Units, ListCourseUnits, GET, h.ListCourseUnits},
 		{Unit, UnitDetails, GET, h.UnitDetails},
 		{UnitFiles, ShowUnitFiles, GET, h.ShowUnitFiles},
+		{UnitViewMarkdown, GetUnitViewMarkdown, GET, h.GetUnitViewMarkdown},
+
 		{UnitFiles, PostUnitFile, POST, h.PostUnitFile},
 		{NewUnit, ShowNewUnit, GET, h.ShowNewUnit},
 		{NewUnit, PostNewUnit, POST, h.PostNewUnit},
@@ -172,6 +177,7 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 		Params:          params,
 		CurrentPath:     path,
 		OpenFileRHN:     ShowUnitFiles.String(),
+		ViewMarkdownRHN: GetUnitViewMarkdown.String(),
 		Files:           files,
 		E:               h.e,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit),
@@ -179,6 +185,53 @@ func (h CourseHandler) ShowUnitFiles(c echo.Context) error {
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) GetUnitViewMarkdown(c echo.Context) error {
+	path := c.Param("*")
+	log.Println("path: ", path)
+	params := ParseCourseIDParams(c)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+	err = h.svc.CreateNodeFilesDir(user, term, course, unit)
+	if err != nil {
+		return err
+	}
+	pathRoot := data.NodeFilesDirPath(user, term, course, unit)
+	path = filepath.Join(pathRoot, path)
+	content, err := RenderMarkdownFile(path)
+	if err != nil {
+		return err
+	}
+	var buf bytes.Buffer
+	data := mt.MarkdownDocument{
+		Title:   filepath.Base(path),
+		Content: string(content),
+		Static:  false,
+	}
+	err = mt.DocLayout(data).Render(context.Background(), &buf)
+	if err != nil {
+		return err
+	}
+	data.Content = buf.String()
+	component := mt.MarkdownIFrame(data)
+	layout := h.CourseManagerLayout(component, user)
+	return Respond(c, "", component, layout)
+
 }
 
 func (h CourseHandler) PostUnitFile(c echo.Context) error {

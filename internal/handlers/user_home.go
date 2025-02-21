@@ -20,7 +20,7 @@ type userHandler struct {
 
 // AncestorPath implements NodeHandler.
 func (u *userHandler) AncestorPath() []domain.CourseNode {
-	panic("unimplemented")
+	return u.ancestors
 }
 
 // Delete implements NodeHandler.
@@ -28,8 +28,9 @@ func (u *userHandler) Delete(echo.Context) error {
 	panic("unimplemented")
 }
 
-// ListChildren implements NodeHandler.
+// ListChildren implements NodeHandler. (implemented)
 func (h *userHandler) ListChildren(c echo.Context) error {
+	log.Println("userHandler.ListChildren")
 	h.params = ParseCourseIDParams(c)
 	userID := c.Get("id")
 	user, err := h.svc.GetUser(userID.(string))
@@ -56,17 +57,17 @@ func (h *userHandler) ListChildren(c echo.Context) error {
 
 // Node implements NodeHandler.
 func (u *userHandler) Node() domain.CourseNode {
-	panic("unimplemented")
+	return u.node
 }
 
 // NodeSet implements NodeHandler.
 func (u *userHandler) NodeSet() []EmptyNode {
-	panic("unimplemented")
+	return EmptyNodesUser
 }
 
 // Params implements NodeHandler.
 func (u *userHandler) Params() mt.CourseIDParams {
-	panic("unimplemented")
+	return u.params
 }
 
 // PostEdit implements NodeHandler.
@@ -81,7 +82,7 @@ func (u *userHandler) PostNewChild(echo.Context) error {
 
 // Router implements NodeHandler.
 func (u *userHandler) Router() *echo.Echo {
-	panic("unimplemented")
+	return u.e
 }
 
 // ShowDetails implements NodeHandler.
@@ -143,7 +144,7 @@ func (h CourseHandler) UserHomeHandlers() []RouteHandler {
 func UserHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 	handler := NewUserHandler(svc, router)
 	var routeHandlers []RouteHandler
-	routeHandlers = append(routeHandlers, NodeHandlers(handler, EmptyNodesTerm...)...)
+	routeHandlers = append(routeHandlers, NodeHandlers(handler, EmptyNodesUser...)...)
 	return routeHandlers
 }
 

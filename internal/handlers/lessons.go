@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
@@ -21,32 +23,34 @@ import (
 )
 
 const (
-	Lessons         RouteName = Unit + "/lessons"
-	Lesson          RouteName = Lessons + RouteName(LessonID)
-	NewLesson       RouteName = Lessons + "/new"
-	EditLesson      RouteName = Lesson + "/edit"
-	Slides          RouteName = Lesson + "/slides"
-	LessonFiles     RouteName = Lesson + "/files/*"
-	EditSlides      RouteName = Slides + "/edit"
-	LessonStandards RouteName = Lesson + "/standards"
-	LessonStandard  RouteName = LessonStandards + RouteName(StandardID)
+	Lessons            RouteName = Unit + "/lessons"
+	Lesson             RouteName = Lessons + RouteName(LessonID)
+	NewLesson          RouteName = Lessons + "/new"
+	EditLesson         RouteName = Lesson + "/edit"
+	Slides             RouteName = Lesson + "/slides"
+	LessonFiles        RouteName = Lesson + "/files/*"
+	LessonViewMarkdown RouteName = Lesson + "/view-markdown/files/*"
+	EditSlides         RouteName = Slides + "/edit"
+	LessonStandards    RouteName = Lesson + "/standards"
+	LessonStandard     RouteName = LessonStandards + RouteName(StandardID)
 )
 
 const (
-	ListUnitLessons      = RouteHandlerName(GET + Lessons)
-	LessonDetails        = RouteHandlerName(GET + Lesson)
-	ShowNewLesson        = RouteHandlerName(GET + NewLesson)
-	PostNewLesson        = RouteHandlerName(POST + NewLesson)
-	ShowEditLesson       = RouteHandlerName(GET + EditLesson)
-	PostEditLesson       = RouteHandlerName(POST + EditLesson)
-	ViewLessonSlides     = RouteHandlerName(GET + Slides)
-	ShowLessonFiles      = RouteHandlerName(GET + LessonFiles)
-	PostLessonFile       = RouteHandlerName(POST + LessonFiles)
-	ShowEditSlides       = RouteHandlerName(GET + EditSlides)
-	PostEditSlides       = RouteHandlerName(POST + EditSlides)
-	DeleteLesson         = RouteHandlerName(DELETE + Lesson)
-	PostLessonStandard   = RouteHandlerName(POST + LessonStandards)
-	DeleteLessonStandard = RouteHandlerName(DELETE + LessonStandard)
+	ListUnitLessons       = RouteHandlerName(GET + Lessons)
+	LessonDetails         = RouteHandlerName(GET + Lesson)
+	ShowNewLesson         = RouteHandlerName(GET + NewLesson)
+	PostNewLesson         = RouteHandlerName(POST + NewLesson)
+	ShowEditLesson        = RouteHandlerName(GET + EditLesson)
+	PostEditLesson        = RouteHandlerName(POST + EditLesson)
+	ViewLessonSlides      = RouteHandlerName(GET + Slides)
+	ShowLessonFiles       = RouteHandlerName(GET + LessonFiles)
+	GetLessonViewMarkdown = RouteHandlerName(GET + LessonViewMarkdown)
+	PostLessonFile        = RouteHandlerName(POST + LessonFiles)
+	ShowEditSlides        = RouteHandlerName(GET + EditSlides)
+	PostEditSlides        = RouteHandlerName(POST + EditSlides)
+	DeleteLesson          = RouteHandlerName(DELETE + Lesson)
+	PostLessonStandard    = RouteHandlerName(POST + LessonStandards)
+	DeleteLessonStandard  = RouteHandlerName(DELETE + LessonStandard)
 )
 
 func (h CourseHandler) LessonHandlers() []RouteHandler {
@@ -59,6 +63,7 @@ func (h CourseHandler) LessonHandlers() []RouteHandler {
 		{EditLesson, PostEditLesson, POST, h.PostEditLesson},
 		{Slides, ViewLessonSlides, GET, h.ViewLessonSlides},
 		{LessonFiles, ShowLessonFiles, GET, h.ShowLessonFiles},
+		{LessonViewMarkdown, GetLessonViewMarkdown, GET, h.GetLessonViewMarkdown},
 		{LessonFiles, PostLessonFile, POST, h.PostLessonFile},
 		{EditSlides, ShowEditSlides, GET, h.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, h.PostEditSlides},
@@ -356,6 +361,7 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 		Params:          params,
 		CurrentPath:     path,
 		OpenFileRHN:     ShowLessonFiles.String(),
+		ViewMarkdownRHN: GetLessonViewMarkdown.String(),
 		Files:           files,
 		E:               h.e,
 		BreadCrumbsData: h.BreadCrumbs(params, user, term, course, unit, lesson),
@@ -363,6 +369,57 @@ func (h CourseHandler) ShowLessonFiles(c echo.Context) error {
 	component := page.Component()
 	layout := h.CourseManagerLayout(component, user)
 	return Respond(c, "", component, layout)
+}
+
+func (h CourseHandler) GetLessonViewMarkdown(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	path := c.Param("*")
+	log.Println("path: ", path)
+	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	term, err := h.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+	lesson, err := h.svc.GetLesson(params.LessonID.Value.(int))
+	if err != nil {
+		return err
+	}
+	err = h.svc.CreateNodeFilesDir(user, term, course, unit, lesson)
+	if err != nil {
+		return err
+	}
+	pathRoot := data.NodeFilesDirPath(user, term, course, unit, lesson)
+	path = filepath.Join(pathRoot, path)
+	content, err := RenderMarkdownFile(path)
+	if err != nil {
+		return err
+	}
+	var buf bytes.Buffer
+	data := mt.MarkdownDocument{
+		Title:   filepath.Base(path),
+		Content: string(content),
+		Static:  false,
+	}
+	err = mt.DocLayout(data).Render(context.Background(), &buf)
+	if err != nil {
+		return err
+	}
+	data.Content = buf.String()
+	component := mt.MarkdownIFrame(data)
+	layout := h.CourseManagerLayout(component, user)
+	return Respond(c, "", component, layout)
+
 }
 
 func (h CourseHandler) PostLessonFile(c echo.Context) error {
