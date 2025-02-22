@@ -22,6 +22,75 @@ import (
 	"github.com/a-h/templ"
 )
 
+type lessonRouter struct {
+	Router
+}
+
+// Delete implements NodeRouter.
+func (l *lessonRouter) Delete(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ListChildren implements NodeRouter.
+func (l *lessonRouter) ListChildren(echo.Context) error {
+	panic("unimplemented")
+}
+
+// PostEdit implements NodeRouter.
+func (l *lessonRouter) PostEdit(echo.Context) error {
+	panic("unimplemented")
+}
+
+// PostFile implements NodeRouter.
+func (l *lessonRouter) PostFile(echo.Context) error {
+	panic("unimplemented")
+}
+
+// PostNewChild implements NodeRouter.
+func (l *lessonRouter) PostNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// Router implements NodeRouter.
+func (l *lessonRouter) GetRouter() Router {
+	return l.Router
+}
+
+// ShowDetails implements NodeRouter.
+func (l *lessonRouter) ShowDetails(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowEdit implements NodeRouter.
+func (l *lessonRouter) ShowEdit(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowFiles implements NodeRouter.
+func (l *lessonRouter) ShowFiles(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ShowNewChild implements NodeRouter.
+func (l *lessonRouter) ShowNewChild(echo.Context) error {
+	panic("unimplemented")
+}
+
+// ViewFile implements NodeRouter.
+func (l *lessonRouter) ViewFile(echo.Context) error {
+	panic("unimplemented")
+}
+
+func NewLessonRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
+	return &lessonRouter{
+		Router: Router{
+			svc:     svc,
+			app:     app,
+			nodeSet: EmptyNodesLesson,
+		},
+	}
+}
+
 const (
 	Lessons            RouteName = Unit + "/lessons"
 	Lesson             RouteName = Lessons + RouteName(LessonID)
@@ -110,7 +179,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 		ParentNode:      unit,
 		Children:        nodes,
 		ChildDetailsRHN: LessonDetails.String(),
-		CreateChildRHN:  ShowNewLesson.String(),
+		ShowNewChildURL: ShowNewLesson.String(),
 		DeleteChildRHN:  DeleteLesson.String(),
 		UpNavURL:        h.e.Reverse(ListCourseUnits.String(), params.ToSlice()...),
 		E:               h.e,
@@ -199,6 +268,7 @@ func (h CourseHandler) ShowEditLesson(c echo.Context) error {
 
 // TODO: maybe the UpdateLesson functions should return an updated lesson instead of having to call GetLesson again
 func (h CourseHandler) PostEditLesson(c echo.Context) error {
+	log.Println("CourseHandler.PostEditLesson:")
 	params := ParseCourseIDParams(c)
 	user, err := h.svc.GetUser(params.UserID.Value.(string))
 	if err != nil {

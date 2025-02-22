@@ -8,11 +8,12 @@ import (
 )
 
 var logger = middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-	LogURI:     true,
-	LogStatus:  true,
-	LogMethod:  true,
-	LogLatency: true,
-	LogError:   true,
+	LogURI:       true,
+	LogStatus:    true,
+	LogRoutePath: true,
+	LogMethod:    true,
+	LogLatency:   true,
+	LogError:     true,
 	LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 		const (
 			reset  = "\033[0m"
@@ -34,13 +35,15 @@ var logger = middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		customWidth := 12
 		latencyWidth := 15
 		errorWidth := 20
+		pathWidth := 50
 		value, _ := c.Get("id").(int)
 		if v.Error == nil {
 			v.Error = fmt.Errorf("no error")
 		}
-		logLine := fmt.Sprintf("%-*s %-*s %s%-*d%s %-*d %-*s %-*s",
+		logLine := fmt.Sprintf("*******\n%-*s\n%-*s\n%-*s\n%s%-*d%s %-*d %-*s %-*s\n*********",
 			methodWidth, v.Method,
 			uriWidth, v.URI,
+			pathWidth, v.RoutePath,
 			statusColor,
 			statusWidth, v.Status,
 			reset,

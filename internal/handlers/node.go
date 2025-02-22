@@ -11,9 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type NodeHandler interface {
+type NodeRouter interface {
 	ListChildren(echo.Context) error
 	ShowFiles(echo.Context) error
+	PostFile(echo.Context) error
 	ViewFile(echo.Context) error
 	ShowDetails(echo.Context) error
 	ShowNewChild(echo.Context) error // e.g. if node is course, new child would be new unit
@@ -21,16 +22,20 @@ type NodeHandler interface {
 	ShowEdit(echo.Context) error
 	PostEdit(echo.Context) error
 	Delete(echo.Context) error // i.e. delete node itself (not child)
-	Router() *echo.Echo
-	Node() domain.CourseNode
-	AncestorPath() []domain.CourseNode
-	NodeSet() []EmptyNode
-	Params() mt.CourseIDParams
+	GetRouter() Router
 }
 
 type EmptyNode domain.CourseNode
 
 type EmptyNodeSet []EmptyNode
+
+func (set EmptyNodeSet) ChildNodeSet() EmptyNodeSet {
+	return emptyNodes[:len(set)+1]
+}
+
+func (set EmptyNodeSet) ParentNodeSet() EmptyNodeSet {
+	return emptyNodes[:len(set)-1]
+}
 
 var emptyNodes = []EmptyNode{
 	domain.User{},
@@ -44,7 +49,6 @@ var EmptyNodesUser = emptyNodes[:1]
 var EmptyNodesTerm = emptyNodes[:2]
 var EmptyNodesCourse = emptyNodes[:3]
 var EmptyNodesUnit = emptyNodes[:4]
-var EmptyNodesLessons = emptyNodes[:5]
 var EmptyNodesLesson = emptyNodes
 
 // e.g. "/users/:user-id/terms/:term-id/courses/:course-id/units"
@@ -103,9 +107,17 @@ func ListChildrenRHN(nodes ...EmptyNode) RouteHandlerName {
 	return rhn
 }
 
+func ListChildChildrenRHN(nodes ...EmptyNode) RouteHandlerName {
+	return ListChildrenRHN(EmptyNodeSet(nodes).ChildNodeSet()...)
+}
+
 func ShowNewChildRHN(nodes ...EmptyNode) RouteHandlerName {
 	routeName := NewChildRouteName(nodes...)
 	return RouteHandlerName(GET + routeName)
+}
+
+func DeleteChildRHN(nodes ...EmptyNode) RouteHandlerName {
+	return DeleteRHN(EmptyNodeSet(nodes).ChildNodeSet()...)
 }
 
 func PostNewChildRHN(nodes ...EmptyNode) RouteHandlerName {
@@ -115,6 +127,14 @@ func PostNewChildRHN(nodes ...EmptyNode) RouteHandlerName {
 
 func ShowNodeDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
 	return RouteHandlerName(GET + NodeRouteName(nodes...))
+}
+
+func ShowParentDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
+	return ShowNodeDetailsRHN(EmptyNodeSet(nodes).ParentNodeSet()...)
+}
+
+func ShowChildDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
+	return ShowNodeDetailsRHN(EmptyNodeSet(nodes).ChildNodeSet()...)
 }
 
 func ShowNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
@@ -203,7 +223,7 @@ func PostNewChildHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) Route
 	return RouteHandler{
 		RouteName:   NewChildRouteName(nodes...),
 		HandlerName: PostNewChildRHN(nodes...),
-		Method:      GET,
+		Method:      POST,
 		HandlerFunc: handlerFunc,
 	}
 }
@@ -217,76 +237,124 @@ func DeleteHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandle
 	}
 }
 
-func NodeHandlers(handler NodeHandler, nodes ...EmptyNode) []RouteHandler {
+func NodeHandlers(router NodeRouter) []RouteHandler {
+	r := router.GetRouter()
 	var handlers = []RouteHandler{
-		ListChildrenHandler(handler.ListChildren, nodes...),
-		ShowNewChildHandler(handler.ShowNewChild, nodes...),
-		PostNewChildHandler(handler.PostNewChild, nodes...),
-		ShowFilesHandler(handler.ShowFiles, nodes...),
-		ShowNodeDetailsHandler(handler.ShowDetails, nodes...),
-		ShowEditHandler(handler.ShowEdit, nodes...),
-		PostEditHandler(handler.PostEdit, nodes...),
-		DeleteHandler(handler.Delete, nodes...),
+		ListChildrenHandler(router.ListChildren, r.nodeSet...),
+		ShowNewChildHandler(router.ShowNewChild, r.nodeSet...),
+		PostNewChildHandler(router.PostNewChild, r.nodeSet...),
+		ShowFilesHandler(router.ShowFiles, r.nodeSet...),
+		ShowNodeDetailsHandler(router.ShowDetails, r.nodeSet...),
+		ShowEditHandler(router.ShowEdit, r.nodeSet...),
+		PostEditHandler(router.PostEdit, r.nodeSet...),
+		DeleteHandler(router.Delete, r.nodeSet...),
 	}
 	return handlers
 }
 
-func ShowDetailsURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ShowNodeDetailsRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func ShowDetailsURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(ShowNodeDetailsRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func ListChildrenURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ListChildrenRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func ListChildrenURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(ListChildrenRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func ListSiblingsURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ListChildrenRHN(handler.NodeSet()[:len(handler.NodeSet())-1]...)), handler.Params().ToSlice()...)
+func ListSiblingsURL(router NodeRouter) string {
+	r := router.GetRouter()
+	log.Println("router nodeSet", r.nodeSet)
+	return r.app.Reverse(string(ListChildrenRHN(EmptyNodeSet(r.nodeSet).ParentNodeSet()...)), r.params.ToSlice()...)
 }
 
-func ShowNewChildURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ShowNewChildRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
-}
-func PostNewChildURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(PostNewChildRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func ShowNewChildURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(ShowNewChildRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func ShowFilesURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ShowNodeFilesRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func PostNewChildURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(PostNewChildRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func ShowEditNodeURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(ShowEditRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func ShowFilesURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(ShowNodeFilesRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func PostEditNodeURL(handler NodeHandler) string {
-	return handler.Router().Reverse(string(PostEditRHN(handler.NodeSet()...)), handler.Params().ToSlice()...)
+func ShowEditNodeURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(ShowEditRHN(r.nodeSet...)), r.params.ToSlice()...)
 }
 
-func NodeDetailsPage(h NodeHandler, isEdit bool) mt.NodeDetailsPage {
+func PostEditNodeURL(handler NodeRouter) string {
+	r := handler.GetRouter()
+	return r.app.Reverse(string(PostEditRHN(r.nodeSet...)), r.params.ToSlice()...)
+}
+
+func NodeDetailsPage(h NodeRouter, isEdit bool) mt.NodeDetailsPage {
+	r := h.GetRouter()
 	return mt.NodeDetailsPage{
-		Params:          h.Params(),
-		Node:            h.Node(),
+		Params:          r.params,
+		Node:            r.node,
 		GetEditNodeURL:  ShowEditNodeURL(h),
 		PostEditNodeURL: PostEditNodeURL(h),
 		ListChildrenURL: ListChildrenURL(h),
 		UpNavURL:        ListSiblingsURL(h),
 		ServerFilesURL:  ShowFilesURL(h),
-		BreadCrumbsData: BreadCrumbs(h.Router(), h.Params(), h.AncestorPath()...),
+		BreadCrumbsData: BreadCrumbs(r.app, r.params, r.ancestors...),
 		IsEdit:          isEdit,
 	}
 }
 
-func NodeListPage(h NodeHandler) mt.NodeListPage {
+func NodeListPage(h NodeRouter) mt.NodeListPage {
+	r := h.GetRouter()
+
+	var upNavURL string
+	if _, ok := r.node.(domain.User); ok {
+		upNavURL = ShowDetailsURL(h)
+	} else {
+		upNavURL = ListSiblingsURL(h)
+	}
 	return mt.NodeListPage{
-		Params:           h.Params(),
-		ParentNode:       h.Node(),
-		Children:         h.Node().Children(),
-		ChildDetailsRHN:  string(ShowNodeDetailsRHN(emptyNodes[:len(h.NodeSet())+1]...)),
-		CreateChildRHN:   ShowNewCourse.String(),
-		ChildChildrenRHN: ListCourseUnits.String(),
-		DeleteChildRHN:   DeleteCourse.String(),
-		UpNavURL:         h.Router().Reverse(ListTerms.String(), h.Params().ToSlice()...),
-		E:                h.Router(),
-		BreadCrumbsData:  BreadCrumbs(h.Router(), h.Params(), h.AncestorPath()...),
+		Params:          r.params,
+		ParentNode:      r.node,
+		Children:        r.node.Children(),
+		ChildDetailsRHN: string(ShowChildDetailsRHN(r.nodeSet...)),
+		ShowNewChildURL: ShowNewChildURL(h),
+		// ShowNewChildURL:  string(ShowNewChildRHN(h.NodeSet()...)),
+		ChildChildrenRHN: string(ListChildChildrenRHN(r.nodeSet...)),
+		DeleteChildRHN:   string(DeleteChildRHN(r.nodeSet...)),
+		UpNavURL:         upNavURL,
+		E:                r.app,
+		BreadCrumbsData:  BreadCrumbs(r.app, r.params, r.ancestors...),
+	}
+}
+
+func NodeCreateChildPage(h NodeRouter) mt.NodeCreatePage {
+	r := h.GetRouter()
+	log.Println("NodeCreateChildPage():", PostNewChildURL(h))
+	// log.Println("NodeCreateChildPage(): ", h.Node().TypeName(), h.Node().GetName())
+	return mt.NodeCreatePage{
+		ParentNode:        r.node,
+		NodeType:          domain.NodeTypeName(r.node.ChildTypeName()),
+		Params:            r.params,
+		PostCreateNodeURL: PostNewChildURL(h),
+		CancelURL:         ListChildrenURL(h),
+		BreadCrumbsData:   BreadCrumbs(r.app, r.params, r.ancestors...),
+	}
+}
+
+func NodeFilesPage(r NodeRouter, path string, files []mt.FilesPageItem) mt.FilesPage {
+	return mt.FilesPage{
+		Node:            r.GetRouter().node,
+		Params:          r.GetRouter().params,
+		CurrentPath:     path,
+		OpenFileRHN:     ShowUnitFiles.String(),
+		ViewMarkdownRHN: GetUnitViewMarkdown.String(),
+		Files:           files,
+		E:               r.GetRouter().app,
+		BreadCrumbsData: BreadCrumbs(r.GetRouter().app, r.GetRouter().params, r.GetRouter().ancestors...),
 	}
 }

@@ -37,3 +37,24 @@ func TestEmptyNodes(t *testing.T) {
 	log.Println(len(EmptyNodesTerm))
 
 }
+
+func TestShowChildDetails(t *testing.T) {
+	courseSet := EmptyNodeSet(EmptyNodesCourse)
+	log.Println(ShowChildDetailsRHN(courseSet...))
+}
+
+func TestShowParentDetailsRHN(t *testing.T) {
+	courseSet := EmptyNodeSet(EmptyNodesCourse)
+	log.Println(ShowParentDetailsRHN(courseSet...))
+
+}
+
+func TestListSiblingsURL(t *testing.T) {
+	rhn := ListChildrenRHN(EmptyNodeSet(EmptyNodesTerm).ParentNodeSet()...)
+	log.Println(rhn)
+}
+
+func TestListChildChildrenRHN(t *testing.T) {
+	courseSet := EmptyNodeSet(EmptyNodesCourse)
+	log.Println(ListChildChildrenRHN(courseSet...))
+}

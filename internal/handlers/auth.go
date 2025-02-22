@@ -57,6 +57,7 @@ func (h CourseHandler) PostSignin(c echo.Context) error {
 		log.Println(err)
 		return c.String(500, err.Error())
 	}
+	log.Println("userID", user.ID)
 	t, err := auth.IssueToken(auth.TokenParams{User: domain.User{
 		ID:        sub,
 		Email:     user.Email,
@@ -68,7 +69,7 @@ func (h CourseHandler) PostSignin(c echo.Context) error {
 		return c.String(500, "Failed to issue token")
 	}
 	auth.WriteToken(c, t)
-	return c.Redirect(303, h.e.Reverse(UserHome.String(), user.ID))
+	return c.Redirect(303, "/users")
 }
 
 func (h CourseHandler) GetSignup(c echo.Context) error {

@@ -2,6 +2,10 @@
 
 ## Pending
 
+- (major) UpNav to terms list from term calendar leaves user-id param empty
+
+- (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.
+
 - (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column
 
 - (major) attempting to view lesson files returns a server error rather than a simple message stating that no files exist for the lesson

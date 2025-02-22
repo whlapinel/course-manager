@@ -33,6 +33,8 @@ type TermsListPage struct {
 
 func (page TermsListPage) Component() templ.Component {
 	var calendarButtons []ComponentData
+	log.Println("TermsListPage.Component(): RHN, userID, termID: ", page.ShowTermCalendarRHN, page.NodeListPage.ParentNode.GetID().(string), page.Children[0].GetID())
+	log.Println("TermsListPage.Component(): ShowCalendarURL: ", page.E.Reverse(page.ShowTermCalendarRHN, page.NodeListPage.ParentNode.GetID().(string), page.Children[0].GetID()))
 
 	for _, term := range page.Children {
 		log.Println("term ID: ", term.GetID())

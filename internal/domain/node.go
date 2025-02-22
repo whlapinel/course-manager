@@ -62,7 +62,7 @@ func (root RootCourseNode) GetNumber() int {
 	return -1
 }
 
-func (root RootCourseNode) GetID() int {
+func (root RootCourseNode) GetID() interface{} {
 	return 0
 }
 

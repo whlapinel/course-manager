@@ -40,6 +40,10 @@ func main() {
 	service := service.NewCourseService(courseRepo)
 	courseHandler := handlers.NewCourseHandler(e, service)
 	handlers.Mount(service, e) // new way
+	// Log all NEW registered routes
+	for _, route := range e.Routes() {
+		fmt.Printf("Method: %s, Path: %s, Name: %s\n", route.Method, route.Path, route.Name)
+	}
 	courseHandler.Mount() // old way
 	assets.RegisterStatic(e)
 	environment, err := LoadEnvironment()

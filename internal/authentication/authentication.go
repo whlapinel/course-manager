@@ -55,18 +55,10 @@ var JWTMiddlewareProtectedNew = func(router *echo.Echo, signinRedirectRHN string
 			return c.Redirect(303, router.Reverse(signinRedirectRHN))
 		},
 		SuccessHandler: func(c echo.Context) {
-			log.Println("SuccessHandler")
-			log.Println("Claims: ", c.Get("user"))
 			userToken := c.Get("user").(*jwt.Token)
 			claims := userToken.Claims.(*JwtCustomClaims)
-			log.Println("Email: ", claims.Email)
-			log.Println("ID: ", claims.ID)
-			log.Println("Name: ", claims.First, claims.Last)
-			log.Println("Picture: ", claims.Picture)
 			expiration := claims.ExpiresAt.Time
-			log.Println("Expiration: ", expiration)
 			if time.Until(expiration) <= cushionTime {
-				log.Println("less than a minute left")
 				t, err := IssueToken(TokenParams{User: domain.User{
 					ID:        claims.ID,
 					FirstName: claims.First,

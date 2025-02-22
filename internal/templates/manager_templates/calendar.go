@@ -4,7 +4,6 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	"gh_static_portfolio/internal/util"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -43,7 +42,6 @@ func (term TermCalendar) GetTerm() domain.Term {
 func (page TermCalendar) Occasions(date time.Time) []domain.Occasion {
 	var occasions []domain.Occasion
 	for _, occ := range page.Term.Occasions {
-		log.Println("TermCalendar.Occasion: occasion ID:", occ.ID)
 		if util.IsSameDate(occ.Date, date) {
 			occasions = append(occasions, occ)
 		}
@@ -150,7 +148,6 @@ func HasNonZeroWeekDay(week []time.Time) bool {
 func Occasions(date time.Time, page CalendarPage) []domain.Occasion {
 	var occasions []domain.Occasion
 	for _, occ := range page.GetTerm().Occasions {
-		log.Println("TermCalendar.Occasion: occasion ID:", occ.ID)
 		if util.IsSameDate(occ.Date, date) {
 			occasions = append(occasions, occ)
 		}

@@ -17,7 +17,7 @@ type NodeListPage struct {
 	ChildUI          [][]ComponentData
 	ChildDetailsRHN  string // details for child e.g. if listing units, this would be the route handler name to show unit details
 	ChildChildrenRHN string // children of child e.g. if listing units, this would be the route handler name to list unit lessons
-	CreateChildRHN   string // e.g. if listing units, this would be the route handler name to show new unit form
+	ShowNewChildURL  string // e.g. if listing units, this would be the route handler name to show new unit form
 	DeleteChildRHN   string
 	UpNavURL         string
 	E                *echo.Echo // for generating URLs from route handler name
@@ -66,7 +66,7 @@ func (page NodeListPage) NodeCreateButton() templ.Component {
 	return HXButton{
 		Text:     fmt.Sprintf("Add %s", page.ParentNode.ChildTypeName()),
 		Method:   HxGet,
-		URL:      page.E.Reverse(page.CreateChildRHN, page.Params.ToSlice()...),
+		URL:      page.ShowNewChildURL,
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()

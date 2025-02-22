@@ -128,6 +128,7 @@ func TermIDParam(params mt.CourseIDParams) (int, error) {
 }
 
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
+	log.Println("ParseRouteParam:", param)
 	return strconv.Atoi(c.Param(param.Name()))
 }
 
@@ -153,10 +154,10 @@ func (h CourseHandler) Mount() {
 	h.MountHandlers(h.HomeHandlers())
 	h.MountHandlers(h.AuthenticationHandlers())
 	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(h.e, GetSignin.String()), auth.GetClaims, authorization.Authorization(h.svc.GetUser))
-	h.ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
-	h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
-	h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
-	h.ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
+	// h.ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
+	// h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
+	// h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
+	// h.ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.AssessmentHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.CalendarHandlers(), ProtectedGroup)
@@ -193,13 +194,15 @@ func (h CourseHandler) MountHandlers(newHandlers []RouteHandler) {
 	}
 }
 
-func Mount(svc service.CourseService, router *echo.Echo) {
+func Mount(svc service.CourseService, app *echo.Echo) {
 	// MountHandlers(h.AuthenticationHandlers())
 	// MountHandlers(h.HomeHandlers())
-	ProtectedGroup := router.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(router, GetSignin.String()), auth.GetClaims, authorization.Authorization(svc.GetUser))
+	ProtectedGroup := app.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(app, GetSignin.String()), auth.GetClaims, authorization.Authorization(svc.GetUser))
 	// ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
-	ProtectRoutes(UserHandlers(svc, router), ProtectedGroup)
-	ProtectRoutes(TermHandlers(svc, router), ProtectedGroup)
+	ProtectRoutes(UserHandlers(svc, app), ProtectedGroup)
+	ProtectRoutes(TermHandlers(svc, app), ProtectedGroup)
+	ProtectRoutes(CourseHandlers(svc, app), ProtectedGroup)
+	ProtectRoutes(UnitHandlers(svc, app), ProtectedGroup)
 	// ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
@@ -267,9 +270,12 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 
 func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		Page: page,
-		User: user,
-		E:    h.e,
+		Page:       page,
+		User:       user,
+		E:          h.e,
+		SigninURL:  h.e.Reverse(GetSignin.String()),
+		SignupURL:  h.e.Reverse(GetSignup.String()),
+		SignoutURL: h.e.Reverse(PostSignout.String()),
 	}
 	return mt.CourseManagerLayoutComponent(cml)
 
@@ -301,9 +307,12 @@ func (h CourseHandler) BreadCrumbs(params mt.CourseIDParams, nodes ...domain.Cou
 
 func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		Page: page,
-		User: user,
-		E:    router,
+		Page:       page,
+		User:       user,
+		E:          router,
+		SigninURL:  router.Reverse(GetSignin.String()),
+		SignupURL:  router.Reverse(GetSignup.String()),
+		SignoutURL: router.Reverse(PostSignout.String()),
 	}
 	return mt.CourseManagerLayoutComponent(cml)
 
