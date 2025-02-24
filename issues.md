@@ -2,8 +2,6 @@
 
 ## Pending
 
-- (major) under certain conditions, have to generate site a second or third time for slides to show up. suspect there's an issue with the files modification times falsely reporting no changes
-
 - (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.
 
 - (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column
@@ -14,6 +12,8 @@
 - 1/23/25 (minor) Deleting a course (unit, lesson may take a while as well) takes a long time. Maybe after a course row itself is deleted we should go ahead and return the response to the user and do the rest in the background. If child elements and files are not deleted we should log an error but the user doesn't need to wait on all of that, maybe?
 
 ## Complete
+
+- (major) under certain conditions, have to generate site a second or third time for slides to show up. suspect there's an issue with the files modification times falsely reporting no changes. Resolved by removing slides.html from data directory. Copying the slides.html in to the static site was causing the html mod time to be later than the markdown mod time. Not sure why it ever worked actually.
 
 - 2/23/25 (major) 405 error (method not allowed) when attempting to post a file to a course. Resolved by adding the necessary functions to handlers/node.go to ensure the route was registered.
 
