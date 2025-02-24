@@ -1,18 +1,26 @@
 ---
 marp: true
+theme: default
+class: lead
+paginate: true
 ---
 
 <!-- headingDivider: 1 -->
+<!-- backgroundColor: black -->
+<!-- class: invert -->
 
 # Warmup
 
-Write a function `abbreviated` that accepts a string and returns a new string that consists of the last 5 characters.
+- Test Changes
 
-## Example
-
-```python
-modified_string = abbreviated('my favorite class is Python')
-print(modified_string) # ython
+1. Put your phone in your bag and put your bag against the wall
+2. Create a new directory `unit_4` in your `python` directory
+  - (We are skipping Unit 3)
+3. Create a new directory `lesson_1` in your `unit_4` directory
+```text
+/python
+  /unit_4
+    /lesson_1
 ```
 
 # Agenda
@@ -20,7 +28,6 @@ print(modified_string) # ython
 ## Today
 
 - Begin Unit 4 (Standards 3.01 through 3.04)
-- (U4 Test is October 8th)
 - Lesson on File operations
 - Assignment: Assignment 4.1
 
@@ -35,11 +42,6 @@ print(modified_string) # ython
 
 - 3.03 Construct programs using appropriate Python libraries.
 - 3.04 Build programs using the sqlite3 and/or the sqlalchemy libraries.
-
-# Announcements
-
-- Certification exam permission slips
-- Github repo is now private so that I can put solutions and assessments in the same folders. I will post all materials in Canvas from now on and will try to go back and add them as well.
 
 # Reading and Writing to Files in Python
 
@@ -145,66 +147,9 @@ with open("example.txt", "r") as file:
         print(line.strip())  # Strip removes the newline character
 ```
 
-# CSV files and Python
-
-CSV stands for "comma separated values". It is a very common format for files containing data.
-
-## Writing to CSV file
-
-```python
-import csv
-
-data = [
-    ["Name", "Age", "City"],
-    ["Alice", 30, "New York"],
-    ["Bob", 25, "San Francisco"]
-]
-
-with open('example.csv', mode='w', newline='') as file:
-    csv_writer = csv.writer(file)
-    csv_writer.writerows(data)  # Write all rows at once
-```
-
-Run this code and take a look at the file created in your directory. It's literally just comma-separated values, you could make one yourself using a simple word processor like notepad!
-
-# Reading from CSV file
-
-```python
-import csv
-
-with open('example.csv', mode='r') as file:
-    csv_reader = csv.reader(file)
-    for row in csv_reader:
-        print(row)  # Each row is a list of strings
-```
-
-**Task:** Read each line from a file and print it
-
-# Exercise: Create and Read a File
-
-1. Write a Python script that:
-   - Opens a file named `students.txt` in write mode.
-   - Writes 5 student names to the file (one per line).
-
-2. Then:
-   - Open `students.txt` in read mode.
-   - Print each student name from the file.
-
-# Solution
-
-**Code:**
-
-```python
-# Step 1: Writing to the file
-with open("students.txt", "w") as file:
-    file.writelines(["Alice\n", "Bob\n", "Charlie\n", "Diana\n", "Eve\n"])
-
-# Step 2: Reading from the file
-with open("students.txt", "r") as file:
-    for line in file:
-        print(line.strip())
-```
-
 # Assignment: 4.1
 
-Due today, if you don't finish in class, do for homework
+- Test Changes
+- [Python problems](./files/assignment4_1.py) (due today)
+- Python Essentials 2 Module 2 Quiz (due Friday)
+

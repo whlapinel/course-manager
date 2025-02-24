@@ -101,6 +101,13 @@ func NodeFilesRouteName(nodes ...EmptyNode) RouteName {
 	return RouteName(path)
 }
 
+func ViewNodeFilesRouteName(nodes ...EmptyNode) RouteName {
+	var name = NodeRouteName(nodes...)
+	path := string(name)
+	path = filepath.Join(path, "/view-markdown/files/*")
+	return RouteName(path)
+}
+
 func ListChildrenRHN(nodes ...EmptyNode) RouteHandlerName {
 	name := ChildNodesRouteName(nodes...)
 	rhn := RouteHandlerName(GET + name)
@@ -140,6 +147,18 @@ func ShowChildDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
 func ShowNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
 	name := NodeFilesRouteName(nodes...)
 	rhn := RouteHandlerName(GET + name)
+	return rhn
+}
+
+func ViewNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
+	name := ViewNodeFilesRouteName(nodes...)
+	rhn := RouteHandlerName(GET + name)
+	return rhn
+}
+
+func PostNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
+	name := NodeFilesRouteName(nodes...)
+	rhn := RouteHandlerName(POST + name)
 	return rhn
 }
 
@@ -191,6 +210,29 @@ func ShowFilesHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHan
 	}
 }
 
+func ViewFilesHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
+	routeName := ViewNodeFilesRouteName(nodes...)
+	rhn := ViewNodeFilesRHN(nodes...)
+	return RouteHandler{
+		RouteName:   routeName,
+		HandlerName: rhn,
+		Method:      GET,
+		HandlerFunc: handlerFunc,
+	}
+
+}
+
+func PostFileHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
+	routeName := NodeFilesRouteName(nodes...)
+	rhn := PostNodeFilesRHN(nodes...)
+	return RouteHandler{
+		RouteName:   routeName,
+		HandlerName: rhn,
+		Method:      POST,
+		HandlerFunc: handlerFunc,
+	}
+}
+
 func ShowNodeDetailsHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
 	return RouteHandler{
 		RouteName:   NodeRouteName(nodes...),
@@ -237,6 +279,7 @@ func DeleteHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandle
 	}
 }
 
+// to be used only if *all* NodeRouter methods are implemented.
 func NodeHandlers(router NodeRouter) []RouteHandler {
 	r := router.GetRouter()
 	var handlers = []RouteHandler{
@@ -244,6 +287,8 @@ func NodeHandlers(router NodeRouter) []RouteHandler {
 		ShowNewChildHandler(router.ShowNewChild, r.nodeSet...),
 		PostNewChildHandler(router.PostNewChild, r.nodeSet...),
 		ShowFilesHandler(router.ShowFiles, r.nodeSet...),
+		ViewFilesHandler(router.ViewFile, r.nodeSet...),
+		PostFileHandler(router.PostFile, r.nodeSet...),
 		ShowNodeDetailsHandler(router.ShowDetails, r.nodeSet...),
 		ShowEditHandler(router.ShowEdit, r.nodeSet...),
 		PostEditHandler(router.PostEdit, r.nodeSet...),
@@ -280,7 +325,7 @@ func PostNewChildURL(handler NodeRouter) string {
 
 func ShowFilesURL(handler NodeRouter) string {
 	r := handler.GetRouter()
-	return r.app.Reverse(string(ShowNodeFilesRHN(r.nodeSet...)), r.params.ToSlice()...)
+	return r.app.Reverse(string(ShowNodeFilesRHN(r.nodeSet...)), r.params.ToSlice("")...)
 }
 
 func ShowEditNodeURL(handler NodeRouter) string {

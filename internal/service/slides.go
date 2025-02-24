@@ -87,3 +87,4 @@ func (svc CourseService) GetSlides(params managertemplates.CourseIDParams) (stri
 	}
 	return string(body), nil
 }
+

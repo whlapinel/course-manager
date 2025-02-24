@@ -376,11 +376,7 @@ templ CourseComponent(instance domain.Course) {
 			@CourseUnorderedList() {
 				for _, unit := range instance.Units {
 					@ListedLinkItem(templates.UnitPath(unit, instance, true), false) {
-						if unit.Number < 0 {
-							{ unit.Description }
-						} else {
-							Unit { strconv.Itoa(unit.Number) }: { unit.Description }
-						}
+						{ unit.Designation() }: { unit.Name }
 					}
 				}
 			}
@@ -406,15 +402,7 @@ templ StaticUnitComponent(unit domain.Unit, course domain.Course) {
 			@CourseUnorderedList() {
 				for _, lesson := range unit.Lessons {
 					@ListedLinkItem(templates.LessonPath(lesson, unit, course, true), false) {
-						if unit.Number < 0 {
-							<strong>Day { strconv.Itoa(lesson.Number) }:</strong> { lesson.Description }
-						} else {
-							if lesson.Name != "" {
-								<strong>Lesson { strconv.Itoa(lesson.Number) }:</strong> { lesson.Name }
-							} else {
-								<strong>Lesson { strconv.Itoa(lesson.Number) }</strong>
-							}
-						}
+						<strong>{ lesson.Designation() }:</strong> { lesson.Name }
 					}
 				}
 			}
@@ -472,7 +460,7 @@ templ TitleDivNewComponent(data TitleDivData) {
 				<summary class="text-xl">Standards/Objectives</summary>
 				<ul>
 					for _, standard := range data.standards {
-						<li>{ strconv.Itoa(standard.Number) }: { standard.Name }</li>
+						<li>{ standard.Designation() }: { standard.Name }</li>
 					}
 				</ul>
 			</details>
@@ -480,17 +468,17 @@ templ TitleDivNewComponent(data TitleDivData) {
 		if len(data.Assessments)!=0 {
 			<details>
 				<summary class="text-xl">Assignments</summary>
-				<ul>
+				<ul class="flex flex-col gap-3 p-4">
 					for _, assessment := range data.Assessments {
-						<li class="flex gap-1 flex-col">
-							<span>
+						<li class="flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4">
+							<span class="text-2xl">
 								{ assessment.Name }
 							</span>
 							<span>
-								{ util.Capitalize(assessment.Category.String()) }
+								Category: { util.Capitalize(assessment.Category.String()) }
 							</span>
 							if assessment.Instructions != "" {
-								<span class="border border-green-500 rounded bg-slate-900 text-green-500 p-2">
+								<span class="border border-green-500 rounded bg-slate-900 text-green-500 p-2 w-min">
 									<pre>
 										{ assessment.Instructions }
 									</pre>

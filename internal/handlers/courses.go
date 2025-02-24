@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
-	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
@@ -34,14 +33,6 @@ func CourseHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 	return routeHandlers
 }
 
-type Router struct {
-	svc       service.CourseService
-	app       *echo.Echo
-	params    mt.CourseIDParams
-	nodeSet   []EmptyNode
-	node      domain.CourseNode
-	ancestors []domain.CourseNode
-}
 type courseRouter struct {
 	router Router
 }

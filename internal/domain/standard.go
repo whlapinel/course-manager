@@ -2,10 +2,8 @@ package domain
 
 import (
 	"fmt"
-	"strconv"
+	"slices"
 )
-
-
 
 type StandardSet struct {
 	ID         int
@@ -39,9 +37,28 @@ type Standards []Standard
 func (std Standard) GetNumber() int {
 	return std.Number
 }
-func (std Standard) Designation(standard Standard) string {
-	if std.ParentID == 0 {
-		return strconv.Itoa(standard.Number)
+func (std Standard) Designation() string {
+	if std.ParentNum == 0 {
+		return fmt.Sprintf("%d", std.Number)
 	}
-	return fmt.Sprintf("%d.%d", standard.Number, standard.ParentNum)
+	return fmt.Sprintf("%d.%d", std.ParentNum, std.Number)
+}
+
+func (stds Objectives) Sort() {
+	slices.SortFunc(stds, func(a, b Objective) int {
+		if a.ParentNum < b.ParentNum {
+			return -1
+		}
+		if a.ParentNum > b.ParentNum {
+			return 1
+		}
+		if a.Number < b.Number {
+			return -1
+		}
+		if a.Number > b.Number {
+			return 1
+		} else {
+			return 0
+		}
+	})
 }

@@ -38,6 +38,7 @@ type NodeFieldName string
 
 const (
 	Name        NodeFieldName = "Name"
+	Number      NodeFieldName = "Number"
 	Description NodeFieldName = "Description"
 )
 
@@ -128,7 +129,6 @@ func TermIDParam(params mt.CourseIDParams) (int, error) {
 }
 
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
-	log.Println("ParseRouteParam:", param)
 	return strconv.Atoi(c.Param(param.Name()))
 }
 
@@ -148,6 +148,15 @@ type RouteHandler struct {
 	HandlerName RouteHandlerName
 	Method      MethodName
 	HandlerFunc echo.HandlerFunc
+}
+
+type Router struct {
+	svc       service.CourseService
+	app       *echo.Echo
+	params    mt.CourseIDParams
+	nodeSet   []EmptyNode
+	node      domain.CourseNode
+	ancestors []domain.CourseNode
 }
 
 func (h CourseHandler) Mount() {
@@ -203,6 +212,7 @@ func Mount(svc service.CourseService, app *echo.Echo) {
 	ProtectRoutes(TermHandlers(svc, app), ProtectedGroup)
 	ProtectRoutes(CourseHandlers(svc, app), ProtectedGroup)
 	ProtectRoutes(UnitHandlers(svc, app), ProtectedGroup)
+	ProtectRoutes(LessonHandlers(svc, app), ProtectedGroup)
 	// ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.LessonHandlers(), ProtectedGroup)

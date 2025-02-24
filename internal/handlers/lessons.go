@@ -22,6 +22,23 @@ import (
 	"github.com/a-h/templ"
 )
 
+func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
+	// nr := NewLessonRouter(svc, router)
+	var routeHandlers []RouteHandler
+	// lr := nodeRouter.(*lessonRouter)
+	lessonRouteHandlers := []RouteHandler{}
+	routeHandlers = append(routeHandlers, lessonRouteHandlers...)
+	var nodeHandlers = []RouteHandler{
+		// ShowFilesHandler(nr.ShowFiles, nr.GetRouter().nodeSet...),
+		// ShowNodeDetailsHandler(nr.ShowDetails, nr.GetRouter().nodeSet...),
+		// ShowEditHandler(nr.ShowEdit, nr.GetRouter().nodeSet...),
+		// PostEditHandler(nr.PostEdit, nr.GetRouter().nodeSet...),
+		// DeleteHandler(nr.Delete, nr.GetRouter().nodeSet...),
+	}
+	routeHandlers = append(routeHandlers, nodeHandlers...)
+	return routeHandlers
+}
+
 type lessonRouter struct {
 	Router
 }
@@ -37,8 +54,105 @@ func (l *lessonRouter) ListChildren(echo.Context) error {
 }
 
 // PostEdit implements NodeRouter.
-func (l *lessonRouter) PostEdit(echo.Context) error {
-	panic("unimplemented")
+func (r *lessonRouter) PostEdit(c echo.Context) error {
+	log.Println("CourseHandler.PostEditLesson:")
+	params := ParseCourseIDParams(c)
+	user, err := r.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
+	lessonID, err := LessonIDParam(params)
+	if err != nil {
+		return err
+	}
+	term, err := r.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := r.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := r.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+
+	lesson, err := r.svc.GetLesson(lessonID)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	var updateLesson = func() error {
+		err := r.svc.UpdateLesson(lesson)
+		if err != nil {
+			return err
+		}
+		updatedLesson, err := r.svc.GetLesson(lessonID)
+		if err != nil {
+			return err
+		}
+		lesson = updatedLesson
+		return nil
+	}
+	var lessonDetails = func(lesson domain.Lesson) mt.NodeDetailsPage {
+		return mt.NodeDetailsPage{
+			Node:            lesson,
+			Params:          params,
+			GetEditNodeURL:  r.app.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+			PostEditNodeURL: r.app.Reverse(PostEditLesson.String(), params.ToSlice()...),
+			IsEdit:          false,
+			BreadCrumbsData: BreadCrumbs(r.app, params, user, term, course, unit, lesson),
+		}
+	}
+	var template templ.Component
+	for key, val := range form {
+		log.Println(key, val)
+		switch key {
+		case "description":
+			lesson.Description = val[0]
+			err := updateLesson()
+			if err != nil {
+				return err
+			}
+			details := lessonDetails(lesson)
+			template = mt.EditDescriptionComponent(details)
+		case "name":
+			lesson.Name = val[0]
+			err := updateLesson()
+			if err != nil {
+				return err
+			}
+			details := lessonDetails(lesson)
+			template = mt.EditNameComponent(details)
+		case "number":
+			num, err := strconv.Atoi(val[0])
+			if err != nil {
+				return err
+			}
+			lesson.Number = num
+			err = updateLesson()
+			if err != nil {
+				return err
+			}
+			details := lessonDetails(lesson)
+			template = mt.EditNumberComponent(details)
+		default:
+			log.Println("form key:", key)
+			panic("form key not expected!")
+		}
+
+	}
+	if template == nil {
+		panic("template is nil!")
+	}
+	return Respond(c, r.app.Reverse(string(LessonDetails), params.ToSlice()...), template, nil)
+
 }
 
 // PostFile implements NodeRouter.
@@ -57,13 +171,80 @@ func (l *lessonRouter) GetRouter() Router {
 }
 
 // ShowDetails implements NodeRouter.
-func (l *lessonRouter) ShowDetails(echo.Context) error {
-	panic("unimplemented")
+func (r *lessonRouter) ShowDetails(c echo.Context) error {
+	r.params = ParseCourseIDParams(c)
+	user, err := r.svc.GetUser(r.params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+	page, err := r.lessonDetailsPage(r.params, "")
+	if err != nil {
+		return err
+	}
+	component := page.Component()
+	layout := CourseManagerLayout(r.app, component, user)
+	return Respond(c, "", component, layout)
 }
 
 // ShowEdit implements NodeRouter.
-func (l *lessonRouter) ShowEdit(echo.Context) error {
-	panic("unimplemented")
+func (r *lessonRouter) ShowEdit(c echo.Context) error {
+	params := ParseCourseIDParams(c)
+	user, err := r.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return err
+	}
+
+	queryParam := c.QueryParam("field")
+	term, err := r.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return err
+	}
+	course, err := r.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return err
+	}
+	unit, err := r.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return err
+	}
+
+	lessonID, err := LessonIDParam(params)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	lesson, err := r.svc.GetLesson(lessonID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if queryParam == "" {
+		log.Println(err)
+		return fmt.Errorf("field query param is missing")
+	}
+	details := mt.NodeDetailsPage{
+		Params:          params,
+		Node:            lesson,
+		GetEditNodeURL:  r.app.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+		PostEditNodeURL: r.app.Reverse(PostEditLesson.String(), params.ToSlice()...),
+		UpNavURL:        r.app.Reverse(ListUnitLessons.String(), params.ToSlice()...),
+		IsEdit:          true,
+		BreadCrumbsData: BreadCrumbs(r.app, params, user, term, course, unit, lesson),
+	}
+	respond := func(component templ.Component) error {
+		return Respond(c, r.app.Reverse(string(LessonDetails), params.ToSlice()...), component, nil)
+	}
+	if queryParam == templates.KebabCase(string(Description)) {
+		return respond(mt.EditDescriptionComponent(details))
+	} else if queryParam == templates.KebabCase(string(Name)) {
+		return respond(mt.EditNameComponent(details))
+	} else if queryParam == "number" {
+		return respond(mt.EditNumberComponent(details))
+	}
+	errText := "field value is not expected"
+	log.Println(errText)
+	return fmt.Errorf("%s %s", errText, queryParam)
+
 }
 
 // ShowFiles implements NodeRouter.
@@ -79,6 +260,65 @@ func (l *lessonRouter) ShowNewChild(echo.Context) error {
 // ViewFile implements NodeRouter.
 func (l *lessonRouter) ViewFile(echo.Context) error {
 	panic("unimplemented")
+}
+
+func (r *lessonRouter) lessonDetailsPage(params mt.CourseIDParams, slides string) (mt.LessonDetailsPage, error) {
+	user, err := r.svc.GetUser(params.UserID.Value.(string))
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+
+	term, err := r.svc.GetTerm(params.TermID.Value.(int))
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	course, err := r.svc.GetCourse(params.CourseID.Value.(int))
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	unit, err := r.svc.GetUnit(params.UnitID.Value.(int))
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	lesson, err := r.svc.GetLesson(params.LessonID.Value.(int))
+	if err != nil {
+		log.Println("error getting lesson:", err)
+		return mt.LessonDetailsPage{}, err
+	}
+	nodeDetails := mt.NodeDetailsPage{
+		Params:            params,
+		ParentNode:        unit,
+		Node:              lesson,
+		GetEditNodeURL:    r.app.Reverse(ShowEditLesson.String(), params.ToSlice()...),
+		PostEditNodeURL:   r.app.Reverse(PostEditLesson.String(), params.ToSlice()...),
+		UpNavURL:          r.app.Reverse(ListUnitLessons.String(), params.ToSlice()...),
+		IsEdit:            false,
+		BreadCrumbsData:   BreadCrumbs(r.app, params, user, term, course, unit, lesson),
+		Slides:            slides,
+		CourseCalendarURL: r.app.Reverse(ShowCourseCalendar.String(), params.ToSlice()...),
+		GithubFilesURL:    string(templates.LessonFilesURL(lesson, unit, course)),
+		ServerFilesURL:    r.app.Reverse(ShowLessonFiles.String(), params.ToSlice("")...),
+	}
+
+	// var idParams = params.ToIntSlice()
+	// var pathParam interface{} = ""
+	// var withPath = append(idParams, pathParam)
+
+	lessonDetails := mt.LessonDetailsPage{
+		E:                       r.app,
+		Standards:               course.StandardSet.Standards,
+		NodeDetailsPage:         nodeDetails,
+		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), params.ToSlice()...),
+		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		GetEditAssessmentRHN:    GetEditAssessment.String(),
+		DeleteAssessmentRHN:     DeleteAssessment.String(),
+		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), params.ToSlice()...),
+		GetSlidesURL:            r.app.Reverse(ViewLessonSlides.String(), params.ToSlice()...),
+		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), params.ToSlice()...),
+		GithubFilesURL:          string(templates.LessonFilesURL(lesson, unit, course)),
+		ServerFilesURL:          r.app.Reverse(ShowLessonFiles.String(), params.ToSlice("")...),
+	}
+	return lessonDetails, nil
 }
 
 func NewLessonRouter(svc service.CourseService, app *echo.Echo) NodeRouter {

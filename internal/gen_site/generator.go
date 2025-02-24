@@ -8,9 +8,13 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
+	managertemplates "gh_static_portfolio/internal/templates/manager_templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"io"
 	"io/fs"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -192,7 +196,12 @@ func Generate(courseRepo data.CourseRepo, userID string) error {
 							lesson.Assessments = assessments
 
 							// Generate slides for the lesson (this function logs internally).
-							GenerateSlides(currentTerm, course, unit, lesson)
+							err = GenerateSlides(user, currentTerm, course, unit, lesson)
+							if err != nil {
+								if !os.IsNotExist(err) {
+									return err
+								}
+							}
 							page := mt.LessonPage{
 								Lesson:    lesson,
 								Unit:      unit,
@@ -371,44 +380,67 @@ func RenderMarkdownFiles(title, filesPath string) error {
 }
 
 // GenerateSlides regenerates the slides HTML if the Markdown file has been updated.
-func GenerateSlides(nodes ...domain.CourseNode) {
-	log.Println("GenerateSlides(): generating slides")
+func GenerateSlides(nodes ...domain.CourseNode) error {
 	// File paths.
 	markdownPath := data.SlidesMarkdownFilePath(nodes...)
-	log.Println("markdownPath:", markdownPath)
-	htmlPath := data.SlidesHTMLFilePath(nodes...)
+	lesson, ok := nodes[len(nodes)-1].(domain.Lesson)
+	if !ok {
+		return fmt.Errorf("node is not a lesson: %v", nodes[len(nodes)-1])
+	}
+	unit, ok := nodes[len(nodes)-2].(domain.Unit)
+	if !ok {
+		return fmt.Errorf("node is not a unit: %v", nodes[len(nodes)-2])
+	}
+	course, ok := nodes[len(nodes)-3].(domain.Course)
+	if !ok {
+		return fmt.Errorf("node is not a course: %v", nodes[len(nodes)-3])
+	}
+	if lesson.ID == 377 {
+		log.Println("generating slides for lesson ID:", lesson.ID)
+	}
+	htmlPath := templates.SlidesPath(lesson, unit, course)
 	log.Println("htmlPath:", htmlPath)
 
 	// Get file information.
 	mdInfo, err := os.Stat(markdownPath)
 	if err != nil {
-		log.Println("file not exists:", os.IsNotExist(err))
-		log.Println(err)
-		if !errors.Is(err, fs.ErrNotExist) {
+		if !os.IsNotExist(err) {
 			log.Printf("Error: Could not access %s: %v\n", markdownPath, err)
 		}
-		return
+		return err
 	}
-
 	htmlInfo, err := os.Stat(htmlPath)
-	log.Println("file not exists:", os.IsNotExist(err))
-	log.Println(err)
 	if os.IsNotExist(err) {
 		// If HTML file doesn't exist, regenerate it.
-		regenerateHTML(markdownPath, htmlPath)
-		return
+		// regenerateHTML(markdownPath, htmlPath)
+		if lesson.ID == 377 {
+			log.Println("regenerating HTML for", lesson.ID, "at path:", htmlPath)
+		}
+		err := newRegenerateHTML(htmlPath, nodes...)
+		if err != nil {
+			return err
+		}
+		return nil
 	} else if err != nil {
 		log.Printf("Error: Could not access %s: %v\n", htmlPath, err)
-		return
+		return fs.ErrNotExist
 	}
 
 	// Compare modification times.
 	mdModTime := mdInfo.ModTime()
 	htmlModTime := htmlInfo.ModTime()
-	if mdModTime.After(htmlModTime) {
-		regenerateHTML(markdownPath, htmlPath)
+	if lesson.ID == 377 {
+		log.Println("markdown modtime", lesson.ID, mdModTime)
+		log.Println("html modtime", lesson.ID, htmlModTime)
 	}
-	log.Println("reached end of GenerateSlides()")
+	if mdModTime.After(htmlModTime) {
+		// regenerateHTML(markdownPath, htmlPath)
+		err := newRegenerateHTML(htmlPath, nodes...)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // regenerateHTML runs the command to regenerate HTML from a Markdown file.
@@ -420,4 +452,63 @@ func regenerateHTML(markdownFile, htmlFile string) {
 		return
 	}
 	fmt.Printf("HTML file %s successfully regenerated from %s\n", htmlFile, markdownFile)
+}
+
+func newRegenerateHTML(htmlFile string, nodes ...domain.CourseNode) error {
+	log.Println("regenerating html for:", htmlFile)
+	var params mt.CourseIDParams
+	for i, node := range nodes {
+		if i == 0 {
+			params.UserID.Value = node.GetID()
+		} else if i == 1 {
+			params.TermID.Value = node.GetID()
+		} else if i == 2 {
+			params.CourseID.Value = node.GetID()
+		} else if i == 3 {
+			params.UnitID.Value = node.GetID()
+		} else if i == 4 {
+			params.LessonID.Value = node.GetID()
+		}
+	}
+	slidesContent, err := GetSlides(params)
+	if err != nil {
+		return err
+	}
+	file, err := os.Create(htmlFile)
+	if err != nil {
+		return err
+	}
+	written, err := file.Write([]byte(slidesContent))
+	if err != nil {
+		return err
+	}
+	log.Println(written, "bytes written to ", htmlFile)
+	return nil
+}
+
+func GetSlides(params managertemplates.CourseIDParams) (string, error) {
+	path, err := marpSlidesPath(params)
+	if err != nil {
+		return "", err
+	}
+	resp, err := http.Get(path)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+}
+
+func marpSlidesPath(params managertemplates.CourseIDParams) (string, error) {
+	baseURL := "http://localhost:8080"
+	userParam := fmt.Sprintf("user_%s", params.UserID.Value)
+	termParam := fmt.Sprintf("term_%d", params.TermID.Value)
+	courseParam := fmt.Sprintf("course_%d", params.CourseID.Value)
+	unitParam := fmt.Sprintf("unit_%d", params.UnitID.Value)
+	lessonParam := fmt.Sprintf("lesson_%d", params.LessonID.Value)
+	return url.JoinPath(baseURL, "users", userParam, "terms", termParam, "courses", courseParam, "units", unitParam, "lessons", lessonParam, "slides.md")
 }

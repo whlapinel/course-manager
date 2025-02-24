@@ -7,8 +7,8 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	"gh_static_portfolio/internal/templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"gh_static_portfolio/internal/util"
 	"io"
 	"log"
 	"net/http"
@@ -311,10 +311,12 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 	respond := func(component templ.Component) error {
 		return Respond(c, r.app.Reverse(string(UnitDetails), params.ToSlice()...), component, nil)
 	}
-	if queryParam == templates.KebabCase(string(Description)) {
+	if queryParam == util.KebabCase(string(Description)) {
 		return respond(mt.EditDescriptionComponent(details))
-	} else if queryParam == templates.KebabCase(string(Name)) {
+	} else if queryParam == util.KebabCase(string(Name)) {
 		return respond(mt.EditNameComponent(details))
+	} else if queryParam == util.KebabCase(string(Number)) {
+		return respond(mt.EditNumberComponent(details))
 	}
 	errText := "field value is not expected"
 	log.Println(errText)
@@ -331,7 +333,6 @@ func (r *unitRouter) ShowFiles(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	term, err := r.svc.GetTerm(r.params.TermID.Value.(int))
 	if err != nil {
 		return err
