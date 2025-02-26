@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	Signin  RouteName = "/signin"
-	Signup  RouteName = "/signup"
-	Signout RouteName = "/signout"
+	Signin  RoutePath = "/signin"
+	Signup  RoutePath = "/signup"
+	Signout RoutePath = "/signout"
 )
 
 const (

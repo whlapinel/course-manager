@@ -17,7 +17,7 @@ type ComponentData interface {
 
 const pageElementID ElementID = "page"
 
-type CourseIDParams struct {
+type NodePath struct {
 	UserID   NodeIDParam
 	TermID   NodeIDParam
 	CourseID NodeIDParam
@@ -30,8 +30,8 @@ type NodeIDParam struct {
 	Value interface{}
 }
 
-func AddNodeChildIDToParams(params CourseIDParams, childID interface{}) CourseIDParams {
-	var newParams CourseIDParams
+func AddNodeChildIDToParams(params NodePath, childID any) NodePath {
+	var newParams NodePath
 	if params.UserID.Value.(string) == "" {
 		newParams.UserID = NodeIDParam{Value: childID.(string)}
 		return newParams
@@ -56,7 +56,7 @@ func AddNodeChildIDToParams(params CourseIDParams, childID interface{}) CourseID
 }
 
 // converts params into a slice of interfaces
-func (params CourseIDParams) ToSlice(additionalParams ...interface{}) []interface{} {
+func (params NodePath) ToSlice(additionalParams ...interface{}) []interface{} {
 	var base []interface{}
 	paramSlice := []interface{}{
 		params.UserID.Value,
@@ -90,7 +90,7 @@ const (
 )
 
 type ShiftButton struct {
-	Params         CourseIDParams
+	Params         NodePath
 	Direction      domain.CalendarDirection
 	TermID         int
 	CourseID       int
@@ -153,7 +153,7 @@ const (
 )
 
 type EditField struct {
-	Params           CourseIDParams
+	Params           domain.NodePath
 	FieldName        string
 	Content          string
 	GetEditFieldURL  string

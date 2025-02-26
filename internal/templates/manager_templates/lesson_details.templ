@@ -52,7 +52,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 							<pre>{ assessment.Instructions }</pre>
 						</details>
 						<button
-							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, props.Params.ToSlice(assessment.ID)...) }
+							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, AddParams(props.Params, assessment.ID)...) }
 							hx-target="#assessment"
 						>
 							Edit
@@ -97,13 +97,6 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 		</details>
 		<div id={ EditSlidesContainerID.String() } class="flex flex-col min-w-screen">
 			@ButtonContainer() {
-				<a
-					class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
-					href={ templ.SafeURL(props.GithubFilesURL) }
-					target="_blank"
-				>Files on GitHub</a>
-				@props.ViewFilesButton()
-				@props.ViewSlidesButton()
 				@props.EditSlidesButton()
 			}
 		</div>
@@ -126,16 +119,6 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 	</div>
 }
 
-// type Assessment struct {
-//     ID           int
-//     LessonID     int
-//     Name         string
-//     Instructions string
-//     Category     AssessmentCategory
-//     DateAssigned time.Time
-//     DateDue      time.Time
-//     Dropped      bool
-// }
 templ EditAssessmentFormComponent(props EditAssessmentForm) {
 	<form id="edit-assessment-form">
 		<div class="grid grid-cols-2 gap-1">
@@ -217,7 +200,7 @@ templ Slides(htmlContent string) {
 // 		value={ name }
 // 	/>
 // }
-templ EditSlidesTemplate(params CourseIDParams, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
+templ EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
 	// <textarea
 	// 	id={ EditSlidesTextAreaID.String() }
 	// 	name={ EditSlidesTextAreaID.String() }

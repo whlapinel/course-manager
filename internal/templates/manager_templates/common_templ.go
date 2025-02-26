@@ -533,9 +533,9 @@ func EditFieldComponent(
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var22 string
-			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldContainerID(props.FieldName))
+			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("#page")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 119, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/common.templ`, Line: 119, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {

@@ -62,3 +62,17 @@ func (svc CourseService) CreateNodeFilesDir(nodes ...domain.CourseNode) error {
 }
 
 // func (svc CourseService) PostLessonFile(lessonID int, path string)
+
+func (svc CourseService) DeleteFile(path string, nodes ...domain.CourseNode) error {
+	root := data.NodeFilesDirPath(nodes...)
+	path = filepath.Join(root, path)
+	_, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	err = os.RemoveAll(path)
+	if err != nil {
+		return err
+	}
+	return nil
+}

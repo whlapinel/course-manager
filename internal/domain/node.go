@@ -1,17 +1,19 @@
 package domain
 
-import "slices"
+import (
+	"slices"
+)
 
 type NodeRepository[T CourseNode] interface {
-	GetByID(id interface{}) (T, error)
-	GetByParentID(parentID interface{}) (T, error)
-	Save(node T) (id interface{}, err error)
-	Delete(id interface{}) error
+	GetByID(id any) (T, error)
+	GetByParentID(parentID any) (T, error)
+	Save(node T) (id any, err error)
+	Delete(id any) error
 }
 
 // Tree node implemented by Term, Course, Unit, Lesson
 type CourseNode interface {
-	GetID() interface{} // could be string or int
+	GetID() any // could be string or int
 	GetName() string
 	GetNumber() int
 	GetParentID() int
@@ -22,6 +24,77 @@ type CourseNode interface {
 	ChildTypeName() string
 	Designation() string
 }
+
+type NodePath struct {
+	UserID   string
+	TermID   int
+	CourseID int
+	UnitID   int
+	LessonID int
+}
+
+func (path NodePath) ToSlice() []any {
+	var pathSlice []any
+	params := []any{path.UserID, path.TermID, path.CourseID, path.UnitID, path.LessonID}
+	for _, param := range params {
+		switch v := param.(type) {
+		case int:
+			if v != 0 {
+				pathSlice = append(pathSlice, param)
+			}
+		case string:
+			if v != "" {
+				pathSlice = append(pathSlice, param)
+
+			}
+		}
+	}
+	return pathSlice
+}
+
+// for storing the actual nodes
+type Nodes struct {
+	User   User
+	Term   Term
+	Course Course
+	Unit   Unit
+	Lesson Lesson
+}
+
+func (nodes Nodes) ToSlice() []CourseNode {
+	var nodeSlice []CourseNode
+	params := []CourseNode{nodes.User, nodes.Term, nodes.Course, nodes.Unit, nodes.Lesson}
+	for _, param := range params {
+		switch v := param.GetID().(type) {
+		case string:
+			if v != "" {
+				nodeSlice = append(nodeSlice, param)
+			} else {
+				return nodeSlice
+			}
+		case int:
+			if v != 0 {
+				nodeSlice = append(nodeSlice, param)
+			} else {
+				return nodeSlice
+			}
+		}
+	}
+	return nodeSlice
+}
+
+// last node in node slice represents current node
+func (path Nodes) CurrentNode() CourseNode {
+	length := len(path.ToSlice())
+	if length == 0 {
+		return path.User
+	}
+	if length == 1 {
+		return path.ToSlice()[0]
+	}
+	return path.ToSlice()[length-1]
+}
+
 type NodeSorter interface {
 	GetNumber() int
 }

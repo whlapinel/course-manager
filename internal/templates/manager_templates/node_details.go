@@ -8,7 +8,7 @@ import (
 )
 
 type NodeDetailsPage struct {
-	Params            CourseIDParams
+	Params            domain.NodePath
 	ParentNode        domain.CourseNode
 	Node              domain.CourseNode
 	GetEditNodeURL    string
@@ -16,11 +16,9 @@ type NodeDetailsPage struct {
 	ListChildrenURL   string
 	UpNavURL          string
 	IsEdit            bool
-	Slides            string
 	NodeImageURL      func() string
 	BreadCrumbsData   BreadCrumbs
 	CourseCalendarURL string
-	GithubFilesURL    string
 	ServerFilesURL    string
 }
 

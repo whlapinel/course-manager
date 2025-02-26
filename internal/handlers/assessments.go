@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	CourseAssessments RouteName = Course + "/assessments"
-	Assessments       RouteName = Lesson + "/assessments"
-	Assessment        RouteName = Assessments + RouteName(AssessmentID)
+	CourseAssessments RoutePath = Course + "/assessments"
+	Assessments       RoutePath = Lesson + "/assessments"
+	Assessment        RoutePath = Assessments + RoutePath(AssessmentID)
 )
 
 const (
@@ -139,7 +139,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
+	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...))
 }
 
 func (h CourseHandler) GetEditAssessment(c echo.Context) error {
@@ -161,7 +161,7 @@ func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 		Params:                params,
 		Assessment:            assessment,
 		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToSlice(assessmentID)...),
-		LessonDetailsURL:      h.e.Reverse(LessonDetails.String(), params.ToSlice()...),
+		LessonDetailsURL:      h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...),
 	}
 	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component(), user))
 }
@@ -216,7 +216,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
+	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...))
 }
 
 func (h CourseHandler) DeleteAssessment(c echo.Context) error {
@@ -229,5 +229,5 @@ func (h CourseHandler) DeleteAssessment(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
+	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...))
 }

@@ -11,7 +11,7 @@ import (
 type NodeCreatePage struct {
 	ParentNode        domain.CourseNode
 	NodeType          domain.NodeTypeName
-	Params            CourseIDParams
+	Params            domain.NodePath
 	PostCreateNodeURL string
 	CancelURL         string
 	BreadCrumbsData   BreadCrumbs

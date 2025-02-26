@@ -8,7 +8,7 @@ import (
 )
 
 type FilesPage struct {
-	Params             CourseIDParams
+	Params             domain.NodePath
 	CurrentPath        string
 	OpenFileRHN        string
 	UploadFileRHN      string
@@ -29,8 +29,15 @@ func (data FilesPage) BreadCrumbs() BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
+func AddParams(params domain.NodePath, additionalParams ...any) []any {
+	pathSlice := params.ToSlice()
+	for _, param := range additionalParams {
+		pathSlice = append(pathSlice, param)
+	}
+	return pathSlice
+}
 func (data FilesPage) FileURL(file FilesPageItem) string {
-	return data.E.Reverse(data.ViewMarkdownRHN, data.Params.ToSlice(file.Path)...)
+	return data.E.Reverse(data.ViewMarkdownRHN, AddParams(data.Params, file.Path)...)
 
 }
 

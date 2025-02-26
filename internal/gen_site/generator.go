@@ -456,7 +456,7 @@ func regenerateHTML(markdownFile, htmlFile string) {
 
 func newRegenerateHTML(htmlFile string, nodes ...domain.CourseNode) error {
 	log.Println("regenerating html for:", htmlFile)
-	var params mt.CourseIDParams
+	var params mt.NodePath
 	for i, node := range nodes {
 		if i == 0 {
 			params.UserID.Value = node.GetID()
@@ -486,7 +486,7 @@ func newRegenerateHTML(htmlFile string, nodes ...domain.CourseNode) error {
 	return nil
 }
 
-func GetSlides(params managertemplates.CourseIDParams) (string, error) {
+func GetSlides(params managertemplates.NodePath) (string, error) {
 	path, err := marpSlidesPath(params)
 	if err != nil {
 		return "", err
@@ -503,7 +503,7 @@ func GetSlides(params managertemplates.CourseIDParams) (string, error) {
 	return string(body), nil
 }
 
-func marpSlidesPath(params managertemplates.CourseIDParams) (string, error) {
+func marpSlidesPath(params managertemplates.NodePath) (string, error) {
 	baseURL := "http://localhost:8080"
 	userParam := fmt.Sprintf("user_%s", params.UserID.Value)
 	termParam := fmt.Sprintf("term_%d", params.TermID.Value)

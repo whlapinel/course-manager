@@ -1,146 +1,105 @@
 ---
 marp: true
+theme: default
+class: lead
+paginate: true
 ---
+
 <!-- headingDivider: 1 -->
+<!-- backgroundColor: black -->
+<!-- class: invert -->
 
-# Warmup
+# Introduction to SQL
 
-Write a function `halve` that returns the first half of the string passed in.
+## What is SQL?
+- SQL stands for **Structured Query Language**
+- It is used to interact with databases
+- Allows storing, retrieving, updating, and deleting data
+- Common databases using SQL: MySQL, PostgreSQL, SQLite, SQL Server
 
-```python
-# function signature
-def halve(s: str)->str:
-    pass # replace 'pass' with your code
+# Why Learn SQL?
+- Used in **data analysis, web development, machine learning, and more**
+- Essential for managing structured data efficiently
+- Enables powerful data querying and manipulation
 
-# test statements
-assert halve('oooo') == 'oo'
-assert halve("I don't want to be a king") == "I don't want"
+# Getting Started with SQL
+**Practice SQL Online:** [sqliteonline.com](https://sqliteonline.com/)
+- Open the website
+- Choose SQLite as your database
+- Try running your first query!
+
+# First Query: Creating a Table
+```sql
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    age INTEGER
+);
 ```
 
-# Agenda
+# Challenge #1:
+Create a table called `books` with the following columns:
+- `id` (INTEGER, Primary Key)
+- `title` (TEXT)
+- `author` (TEXT)
+- `year_published` (INTEGER)
 
-- Lecture on SQLAlchemy
-- Assignment 4.4 SQLAlchemy
+# Inserting Data
+We add data using the `INSERT` statement:
+```sql
+INSERT INTO students (name, age) VALUES ('Alice', 21);
+INSERT INTO students (name, age) VALUES ('Bob', 22);
+```
 
-# Glance-ahead
+# Challenge #2:
+Insert three books into your `books` table with different titles, authors, and years.
 
-- Tomorrow (Thurs): Classes and Objects
-- Friday: More classes and objects
-- Unit 4 Test will be Oct. 8th
+# Retrieving Data
+Use `SELECT` to view data:
+```sql
+SELECT * FROM students;
+```
 
-# Announcements
+To view only specific columns:
+```sql
+SELECT name FROM students;
+```
 
-- Return signed permission forms for Certification Exam
+# Challenge #3:
+Retrieve only the `title` and `author` columns from your `books` table.
 
-# Introduction to SQLAlchemy
+# Filtering Data with WHERE
+Use `WHERE` to filter results:
+```sql
+SELECT * FROM students WHERE age > 21;
+```
 
-# Overview
+# Challenge #4:
+Retrieve all books published after 2000.
 
-- **SQLAlchemy** is a Python SQL toolkit and Object Relational Mapper (ORM).
-- Allows interaction with databases using Python objects.
-- Supports multiple database backends (e.g., SQLite, PostgreSQL, MySQL).
+# Updating Data
+Modify existing data using `UPDATE`:
+```sql
+UPDATE students SET age = 23 WHERE name = 'Alice';
+```
 
-# Why Use SQLAlchemy?
+# Challenge #5:
+Change the author of one book in your `books` table.
 
-- Simplifies database interaction through ORM.
-- Provides flexibility for both SQL and Pythonic database access.
-- Supports complex queries while maintaining performance.
+# Deleting Data
+Remove records using `DELETE`:
+```sql
+DELETE FROM students WHERE name = 'Bob';
+```
 
-# Key Components
-
-- **Engine**: Core interface to the database.
-- **Session**: Manages database transactions and queries.
-- **Declarative Base**: Defines the database schema using Python classes.
-
-# Setting Up SQLAlchemy
-
-- Install SQLAlchemy using pip:
-
-  ```bash
-  pip install sqlalchemy
-  ```
-
-# Creating a Database
-
-1. Import the necessary modules:
-
-   ```python
-   from sqlalchemy import create_engine, Column, Integer, String
-   from sqlalchemy.ext.declarative import declarative_base
-   ```
-
-2. Create the engine and base:
-
-   ```python
-   engine = create_engine('sqlite:///example.db')
-   Base = declarative_base()
-   ```
-
-# Defining a Model
-
-- Example of defining a 'Student' model:
-
-  ```python
-  class Student(Base):
-      __tablename__ = 'students'
-      id = Column(Integer, primary_key=True)
-      name = Column(String, nullable=False)
-      age = Column(Integer, nullable=False)
-      grade = Column(String)
-  ```
-
-- `Base.metadata.create_all(engine)` creates the table in the database.
-
-# Working with Sessions
-
-- A **Session** allows you to interact with the database:
-
-  ```python
-  from sqlalchemy.orm import sessionmaker
-  Session = sessionmaker(bind=engine)
-  session = Session()
-  ```
-
-# CRUD Operations
-
-- **Insert**:
-
-  ```python
-  student = Student(id=1, name='Alice', age=21, grade='A')
-  session.add(student)
-  session.commit()
-  ```
-
-# **Query**
-
-  ```python
-  students = session.query(Student).all()
-  for student in students:
-      print(student.name)
-  ```
-
-# **Update**
-
-  ```python
-  student = session.query(Student).filter(Student.id == 1).first()
-  student.grade = 'A+'
-  session.commit()
-  ```
-
-# **Delete**
-  
-  ```python
-  session.delete(student)
-  session.commit()
-  ```
-
-# Best Practices
-
-- Always close the session using `session.close()`.
-- Use exception handling for database operations.
+# Challenge #6:
+Delete a book from your `books` table where the year published is before 1990.
 
 # Summary
-
-- SQLAlchemy is a powerful tool for managing databases with Python.
-- ORM simplifies data interaction by treating tables as Python objects.
-- Practice CRUD operations to gain confidence in using SQLAlchemy.
+- SQL helps manage databases
+- `CREATE TABLE` to define structure
+- `INSERT INTO` to add data
+- `SELECT` to retrieve data
+- `WHERE` for filtering
+- `UPDATE` to modify data
+- `DELETE` to remove data

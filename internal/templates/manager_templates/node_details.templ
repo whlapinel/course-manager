@@ -9,13 +9,7 @@ templ NodeDetailsComponent(props NodeDetailsPage) {
 			@props.CalendarButton()
 		}
 		<div class="flex">
-						<a
-					class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
-					href={ templ.SafeURL(props.GithubFilesURL) }
-					target="_blank"
-				>Files on GitHub</a>
-				@props.ViewFilesButton()
-
+			@props.ViewFilesButton()
 		</div>
 		<div class="flex flex-col gap-2">
 			@EditNumberComponent(props)

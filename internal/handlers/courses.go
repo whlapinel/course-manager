@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"bytes"
-	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/service"
@@ -34,28 +32,27 @@ func CourseHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 }
 
 type courseRouter struct {
-	router Router
+	Router
+}
+
+// SetRouter implements NodeRouter.
+func (r *courseRouter) SetRouter(router Router) {
+	r.Router = router
 }
 
 // PostFile implements NodeRouter.
 func (r *courseRouter) PostFile(c echo.Context) error {
-	h := r.router
 	path := c.Param("*")
 	log.Println("path: ", path)
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
+	nodes, err := r.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourse(h.params.CourseID.Value.(int))
-	if err != nil {
-		return err
-	}
-	dirPath := data.NodeFilesDirPath(user, term, course)
+	dirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
 	path = filepath.Join(dirPath, path)
 	// Parse the form to retrieve the file
 	err = c.Request().ParseMultipartForm(10 << 20)
@@ -91,42 +88,38 @@ func (r *courseRouter) PostFile(c echo.Context) error {
 }
 
 func (r *courseRouter) GetRouter() Router {
-	return r.router
+	return r.Router
 }
 
 // Delete implements NodeRouter.
 func (r *courseRouter) Delete(c echo.Context) error {
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	courseId := h.params.CourseID
-	return h.svc.DeleteCourse(courseId.Value.(int))
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	return r.svc.DeleteCourse(nodes.Course.ID)
 }
 
 // ListChildren implements NodeRouter. (implemented)
 func (r *courseRouter) ListChildren(c echo.Context) error {
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-
-	course, err := h.svc.GetCourse(h.params.CourseID.Value.(int))
+	r.params = params
+	nodes, err := r.svc.NodesWithChildren(r.params)
 	if err != nil {
 		return err
 	}
-	units, err := h.svc.GetUnits(h.params.CourseID.Value.(int))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	course.Units = units
-	h.node = course
-	r.router = h
-	unitList := NodeListPage(r)
-	template := mt.NodeListComponent(unitList)
-	layout := CourseManagerLayout(h.app, template, user)
-	return Respond(c, "", template, layout)
+	r.nodes = nodes
+	page := NodeListPage(r)
+	component := page.Component()
+	layout := CourseManagerLayout(r.app, component, nodes.User)
+	return Respond(c, "", component, layout)
 }
 
 // PostEdit implements NodeRouter.
@@ -141,78 +134,60 @@ func (c *courseRouter) PostNewChild(echo.Context) error {
 
 // ShowDetails implements NodeRouter.
 func (r *courseRouter) ShowDetails(c echo.Context) error {
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-
-	course, err := h.svc.GetCourse(h.params.CourseID.Value.(int))
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
-	sets, err := h.svc.GetStandardSets()
+	sets, err := r.svc.GetStandardSets()
 	if err != nil {
 		return err
 	}
 	page := mt.CourseDetailsPage{
-		GetCopyCourseURL:         h.app.Reverse(GetCopyCourse.String(), h.params.ToSlice()...),
+		GetCopyCourseURL:         r.app.Reverse(GetCopyCourse.String(), r.params.ToSlice()...),
 		StandardSets:             sets,
-		PostSelectStandardSetURL: h.app.Reverse(string(PostSelectStandardSet), h.params.ToSlice()...),
+		PostSelectStandardSetURL: r.app.Reverse(string(PostSelectStandardSet), r.params.ToSlice()...),
 		NodeDetailsPage: mt.NodeDetailsPage{
-			Params:          h.params,
-			Node:            course,
-			GetEditNodeURL:  h.app.Reverse(ShowEditCourse.String(), h.params.ToSlice()...),
-			PostEditNodeURL: h.app.Reverse(PostEditCourse.String(), h.params.ToSlice()...),
-			ListChildrenURL: h.app.Reverse(ListCourseUnits.String(), h.params.ToSlice()...),
-			UpNavURL:        h.app.Reverse(ListTermCourses.String(), h.params.ToSlice()...),
+			Params:          r.params,
+			Node:            nodes.Course,
+			GetEditNodeURL:  r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
+			PostEditNodeURL: r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
+			ListChildrenURL: r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),
+			UpNavURL:        r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...),
 			IsEdit:          false,
-			BreadCrumbsData: BreadCrumbs(h.app, h.params, user, course.Term, course),
-			GithubFilesURL:  string(templates.CourseFilesURL(course)),
-			ServerFilesURL:  h.app.Reverse(ShowCourseFiles.String(), h.params.ToSlice("")...),
+			BreadCrumbsData: BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
+			ServerFilesURL:  r.app.Reverse(ShowCourseFiles.String(), AddParams(params, "")...),
 		},
 	}
 	component := page.Component()
-	layout := CourseManagerLayout(h.app, component, user)
+	layout := CourseManagerLayout(r.app, component, nodes.User)
 	return Respond(c, "", component, layout)
 
 }
 
 // ShowEdit implements NodeRouter.
 func (r *courseRouter) ShowEdit(c echo.Context) error {
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
 	queryParam := c.QueryParam("field")
-	courseID, err := CourseIDParam(h.params)
+	params, err := ParseNodePath(c)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
-	course, err := h.svc.GetCourse(courseID)
+	nodes, err := r.svc.Nodes(params)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
+	r.nodes = nodes
 	if queryParam == "" {
 		log.Println(err)
 		return fmt.Errorf("field query param is missing")
 	}
-	details := mt.NodeDetailsPage{
-		Params:          h.params,
-		Node:            course,
-		GetEditNodeURL:  h.app.Reverse(ShowEditCourse.String(), h.params.ToSlice()...),
-		PostEditNodeURL: h.app.Reverse(PostEditCourse.String(), h.params.ToSlice()...),
-		ListChildrenURL: h.app.Reverse(ListCourseUnits.String(), h.params.ToSlice()...),
-		IsEdit:          true,
-		BreadCrumbsData: BreadCrumbs(h.app, h.params, user, course.Term, course),
-	}
+	details := NodeDetailsPage(r, true)
 	respond := func(component templ.Component) error {
-		return Respond(c, h.app.Reverse(string(CourseDetails), h.params.ToSlice()...), component, nil)
+		return Respond(c, r.app.Reverse(string(CourseDetails), r.params.ToSlice()...), component, nil)
 	}
 	if queryParam == templates.KebabCase(string(Description)) {
 		return respond(mt.EditDescriptionComponent(details))
@@ -227,56 +202,7 @@ func (r *courseRouter) ShowEdit(c echo.Context) error {
 
 // ShowFiles implements NodeRouter.
 func (r *courseRouter) ShowFiles(c echo.Context) error {
-	h := r.router
-	path := c.Param("*")
-	log.Println("path: ", path)
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
-
-	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
-	if err != nil {
-		return err
-	}
-	course, err := h.svc.GetCourse(h.params.CourseID.Value.(int))
-	if err != nil {
-		return err
-	}
-	err = h.svc.CreateNodeFilesDir(user, term, course)
-	if err != nil {
-		return err
-	}
-	isDir, err := h.svc.IsDir(path, user, term, course)
-	if err != nil {
-		return err
-	}
-	if !isDir {
-		c.Attachment(h.svc.NodeFilePath(path, user, term, course), filepath.Base(path))
-	}
-	files, err := h.svc.NodeFiles(path, user, term, course)
-	for _, file := range files {
-		log.Println(file.Path)
-	}
-	if err != nil {
-		return err
-	}
-	log.Println(files)
-	page := mt.FilesPage{
-		Node:            course,
-		Params:          h.params,
-		CurrentPath:     path,
-		OpenFileRHN:     ShowCourseFiles.String(),
-		Files:           files,
-		E:               h.app,
-		BreadCrumbsData: BreadCrumbs(h.app, h.params, user, term, course),
-		ViewMarkdownRHN: GetCourseViewMarkdown.String(),
-	}
-	component := page.Component()
-	layout := CourseManagerLayout(h.app, component, user)
-	return Respond(c, "", component, layout)
-
+	return ShowFiles(c, r)
 }
 
 // ShowNewChild implements NodeRouter.
@@ -286,70 +212,30 @@ func (c *courseRouter) ShowNewChild(echo.Context) error {
 
 // ViewFile implements NodeRouter.
 func (r *courseRouter) ViewFile(c echo.Context) error {
-	h := r.router
-	path := c.Param("*")
-	log.Println("path: ", path)
-	h.params = ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(h.params.UserID.Value.(string))
-	if err != nil {
-		return err
-	}
-	term, err := h.svc.GetTerm(h.params.TermID.Value.(int))
-	if err != nil {
-		return err
-	}
-	course, err := h.svc.GetCourse(h.params.CourseID.Value.(int))
-	if err != nil {
-		return err
-	}
-	err = h.svc.CreateNodeFilesDir(user, term, course)
-	if err != nil {
-		return err
-	}
-	pathRoot := data.NodeFilesDirPath(user, term, course)
-	path = filepath.Join(pathRoot, path)
-	content, err := RenderMarkdownFile(path)
-	if err != nil {
-		return err
-	}
-	var buf bytes.Buffer
-	data := mt.MarkdownDocument{
-		Title:   filepath.Base(path),
-		Content: string(content),
-		Static:  false,
-	}
-	err = mt.DocLayout(data).Render(context.Background(), &buf)
-	if err != nil {
-		return err
-	}
-	data.Content = buf.String()
-	component := mt.MarkdownIFrame(data)
-	layout := CourseManagerLayout(h.app, component, user)
-	return Respond(c, "", component, layout)
+	return ViewFile(c, r)
 }
 
 func NewCourseRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &courseRouter{
-		router: Router{
-			svc:     svc,
-			app:     app,
-			nodeSet: EmptyNodesCourse,
+		Router: Router{
+			svc:          svc,
+			app:          app,
+			emptyNodeSet: EmptyNodesCourse,
 		},
 	}
-
 }
 
 const (
-	Courses            RouteName = Term + "/courses"
-	Course             RouteName = Courses + RouteName(CourseID)
-	CourseFiles        RouteName = Course + "/files/*"
-	CourseViewMarkdown RouteName = Course + "/view-markdown/files/*"
-	CourseImage        RouteName = Course + "/image"
-	NewCourse          RouteName = Courses + "/new"
-	EditCourse         RouteName = Course + "/edit"
-	CopyCourse         RouteName = Course + "/copy-to-term"
-	CopyCourseToTerm   RouteName = CopyCourse
-	StandardSet        RouteName = Course + "/standard-set"
+	Courses            RoutePath = Term + "/courses"
+	Course             RoutePath = Courses + RoutePath(CourseID)
+	CourseFiles        RoutePath = Course + "/files/*"
+	CourseViewMarkdown RoutePath = Course + "/view-markdown/files/*"
+	CourseImage        RoutePath = Course + "/image"
+	NewCourse          RoutePath = Courses + "/new"
+	EditCourse         RoutePath = Course + "/edit"
+	CopyCourse         RoutePath = Course + "/copy-to-term"
+	CopyCourseToTerm   RoutePath = CopyCourse
+	StandardSet        RoutePath = Course + "/standard-set"
 )
 const (
 	ListTermCourses       = RouteHandlerName(GET + Courses)
@@ -368,28 +254,36 @@ const (
 )
 
 func (r *courseRouter) GetCopyCourse(c echo.Context) error {
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	terms, err := h.svc.GetTerms(h.params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	terms, err := r.svc.GetTerms(nodes.User.ID)
 	if err != nil {
 		return err
 	}
 	data := mt.CopyCourseData{
-		TermID:                  h.params.TermID.Value.(int),
-		CourseID:                h.params.CourseID.Value.(int),
+		TermID:                  r.params.TermID,
+		CourseID:                r.params.CourseID,
 		Terms:                   terms,
-		E:                       h.app,
+		E:                       r.app,
 		PostCopyCourseToTermRHN: string(PostCopyCourseToTerm),
 	}
 	component := data.Component()
-	return Respond(c, h.app.Reverse(ListTermCourses.String(), h.params.ToSlice()...), component, nil)
+	return Respond(c, r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...), component, nil)
 }
 
 func (r *courseRouter) PostCopyCourseToTerm(c echo.Context) error {
-	log.Println("courseRouter.PostCopyCourseToTerm:")
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	if h.params.CourseID.Valid && h.params.TermID.Valid {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	if r.params.CourseID != 0 && r.params.TermID != 0 {
 		err := c.Request().ParseForm()
 		if err != nil {
 			return err
@@ -400,22 +294,24 @@ func (r *courseRouter) PostCopyCourseToTerm(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		_, err = h.svc.CopyCourseToTerm(h.params.CourseID.Value.(int), termID)
+		_, err = r.svc.CopyCourseToTerm(r.params.CourseID, termID)
 		if err != nil {
 			return err
 		}
 
 	} else {
-		return fmt.Errorf("params not valid: courseID: %d and termID: %d", h.params.CourseID.Value, h.params.TermID.Value)
+		return fmt.Errorf("params not valid: courseID: %d and termID: %d", r.params.CourseID, r.params.TermID)
 	}
-	return c.Redirect(302, h.app.Reverse(ListTermCourses.String(), h.params.ToSlice()...))
+	return c.Redirect(302, r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...))
 }
 
 func (r *courseRouter) PostSelectStandardSet(c echo.Context) error {
-	log.Println("courseRouter.PostSelectStandardSet():")
-	h := r.router
-	h.params = ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -425,9 +321,9 @@ func (r *courseRouter) PostSelectStandardSet(c echo.Context) error {
 		return err
 	}
 	log.Println("selected set: ", standardSetParam)
-	err = h.svc.SetStandardSet(h.params.CourseID.Value.(int), setID)
+	err = r.svc.SetStandardSet(r.params.CourseID, setID)
 	if err != nil {
 		return err
 	}
-	return c.Redirect(302, h.app.Reverse(CourseDetails.String(), h.params.ToSlice()...))
+	return c.Redirect(302, r.app.Reverse(CourseDetails.String(), r.params.ToSlice()...))
 }

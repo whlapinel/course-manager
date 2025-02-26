@@ -22,7 +22,7 @@ func TestEditNodeRouteName(t *testing.T) {
 
 }
 func TestNodeFilesRouteName(t *testing.T) {
-	name := NodeFilesRouteName(EmptyNodesCourse...)
+	name := NodeFilesRoutePath(EmptyNodesCourse...)
 	log.Println(name)
 
 }

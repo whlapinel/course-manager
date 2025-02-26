@@ -2,7 +2,6 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
-	"log"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -19,13 +18,12 @@ func (page CourseListPage) Component() templ.Component {
 	var assessmentButtons []ComponentData
 
 	for _, course := range page.Children {
-		log.Println("CourseListPage.Component() params with course ID: ", page.Params.ToSlice(course.GetID()))
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, page.Params.ToSlice(course.GetID())...),
+			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, AddParams(page.Params, course.GetID())...),
 		}
 		calendarButtons = append(calendarButtons, button)
 		button2 := ShowAssessmentsButton{
-			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, page.Params.ToSlice(course.GetID())...),
+			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, AddParams(page.Params, course.GetID())...),
 		}
 		assessmentButtons = append(assessmentButtons, button2)
 

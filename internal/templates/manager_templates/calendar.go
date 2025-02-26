@@ -24,7 +24,7 @@ func MonthDates(term domain.Term) []time.Time {
 }
 
 type TermCalendar struct {
-	Params               CourseIDParams
+	Params               domain.NodePath
 	Term                 domain.Term
 	ListTermsURL         string
 	TermDetailsURL       string
@@ -54,8 +54,8 @@ func (page TermCalendar) TermOccasionEditor(occasion domain.Occasion) templ.Comp
 		Params:              page.Params,
 		Occasion:            occasion,
 		IsEditing:           false,
-		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, page.Params.ToSlice(occasion.ID)...),
-		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, page.Params.ToSlice(occasion.ID)...),
+		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
+		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
 	}.Component()
 
 }
@@ -107,7 +107,7 @@ func (data TermCalendar) BreadCrumbs() BreadCrumbs {
 type CourseCalendar struct {
 	Admin                         bool
 	Static                        bool
-	Params                        CourseIDParams
+	Params                        NodePath
 	Course                        domain.Course
 	TermDetailsURL                string
 	CourseDetailsURL              string
@@ -156,7 +156,7 @@ func Occasions(date time.Time, page CalendarPage) []domain.Occasion {
 }
 
 type TermOccasionEditor struct {
-	Params              CourseIDParams
+	Params              domain.NodePath
 	Occasion            domain.Occasion
 	IsEditing           bool
 	GetEditOccasionURL  string
@@ -229,7 +229,7 @@ func (data CourseCalendar) PageLayout() PageLayout {
 }
 
 type CalendarLessonContainerNew struct {
-	Params              CourseIDParams
+	Params              NodePath
 	Static              bool
 	Date                time.Time
 	Course              domain.Course
@@ -289,7 +289,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 
 type AddLessonToDatePage struct {
 	Date             time.Time
-	Params           CourseIDParams
+	Params           NodePath
 	Course           domain.Course
 	AddLessonDateRHN string
 	E                *echo.Echo

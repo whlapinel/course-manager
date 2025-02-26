@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
@@ -14,9 +12,14 @@ type userRouter struct {
 	Router
 }
 
+// SetRouter implements NodeRouter.
+func (r *userRouter) SetRouter(router Router) {
+	r.Router = router
+}
+
 // PostFile implements NodeRouter.
-func (r *userRouter) PostFile(echo.Context) error {
-	panic("unimplemented")
+func (r *userRouter) PostFile(c echo.Context) error {
+	return PostFile(c, r)
 }
 
 // DownloadFile implements NodeRouter.
@@ -36,28 +39,24 @@ func (u *userRouter) Delete(echo.Context) error {
 
 // ListChildren implements NodeHandler. (implemented)
 func (r *userRouter) ListChildren(c echo.Context) error {
-	log.Println("userHandler.ListChildren")
-	r.params = ParseCourseIDParams(c)
-	userID := c.Get("id")
-	user, err := r.svc.GetUser(userID.(string))
+	// userID := c.Get("id")
+	path, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-	log.Println("user ID:", r.params.UserID.Value.(string))
-	terms, err := r.svc.GetTerms(userID.(string))
+	r.params = path
+	nodes, err := r.svc.NodesWithChildren(path)
 	if err != nil {
-		return fmt.Errorf("error in CourseHandler.ListTerms: %s", err)
+		return err
 	}
-	user.Terms = terms
-	r.node = user
-	r.ancestors = []domain.CourseNode{}
+	r.nodes = nodes
 	page := mt.TermsListPage{
 		ShowTermCalendarRHN: ShowTermCalendar.String(),
 		NodeListPage:        NodeListPage(r),
 	}
 	log.Println("TermsListPage initialized: ", page)
 	var component = page.Component()
-	layout := CourseManagerLayout(r.app, component, user)
+	layout := CourseManagerLayout(r.app, component, nodes.User)
 	return Respond(c, "", component, layout)
 
 }
@@ -74,25 +73,21 @@ func (u *userRouter) PostNewChild(echo.Context) error {
 
 // ShowDetails implements NodeHandler.
 func (r *userRouter) ShowDetails(c echo.Context) error {
-	r.params = ParseCourseIDParams(c)
-	userIDParam, ok := r.params.UserID.Value.(string)
-	if !ok {
-		return fmt.Errorf("invalid userID")
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
 	}
-	if userIDParam != c.Get("id") {
-		return fmt.Errorf("mismatch between param userID and authenticated userID")
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
 	}
+	r.nodes = nodes
 	page := mt.UserHomePage{
 		GenerateSiteURL: r.app.Reverse(GenerateSite.String(), r.params.ToSlice()...),
 		SyncSiteURL:     r.app.Reverse(SyncSite.String(), r.params.ToSlice()...),
 		ListTermsURL:    ListChildrenURL(r),
-		User: domain.User{
-			ID:        userIDParam,
-			FirstName: c.Get("first").(string),
-			LastName:  c.Get("last").(string),
-			Email:     c.Get("email").(string),
-			Picture:   c.Get("picture").(string),
-		},
+		User:            r.nodes.User,
 	}
 	component := page.Component()
 	layout := CourseManagerLayout(r.app, component, page.User)
@@ -106,8 +101,8 @@ func (u *userRouter) ShowEdit(echo.Context) error {
 }
 
 // ShowFiles implements NodeHandler.
-func (u *userRouter) ShowFiles(echo.Context) error {
-	panic("unimplemented")
+func (r *userRouter) ShowFiles(c echo.Context) error {
+	return ShowFiles(c, r)
 }
 
 // ShowNewChild implements NodeHandler.
@@ -131,12 +126,7 @@ func (u *userRouter) ViewFile(echo.Context) error {
 
 func (r *userRouter) UserAuth(c echo.Context) error {
 	userID := c.Get("id")
-	r.params = mt.CourseIDParams{
-		UserID: mt.NodeIDParam{
-			Valid: true,
-			Value: userID,
-		},
-	}
+	r.params.UserID = userID.(string)
 	return c.Redirect(302, ShowDetailsURL(r))
 }
 
@@ -157,19 +147,18 @@ func (r *userRouter) SyncSite(c echo.Context) error {
 func NewUserHandler(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &userRouter{
 		Router: Router{
-			svc:       svc,
-			app:       app,
-			nodeSet:   EmptyNodesUser,
-			ancestors: []domain.CourseNode{domain.RootCourseNode{}},
+			svc:          svc,
+			app:          app,
+			emptyNodeSet: EmptyNodesUser,
 		},
 	}
 }
 
 const (
-	Users    RouteName = "/users"
-	User     RouteName = Users + RouteName(UserID)
-	Generate RouteName = User + "/generate"
-	Sync     RouteName = User + "/sync"
+	Users    RoutePath = "/users"
+	User     RoutePath = Users + RoutePath(UserID)
+	Generate RoutePath = User + "/generate"
+	Sync     RoutePath = User + "/sync"
 )
 
 const (

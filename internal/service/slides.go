@@ -5,7 +5,6 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	sitegenerator "gh_static_portfolio/internal/gen_site"
-	managertemplates "gh_static_portfolio/internal/templates/manager_templates"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,13 +12,13 @@ import (
 	"path/filepath"
 )
 
-func marpSlidesPath(params managertemplates.CourseIDParams) (string, error) {
+func marpSlidesPath(params domain.NodePath) (string, error) {
 	baseURL := "http://localhost:8080"
-	userParam := fmt.Sprintf("user_%s", params.UserID.Value)
-	termParam := fmt.Sprintf("term_%d", params.TermID.Value)
-	courseParam := fmt.Sprintf("course_%d", params.CourseID.Value)
-	unitParam := fmt.Sprintf("unit_%d", params.UnitID.Value)
-	lessonParam := fmt.Sprintf("lesson_%d", params.LessonID.Value)
+	userParam := fmt.Sprintf("user_%s", params.UserID)
+	termParam := fmt.Sprintf("term_%d", params.TermID)
+	courseParam := fmt.Sprintf("course_%d", params.CourseID)
+	unitParam := fmt.Sprintf("unit_%d", params.UnitID)
+	lessonParam := fmt.Sprintf("lesson_%d", params.LessonID)
 	return url.JoinPath(baseURL, "users", userParam, "terms", termParam, "courses", courseParam, "units", unitParam, "lessons", lessonParam, "slides.md")
 }
 
@@ -71,7 +70,7 @@ func (svc CourseService) SlidesTemplate(lesson domain.CourseNode) ([]byte, error
 	return templateFileContents, nil
 }
 
-func (svc CourseService) GetSlides(params managertemplates.CourseIDParams) (string, error) {
+func (svc CourseService) GetSlides(params domain.NodePath) (string, error) {
 	path, err := marpSlidesPath(params)
 	if err != nil {
 		return "", err
@@ -87,4 +86,3 @@ func (svc CourseService) GetSlides(params managertemplates.CourseIDParams) (stri
 	}
 	return string(body), nil
 }
-

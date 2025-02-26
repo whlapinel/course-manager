@@ -28,7 +28,7 @@ func NewCourseHandler(e *echo.Echo, svc service.CourseService) CourseHandler {
 	}
 }
 
-type RouteName string
+type RoutePath string
 
 type MethodName string
 
@@ -68,59 +68,93 @@ const (
 // strips the '/:' off RouteParam
 func (p RouteParam) Name() string {
 	return string(p[2:])
+}
+
+type NodeParam interface {
+	int | string
+}
+
+func ParseNodePath(c echo.Context) (domain.NodePath, error) {
+	parsingError := func(param RouteParam, err error) (domain.NodePath, error) {
+		return domain.NodePath{}, fmt.Errorf("error parsing %s: %v", param, err)
+	}
+	userID := ParseRouteStringParam(c, UserID)
+	termID, err := ParseRouteParam(c, TermID)
+	if err != nil {
+		return parsingError(TermID, err)
+	}
+	courseID, err := ParseRouteParam(c, CourseID)
+	if err != nil {
+		return parsingError(CourseID, err)
+	}
+	unitID, err := ParseRouteParam(c, UnitID)
+	if err != nil {
+		return parsingError(UnitID, err)
+	}
+	lessonID, err := ParseRouteParam(c, LessonID)
+	if err != nil {
+		return parsingError(LessonID, err)
+	}
+	return domain.NodePath{
+		UserID:   userID,
+		TermID:   termID,
+		CourseID: courseID,
+		UnitID:   unitID,
+		LessonID: lessonID,
+	}, nil
 
 }
 
-func ParseCourseIDParams(c echo.Context) mt.CourseIDParams {
-	var params mt.CourseIDParams
+func ParseCourseIDParams(c echo.Context) mt.NodePath {
+	var params mt.NodePath
 	userID := ParseRouteStringParam(c, UserID)
 	params.UserID.Valid = userID != ""
 	params.UserID.Value = userID
 	termID, err := ParseRouteParam(c, TermID)
-	if err == nil {
+	if err == nil && termID != 0 {
 		params.TermID.Valid = true
 		params.TermID.Value = termID
 	}
 	courseID, err := ParseRouteParam(c, CourseID)
-	if err == nil {
+	if err == nil && courseID != 0 {
 		params.CourseID.Valid = true
 		params.CourseID.Value = courseID
 	}
 	unitID, err := ParseRouteParam(c, UnitID)
-	if err == nil {
+	if err == nil && unitID != 0 {
 		params.UnitID.Valid = true
 		params.UnitID.Value = unitID
 	}
 	lessonID, err := ParseRouteParam(c, LessonID)
-	if err == nil {
+	if err == nil && lessonID != 0 {
 		params.LessonID.Valid = true
 		params.LessonID.Value = lessonID
 	}
 	return params
 }
 
-func CourseIDParam(params mt.CourseIDParams) (int, error) {
+func CourseIDParam(params mt.NodePath) (int, error) {
 	if params.CourseID.Valid {
 		return params.CourseID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func UnitIDParam(params mt.CourseIDParams) (int, error) {
+func UnitIDParam(params mt.NodePath) (int, error) {
 	if params.UnitID.Valid {
 		return params.UnitID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func LessonIDParam(params mt.CourseIDParams) (int, error) {
+func LessonIDParam(params mt.NodePath) (int, error) {
 	if params.LessonID.Valid {
 		return params.LessonID.Value.(int), nil
 	} else {
 		return -1, fmt.Errorf("invalid param")
 	}
 }
-func TermIDParam(params mt.CourseIDParams) (int, error) {
+func TermIDParam(params mt.NodePath) (int, error) {
 	if params.TermID.Valid {
 		return params.TermID.Value.(int), nil
 	} else {
@@ -129,7 +163,11 @@ func TermIDParam(params mt.CourseIDParams) (int, error) {
 }
 
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
-	return strconv.Atoi(c.Param(param.Name()))
+	val := c.Param(param.Name())
+	if val == "" {
+		return 0, nil
+	}
+	return strconv.Atoi(val)
 }
 
 func ParseRouteStringParam(c echo.Context, param RouteParam) string {
@@ -144,19 +182,18 @@ func (rhn RouteHandlerName) String() string {
 }
 
 type RouteHandler struct {
-	RouteName   RouteName
+	RoutePath   RoutePath
 	HandlerName RouteHandlerName
 	Method      MethodName
 	HandlerFunc echo.HandlerFunc
 }
 
 type Router struct {
-	svc       service.CourseService
-	app       *echo.Echo
-	params    mt.CourseIDParams
-	nodeSet   []EmptyNode
-	node      domain.CourseNode
-	ancestors []domain.CourseNode
+	svc          service.CourseService
+	app          *echo.Echo
+	params       domain.NodePath
+	nodes        domain.Nodes
+	emptyNodeSet []EmptyNode
 }
 
 func (h CourseHandler) Mount() {
@@ -167,7 +204,7 @@ func (h CourseHandler) Mount() {
 	// h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
 	// h.ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
 	// h.ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
-	h.ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
+	// h.ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.AssessmentHandlers(), ProtectedGroup)
 	h.ProtectRoutes(h.CalendarHandlers(), ProtectedGroup)
 }
@@ -176,11 +213,11 @@ func (h CourseHandler) ProtectRoutes(handlers []RouteHandler, group *echo.Group)
 	for _, handler := range handlers {
 		switch handler.Method {
 		case GET:
-			group.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case POST:
-			group.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case DELETE:
-			group.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		default:
 			log.Fatal("http method in route handler not expected")
 		}
@@ -192,11 +229,11 @@ func (h CourseHandler) MountHandlers(newHandlers []RouteHandler) {
 	for _, handler := range newHandlers {
 		switch handler.Method {
 		case GET:
-			h.e.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			h.e.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case POST:
-			h.e.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			h.e.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case DELETE:
-			h.e.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			h.e.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		default:
 			log.Fatal("http method in route handler not expected")
 		}
@@ -224,11 +261,11 @@ func ProtectRoutes(handlers []RouteHandler, group *echo.Group) {
 	for _, handler := range handlers {
 		switch handler.Method {
 		case GET:
-			group.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case POST:
-			group.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case DELETE:
-			group.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			group.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		default:
 			log.Fatal("http method in route handler not expected")
 		}
@@ -240,11 +277,11 @@ func MountHandlers(newHandlers []RouteHandler, router *echo.Echo) {
 	for _, handler := range newHandlers {
 		switch handler.Method {
 		case GET:
-			router.GET(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			router.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case POST:
-			router.POST(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			router.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case DELETE:
-			router.DELETE(string(handler.RouteName), handler.HandlerFunc).Name = handler.HandlerName.String()
+			router.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		default:
 			log.Fatal("http method in route handler not expected")
 		}
@@ -291,30 +328,6 @@ func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.Use
 
 }
 
-func (h CourseHandler) BreadCrumbs(params mt.CourseIDParams, nodes ...domain.CourseNode) mt.BreadCrumbs {
-	var breadCrumbs mt.BreadCrumbs
-	for _, node := range nodes {
-		if user, ok := node.(domain.User); ok {
-			breadCrumbs.User = user
-			breadCrumbs.UserDetailsURL = h.e.Reverse(UserHome.String(), params.ToSlice()...)
-		} else if term, ok := node.(domain.Term); ok {
-			breadCrumbs.Term = term
-			breadCrumbs.TermDetailsURL = h.e.Reverse(TermDetails.String(), params.ToSlice()...)
-		} else if course, ok := node.(domain.Course); ok {
-			breadCrumbs.Course = course
-			breadCrumbs.CourseDetailsURL = h.e.Reverse(CourseDetails.String(), params.ToSlice()...)
-		} else if unit, ok := node.(domain.Unit); ok {
-			breadCrumbs.Unit = unit
-			breadCrumbs.UnitDetailsURL = h.e.Reverse(UnitDetails.String(), params.ToSlice()...)
-		} else if lesson, ok := node.(domain.Lesson); ok {
-			breadCrumbs.Lesson = lesson
-			breadCrumbs.LessonDetailsURL = h.e.Reverse(LessonDetails.String(), params.ToSlice()...)
-		}
-	}
-	return breadCrumbs
-
-}
-
 func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
 		Page:       page,
@@ -328,24 +341,32 @@ func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.Us
 
 }
 
-func BreadCrumbs(router *echo.Echo, params mt.CourseIDParams, nodes ...domain.CourseNode) mt.BreadCrumbs {
+func AddParams(path domain.NodePath, params ...any) []any {
+	paramSlice := path.ToSlice()
+	for _, param := range params {
+		paramSlice = append(paramSlice, param)
+	}
+	return paramSlice
+}
+
+func BreadCrumbs(router *echo.Echo, params domain.NodePath, nodes ...domain.CourseNode) mt.BreadCrumbs {
 	var breadCrumbs mt.BreadCrumbs
 	for _, node := range nodes {
 		if user, ok := node.(domain.User); ok {
 			breadCrumbs.User = user
-			breadCrumbs.UserDetailsURL = router.Reverse(UserHome.String(), params.ToSlice()...)
+			breadCrumbs.UserDetailsURL = router.Reverse(string(ShowNodeDetailsRHN(EmptyNodesUser...)), params.ToSlice()...)
 		} else if term, ok := node.(domain.Term); ok {
 			breadCrumbs.Term = term
-			breadCrumbs.TermDetailsURL = router.Reverse(TermDetails.String(), params.ToSlice()...)
+			breadCrumbs.TermDetailsURL = router.Reverse(string(ShowNodeDetailsRHN(EmptyNodesTerm...)), params.ToSlice()...)
 		} else if course, ok := node.(domain.Course); ok {
 			breadCrumbs.Course = course
-			breadCrumbs.CourseDetailsURL = router.Reverse(CourseDetails.String(), params.ToSlice()...)
+			breadCrumbs.CourseDetailsURL = router.Reverse(string(ShowNodeDetailsRHN(EmptyNodesCourse...)), params.ToSlice()...)
 		} else if unit, ok := node.(domain.Unit); ok {
 			breadCrumbs.Unit = unit
-			breadCrumbs.UnitDetailsURL = router.Reverse(UnitDetails.String(), params.ToSlice()...)
+			breadCrumbs.UnitDetailsURL = router.Reverse(string(ShowNodeDetailsRHN(EmptyNodesUnit...)), params.ToSlice()...)
 		} else if lesson, ok := node.(domain.Lesson); ok {
 			breadCrumbs.Lesson = lesson
-			breadCrumbs.LessonDetailsURL = router.Reverse(LessonDetails.String(), params.ToSlice()...)
+			breadCrumbs.LessonDetailsURL = router.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...)
 		}
 	}
 	return breadCrumbs

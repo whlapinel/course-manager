@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	Calendar              RouteName = Course + "/calendar"
-	ShiftLessonRouteName  RouteName = Lesson + RouteName(ShiftDirection)
-	ExtendLessonRouteName RouteName = ShiftLessonRouteName + "/extend"
-	CalendarDate          RouteName = Calendar + RouteName(Date)
-	LessonDates           RouteName = Lesson + "/dates"
-	LessonDate            RouteName = LessonDates + RouteName(Date)
+	Calendar              RoutePath = Course + "/calendar"
+	ShiftLessonRouteName  RoutePath = Lesson + RoutePath(ShiftDirection)
+	ExtendLessonRouteName RoutePath = ShiftLessonRouteName + "/extend"
+	CalendarDate          RoutePath = Calendar + RoutePath(Date)
+	LessonDates           RoutePath = Lesson + "/dates"
+	LessonDate            RoutePath = LessonDates + RoutePath(Date)
 )
 const (
 	ShowCourseCalendar    = RouteHandlerName(GET + Calendar)
@@ -158,7 +158,7 @@ func (h CourseHandler) AddLessonDate(c echo.Context) error {
 	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToSlice()...))
 }
 
-func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar, error) {
+func (h CourseHandler) calendarPage(params mt.NodePath) (mt.CourseCalendar, error) {
 	course, err := h.svc.GetCourseForCalendar(params.CourseID.Value.(int))
 	if err != nil {
 		log.Println(err)
@@ -168,7 +168,7 @@ func (h CourseHandler) calendarPage(params mt.CourseIDParams) (mt.CourseCalendar
 		Admin:                         true,
 		Params:                        params,
 		Course:                        course,
-		LessonDetailsRouteHandlerName: LessonDetails.String(),
+		LessonDetailsRouteHandlerName: string(ShowNodeDetailsRHN(EmptyNodesLesson...)),
 		TermDetailsURL:                h.e.Reverse(TermDetails.String(), params.ToSlice()...),
 		CourseDetailsURL:              h.e.Reverse(CourseDetails.String(), params.ToSlice()...),
 		ShiftLessonRouteHandlerName:   ShiftLessonRHN.String(),

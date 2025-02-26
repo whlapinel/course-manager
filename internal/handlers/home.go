@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Home RouteName = "/"
+	Home RoutePath = "/"
 )
 
 const (

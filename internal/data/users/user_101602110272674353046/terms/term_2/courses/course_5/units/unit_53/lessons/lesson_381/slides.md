@@ -1,36 +1,85 @@
 ---
 marp: true
+theme: default
+class: lead
+paginate: true
 ---
 
 <!-- headingDivider: 1 -->
+<!-- backgroundColor: black -->
+<!-- class: invert -->
 
-# Warmup
+# Introduction to SQLite in Python
 
-Write a function `num_to_word` that accepts a number and returns a worded version.
+## What is SQLite?
+- A lightweight, self-contained SQL database engine.
+- Does not require a separate server process.
+- Great for small to medium applications.
 
-## Example
+# Why Use SQLite with Python?
+- Comes built-in with Python (`sqlite3` module).
+- Easy to set up and use.
+- Ideal for prototyping and lightweight applications.
 
+# Setting Up SQLite in Python
+**Step 1:** Import SQLite module
 ```python
-example = num_to_word(9)
-
-print(example) # nine
-
+import sqlite3
 ```
 
-# Agenda
+**Step 2:** Connect to a database (creates one if it doesn’t exist)
+```python
+conn = sqlite3.connect("example.db")
+```
 
-- Seat assignments
-- Assignment 4.5
+**Step 3:** Create a cursor to execute SQL commands
+```python
+cursor = conn.cursor()
+```
 
-# Announcements
+# Creating a Table
+```python
+cursor.execute('''CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    age INTEGER
+)''')
+conn.commit()
+```
 
-- Assignment 4.4 scrapped
-- Test on October 8th (Tuesday) 1 week
-- SQLite and text files I/O
-- Review and reinforcement today, tomorrow, and Monday
-- Using AI: fine during assignments, but as a HELPER
-  - May not use during tests!
+# Inserting Data
+```python
+cursor.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("Alice", 25))
+conn.commit()
+```
 
-# Looking ahead
+# Retrieving Data
+```python
+cursor.execute("SELECT * FROM users")
+rows = cursor.fetchall()
+for row in rows:
+    print(row)
+```
 
-- Classes and OOP
+# Updating Data
+```python
+cursor.execute("UPDATE users SET age = ? WHERE name = ?", (26, "Alice"))
+conn.commit()
+```
+
+# Deleting Data
+```python
+cursor.execute("DELETE FROM users WHERE name = ?", ("Alice",))
+conn.commit()
+```
+
+# Closing the Connection
+```python
+conn.close()
+```
+
+# Summary
+- Use `sqlite3.connect()` to connect to a database.
+- Use `cursor.execute()` to run SQL commands.
+- Always `commit()` changes and `close()` the connection when done.
+- SQLite is a great starting point for working with databases in Python!

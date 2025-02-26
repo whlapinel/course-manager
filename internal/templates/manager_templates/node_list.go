@@ -11,7 +11,7 @@ import (
 )
 
 type NodeListPage struct {
-	Params           CourseIDParams
+	Params           domain.NodePath
 	ParentNode       domain.CourseNode
 	Children         []domain.CourseNode
 	ChildUI          [][]ComponentData
@@ -37,7 +37,7 @@ func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Componen
 		Text:      "Delete",
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    HxDelete,
-		URL:       page.E.Reverse(page.DeleteChildRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToSlice()...),
+		URL:       page.E.Reverse(page.DeleteChildRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget:  page.ListItemElementID(node).Selector(),
 	}.Component()
 }
@@ -46,7 +46,7 @@ func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Compon
 	return HXButton{
 		Text:     node.ChildTypeName() + "s",
 		Method:   HxGet,
-		URL:      page.E.Reverse(page.ChildChildrenRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToSlice()...),
+		URL:      page.E.Reverse(page.ChildChildrenRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
@@ -56,7 +56,7 @@ func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Compone
 	return HXButton{
 		Text:     "Details",
 		Method:   HxGet,
-		URL:      page.E.Reverse(page.ChildDetailsRHN, AddNodeChildIDToParams(page.Params, node.GetID()).ToSlice()...),
+		URL:      page.E.Reverse(page.ChildDetailsRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()

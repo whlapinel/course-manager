@@ -67,10 +67,6 @@ type Unit struct {
 	Image       Image
 }
 
-func (u Unit) AddLesson(lesson Lesson) {
-	u.Lessons = append(u.Lessons, lesson)
-}
-
 func (u Unit) Designation() string {
 	if u.Number < 0 {
 		return "N/A"

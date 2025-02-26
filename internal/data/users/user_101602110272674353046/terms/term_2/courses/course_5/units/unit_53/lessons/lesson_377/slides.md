@@ -11,8 +11,6 @@ paginate: true
 
 # Warmup
 
-- Test Changes
-
 1. Put your phone in your bag and put your bag against the wall
 2. Create a new directory `unit_4` in your `python` directory
   - (We are skipping Unit 3)
@@ -149,7 +147,6 @@ with open("example.txt", "r") as file:
 
 # Assignment: 4.1
 
-- Test Changes
 - [Python problems](./files/assignment4_1.py) (due today)
 - Python Essentials 2 Module 2 Quiz (due Friday)
 

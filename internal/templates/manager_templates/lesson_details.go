@@ -11,35 +11,25 @@ import (
 
 type LessonDetailsPage struct {
 	NodeDetailsPage
+	Slides                                                       string
 	E                                                            *echo.Echo
 	Standards                                                    []domain.Standard
 	GetObjectivesURL                                             string
 	PostLessonStandardURL, DeleteLessonStandardRHN               string
 	GetEditAssessmentRHN, PostAssessmentURL, DeleteAssessmentRHN string
-	GetSlidesURL, EditSlidesURL, GithubFilesURL, ServerFilesURL  string
+	GetSlidesURL, EditSlidesURL                                  string
 }
 
 func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
-	return page.E.Reverse(page.DeleteLessonStandardRHN, page.Params.ToSlice(stdID)...)
+	return page.E.Reverse(page.DeleteLessonStandardRHN, AddParams(page.Params, stdID)...)
 }
 
 func (page LessonDetailsPage) DeleteAssessmentURL(assessmentID int) string {
-	return page.E.Reverse(page.DeleteAssessmentRHN, page.Params.ToSlice(assessmentID)...)
+	return page.E.Reverse(page.DeleteAssessmentRHN, AddParams(page.Params, assessmentID)...)
 }
 
 func (page LessonDetailsPage) Lesson() domain.Lesson {
 	return page.Node.(domain.Lesson)
-}
-
-func (page LessonDetailsPage) ViewSlidesButton() templ.Component {
-	return HXButton{
-		Text:     "View Slides",
-		Method:   HxGet,
-		URL:      page.GetSlidesURL,
-		HxTarget: "#page",
-		PushURL:  true,
-	}.Component()
-
 }
 
 func (page LessonDetailsPage) EditSlidesButton() templ.Component {
@@ -51,16 +41,6 @@ func (page LessonDetailsPage) EditSlidesButton() templ.Component {
 		PushURL:  true,
 	}.Component()
 
-}
-
-func (page LessonDetailsPage) ViewFilesButton() templ.Component {
-	return HXButton{
-		Method:   HxGet,
-		URL:      page.ServerFilesURL,
-		Text:     "Files",
-		HxTarget: "#page",
-		PushURL:  true,
-	}.Component()
 }
 
 func (page LessonDetailsPage) Component() templ.Component {
@@ -77,7 +57,7 @@ func DisplayCategory(cat domain.AssessmentCategory) string {
 }
 
 type EditAssessmentForm struct {
-	Params                CourseIDParams
+	Params                NodePath
 	Assessment            domain.Assessment
 	PostEditAssessmentURL string
 	LessonDetailsURL      string

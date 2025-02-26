@@ -1,4 +1,5 @@
 ---
+layout: none
 marp: true
 theme: default
 class: lead
@@ -8,11 +9,12 @@ paginate: true
 <!-- headingDivider: 1 -->
 <!-- backgroundColor: black -->
 <!-- class: invert -->
+# Lesson 2.1
 
-# Agenda
+# **Warmup**
 
-- Catch-up day (short class due to early release)
-
-## Reminders
-
-- Python Essentials 2 Course Module 2 Quiz due Friday
+Testing, testing
+		
+# **Agenda**
+		
+# **Looking ahead**

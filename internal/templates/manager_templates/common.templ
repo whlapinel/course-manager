@@ -116,7 +116,7 @@ templ EditFieldComponent(
 			@CancelEditButton()
 			<button
 				hx-post={ props.PostEditFieldURL }
-				hx-target={ "#" + FieldContainerID(props.FieldName) }
+				hx-target={ "#page" }
 				hx-include={ "#" + FieldInputID(props.FieldName) }
 			>Submit</button>
 		} else {

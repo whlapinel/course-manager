@@ -6,12 +6,12 @@ import (
 )
 
 type newLessonForm struct {
-	params           CourseIDParams
+	params           NodePath
 	postNewLessonRHN string
 	e                *echo.Echo
 }
 
-func NewLessonForm(params CourseIDParams, postNewLessonRHN string, e *echo.Echo) templ.Component {
+func NewLessonForm(params NodePath, postNewLessonRHN string, e *echo.Echo) templ.Component {
 	form := newLessonForm{params: params, postNewLessonRHN: postNewLessonRHN, e: e}
 	return newLessonFormComponent(form)
 }
