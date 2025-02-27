@@ -85,6 +85,23 @@ func (r *lessonRouter) PostEditSlides(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
+	go func() error {
+		slides, err := r.svc.GetSlides(r.params)
+		if err != nil {
+			return err
+		}
+		path := data.SlidesHTMLFilePath(r.nodes.ToSlice()...)
+		file, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		written, err := file.Write([]byte(slides))
+		if err != nil {
+			return err
+		}
+		log.Printf("%d written to file %s", written, path)
+		return nil
+	}()
 	return c.Redirect(303, ShowDetailsURL(r))
 
 }
