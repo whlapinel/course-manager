@@ -38,12 +38,14 @@ func (h CourseHandler) AssessmentHandlers() []RouteHandler {
 func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	var err error
 	var category domain.AssessmentCategory
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-
+	nodes, err := h.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
 	categoryParam := c.QueryParam("category")
 	log.Println(categoryParam)
 	startDateParam := c.QueryParam("start")
@@ -75,13 +77,13 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID.Value.(int), start, end)
+		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID, start, end)
 		if err != nil {
 			return err
 		}
 	} else {
 		// no category filter
-		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID.Value.(int))
+		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
 		if err != nil {
 			return err
 		}
@@ -99,11 +101,14 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,
 	}
-	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), user))
+	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), nodes.User))
 }
 func (h CourseHandler) PostAssessment(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -127,7 +132,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	}
 	_, err = h.svc.SaveAssessment(service.SaveAssessmentParams{
 		Assessment: domain.Assessment{
-			LessonID:     params.LessonID.Value.(int),
+			LessonID:     params.LessonID,
 			Name:         name,
 			Instructions: instructions,
 			Category:     domain.AssessmentCategory(category),
@@ -143,12 +148,14 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 }
 
 func (h CourseHandler) GetEditAssessment(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-
+	nodes, err := h.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
 	assessmentID, err := ParseRouteParam(c, AssessmentID)
 	if err != nil {
 		return err
@@ -160,15 +167,18 @@ func (h CourseHandler) GetEditAssessment(c echo.Context) error {
 	data := mt.EditAssessmentForm{
 		Params:                params,
 		Assessment:            assessment,
-		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), params.ToSlice(assessmentID)...),
+		PostEditAssessmentURL: h.e.Reverse(PostEditAssessment.String(), AddParams(params, assessmentID)...),
 		LessonDetailsURL:      h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...),
 	}
-	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component(), user))
+	return Respond(c, "", data.Component(), h.CourseManagerLayout(data.Component(), nodes.User))
 }
 
 func (h CourseHandler) PostEditAssessment(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -179,6 +189,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	form := c.Request().Form
 	name := form.Get("name")
 	instructions := form.Get("instructions")
+	file := form.Get("file")
 	categoryParam := form.Get("category")
 	category, err := strconv.Atoi(categoryParam)
 	if err != nil {
@@ -202,9 +213,10 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	updateParams := service.UpdateAssessmentParams{
 		Assessment: domain.Assessment{
 			ID:           assessmentID,
-			LessonID:     params.LessonID.Value.(int),
+			LessonID:     params.LessonID,
 			Name:         name,
 			Instructions: instructions,
+			File:         file,
 			Category:     domain.AssessmentCategory(category),
 			DateAssigned: assigned,
 			DateDue:      due,
@@ -220,7 +232,10 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 }
 
 func (h CourseHandler) DeleteAssessment(c echo.Context) error {
-	params := ParseCourseIDParams(c)
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
 	id, err := ParseRouteParam(c, AssessmentID)
 	if err != nil {
 		return err

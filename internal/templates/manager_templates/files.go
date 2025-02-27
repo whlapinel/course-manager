@@ -31,9 +31,7 @@ func (data FilesPage) BreadCrumbs() BreadCrumbs {
 
 func AddParams(params domain.NodePath, additionalParams ...any) []any {
 	pathSlice := params.ToSlice()
-	for _, param := range additionalParams {
-		pathSlice = append(pathSlice, param)
-	}
+	pathSlice = append(pathSlice, additionalParams...)
 	return pathSlice
 }
 func (data FilesPage) FileURL(file FilesPageItem) string {

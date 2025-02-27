@@ -84,7 +84,7 @@ func LessonImagePath(lesson domain.Lesson, unit domain.Unit, course domain.Cours
 	return filepath.Join(dir, "image.png")
 }
 
-// Student-facing site
+// Github files link for student-facing site
 func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.SafeURL {
 	filePath, err := url.JoinPath(GithubRoot, LessonFilesPath(lesson, unit, course))
 	if err != nil {

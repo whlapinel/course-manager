@@ -105,62 +105,62 @@ func ParseNodePath(c echo.Context) (domain.NodePath, error) {
 
 }
 
-func ParseCourseIDParams(c echo.Context) mt.NodePath {
-	var params mt.NodePath
-	userID := ParseRouteStringParam(c, UserID)
-	params.UserID.Valid = userID != ""
-	params.UserID.Value = userID
-	termID, err := ParseRouteParam(c, TermID)
-	if err == nil && termID != 0 {
-		params.TermID.Valid = true
-		params.TermID.Value = termID
-	}
-	courseID, err := ParseRouteParam(c, CourseID)
-	if err == nil && courseID != 0 {
-		params.CourseID.Valid = true
-		params.CourseID.Value = courseID
-	}
-	unitID, err := ParseRouteParam(c, UnitID)
-	if err == nil && unitID != 0 {
-		params.UnitID.Valid = true
-		params.UnitID.Value = unitID
-	}
-	lessonID, err := ParseRouteParam(c, LessonID)
-	if err == nil && lessonID != 0 {
-		params.LessonID.Valid = true
-		params.LessonID.Value = lessonID
-	}
-	return params
-}
+// func ParseCourseIDParams(c echo.Context) mt.NodePath {
+// 	var params mt.NodePath
+// 	userID := ParseRouteStringParam(c, UserID)
+// 	params.UserID.Valid = userID != ""
+// 	params.UserID.Value = userID
+// 	termID, err := ParseRouteParam(c, TermID)
+// 	if err == nil && termID != 0 {
+// 		params.TermID.Valid = true
+// 		params.TermID.Value = termID
+// 	}
+// 	courseID, err := ParseRouteParam(c, CourseID)
+// 	if err == nil && courseID != 0 {
+// 		params.CourseID.Valid = true
+// 		params.CourseID.Value = courseID
+// 	}
+// 	unitID, err := ParseRouteParam(c, UnitID)
+// 	if err == nil && unitID != 0 {
+// 		params.UnitID.Valid = true
+// 		params.UnitID.Value = unitID
+// 	}
+// 	lessonID, err := ParseRouteParam(c, LessonID)
+// 	if err == nil && lessonID != 0 {
+// 		params.LessonID.Valid = true
+// 		params.LessonID.Value = lessonID
+// 	}
+// 	return params
+// }
 
-func CourseIDParam(params mt.NodePath) (int, error) {
-	if params.CourseID.Valid {
-		return params.CourseID.Value.(int), nil
-	} else {
-		return -1, fmt.Errorf("invalid param")
-	}
-}
-func UnitIDParam(params mt.NodePath) (int, error) {
-	if params.UnitID.Valid {
-		return params.UnitID.Value.(int), nil
-	} else {
-		return -1, fmt.Errorf("invalid param")
-	}
-}
-func LessonIDParam(params mt.NodePath) (int, error) {
-	if params.LessonID.Valid {
-		return params.LessonID.Value.(int), nil
-	} else {
-		return -1, fmt.Errorf("invalid param")
-	}
-}
-func TermIDParam(params mt.NodePath) (int, error) {
-	if params.TermID.Valid {
-		return params.TermID.Value.(int), nil
-	} else {
-		return -1, fmt.Errorf("invalid param")
-	}
-}
+// func CourseIDParam(params mt.NodePath) (int, error) {
+// 	if params.CourseID.Valid {
+// 		return params.CourseID.Value.(int), nil
+// 	} else {
+// 		return -1, fmt.Errorf("invalid param")
+// 	}
+// }
+// func UnitIDParam(params mt.NodePath) (int, error) {
+// 	if params.UnitID.Valid {
+// 		return params.UnitID.Value.(int), nil
+// 	} else {
+// 		return -1, fmt.Errorf("invalid param")
+// 	}
+// }
+// func LessonIDParam(params mt.NodePath) (int, error) {
+// 	if params.LessonID.Valid {
+// 		return params.LessonID.Value.(int), nil
+// 	} else {
+// 		return -1, fmt.Errorf("invalid param")
+// 	}
+// }
+// func TermIDParam(params mt.NodePath) (int, error) {
+// 	if params.TermID.Valid {
+// 		return params.TermID.Value.(int), nil
+// 	} else {
+// 		return -1, fmt.Errorf("invalid param")
+// 	}
+// }
 
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
 	val := c.Param(param.Name())
@@ -343,9 +343,7 @@ func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.Us
 
 func AddParams(path domain.NodePath, params ...any) []any {
 	paramSlice := path.ToSlice()
-	for _, param := range params {
-		paramSlice = append(paramSlice, param)
-	}
+	paramSlice = append(paramSlice, params...)
 	return paramSlice
 }
 

@@ -15,6 +15,8 @@ type LessonDetailsPage struct {
 	E                                                            *echo.Echo
 	Standards                                                    []domain.Standard
 	GetObjectivesURL                                             string
+	FileRHN                                                      string
+	ViewMarkdownRHN                                              string
 	PostLessonStandardURL, DeleteLessonStandardRHN               string
 	GetEditAssessmentRHN, PostAssessmentURL, DeleteAssessmentRHN string
 	GetSlidesURL, EditSlidesURL                                  string
@@ -43,6 +45,22 @@ func (page LessonDetailsPage) EditSlidesButton() templ.Component {
 
 }
 
+func (data LessonDetailsPage) ViewMarkdownButton(filepath string) templ.Component {
+	return HXButton{
+		Text:     "View As HTML",
+		Method:   HxGet,
+		HxTarget: "#markdown",
+		URL:      data.FileURL(filepath),
+		PushURL:  true,
+	}.Component()
+
+}
+
+func (data LessonDetailsPage) FileURL(filepath string) string {
+	return data.E.Reverse(data.ViewMarkdownRHN, AddParams(data.Params, filepath)...)
+
+}
+
 func (page LessonDetailsPage) Component() templ.Component {
 	return LessonDetailsComponent(page)
 }
@@ -57,7 +75,7 @@ func DisplayCategory(cat domain.AssessmentCategory) string {
 }
 
 type EditAssessmentForm struct {
-	Params                NodePath
+	Params                domain.NodePath
 	Assessment            domain.Assessment
 	PostEditAssessmentURL string
 	LessonDetailsURL      string

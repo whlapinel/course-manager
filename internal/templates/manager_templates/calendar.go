@@ -107,7 +107,7 @@ func (data TermCalendar) BreadCrumbs() BreadCrumbs {
 type CourseCalendar struct {
 	Admin                         bool
 	Static                        bool
-	Params                        NodePath
+	Params                        domain.NodePath
 	Course                        domain.Course
 	TermDetailsURL                string
 	CourseDetailsURL              string
@@ -181,8 +181,8 @@ func (data CourseCalendar) Component() templ.Component {
 
 func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date time.Time) templ.Component {
 	params := data.Params
-	params.UnitID.Value = lesson.UnitID
-	params.LessonID.Value = lesson.ID
+	params.UnitID = lesson.UnitID
+	params.LessonID = lesson.ID
 	container := CalendarLessonContainerNew{
 		Date:                date,
 		Params:              params,
@@ -190,7 +190,7 @@ func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date ti
 		LessonDetailsURL:    data.E.Reverse(data.LessonDetailsRouteHandlerName, params.ToSlice()...),
 		Course:              data.Course,
 		ShiftLessonRHN:      data.ShiftLessonRouteHandlerName,
-		RemoveLessonDateURL: data.E.Reverse(data.RemoveLessonDateRHN, params.ToSlice(date.Format(time.DateOnly))...),
+		RemoveLessonDateURL: data.E.Reverse(data.RemoveLessonDateRHN, AddParams(params, date.Format(time.DateOnly))...),
 		E:                   data.E,
 	}
 	if data.Static {
@@ -202,9 +202,9 @@ func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date ti
 func (data CourseCalendar) ShowAddLessonDatePageURL(date time.Time) string {
 	return data.E.Reverse(
 		data.ShowAddLessonDateRHN,
-		data.Params.UserID.Value,
-		data.Params.TermID.Value,
-		data.Params.CourseID.Value,
+		data.Params.UserID,
+		data.Params.TermID,
+		data.Params.CourseID,
 		date.Format(time.DateOnly),
 	)
 }
@@ -229,7 +229,7 @@ func (data CourseCalendar) PageLayout() PageLayout {
 }
 
 type CalendarLessonContainerNew struct {
-	Params              NodePath
+	Params              domain.NodePath
 	Static              bool
 	Date                time.Time
 	Course              domain.Course
@@ -281,7 +281,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 	button := ShiftButton{
 		Direction:      cd,
 		Params:         data.Params,
-		ShiftLessonURL: data.E.Reverse(data.ShiftLessonRHN, data.Params.ToSlice(cd.String())...),
+		ShiftLessonURL: data.E.Reverse(data.ShiftLessonRHN, AddParams(data.Params, cd.String())...),
 		e:              data.E,
 	}
 	return button.Component()
@@ -289,7 +289,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 
 type AddLessonToDatePage struct {
 	Date             time.Time
-	Params           NodePath
+	Params           domain.NodePath
 	Course           domain.Course
 	AddLessonDateRHN string
 	E                *echo.Echo
@@ -301,9 +301,9 @@ func (page AddLessonToDatePage) Component() templ.Component {
 }
 
 func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
-	data.Params.UnitID.Value = unitID
-	data.Params.LessonID.Value = lessonID
-	return data.E.Reverse(data.AddLessonDateRHN, data.Params.ToSlice(data.Date.Format(time.DateOnly))...)
+	data.Params.UnitID = unitID
+	data.Params.LessonID = lessonID
+	return data.E.Reverse(data.AddLessonDateRHN, AddParams(data.Params, data.Date.Format(time.DateOnly))...)
 }
 
 func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {

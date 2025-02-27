@@ -11,6 +11,7 @@ type Assessment struct {
 	LessonID     int
 	Name         string
 	Instructions string
+	File         string
 	Category     AssessmentCategory
 	DateAssigned time.Time
 	DateDue      time.Time

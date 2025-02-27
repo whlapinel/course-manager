@@ -43,8 +43,17 @@ func (r *termRouter) GetRouter() Router {
 
 // PostNewChild implements NodeRouter. (implemented)
 func (r *termRouter) PostNewChild(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	err := c.Request().ParseForm()
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	err = c.Request().ParseForm()
 	if err != nil {
 		return err
 	}
@@ -52,18 +61,17 @@ func (r *termRouter) PostNewChild(c echo.Context) error {
 	for key, val := range form {
 		log.Println("key, val: ", key, val)
 	}
-	termID := params.TermID.Value
 	name := c.FormValue("name")
 	description := c.FormValue("description")
 	course, err := r.svc.SaveCourse(service.SaveCourseParams{
-		TermID:      termID.(int),
+		TermID:      params.TermID,
 		Name:        name,
 		Description: description,
 	})
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, r.app.Reverse(string(ShowNodeDetailsRHN(EmptyNodesCourse...)), params.ToSlice(course.ID)...))
+	return c.Redirect(303, r.app.Reverse(string(ShowNodeDetailsRHN(EmptyNodesCourse...)), AddParams(params, course.ID)...))
 }
 
 // ShowNewChild implements NodeRouter. (implemented)
@@ -87,12 +95,17 @@ func (r *termRouter) ShowNewChild(c echo.Context) error {
 
 // Delete implements NodeRouter. (implemented)
 func (r *termRouter) Delete(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	termID, err := TermIDParam(params)
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-	err = r.svc.DeleteTerm(termID)
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	err = r.svc.DeleteTerm(r.params.TermID)
 	if err != nil {
 		return err
 	}
@@ -138,7 +151,6 @@ func (r *termRouter) PostEdit(c echo.Context) error {
 		return err
 	}
 	form := c.Request().Form
-	var template templ.Component
 	for key, val := range form {
 		log.Println(key, val)
 		switch key {
@@ -159,9 +171,6 @@ func (r *termRouter) PostEdit(c echo.Context) error {
 			panic("form key not expected!")
 		}
 
-	}
-	if template == nil {
-		panic("template is nil!")
 	}
 	return c.Redirect(303, ShowDetailsURL(r))
 
@@ -428,11 +437,17 @@ func (r *termRouter) ShowEditTermDates(c echo.Context) error {
 }
 
 func (r *termRouter) PostEditTermDates(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	termID, err := TermIDParam(params)
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+
 	err = c.Request().ParseForm()
 	if err != nil {
 		return err
@@ -443,7 +458,7 @@ func (r *termRouter) PostEditTermDates(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = r.svc.AddNonInstructDay(termID, date)
+	err = r.svc.AddNonInstructDay(params.TermID, date)
 	if err != nil {
 		return err
 	}

@@ -39,8 +39,11 @@ func (h CourseHandler) CalendarHandlers() []RouteHandler {
 }
 
 func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
@@ -49,23 +52,27 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component, user)
+	layout := h.CourseManagerLayout(component, nodes.User)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShiftLesson(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
+	nodes, err := h.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+
 	cdParam := ParseRouteStringParam(c, ShiftDirection)
 	cd, err := domain.ParseDirection(cdParam)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	err = h.svc.WebShift(params.TermID.Value.(int), params.CourseID.Value.(int), params.LessonID.Value.(int), cd)
+	err = h.svc.WebShift(params.TermID, params.CourseID, params.LessonID, cd)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -75,23 +82,27 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component, user)
+	layout := h.CourseManagerLayout(component, nodes.User)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ExtendLesson(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
+	nodes, err := h.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+
 	cdParam := ParseRouteStringParam(c, ShiftDirection)
 	cd, err := domain.ParseDirection(cdParam)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	err = h.svc.Extend(params.TermID.Value.(int), params.CourseID.Value.(int), params.LessonID.Value.(int), cd)
+	err = h.svc.Extend(params.TermID, params.CourseID, params.LessonID, cd)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -101,13 +112,16 @@ func (h CourseHandler) ExtendLesson(c echo.Context) error {
 		return err
 	}
 	component := calendarData.Component()
-	layout := h.CourseManagerLayout(component, user)
+	layout := h.CourseManagerLayout(component, nodes.User)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
-	params := ParseCourseIDParams(c)
-	user, err := h.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
@@ -116,7 +130,7 @@ func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	course, err := h.svc.GetCourseWithChildren(params.CourseID.Value.(int))
+	course, err := h.svc.GetCourseWithChildren(params.CourseID)
 	if err != nil {
 		return err
 	}
@@ -128,17 +142,20 @@ func (h CourseHandler) ShowAddLessonDatePage(c echo.Context) error {
 		AddLessonDateRHN: string(PostAddLessonDate),
 	}
 	component := page.Component()
-	layout := h.CourseManagerLayout(component, user)
+	layout := h.CourseManagerLayout(component, nodes.User)
 	return Respond(c, "", component, layout)
 }
 
 func (h CourseHandler) RemoveLessonDate(c echo.Context) error {
-	params := ParseCourseIDParams(c)
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
 	date, err := ParseDateParam(c)
 	if err != nil {
 		return err
 	}
-	err = h.svc.RemoveLessonDate(params.LessonID.Value.(int), date)
+	err = h.svc.RemoveLessonDate(params.LessonID, date)
 	if err != nil {
 		return err
 	}
@@ -146,20 +163,23 @@ func (h CourseHandler) RemoveLessonDate(c echo.Context) error {
 }
 
 func (h CourseHandler) AddLessonDate(c echo.Context) error {
-	params := ParseCourseIDParams(c)
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
 	date, err := ParseDateParam(c)
 	if err != nil {
 		return err
 	}
-	err = h.svc.AddLessonDate(params.LessonID.Value.(int), params.TermID.Value.(int), date)
+	err = h.svc.AddLessonDate(params.LessonID, params.TermID, date)
 	if err != nil {
 		return err
 	}
 	return c.Redirect(303, h.e.Reverse(ShowCourseCalendar.String(), params.ToSlice()...))
 }
 
-func (h CourseHandler) calendarPage(params mt.NodePath) (mt.CourseCalendar, error) {
-	course, err := h.svc.GetCourseForCalendar(params.CourseID.Value.(int))
+func (h CourseHandler) calendarPage(params domain.NodePath) (mt.CourseCalendar, error) {
+	course, err := h.svc.GetCourseForCalendar(params.CourseID)
 	if err != nil {
 		log.Println(err)
 		return mt.CourseCalendar{}, err

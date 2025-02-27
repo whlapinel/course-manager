@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/util"
 	"github.com/labstack/echo/v4"
 	"strconv"
 	"time"
@@ -50,6 +51,14 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 							<p>{ DisplayCategory(assessment.Category) }</p>
 							<p>Due: { assessment.DateDue.Format(time.DateOnly) }</p>
 							<pre>{ assessment.Instructions }</pre>
+							if assessment.File != "" {
+								<a href={ templ.SafeURL(props.E.Reverse(props.FileRHN, AddParams(props.Params, assessment.File)...)) }>
+									File: { assessment.File }
+								</a>
+								if util.IsMarkdown(assessment.File) {
+									@props.ViewMarkdownButton(assessment.File)
+								}
+							}
 						</details>
 						<button
 							hx-get={ props.E.Reverse(props.GetEditAssessmentRHN, AddParams(props.Params, assessment.ID)...) }
@@ -89,6 +98,8 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 					<option value={ strconv.Itoa(int(domain.Midterm)) }>Midterm</option>
 					<option value={ strconv.Itoa(int(domain.Final)) }>Final</option>
 				</select>
+				<label for="file">File</label>
+				<input id="file" name="file" type="text" class="bg-black"/>
 				<label for="instructions">Instructions</label>
 				<textarea class="bg-black font-mono p-1 w-full" id="instructions" name="instructions"></textarea>
 				<input type="hidden" name="lesson-id" value={ strconv.Itoa(props.Lesson().ID) }/>
@@ -117,6 +128,7 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			@Slides(props.Slides)
 		}
 	</div>
+	<div id="markdown"></div>
 }
 
 templ EditAssessmentFormComponent(props EditAssessmentForm) {
@@ -154,6 +166,8 @@ templ EditAssessmentFormComponent(props EditAssessmentForm) {
 					selected?={ props.Assessment.Category == domain.Final }
 				>Final</option>
 			</select>
+			<label for="file">File</label>
+			<input id="file" name="file" type="text" class="bg-black" value={ props.Assessment.File }/>
 			<fieldset>
 				<legend>Status</legend>
 				<div>

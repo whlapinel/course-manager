@@ -53,10 +53,7 @@ FROM
   terms t
   LEFT JOIN dates d ON d.term_id = t.id
 WHERE
-  user_id = ?;
-
-ORDER BY
-  t.id;
+  t.user_id = ?;
 
 -- name: GetTermDates :many
 SELECT

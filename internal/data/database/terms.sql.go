@@ -11,8 +11,9 @@ import (
 )
 
 const deleteTerm = `-- name: DeleteTerm :one
-DELETE FROM terms WHERE id = ?
-RETURNING id, name, start, "end", description, user_id
+DELETE FROM terms
+WHERE
+  id = ? RETURNING id, name, start, "end", description, user_id
 `
 
 func (q *Queries) DeleteTerm(ctx context.Context, id int64) (Term, error) {
@@ -39,8 +40,7 @@ SELECT
   d.date
 FROM
   terms t
-LEFT JOIN
-  dates d ON d.term_id = t.id
+  LEFT JOIN dates d ON d.term_id = t.id
 WHERE
   d.date = ?
 `
@@ -69,7 +69,12 @@ func (q *Queries) GetTerm(ctx context.Context, date string) (GetTermRow, error) 
 }
 
 const getTermByID = `-- name: GetTermByID :one
-SELECT id, name, start, "end", description, user_id FROM terms WHERE id = ?
+SELECT
+  id, name, start, "end", description, user_id
+FROM
+  terms
+WHERE
+  id = ?
 `
 
 func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
@@ -87,8 +92,12 @@ func (q *Queries) GetTermByID(ctx context.Context, id int64) (Term, error) {
 }
 
 const getTermDates = `-- name: GetTermDates :many
-SELECT id, term_id, date FROM dates d
-WHERE d.term_id = ?
+SELECT
+  id, term_id, date
+FROM
+  dates d
+WHERE
+  d.term_id = ?
 `
 
 func (q *Queries) GetTermDates(ctx context.Context, termID int64) ([]Date, error) {
@@ -115,17 +124,18 @@ func (q *Queries) GetTermDates(ctx context.Context, termID int64) ([]Date, error
 }
 
 const getTerms = `-- name: GetTerms :many
-SELECT   
+SELECT
   t.id,
   t.name,
   t.description,
   t.start,
   t.end,
-  d.date 
-FROM terms t
-LEFT JOIN dates d 
-ON d.term_id = t.id
-ORDER BY t.id
+  d.date
+FROM
+  terms t
+  LEFT JOIN dates d ON d.term_id = t.id
+WHERE
+  t.user_id = ?
 `
 
 type GetTermsRow struct {
@@ -137,8 +147,8 @@ type GetTermsRow struct {
 	Date        sql.NullString
 }
 
-func (q *Queries) GetTerms(ctx context.Context) ([]GetTermsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getTerms)
+func (q *Queries) GetTerms(ctx context.Context, userID string) ([]GetTermsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTerms, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -168,12 +178,10 @@ func (q *Queries) GetTerms(ctx context.Context) ([]GetTermsRow, error) {
 }
 
 const saveTerm = `-- name: SaveTerm :one
-INSERT INTO terms (
-  name, description, start, end
-) VALUES (
-  ?, ?, ?, ?
-)
-RETURNING id, name, start, "end", description, user_id
+INSERT INTO
+  terms (name, description, start, end)
+VALUES
+  (?, ?, ?, ?) RETURNING id, name, start, "end", description, user_id
 `
 
 type SaveTermParams struct {
@@ -203,8 +211,14 @@ func (q *Queries) SaveTerm(ctx context.Context, arg SaveTermParams) (Term, error
 }
 
 const updateTerm = `-- name: UpdateTerm :exec
-UPDATE terms SET name = ?, description = ?, start = ?, end = ?
-WHERE id = ?
+UPDATE terms
+SET
+  name = ?,
+  description = ?,
+  start = ?,
+  end = ?
+WHERE
+  id = ?
 `
 
 type UpdateTermParams struct {

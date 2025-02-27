@@ -5,11 +5,13 @@ import (
 	"context"
 	"fmt"
 	"gh_static_portfolio/internal/data"
+	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"gh_static_portfolio/internal/util"
 	"log"
 	"path/filepath"
+	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -109,8 +111,45 @@ func (r *unitRouter) PostFile(c echo.Context) error {
 }
 
 // PostNewChild implements NodeRouter.
-func (u *unitRouter) PostNewChild(echo.Context) error {
-	panic("unimplemented")
+func (r *unitRouter) PostNewChild(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println("key, val: ", key, val)
+	}
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	numberParam := c.FormValue("number")
+	number, err := strconv.Atoi(numberParam)
+	if err != nil {
+		return err
+	}
+	lesson, err := r.svc.SaveLesson(service.SaveLessonParams{
+		Lesson: domain.Lesson{
+			UnitID:      params.UnitID,
+			Name:        name,
+			Number:      number,
+			Description: description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, r.app.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), AddParams(params, lesson.ID)...))
+
 }
 
 // Router implements NodeRouter.
@@ -165,8 +204,22 @@ func (r *unitRouter) ShowFiles(c echo.Context) error {
 }
 
 // ShowNewChild implements NodeRouter.
-func (u *unitRouter) ShowNewChild(echo.Context) error {
-	panic("unimplemented")
+func (r *unitRouter) ShowNewChild(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	page := NodeCreateChildPage(r)
+	component := page.Component()
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
+	return Respond(c, "", component, layout)
+
 }
 
 // ViewFile implements NodeRouter.

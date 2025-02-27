@@ -8,7 +8,6 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
-	managertemplates "gh_static_portfolio/internal/templates/manager_templates"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"io"
 	"io/fs"
@@ -443,17 +442,6 @@ func GenerateSlides(nodes ...domain.CourseNode) error {
 	return nil
 }
 
-// regenerateHTML runs the command to regenerate HTML from a Markdown file.
-func regenerateHTML(markdownFile, htmlFile string) {
-	cmd := exec.Command("marp", markdownFile, "-o", htmlFile)
-	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("Error: Failed to regenerate HTML: %v\n", err)
-		return
-	}
-	fmt.Printf("HTML file %s successfully regenerated from %s\n", htmlFile, markdownFile)
-}
-
 func newRegenerateHTML(htmlFile string, nodes ...domain.CourseNode) error {
 	log.Println("regenerating html for:", htmlFile)
 	var params mt.NodePath
@@ -486,7 +474,7 @@ func newRegenerateHTML(htmlFile string, nodes ...domain.CourseNode) error {
 	return nil
 }
 
-func GetSlides(params managertemplates.NodePath) (string, error) {
+func GetSlides(params mt.NodePath) (string, error) {
 	path, err := marpSlidesPath(params)
 	if err != nil {
 		return "", err
@@ -503,7 +491,7 @@ func GetSlides(params managertemplates.NodePath) (string, error) {
 	return string(body), nil
 }
 
-func marpSlidesPath(params managertemplates.NodePath) (string, error) {
+func marpSlidesPath(params mt.NodePath) (string, error) {
 	baseURL := "http://localhost:8080"
 	userParam := fmt.Sprintf("user_%s", params.UserID.Value)
 	termParam := fmt.Sprintf("term_%d", params.TermID.Value)

@@ -8,29 +8,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func TestGetTerm(t *testing.T) {
-	term, err := cr.GetTerm(time.Now())
-	if err != nil {
-		t.Errorf("error fetching term: %s", err)
-	}
-	if term != nil {
-		if term.Start.IsZero() {
-			t.Error("term Start is zero")
-		}
-		log.Println(term.Name)
-		log.Println(term.ID)
-		monthDates, err := term.TermMonths()
-		if err != nil {
-			t.Error("error getting month dates")
-		}
-		for _, date := range monthDates {
-			log.Println(date.Format(time.DateOnly))
-		}
-	} else {
-		log.Println("term was nil")
-	}
-}
-
 func TestGetTermWithDates(t *testing.T) {
 	term, err := cr.GetTermWithDates(1)
 	if err != nil {

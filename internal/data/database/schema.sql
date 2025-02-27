@@ -90,6 +90,7 @@ CREATE TABLE
         lesson_id INTEGER NOT NULL,
         name TEXT NOT NULL,
         instructions TEXT NOT NULL,
+        file TEXT,
         category INTEGER NOT NULL,
         date_assigned TEXT NOT NULL,
         date_due TEXT NOT NULL,
@@ -121,5 +122,5 @@ CREATE TABLE
         start TEXT NOT NULL,
         end TEXT NOT NULL,
         description TEXT,
-        user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE
+        user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE
     );

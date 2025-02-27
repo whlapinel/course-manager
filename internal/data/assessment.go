@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"database/sql"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
 	"time"
@@ -18,6 +19,10 @@ func (cr CourseRepo) SaveAssessment(assessment domain.Assessment) (domain.Assess
 		LessonID:     int64(assessment.LessonID),
 		Name:         assessment.Name,
 		Instructions: assessment.Instructions,
+		File: sql.NullString{
+			Valid:  assessment.File != "",
+			String: assessment.File,
+		},
 		Category:     int64(assessment.Category),
 		DateAssigned: assessment.DateAssigned.Format(time.DateOnly),
 		DateDue:      assessment.DateDue.Format(time.DateOnly),
@@ -77,6 +82,7 @@ func (cr CourseRepo) fromDBAssessment(dbAssmt database.Assessment) (domain.Asses
 		LessonID:     int(dbAssmt.LessonID),
 		Name:         dbAssmt.Name,
 		Instructions: dbAssmt.Instructions,
+		File:         dbAssmt.File.String,
 		Category:     domain.AssessmentCategory(dbAssmt.Category),
 		DateAssigned: assigned,
 		DateDue:      due,
@@ -104,7 +110,7 @@ func (cr CourseRepo) GetAssessmentsByCategory(category domain.AssessmentCategory
 	return assessments, nil
 }
 
-func (cr CourseRepo)GetAllCourseAssessments(courseID int) ([]domain.Assessment, error){
+func (cr CourseRepo) GetAllCourseAssessments(courseID int) ([]domain.Assessment, error) {
 	dbAssessments, err := cr.queries.GetCourseAssessments(context.Background(), int64(courseID))
 	if err != nil {
 		return nil, err
@@ -136,6 +142,10 @@ func (cr CourseRepo) UpdateAssessment(assessment domain.Assessment) error {
 		LessonID:     int64(assessment.LessonID),
 		Name:         assessment.Name,
 		Instructions: assessment.Instructions,
+		File: sql.NullString{
+			Valid:  assessment.File != "",
+			String: assessment.File,
+		},
 		Category:     int64(assessment.Category),
 		DateAssigned: assessment.DateAssigned.Format(time.DateOnly),
 		DateDue:      assessment.DateDue.Format(time.DateOnly),

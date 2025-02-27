@@ -9,6 +9,17 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
+# Warmup
+
+- Phones in bags, bags against the wall
+- Create and open `lesson_4` in VS Code
+
+```text
+/python
+  /unit_4
+    /lesson_4
+```
+
 # More on Functions in Python 
 
 ## Review: What is a Function?
@@ -81,3 +92,12 @@ Create a function that accepts a Pokémon’s profile with `**kwargs` and prints
 - `*args` and `**kwargs` allow handling multiple arguments dynamically.
 - Default parameters provide fallbacks when values are missing.
 - Using keyword arguments makes functions more readable.
+
+# Assignment 4.4
+
+- Complete [problems](./files/assignment_1_4_4.html) and submit as python file
+- Complete CodeHS Assignments 5.5 & 5.6
+
+## Reminder
+ 
+- Python Essentials 1 Course Module 2 Quiz is due tomorrow

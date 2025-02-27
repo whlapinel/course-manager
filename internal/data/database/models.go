@@ -13,6 +13,7 @@ type Assessment struct {
 	LessonID     int64
 	Name         string
 	Instructions string
+	File         sql.NullString
 	Category     int64
 	DateAssigned string
 	DateDue      string

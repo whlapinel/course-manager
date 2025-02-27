@@ -172,8 +172,9 @@ func (r *lessonRouter) PostFile(c echo.Context) error {
 
 // PostNewChild implements NodeRouter.
 // Lesson does not have child nodes
-func (l *lessonRouter) PostNewChild(echo.Context) error {
-	panic("unimplemented")
+func (r *lessonRouter) PostNewChild(c echo.Context) error {
+	panic("not implemented")
+
 }
 
 // Router implements NodeRouter.
@@ -204,6 +205,8 @@ func (r *lessonRouter) ShowDetails(c echo.Context) error {
 		Standards:               r.nodes.Course.StandardSet.Standards,
 		NodeDetailsPage:         nodeDetails,
 		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), params.ToSlice()...),
+		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
+		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
 		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
 		GetEditAssessmentRHN:    GetEditAssessment.String(),
 		DeleteAssessmentRHN:     DeleteAssessment.String(),

@@ -391,8 +391,6 @@ func NodeListPage(r NodeRouter) mt.NodeListPage {
 
 func NodeCreateChildPage(h NodeRouter) mt.NodeCreatePage {
 	r := h.GetRouter()
-	log.Println("NodeCreateChildPage():", PostNewChildURL(h))
-	// log.Println("NodeCreateChildPage(): ", h.Node().TypeName(), h.Node().GetName())
 	return mt.NodeCreatePage{
 		ParentNode:        r.nodes.CurrentNode(),
 		NodeType:          domain.NodeTypeName(r.nodes.CurrentNode().ChildTypeName()),

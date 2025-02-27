@@ -1,11 +1,13 @@
 package managertemplates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
 	"log"
 	"net/url"
 	"path/filepath"
+	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -90,7 +92,7 @@ const (
 )
 
 type ShiftButton struct {
-	Params         NodePath
+	Params         domain.NodePath
 	Direction      domain.CalendarDirection
 	TermID         int
 	CourseID       int
@@ -197,8 +199,41 @@ type TitleDivData struct {
 	title, description, imgPath string
 	standards                   []domain.Standard
 	Assessments                 []domain.Assessment
+	StaticFilesURL              templ.SafeURL
+	GitHubFilesURL              templ.SafeURL
 	showImg                     bool
 	lightBg                     bool
+}
+
+func (page LessonPage) Component() templ.Component {
+	return StaticLessonComponent(page)
+}
+
+func (page LessonPage) TitleDivNew() templ.Component {
+	return TitleDivData{
+		title:          fmt.Sprintf("%s: %s", page.Lesson.Designation(), page.Lesson.Name),
+		description:    page.Lesson.Description,
+		StaticFilesURL: templ.SafeURL(templates.LessonFilesPath(page.Lesson, page.Unit, page.Course)),
+		GitHubFilesURL: templates.LessonFilesURL(page.Lesson, page.Unit, page.Course),
+		imgPath:        filepath.Join(templates.LessonPath(page.Lesson, page.Unit, page.Course, false), page.Lesson.Image.BasePath),
+		standards:      page.Lesson.Standards,
+		Assessments:    page.Lesson.Assessments,
+	}.Component()
+
+}
+
+// Github files URL
+func (data TitleDivData) FileURL(filepath string) templ.SafeURL {
+	url, _ := url.JoinPath(string(data.GitHubFilesURL), filepath)
+	return templ.SafeURL(url)
+}
+
+func (data TitleDivData) ViewMarkdownURL(filepath string) templ.SafeURL {
+	filepath = strings.ReplaceAll(filepath, ".md", ".html")
+	url, _ := url.JoinPath(string(data.StaticFilesURL), filepath)
+	url = RemoveDocsFromPath(url)
+	url = MakeAbsolute(url)
+	return templ.SafeURL(url)
 }
 
 func StaticNewHomePage() StaticPage {

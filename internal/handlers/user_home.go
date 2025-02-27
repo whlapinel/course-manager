@@ -107,9 +107,17 @@ func (r *userRouter) ShowFiles(c echo.Context) error {
 
 // ShowNewChild implements NodeHandler.
 func (r *userRouter) ShowNewChild(c echo.Context) error {
-
-	params := ParseCourseIDParams(c)
-	user, err := r.svc.GetUser(params.UserID.Value.(string))
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	user, err := r.svc.GetUser(params.UserID)
 	if err != nil {
 		return err
 	}

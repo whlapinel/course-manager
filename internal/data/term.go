@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func (cr CourseRepo) GetTerm(date time.Time) (*domain.Term, error) {
-	dbTerms, err := cr.queries.GetTerms(context.Background())
+func (cr CourseRepo) GetTerm(date time.Time, userID string) (*domain.Term, error) {
+	dbTerms, err := cr.queries.GetTerms(context.Background(), userID)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (cr CourseRepo) GetTermByID(termID int) (domain.Term, error) {
 }
 
 func (cr CourseRepo) GetTerms(userID string) ([]domain.Term, error) {
-	dbGetTermRows, err := cr.queries.GetTerms(context.Background())
+	dbGetTermRows, err := cr.queries.GetTerms(context.Background(), userID)
 	if err != nil {
 		return nil, err
 	}
