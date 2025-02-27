@@ -194,13 +194,13 @@ func Generate(courseRepo data.CourseRepo, userID string) error {
 							}
 							lesson.Assessments = assessments
 
-							// Generate slides for the lesson (this function logs internally).
-							err = GenerateSlides(user, currentTerm, course, unit, lesson)
-							if err != nil {
-								if !os.IsNotExist(err) {
-									return err
-								}
-							}
+							// // Generate slides for the lesson (this function logs internally).
+							// err = GenerateSlides(user, currentTerm, course, unit, lesson)
+							// if err != nil {
+							// 	if !os.IsNotExist(err) {
+							// 		return err
+							// 	}
+							// }
 							page := mt.LessonPage{
 								Lesson:    lesson,
 								Unit:      unit,

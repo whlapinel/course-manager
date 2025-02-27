@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -31,6 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	time.Sleep(time.Second * 30)
 	defer func() {
 		startMarp.Process.Signal(os.Interrupt)
 	}()
@@ -61,36 +63,42 @@ func main() {
 					log.Fatal("error getting units", err)
 				}
 				for _, lesson := range lessons {
-					go func() error {
-						path := domain.NodePath{
-							UserID:   user.ID,
-							TermID:   term.ID,
-							CourseID: course.ID,
-							LessonID: lesson.ID,
+					path := domain.NodePath{
+						UserID:   user.ID,
+						TermID:   term.ID,
+						CourseID: course.ID,
+						UnitID:   unit.ID,
+						LessonID: lesson.ID,
+					}
+					nodes := domain.Nodes{
+						User:   user,
+						Term:   term,
+						Course: course,
+						Unit:   unit,
+						Lesson: lesson,
+					}
+					markdownPath := data.SlidesMarkdownFilePath(nodes.ToSlice()...)
+					_, err := os.Stat(markdownPath)
+					if err != nil {
+						if os.IsNotExist(err) {
+							continue
 						}
-						slides, err := svc.GetSlides(path)
-						if err != nil {
-							return err
-						}
-						nodes := domain.Nodes{
-							User:   user,
-							Term:   term,
-							Course: course,
-							Unit:   unit,
-							Lesson: lesson,
-						}
-						htmlPath := data.SlidesHTMLFilePath(nodes.ToSlice()...)
-						file, err := os.Create(htmlPath)
-						if err != nil {
-							return err
-						}
-						written, err := file.Write([]byte(slides))
-						if err != nil {
-							return err
-						}
-						log.Printf("%d written to file %s", written, htmlPath)
-						return nil
-					}()
+					}
+					slides, err := svc.GetSlides(path)
+					if err != nil {
+						log.Println(err)
+					}
+					htmlPath := data.SlidesHTMLFilePath(nodes.ToSlice()...)
+					html, err := os.Create(htmlPath)
+					if err != nil {
+						log.Println(err)
+					}
+					written, err := html.Write([]byte(slides))
+					if err != nil {
+						log.Println(err)
+					}
+					log.Printf("%d written to file %s", written, htmlPath)
+					html.Close()
 
 				}
 			}
