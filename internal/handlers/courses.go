@@ -212,7 +212,7 @@ func (c *courseRouter) ShowNewChild(echo.Context) error {
 
 // ViewFile implements NodeRouter.
 func (r *courseRouter) ViewFile(c echo.Context) error {
-	return ViewFile(c, r)
+	return ViewFile(c, r, ShowDetailsURL(r))
 }
 
 func NewCourseRouter(svc service.CourseService, app *echo.Echo) NodeRouter {

@@ -8,12 +8,10 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
-	"gh_static_portfolio/internal/util"
 	"log"
 	"path/filepath"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -181,19 +179,21 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 		return fmt.Errorf("field query param is missing")
 	}
 	details := NodeDetailsPage(r, true)
-	var component templ.Component
-	if queryParam == util.KebabCase(string(Description)) {
-		component = mt.EditDescriptionComponent(details)
-	} else if queryParam == util.KebabCase(string(Name)) {
-		component = mt.EditNameComponent(details)
-	} else if queryParam == util.KebabCase(string(Number)) {
-		component = mt.EditNumberComponent(details)
-	} else {
-		errText := "field value is not expected"
-		log.Println(errText)
-		return fmt.Errorf("%s %s", errText, queryParam)
-	}
-	layout := CourseManagerLayout(r.app, details.Component(), r.nodes.User)
+	details.EditField = queryParam
+	// var component templ.Component
+	// if queryParam == util.KebabCase(string(Description)) {
+	// 	component = mt.EditDescriptionComponent(details)
+	// } else if queryParam == util.KebabCase(string(Name)) {
+	// 	component = mt.EditNameComponent(details)
+	// } else if queryParam == util.KebabCase(string(Number)) {
+	// 	component = mt.EditNumberComponent(details)
+	// } else {
+	// 	errText := "field value is not expected"
+	// 	log.Println(errText)
+	// 	return fmt.Errorf("%s %s", errText, queryParam)
+	// }
+	component := details.Component()
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 
 }

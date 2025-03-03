@@ -240,7 +240,7 @@ func (r *termRouter) ShowFiles(c echo.Context) error {
 
 // ViewFile implements NodeRouter.
 func (r *termRouter) ViewFile(c echo.Context) error {
-	return ViewFile(c, r)
+	return ViewFile(c, r, ShowDetailsURL(r))
 }
 
 const (

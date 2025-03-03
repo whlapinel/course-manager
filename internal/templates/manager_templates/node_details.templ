@@ -19,3 +19,21 @@ templ NodeDetailsComponent(props NodeDetailsPage) {
 		</div>
 	}
 }
+
+templ NewNodeDetailsComponent(props NodeDetailsPage) {
+	@PageLayoutComponent(props) {
+		if props.Node.ChildTypeName() != "" {
+			@props.ListChildrenButton()
+		}
+		if props.CourseCalendarURL != "" {
+			@props.CalendarButton()
+		}
+		<div class="flex">
+			@props.ViewFilesButton()
+		</div>
+		<div class="flex flex-col gap-2">
+			@props.FieldsComponent(props.EditField)
+			{ children... }
+		</div>
+	}
+}

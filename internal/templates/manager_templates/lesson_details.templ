@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-templ LessonDetailsComponent(props LessonDetailsPage) {
+templ LessonDetailsComponent(props LessonDetailsPage, components ...templ.Component) {
 	@NodeDetailsComponent(props.NodeDetailsPage) {
 		if  props.Lesson().Standards != nil {
 			<ul>
@@ -123,12 +123,18 @@ templ LessonDetailsComponent(props LessonDetailsPage) {
 			}
 		}
 	}
-	<div id="slides" class="flex justify-center">
+	<button id="show-slides-btn">Show Slides</button>
+	<div id="slides" class="flex justify-center h-0 overflow-hidden">
+		<script src="/dist/lesson-details.js"></script>
 		if props.Slides != "" {
 			@Slides(props.Slides)
 		}
 	</div>
-	<div id="markdown"></div>
+	<div id="markdown">
+		for _, component := range components {
+			@component
+		}
+	</div>
 }
 
 templ EditAssessmentFormComponent(props EditAssessmentForm) {

@@ -11,5 +11,6 @@ module.exports = {
     safelist: [
         "max-h-0",
         "max-h-fit",
+        "min-h-fit",
     ],
 }

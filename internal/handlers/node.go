@@ -475,7 +475,8 @@ func ShowFiles(c echo.Context, r NodeRouter) error {
 	return Respond(c, "", component, layout)
 }
 
-func ViewFile(c echo.Context, router NodeRouter) error {
+// redirect is for non-htmx requests
+func ViewFile(c echo.Context, router NodeRouter, redirect string) error {
 	r := router.GetRouter()
 	path := c.Param("*")
 	log.Println("path: ", path)
@@ -509,8 +510,7 @@ func ViewFile(c echo.Context, router NodeRouter) error {
 	}
 	data.Content = buf.String()
 	component := mt.MarkdownIFrame(data)
-	layout := CourseManagerLayout(r.app, component, nodes.User)
-	return Respond(c, "", component, layout)
+	return Respond(c, redirect, component, nil)
 
 }
 

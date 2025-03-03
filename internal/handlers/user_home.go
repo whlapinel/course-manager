@@ -122,7 +122,7 @@ func (r *userRouter) ShowNewChild(c echo.Context) error {
 		return err
 	}
 	nodeCreate := NodeCreateChildPage(r)
-	template := mt.NodeCreateComponent(nodeCreate)
+	template := mt.NodeCreatePageComponent(nodeCreate)
 	layout := CourseManagerLayout(r.app, template, user)
 	return Respond(c, "", template, layout)
 }

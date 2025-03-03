@@ -114,6 +114,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	}
 	form := c.Request().Form
 	name := form.Get("name")
+	file := form.Get("file")
 	instructions := form.Get("instructions")
 	categoryParam := form.Get("category")
 	category, err := strconv.Atoi(categoryParam)
@@ -135,6 +136,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 			LessonID:     params.LessonID,
 			Name:         name,
 			Instructions: instructions,
+			File:         file,
 			Category:     domain.AssessmentCategory(category),
 			DateAssigned: assigned,
 			DateDue:      due,

@@ -23,10 +23,13 @@ func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 	lessonRouteHandlers := []RouteHandler{
 		{EditSlides, ShowEditSlides, GET, lr.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, lr.PostEditSlides},
+		{LessonStandards, PostLessonStandard, POST, lr.PostLessonStandard},
+		{LessonStandard, DeleteLessonStandard, DELETE, lr.DeleteLessonStandard},
 	}
 	routeHandlers = append(routeHandlers, lessonRouteHandlers...)
 	var nodeHandlers = []RouteHandler{
 		ShowFilesHandler(nr.ShowFiles, nr.GetRouter().emptyNodeSet...),
+		PostFileHandler(nr.PostFile, nr.GetRouter().emptyNodeSet...),
 		ViewFilesHandler(nr.ViewFile, nr.GetRouter().emptyNodeSet...),
 		ShowNodeDetailsHandler(nr.ShowDetails, nr.GetRouter().emptyNodeSet...),
 		ShowEditHandler(nr.ShowEdit, nr.GetRouter().emptyNodeSet...),
@@ -191,7 +194,6 @@ func (r *lessonRouter) PostFile(c echo.Context) error {
 // Lesson does not have child nodes
 func (r *lessonRouter) PostNewChild(c echo.Context) error {
 	panic("not implemented")
-
 }
 
 // Router implements NodeRouter.
@@ -281,7 +283,7 @@ func (l *lessonRouter) ShowNewChild(echo.Context) error {
 
 // ViewFile implements NodeRouter.
 func (r *lessonRouter) ViewFile(c echo.Context) error {
-	return ViewFile(c, r)
+	return ViewFile(c, r, ShowDetailsURL(r))
 }
 
 func NewLessonRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
@@ -319,135 +321,46 @@ const (
 	DeleteLessonStandard  = RouteHandlerName(DELETE + LessonStandard)
 )
 
-// func (h CourseHandler) LessonHandlers() []RouteHandler {
-// 	return []RouteHandler{
-// 		{Lessons, ListUnitLessons, GET, h.ListUnitLessons},
-// 		{Lesson, LessonDetails, GET, h.LessonDetails},
-// 		{NewLesson, ShowNewLesson, GET, h.ShowNewLesson},
-// 		{NewLesson, PostNewLesson, POST, h.PostNewLesson},
-// 		{EditLesson, ShowEditLesson, GET, h.ShowEditLesson},
-// 		{EditLesson, PostEditLesson, POST, h.PostEditLesson},
-// 		{Slides, ViewLessonSlides, GET, h.ViewLessonSlides},
-// 		{LessonFiles, ShowLessonFiles, GET, h.ShowLessonFiles},
-// 		{LessonViewMarkdown, GetLessonViewMarkdown, GET, h.GetLessonViewMarkdown},
-// 		{LessonFiles, PostLessonFile, POST, h.PostLessonFile},
-// 		{EditSlides, ShowEditSlides, GET, h.ShowEditSlides},
-// 		{EditSlides, PostEditSlides, POST, h.PostEditSlides},
-// 		{Lesson, DeleteLesson, DELETE, h.DeleteLesson},
-// 		{LessonStandards, PostLessonStandard, POST, h.PostLessonStandard},
-// 		{LessonStandard, DeleteLessonStandard, DELETE, h.DeleteLessonStandard},
-// 	}
-// }
+func (r *lessonRouter) PostLessonStandard(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	objectiveParam := c.Request().Form.Get("objective")
+	objID, err := strconv.Atoi(objectiveParam)
+	if err != nil {
+		return err
+	}
+	err = r.svc.SetLessonObjective(params.LessonID, objID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, ShowDetailsURL(r))
+}
 
-// func (h CourseHandler) ShowNewLesson(c echo.Context) error {
-// 	params := ParseCourseIDParams(c)
-// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	term, err := h.svc.GetTerm(params.TermID.Value.(int))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	course, err := h.svc.GetCourse(params.CourseID.Value.(int))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	unit, err := h.svc.GetUnit(params.UnitID.Value.(int))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	page := mt.NodeCreatePage{
-// 		ParentNode:        unit,
-// 		NodeType:          domain.LessonTypeName,
-// 		Params:            params,
-// 		PostCreateNodeURL: h.e.Reverse(PostNewLesson.String(), params.ToSlice()...),
-// 		CancelURL:         h.e.Reverse(ListUnitLessons.String(), params.ToSlice()...),
-// 		BreadCrumbsData:   h.BreadCrumbs(params, user, term, course, unit),
-// 	}
-// 	template := mt.NodeCreateComponent(page)
-// 	layout := h.CourseManagerLayout(template, user)
-// 	return Respond(c, "", template, layout)
-// }
-
-// func (h CourseHandler) PostNewLesson(c echo.Context) error {
-// 	err := c.Request().ParseForm()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	form := c.Request().Form
-// 	for key, val := range form {
-// 		log.Println("key, val: ", key, val)
-// 	}
-// 	params := ParseCourseIDParams(c)
-// 	name := form.Get("name")
-// 	numberParam := form.Get("number")
-// 	number, err := strconv.Atoi(numberParam)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	description := form.Get("description")
-// 	lesson, err := h.svc.SaveLesson(service.SaveLessonParams{
-// 		Lesson: domain.Lesson{
-// 			UnitID:      params.UnitID.Value.(int),
-// 			Number:      number,
-// 			Name:        name,
-// 			Description: description,
-// 		},
-// 	})
-
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return c.Redirect(303, h.e.Reverse(LessonDetails.String(), params.ToSlice(lesson.ID)...))
-// }
-
-// func (h CourseHandler) PostLessonStandard(c echo.Context) error {
-// 	params := ParseCourseIDParams(c)
-// 	err := c.Request().ParseForm()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	objectiveParam := c.Request().Form.Get("objective")
-// 	objID, err := strconv.Atoi(objectiveParam)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	err = h.svc.SetLessonObjective(params.LessonID.Value.(int), objID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return c.Redirect(302, h.e.Reverse(LessonDetails.String(), params.ToSlice()...))
-// }
-
-// func (h CourseHandler) DeleteLessonStandard(c echo.Context) error {
-// 	params := ParseCourseIDParams(c)
-// 	user, err := h.svc.GetUser(params.UserID.Value.(string))
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = c.Request().ParseForm()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	objectiveParam := ParseRouteStringParam(c, StandardID)
-// 	objID, err := strconv.Atoi(objectiveParam)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	log.Println(params.ToSlice()...)
-// 	log.Println("deleting lesson standard ", objID)
-// 	err = h.svc.DeleteLessonObjective(params.LessonID.Value.(int), objID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	page, err := h.lessonDetailsPage(params, "")
-// 	if err != nil {
-// 		return err
-// 	}
-// 	component := page.Component()
-// 	layout := h.CourseManagerLayout(component, user)
-// 	return Respond(c, "", component, layout)
-// }
+func (r *lessonRouter) DeleteLessonStandard(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	objectiveParam := ParseRouteStringParam(c, StandardID)
+	objID, err := strconv.Atoi(objectiveParam)
+	if err != nil {
+		return err
+	}
+	log.Println(params.ToSlice()...)
+	log.Println("deleting lesson standard ", objID)
+	err = r.svc.DeleteLessonObjective(params.LessonID, objID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, ShowDetailsURL(r))
+}

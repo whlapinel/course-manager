@@ -3,6 +3,8 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/manager_templates/components"
+	"strconv"
 
 	"github.com/a-h/templ"
 )
@@ -15,6 +17,7 @@ type NodeDetailsPage struct {
 	PostEditNodeURL   string
 	ListChildrenURL   string
 	UpNavURL          string
+	EditField         string
 	IsEdit            bool
 	NodeImageURL      func() string
 	BreadCrumbsData   BreadCrumbs
@@ -27,7 +30,7 @@ func (page NodeDetailsPage) BreadCrumbs() BreadCrumbs {
 }
 
 func (page NodeDetailsPage) Component() templ.Component {
-	return NodeDetailsComponent(page)
+	return NewNodeDetailsComponent(page)
 }
 
 func (page NodeDetailsPage) PageLayout() PageLayout {
@@ -86,4 +89,30 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
+}
+
+func (page NodeDetailsPage) FieldsComponent(editField string) templ.Component {
+	list := cmp.NewDescriptionList(cmp.NewDescriptionListParams{
+		Title:       page.PageTitle(),
+		GetEditURL:  page.GetEditNodeURL,
+		PostEditURL: page.PostEditNodeURL,
+	})
+	var numItem, nameItem, descriptionItem cmp.DescriptionListItem
+	numItem = cmp.NewDescriptionListItem("Number", strconv.Itoa(page.Node.GetNumber()), true, false)
+	nameItem = cmp.NewDescriptionListItem("Name", page.Node.GetName(), true, false)
+	descriptionItem = cmp.NewDescriptionListItem("Description", page.Node.GetDescription(), true, false)
+	switch editField {
+	case "number":
+		numItem.IsEditing = true
+	case "name":
+		nameItem.IsEditing = true
+	case "description":
+		descriptionItem.IsEditing = true
+	}
+	list = list.AddItems(
+		numItem,
+		nameItem,
+		descriptionItem,
+	)
+	return list.Component()
 }
