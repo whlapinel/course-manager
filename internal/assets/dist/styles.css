@@ -1209,11 +1209,6 @@ video {
   color: rgb(147 197 253 / var(--tw-text-opacity));
 }
 
-.text-cyan-50 {
-  --tw-text-opacity: 1;
-  color: rgb(236 254 255 / var(--tw-text-opacity));
-}
-
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -1405,11 +1400,6 @@ video {
   .sm\:px-0 {
     padding-left: 0px;
     padding-right: 0px;
-  }
-
-  .sm\:px-6 {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
   }
 
   .sm\:py-32 {

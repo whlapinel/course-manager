@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/service"
 	"io"
@@ -12,8 +11,6 @@ import (
 
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
-
-	"github.com/a-h/templ"
 )
 
 func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
@@ -249,25 +246,13 @@ func (r *lessonRouter) ShowEdit(c echo.Context) error {
 		return err
 	}
 	r.nodes = nodes
-	queryParam := c.QueryParam("field")
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
+	page, err := r.DetailsPage(true)
+	if err != nil {
+		return err
 	}
-	details := NodeDetailsPage(r, true)
-	respond := func(component templ.Component) error {
-		return Respond(c, r.app.Reverse(string(ShowNodeDetailsRHN(r.emptyNodeSet...)), params.ToSlice()...), component, nil)
-	}
-	if queryParam == "description" {
-		return respond(mt.EditDescriptionComponent(details))
-	} else if queryParam == "name" {
-		return respond(mt.EditNameComponent(details))
-	} else if queryParam == "number" {
-		return respond(mt.EditNumberComponent(details))
-	}
-	errText := "field value is not expected"
-	log.Println(errText)
-	return fmt.Errorf("%s %s", errText, queryParam)
+	component := page.Component()
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
+	return Respond(c, "", component, layout)
 
 }
 
@@ -363,4 +348,26 @@ func (r *lessonRouter) DeleteLessonStandard(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(303, ShowDetailsURL(r))
+}
+
+func (r *lessonRouter) DetailsPage(isEdit bool) (mt.LessonDetailsPage, error) {
+	slides, err := r.svc.GetSlides(r.params)
+	if err != nil {
+		return mt.LessonDetailsPage{}, err
+	}
+	page := mt.LessonDetailsPage{
+		Slides:                  slides,
+		E:                       r.app,
+		Standards:               r.nodes.Course.StandardSet.Standards,
+		NodeDetailsPage:         NodeDetailsPage(r, isEdit),
+		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), r.params.ToSlice()...),
+		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
+		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
+		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
+		GetEditAssessmentRHN:    GetEditAssessment.String(),
+		DeleteAssessmentRHN:     DeleteAssessment.String(),
+		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), r.params.ToSlice()...),
+		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), r.params.ToSlice()...),
+	}
+	return page, nil
 }

@@ -3,7 +3,7 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	cmp "gh_static_portfolio/internal/templates/manager_templates/components"
+	cmp "gh_static_portfolio/internal/templates/components"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -17,7 +17,7 @@ type NodeDetailsPage struct {
 	PostEditNodeURL   string
 	ListChildrenURL   string
 	UpNavURL          string
-	EditField         string
+	CancelEditURL     string
 	IsEdit            bool
 	NodeImageURL      func() string
 	BreadCrumbsData   BreadCrumbs
@@ -30,7 +30,7 @@ func (page NodeDetailsPage) BreadCrumbs() BreadCrumbs {
 }
 
 func (page NodeDetailsPage) Component() templ.Component {
-	return NewNodeDetailsComponent(page)
+	return NodeDetailsComponent(page)
 }
 
 func (page NodeDetailsPage) PageLayout() PageLayout {
@@ -91,6 +91,69 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 	}.Component()
 }
 
+func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
+	title := "Title placeholder"
+	subtitle := "Subtitle placeholder"
+	if editing {
+		var numItem, nameItem, descriptionItem cmp.Component
+		numItem = cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+			Name:  "Number",
+			Type:  cmp.Number,
+			Value: strconv.Itoa(page.Node.GetNumber()),
+		})
+		nameItem = cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+			Name:  "Name",
+			Type:  cmp.Text,
+			Value: page.Node.GetName(),
+		})
+		descriptionItem = cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+			Name:  "Description",
+			Value: page.Node.GetDescription(),
+		})
+		form := cmp.NewForm(cmp.NewFormParams{
+			Title:     title,
+			Subtitle:  subtitle,
+			PostURL:   page.PostEditNodeURL,
+			CancelURL: page.CancelEditURL,
+			HxTarget:  "#page",
+		})
+		form = form.AddElement(numItem, nameItem, descriptionItem)
+		return form.Component()
+	} else {
+		var numItem, nameItem, descriptionItem cmp.EditableInfoItem
+		numItem = cmp.EditableInfoItem{
+			Element: cmp.Element{ID: cmp.Kebab("Number")},
+			Field:   "Number",
+			Value:   strconv.Itoa(page.Node.GetNumber()),
+		}
+		nameItem = cmp.EditableInfoItem{
+			Element: cmp.Element{ID: cmp.Kebab("Name")},
+			Field:   "Name",
+			Value:   page.Node.GetName(),
+		}
+		descriptionItem = cmp.EditableInfoItem{
+			Element: cmp.Element{ID: cmp.Kebab("Description")},
+			Field:   "Description",
+			Value:   page.Node.GetDescription(),
+		}
+		info := cmp.EditableInfo{
+			Element: cmp.Element{
+				ID: cmp.Kebab("lesson-form"),
+			},
+			Title:      title,
+			Subtitle:   subtitle,
+			GetEditURL: page.GetEditNodeURL,
+			Components: []cmp.EditableInfoItem{
+				numItem, nameItem, descriptionItem,
+			},
+		}
+
+		return info.Component()
+	}
+
+}
+
+// newer version, not working, needs to be replaced
 func (page NodeDetailsPage) FieldsComponent(editField string) templ.Component {
 	list := cmp.NewDescriptionList(cmp.NewDescriptionListParams{
 		Title:       page.PageTitle(),

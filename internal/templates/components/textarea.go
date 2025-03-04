@@ -29,6 +29,7 @@ func NewTextAreaWithLabel(params TextAreaWithLabelParams) TextAreaWithLabel {
 		TextArea{
 			Element: Element{ID: id},
 			Name:    name,
+			Value:   params.Value,
 		},
 		Label{
 			Content: params.Name,

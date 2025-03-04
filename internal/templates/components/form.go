@@ -10,11 +10,33 @@ type Form struct {
 	Element
 	Title      string
 	Subtitle   string
-	Components []Component
+	Components []Component // should only be input elements
 	PostURL    string
 	CancelURL  string
 	HxTarget   string
 	Editing    bool
+}
+
+type EditableInfo struct {
+	Element
+	Title      string
+	Subtitle   string
+	GetEditURL string
+	Components []EditableInfoItem // should only be text elements, not input
+}
+
+func (el EditableInfo) Component() templ.Component {
+	return EditableInfoComponent(el)
+}
+
+type EditableInfoItem struct {
+	Element
+	Field string
+	Value string
+}
+
+func (el EditableInfoItem) Component() templ.Component {
+	return EditableInfoItemComponent(el)
 }
 
 type NewFormParams struct {
@@ -23,7 +45,6 @@ type NewFormParams struct {
 	PostURL   string
 	CancelURL string
 	HxTarget  string
-	Editing   bool
 }
 
 func NewForm(params NewFormParams) Form {
@@ -36,7 +57,6 @@ func NewForm(params NewFormParams) Form {
 		CancelURL: params.CancelURL,
 		PostURL:   params.PostURL,
 		HxTarget:  params.HxTarget,
-		Editing:   params.Editing,
 	}
 }
 

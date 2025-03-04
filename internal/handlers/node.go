@@ -357,6 +357,7 @@ func NodeDetailsPage(router NodeRouter, isEdit bool) mt.NodeDetailsPage {
 		PostEditNodeURL: PostEditNodeURL(router),
 		ListChildrenURL: listChildrenURL,
 		UpNavURL:        ListSiblingsURL(router),
+		CancelEditURL:   ShowDetailsURL(router),
 		ServerFilesURL:  ShowFilesURL(router),
 		BreadCrumbsData: BreadCrumbs(r.app, r.params, r.nodes.ToSlice()...),
 		IsEdit:          isEdit,

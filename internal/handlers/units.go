@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
@@ -82,23 +81,25 @@ func (r *unitRouter) PostEdit(c echo.Context) error {
 	for key, val := range form {
 		log.Println(key, val)
 		switch key {
+		case "number":
+			number, err := strconv.Atoi(val[0])
+			if err != nil {
+				return err
+			}
+			r.nodes.Unit.Number = number
 		case "description":
 			r.nodes.Unit.Description = val[0]
-			err := r.svc.UpdateUnit(r.nodes.Unit)
-			if err != nil {
-				return err
-			}
 		case "name":
 			r.nodes.Unit.Name = val[0]
-			err := r.svc.UpdateUnit(r.nodes.Unit)
-			if err != nil {
-				return err
-			}
 		default:
 			log.Println("form key:", key)
 			panic("form key not expected!")
 		}
 
+	}
+	err = r.svc.UpdateUnit(r.nodes.Unit)
+	if err != nil {
+		return err
 	}
 	return c.Redirect(303, ShowDetailsURL(r))
 }
@@ -172,26 +173,7 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 		return err
 	}
 	r.nodes = nodes
-
-	queryParam := c.QueryParam("field")
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
-	}
 	details := NodeDetailsPage(r, true)
-	details.EditField = queryParam
-	// var component templ.Component
-	// if queryParam == util.KebabCase(string(Description)) {
-	// 	component = mt.EditDescriptionComponent(details)
-	// } else if queryParam == util.KebabCase(string(Name)) {
-	// 	component = mt.EditNameComponent(details)
-	// } else if queryParam == util.KebabCase(string(Number)) {
-	// 	component = mt.EditNumberComponent(details)
-	// } else {
-	// 	errText := "field value is not expected"
-	// 	log.Println(errText)
-	// 	return fmt.Errorf("%s %s", errText, queryParam)
-	// }
 	component := details.Component()
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)

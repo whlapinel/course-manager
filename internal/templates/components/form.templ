@@ -1,0 +1,75 @@
+package components
+
+templ FormComponent(el Form) {
+	<form
+		hx-target={ el.HxTarget }
+		hx-post={ el.PostURL }
+		id={ el.ID }
+	>
+		<div class="space-y-12">
+			<div class="border-b border-white/10 pb-12">
+				<h2 class="text-base/7 font-semibold text-white">{ el.Title }</h2>
+				<p class="mt-1 text-sm/6 text-gray-400">
+					{ el.Subtitle }
+				</p>
+				for _, component := range el.Components {
+					@component.Component()
+				}
+			</div>
+		</div>
+		<div class="mt-6 flex items-center justify-end gap-x-6">
+			<button
+				hx-push-url="true"
+				hx-target={ el.HxTarget }
+				hx-get={ el.CancelURL }
+				type="button"
+				class="text-sm/6 font-semibold text-white"
+			>Cancel</button>
+			<button
+				hx-include={ "#" + el.ID }
+				class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+			>Save</button>
+		</div>
+	</form>
+}
+
+// this is designed for editable information
+templ EditableInfoComponent(el EditableInfo) {
+	<div id={ el.ID }>
+		<div class="space-y-12">
+			<div class="border-b border-white/10 pb-12">
+				<h2 class="text-base/7 font-semibold text-white">{ el.Title }</h2>
+				<p class="mt-1 text-sm/6 text-gray-400">
+					{ el.Subtitle }
+				</p>
+				for _, component := range el.Components {
+					@component.Component()
+				}
+			</div>
+		</div>
+		<div class="mt-6 flex items-center justify-end gap-x-6">
+			<button
+				hx-push-url="true"
+				hx-get={ el.GetEditURL }
+				hx-target={ "#page" }
+				class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+			>Edit</button>
+		</div>
+	</div>
+}
+
+templ EditableInfoItemComponent(el EditableInfoItem) {
+	<div
+		class="sm:col-span-4"
+		id={ Kebab(el.Field) }
+	>
+		@LabelComponent(Label{Content: el.Field})
+		<div class="mt-2">
+			<div
+				class="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 "
+			>
+				{ el.Value }
+			</div>
+		</div>
+	</div>
+}

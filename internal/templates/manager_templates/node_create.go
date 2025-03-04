@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/domain"
 	tpl "gh_static_portfolio/internal/templates"
 
-	cmp "gh_static_portfolio/internal/templates/manager_templates/components"
+	cmp "gh_static_portfolio/internal/templates/components"
 
 	"github.com/a-h/templ"
 )

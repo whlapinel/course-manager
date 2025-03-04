@@ -2,6 +2,8 @@
 
 ## Pending
 
+- Select lesson to add to date page needs major upgrade (functionality is ok)
+- Assessments list page UI needs major upgrade (functionality is ok)
 - (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.
 
 - (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column
@@ -13,7 +15,7 @@
 
 ## Complete
 
-- (major) under certain conditions, have to generate site a second or third time for slides to show up. suspect there's an issue with the files modification times falsely reporting no changes. Resolved by removing slides.html from data directory. Copying the slides.html in to the static site was causing the html mod time to be later than the markdown mod time. Not sure why it ever worked actually.
+- (major) under certain conditions, have to generate site a second or third time for slides to show up. suspect there's an issue with the files modification times falsely reporting no changes. Resolved by removing slides.html from data directory. Copying the slides.html in to the static site was causing the html mod time to be later than the markdown mod time. Not sure why it ever worked actually. (Note: I re-added the slides.html to the data directory and removed the slide generation phase from the site generator, and  made sure that every time an edit is made to the slides, the html is regenerated)
 
 - 2/23/25 (major) 405 error (method not allowed) when attempting to post a file to a course. Resolved by adding the necessary functions to handlers/node.go to ensure the route was registered.
 
