@@ -28,6 +28,7 @@ const (
 	Number InputType = "number"
 	File   InputType = "file"
 	Email  InputType = "email"
+	Hidden InputType = "hidden"
 )
 
 func (el Input) Component() templ.Component {
@@ -35,9 +36,9 @@ func (el Input) Component() templ.Component {
 }
 
 type InputWithLabelParams struct {
-	Name    string
-	Type    InputType
-	Value   string
+	Name  string
+	Type  InputType
+	Value string
 }
 
 func Kebab(name string) string {
@@ -59,6 +60,22 @@ func NewInputWithLabel(params InputWithLabelParams) InputWithLabel {
 			For:     id,
 		},
 	}
+}
+
+type HiddenInputParams struct {
+	Name  string
+	Value string
+}
+
+func NewHiddenInput(params HiddenInputParams) Input {
+	id := Kebab(params.Name)
+	return Input{
+		Element:   Element{ID: id},
+		Name:      Kebab(params.Name),
+		Value:     params.Value,
+		InputType: Hidden,
+	}
+
 }
 
 type InputWithLabel struct {

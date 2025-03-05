@@ -45,7 +45,7 @@ func (page NodeDetailsPage) PageLayout() PageLayout {
 
 func (page NodeDetailsPage) CalendarButton() templ.Component {
 	return HXButton{
-		Text:     "Calendar",
+		Text:     "📅",
 		Method:   HxGet,
 		URL:      page.CourseCalendarURL,
 		HxTarget: "#page",
@@ -65,7 +65,7 @@ func (page NodeDetailsPage) PageTitle() string {
 func (page NodeDetailsPage) upNavText() string {
 	parentPageText := page.Node.TypeName()
 	if page.Node.ParentTypeName() == string(domain.RootTypeName) {
-		parentPageText = "Home"
+		parentPageText = "🏠"
 		return fmt.Sprintf("Up to %s", parentPageText)
 	}
 	return fmt.Sprintf("Up to %ss", parentPageText)
@@ -85,7 +85,7 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 	return HXButton{
 		Method:   HxGet,
 		URL:      page.ServerFilesURL,
-		Text:     "Files",
+		Text:     "📂",
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
@@ -95,21 +95,24 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 	title := "Title placeholder"
 	subtitle := "Subtitle placeholder"
 	if editing {
-		var numItem, nameItem, descriptionItem cmp.Component
-		numItem = cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		var comps []cmp.Component
+		numItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 			Name:  "Number",
 			Type:  cmp.Number,
 			Value: strconv.Itoa(page.Node.GetNumber()),
 		})
-		nameItem = cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		comps = append(comps, numItem)
+		nameItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 			Name:  "Name",
 			Type:  cmp.Text,
 			Value: page.Node.GetName(),
 		})
-		descriptionItem = cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+		comps = append(comps, nameItem)
+		descriptionItem := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
 			Name:  "Description",
 			Value: page.Node.GetDescription(),
 		})
+		comps = append(comps, descriptionItem)
 		form := cmp.NewForm(cmp.NewFormParams{
 			Title:     title,
 			Subtitle:  subtitle,
@@ -117,7 +120,7 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 			CancelURL: page.CancelEditURL,
 			HxTarget:  "#page",
 		})
-		form = form.AddElement(numItem, nameItem, descriptionItem)
+		form = form.AddElement(comps...)
 		return form.Component()
 	} else {
 		var numItem, nameItem, descriptionItem cmp.EditableInfoItem

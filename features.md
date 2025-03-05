@@ -3,6 +3,7 @@
 
 ## Pending (keep in priority order)
 
+- Allow user to modify unit sequence
 - Calendar should jump to current month
 - From lesson details: back to calendar
 - From lesson details page: next lesson or previous lesson (nice to have)
@@ -11,7 +12,6 @@
 - Share course with user (read-only)
 - Share course with user (with edit privileges)
 - Copy course from user
-
 - CourseNode files capabilities:
   - 1/22/25 User can delete node files
   - 1/22/25 User can rename node files

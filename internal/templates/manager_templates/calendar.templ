@@ -72,23 +72,10 @@ templ LinkWithInfoDialogComponent(data LinkWithInfoDialog) {
 }
 
 templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
+	@PageLayoutComponent(page)
 	<h1>{ page.Course.Name }</h1>
 	<h2>{ page.Date.Format(time.DateOnly) }</h2>
-	<ul>
-		<details>
-			for _, unit := range page.Course.Units {
-				<summary>{ unit.Name }</summary>
-				<ul>
-					for _, lesson := range unit.Lessons {
-						<li
-							hx-post={ page.AddLessonDateURL(unit.ID, lesson.ID) }
-							hx-target="#page"
-						>{ lesson.Name }</li>
-					}
-				</ul>
-			}
-		</details>
-	</ul>
+	@page.UnitPicker()
 }
 
 // CourseManager site
@@ -190,11 +177,18 @@ templ TermOccasionEditorComponent(data TermOccasionEditor) {
 				<button hx-post={ data.PostEditOccasionURL } hx-target="#page">Submit</button>
 			</form>
 		} else {
+			@OccasionComponent(data.Occasion)
 			<button
 				hx-get={ data.GetEditOccasionURL }
 				hx-target={ "#" + data.ComponentID() }
 			>
-				Edit
+				📝
+			</button>
+			<button
+				hx-delete={ data.DeleteOccasionURL }
+				hx-target={ "#" + data.ComponentID() }
+			>
+				❌
 			</button>
 		}
 	</div>
@@ -222,7 +216,6 @@ templ CalendarDateComponent(date time.Time, page CalendarPage) {
 			if termCal, ok := page.(TermCalendar); ok {
 				@termCal.AddOccasionButton(date)
 				for _, occasion := range Occasions(date, termCal) {
-					@OccasionComponent(occasion)
 					@termCal.TermOccasionEditor(occasion)
 				}
 			} else if courseCal, ok := page.(CourseCalendar); ok {
@@ -242,4 +235,20 @@ templ CalendarDateComponent(date time.Time, page CalendarPage) {
 
 templ OccasionComponent(occasion domain.Occasion) {
 	<p class="text-lg text-blue-300 font-extrabold">{ occasion.Name }</p>
+}
+
+// for adding lessons to a date
+templ UnitPickerComponent(page UnitPicker) {
+	<div id="picker" class="flex flex-col max-w-fit">
+		for _, unit := range page.Units {
+			@page.ListLessonsButton(unit)
+		}
+	</div>
+}
+
+templ LessonPickerComponent(page LessonPicker) {
+	@page.ListUnitsButton()
+	for _, lesson := range page.Lessons {
+		@page.SelectLessonButton(lesson)
+	}
 }

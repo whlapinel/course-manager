@@ -34,7 +34,7 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 
 func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
 	return HXButton{
-		Text:      "Delete",
+		Text:      "❌",
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    HxDelete,
 		URL:       page.E.Reverse(page.DeleteChildRHN, AddParams(page.Params, node.GetID())...),
@@ -54,7 +54,7 @@ func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Compon
 
 func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Component {
 	return HXButton{
-		Text:     "Details",
+		Text:     "🔍",
 		Method:   HxGet,
 		URL:      page.E.Reverse(page.ChildDetailsRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget: "#page",
@@ -64,7 +64,7 @@ func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Compone
 
 func (page NodeListPage) NodeCreateButton() templ.Component {
 	return HXButton{
-		Text:     fmt.Sprintf("Add %s", page.ParentNode.ChildTypeName()),
+		Text:     fmt.Sprintf("➕ %s", page.ParentNode.ChildTypeName()),
 		Method:   HxGet,
 		URL:      page.ShowNewChildURL,
 		HxTarget: "#page",
@@ -89,7 +89,7 @@ func (list NodeListPage) PageLayout() PageLayout {
 
 func (list NodeListPage) upNavText() string {
 	if list.UpNavURL != "" && list.ParentNode != nil {
-		return fmt.Sprintf("Up to %s", upNavText(list.ParentNode.TypeName()))
+		return fmt.Sprintf("⬆️ to %s", upNavText(list.ParentNode.TypeName()))
 	} else {
 		return ""
 	}

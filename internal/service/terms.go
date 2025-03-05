@@ -136,3 +136,11 @@ func (svc CourseService) UpdateOccasion(name string, id int) error {
 	occasion.Name = name
 	return svc.repo.UpdateOccasion(occasion)
 }
+
+func (svc CourseService) DeleteOccasion(occasionID int) error {
+	occasion, err := svc.GetOccasion(occasionID)
+	if err != nil {
+		return err
+	}
+	return svc.repo.DeleteOccasion(occasion)
+}

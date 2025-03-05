@@ -192,6 +192,10 @@ func (cr CourseRepo) UpdateOccasion(occasion domain.Occasion) error {
 
 }
 
+func (cr CourseRepo) DeleteOccasion(occasion domain.Occasion) error {
+	return cr.queries.DeleteOccasion(context.Background(), int64(occasion.ID))
+}
+
 func (t CourseRepo) SaveTerm(term domain.Term) (int, error) {
 	termParams := database.SaveTermParams{
 		Name: term.Name,

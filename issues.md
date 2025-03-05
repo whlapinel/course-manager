@@ -2,16 +2,18 @@
 
 ## Pending
 
+- No way to delete occasions from term calendar
 - Select lesson to add to date page needs major upgrade (functionality is ok)
 - Assessments list page UI needs major upgrade (functionality is ok)
 - (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.
 
-- (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column
+- (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column; this means deleting a lesson will give a foriegn key error upon attempting to delete a lesson that has assignments. Which might be ok, but will need to adjust the UI accordingly.
 
 - (major) attempting to view lesson files returns a server error rather than a simple message stating that no files exist for the lesson
 - (major) similarly, attempting to view lesson slides returns a server error
 
 - 1/23/25 (minor) Deleting a course (unit, lesson may take a while as well) takes a long time. Maybe after a course row itself is deleted we should go ahead and return the response to the user and do the rest in the background. If child elements and files are not deleted we should log an error but the user doesn't need to wait on all of that, maybe?
+- (minor) I think FitToTerm won't respect out of order units or lessons, it will put units and lessons in order using sequence and numbers rather than keeping the order as it was in the previous term.
 
 ## Complete
 

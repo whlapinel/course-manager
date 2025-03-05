@@ -350,17 +350,26 @@ func NodeDetailsPage(router NodeRouter, isEdit bool) mt.NodeDetailsPage {
 	if _, ok := r.nodes.CurrentNode().(domain.Lesson); !ok {
 		listChildrenURL = ListChildrenURL(router)
 	}
+	node := r.nodes.CurrentNode()
+	var calURL string
+	_, isCourse := node.(domain.Course)
+	_, isUnit := node.(domain.Unit)
+	_, isLesson := node.(domain.Lesson)
+	if isCourse || isUnit || isLesson {
+		calURL = r.app.Reverse(string(ShowCourseCalendar), r.params.ToSlice()...)
+	}
 	return mt.NodeDetailsPage{
-		Params:          r.params,
-		Node:            r.nodes.CurrentNode(),
-		GetEditNodeURL:  ShowEditNodeURL(router),
-		PostEditNodeURL: PostEditNodeURL(router),
-		ListChildrenURL: listChildrenURL,
-		UpNavURL:        ListSiblingsURL(router),
-		CancelEditURL:   ShowDetailsURL(router),
-		ServerFilesURL:  ShowFilesURL(router),
-		BreadCrumbsData: BreadCrumbs(r.app, r.params, r.nodes.ToSlice()...),
-		IsEdit:          isEdit,
+		Params:            r.params,
+		Node:              r.nodes.CurrentNode(),
+		CourseCalendarURL: calURL,
+		GetEditNodeURL:    ShowEditNodeURL(router),
+		PostEditNodeURL:   PostEditNodeURL(router),
+		ListChildrenURL:   listChildrenURL,
+		UpNavURL:          ListSiblingsURL(router),
+		CancelEditURL:     ShowDetailsURL(router),
+		ServerFilesURL:    ShowFilesURL(router),
+		BreadCrumbsData:   BreadCrumbs(r.app, r.params, r.nodes.ToSlice()...),
+		IsEdit:            isEdit,
 	}
 }
 

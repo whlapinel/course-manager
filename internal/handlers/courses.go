@@ -154,6 +154,7 @@ func (r *courseRouter) ShowDetails(c echo.Context) error {
 		NodeDetailsPage: mt.NodeDetailsPage{
 			Params:          r.params,
 			Node:            nodes.Course,
+			CourseCalendarURL: r.app.Reverse(ShowCourseCalendar.String(), r.params.ToSlice()...),
 			GetEditNodeURL:  r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
 			PostEditNodeURL: r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
 			ListChildrenURL: r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),

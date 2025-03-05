@@ -9,228 +9,217 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
-# Warmup
+# Building a Clash Royale-Themed CLI App
+## Using SQLite3 in Python
 
-Write a function `write_name` that writes a name to a text file `names.txt`.
+## 🏰 Project Overview
 
-```python
-def write_name(name: str)->None:
-```
+### **Clash Royale Card Manager**
+- Manage a database of Clash Royale cards.
+- Add, update, delete, and list cards.
+- Built using Python and SQLite3.
 
-Write a second function `read_name` that reads and returns the first name from the text file `names.txt`.
-
-```python
-def read_name()->str:
-```
-
-Add your test:
+# 🛠 Setting Up the Database
 
 ```python
-write_name("Bill")
-name = read_name()
-assert name == "Bill"
+import sqlite3
+
+def create_connection():
+    """Creates and returns a database connection."""
+    try:
+        conn = sqlite3.connect("clash_royale.db")
+        conn.row_factory = sqlite3.Row  # Enables dictionary-like access to rows
+        return conn
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return None
 ```
 
-# Agenda
-
-- Review for Unit 4 test (tomorrow)
-
-# Announcements
-
-- Friday: Guest Speakers from MSC 8-9am in Cafe
-
-# Looking ahead
-
-## Unit 5: Classes and Objects, Generators
-
-# Python File Operations & SQLite Review
-
-1. File Operations
-   - Writing to files
-   - Appending to files
-   - Reading from files (Total and Average)
-
-2. SQLite Operations
-   - Creating a connection
-   - Creating a table
-   - Inserting, Updating, Deleting
-   - Querying (single and multiple)
-
-# File Operations: Writing
-
-## Task 1: Writing to a File
-
-Write a function that takes in a **filename** and a **name** and writes the name to the file.  
-
-*Hints*:
-
-- Use the `open()` function with `'w'` mode to write.
-- Don’t forget to close the file or use a `with` block!
+# 🎴 Adding Cards (With Error Handling)
 
 ```python
-def write_name_to_file(filename, name):
-    # Your code here
+def add_card(conn, name, elixir_cost, rarity):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO cards (name, elixir_cost, rarity) VALUES (?, ?, ?)",
+                       (name, elixir_cost, rarity))
+        conn.commit()
+        print("✅ Card added successfully!")
+    except sqlite3.Error as e:
+        print(f"Error adding card: {e}")
 ```
 
-# File Operations: Appending
+Usage:
+```python
+conn = create_connection()
+if conn:
+    add_card(conn, "P.E.K.K.A", 7, "Epic")
+    conn.close()
+```
 
-## Task 2: Appending to a File
-
-Write a function that **appends** a new grade to a file of scores.
-
-*Hints*:
-
-- Use `'a'` mode in `open()` to append.
-- Don’t forget to add a newline (`\n`) after the grade!
+# 📜 Viewing Cards (With Row Factory)
 
 ```python
-def append_grade_to_file(filename, grade):
-    # Your code here
+def list_cards(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM cards")
+        cards = cursor.fetchall()
+        
+        for card in cards:
+            print(f"ID: {card['id']}, Name: {card['name']}, Elixir: {card['elixir_cost']}, Rarity: {card['rarity']}")
+    except sqlite3.Error as e:
+        print(f"Error fetching cards: {e}")
 ```
 
-# File Operations: Reading & Total
+Usage:
+```python
+conn = create_connection()
+if conn:
+    list_cards(conn)
+    conn.close()
+```
 
-## Task 3: Reading and Calculating Total
-
-Write a function that reads from the **scores file** and calculates the **total** of all scores.
-
-*Hints*:
-
-- Open the file in `'r'` mode.
-- Use a loop to read each line, convert to an integer, and sum the values.
+# 🔄 Updating a Card (With Error Handling)
 
 ```python
-def read_and_calculate_total(filename):
-    # Your code here
+def update_card(conn, card_id, new_name, new_elixir, new_rarity):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE cards SET name = ?, elixir_cost = ?, rarity = ? WHERE id = ?",
+                       (new_name, new_elixir, new_rarity, card_id))
+        conn.commit()
+        print("✅ Card updated successfully!")
+    except sqlite3.Error as e:
+        print(f"Error updating card: {e}")
 ```
 
-# File Operations: Reading & Average
-
-## Task 4: Calculating Average
-
-Write a function to calculate the **average score** from a file of scores.
-
-*Hints*:
-
-- Use a loop to calculate both the total and the count of scores.
-- Return the total divided by the number of scores.
+# ❌ Deleting a Card (With Error Handling)
 
 ```python
-def read_and_calculate_average(filename):
-    # Your code here
+def delete_card(conn, card_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM cards WHERE id = ?", (card_id,))
+        conn.commit()
+        print("✅ Card deleted successfully!")
+    except sqlite3.Error as e:
+        print(f"Error deleting card: {e}")
 ```
 
-# SQLite Operations: Connection
-
-## Task 5: Create a Database Connection
-
-Write a function that creates a connection to an SQLite database.
-
-*Hints*:
-
-- Use `sqlite3.connect()` to create a connection.
-- Don’t forget to return the connection object!
+# 🎮 Building the CLI Menu (With Error Handling)
 
 ```python
-def create_connection(db_file):
-    # Your code here
+def menu():
+    conn = create_connection()
+    if not conn:
+        return
+    try:
+        while True:
+            print("\n🏆 Clash Royale Card Manager 🏆")
+            print("1. Add Card")
+            print("2. View Cards")
+            print("3. Update Card")
+            print("4. Delete Card")
+            print("5. Exit")
+            
+            choice = input("Enter choice: ")
+            
+            if choice == "1":
+                name = input("Card Name: ")
+                elixir = int(input("Elixir Cost: "))
+                rarity = input("Rarity (Common/Rare/Epic/Legendary): ")
+                add_card(conn, name, elixir, rarity)
+            elif choice == "2":
+                list_cards(conn)
+            elif choice == "3":
+                card_id = int(input("Card ID: "))
+                name = input("New Name: ")
+                elixir = int(input("New Elixir Cost: "))
+                rarity = input("New Rarity: ")
+                update_card(conn, card_id, name, elixir, rarity)
+            elif choice == "4":
+                card_id = int(input("Card ID to delete: "))
+                delete_card(conn, card_id)
+            elif choice == "5":
+                break
+            else:
+                print("Invalid choice!")
+    finally:
+        conn.close()
 ```
 
-# SQLite Operations: Create Table
+# 💡 SQLite3 Advanced Tips & Tricks
 
-## Task 6: Creating a Table for Pokémon
+## 🔹 Using `sqlite3.Row` for Better Data Handling
+- Allows accessing columns by name (e.g., `row['name']` instead of `row[1]`).
+- Makes code **more readable** and less error-prone.
 
-Write a function to create a **Pokemon** table with columns `id`, `name`, and `type`.
+# 🔹 PRAGMA Statements
+- Control SQLite settings.
+- **Example: Enable Foreign Keys**
+  ```python
+  conn.execute("PRAGMA foreign_keys = ON;")
+  ```
+- **Example: Check Database Integrity**
+  ```python
+  conn.execute("PRAGMA integrity_check;")
+  ```
 
-*Hints*:
+# ⚡ Lesser-Known SQLite Features
 
-- Use `CREATE TABLE` in your SQL statement.
-- Execute the SQL using the connection's `execute()` method.
-
+## 🔸 Use an **In-Memory Database** for Fast Testing
 ```python
-def create_table(conn):
-    # Your code here
+conn = sqlite3.connect(":memory:")
 ```
+- Faster than file-based databases.
+- Data is lost when the program exits.
 
-# SQLite Operations: Insert Pokémon
-
-## Task 7: Inserting a Pokémon
-
-Write a function that inserts a Pokémon (name and type) into the table.
-
-*Hints*:
-
-- Use `INSERT INTO` SQL.
-- Pass the values as parameters to avoid SQL injection.
-
+# 🔸 Using SQLite Functions in Queries
 ```python
-def insert_pokemon(conn, name, pokemon_type):
-    # Your code here
+cursor.execute("SELECT upper(name) FROM cards")
 ```
+- Runs `UPPER(name)` inside SQLite instead of Python.
 
-# SQLite Operations: Update Pokémon
-
-## Task 8: Updating a Pokémon's Type
-
-Write a function that updates a Pokémon's **type** in the table.
-
-*Hints*:
-
-- Use `UPDATE` SQL to change the type where the name matches.
-- Don't forget to commit the change!
-
+# 🔸 Storing JSON Data
 ```python
-def update_pokemon_type(conn, name, new_type):
-    # Your code here
+cursor.execute("INSERT INTO cards (name, elixir_cost, rarity) VALUES (?, ?, ?)",
+               (json.dumps({"name": "P.E.K.K.A", "elixir": 7}), 7, "Epic"))
 ```
+- Useful for dynamic attributes.
 
-# SQLite Operations: Delete Pokémon
+# 🚀 Wrapping Up
+- You’ve built a **Clash Royale-themed CLI app** with SQLite3.
+- You learned **error handling, row_factory, and advanced SQLite features**.
+- Try adding **custom queries** and new features!
 
-## Task 9: Deleting a Pokémon
+# Assignment 4.7
 
-Write a function that deletes a Pokémon from the table by name.
+- Build your own CLI application using Python and Sqlite3
 
-*Hints*:
+# Ideas for your app
 
-- Use `DELETE FROM` SQL with a `WHERE` condition.
-- Make sure to commit the changes.
+## To-Do List Manager
 
-```python
-def delete_pokemon(conn, name):
-    # Your code here
-```
+Users can add, delete, and mark tasks as complete.
+Store tasks in an SQLite database with due dates and statuses.
 
-# SQLite Operations: Query Pokémon
+# Book Tracker
 
-## Task 10: Query a Pokémon by Name
+Users can add books they’ve read, rate them, and track progress.
+Store book titles, authors, completion status, and ratings in SQLite.
 
-Write a function to query a specific Pokémon by its name and return the result.
+# Expense Tracker
 
-*Hints*:
+Users can log daily expenses with categories.
+Store transactions in SQLite with timestamps and amounts.
 
-- Use `SELECT` SQL with a `WHERE` condition.
-- Return the fetched result using `fetchone()`.
+# Simple Contact Manager
 
-```python
-def query_pokemon_by_name(conn, name):
-    # Your code here
-```
+Users can store names, phone numbers, and emails.
+Provide search and update functionality using SQLite.
 
-# SQLite Operations: Query All Pokémon
+# Student Grades Manager
 
-## Task 11: Query All Pokémon
-
-Write a function to query all Pokémon from the table.
-
-*Hints*:
-
-- Use `SELECT *` SQL to fetch all rows.
-- Return all rows using `fetchall()`.
-
-```python
-def query_all_pokemon(conn):
-    # Your code here
-```
-
-# Conclusion
-
+Allow users to enter student names, subjects, and grades.
+Compute average grades and store records in SQLite.

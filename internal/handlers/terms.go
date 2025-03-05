@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -210,27 +208,12 @@ func (r *termRouter) ShowEdit(c echo.Context) error {
 		return err
 	}
 	r.nodes = nodes
-	queryParam := c.QueryParam("field")
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
-	}
 	details := mt.TermDetailsPage{
 		NodeDetailsPage: NodeDetailsPage(r, true),
 	}
-
-	respond := func(component templ.Component) error {
-		return Respond(c, ShowDetailsURL(r), component, nil)
-	}
-	if queryParam == "description" {
-		return respond(mt.EditDescriptionComponent(details.NodeDetailsPage))
-	} else if queryParam == "name" {
-		return respond(mt.EditNameComponent(details.NodeDetailsPage))
-	}
-	errText := "field value is not expected"
-	log.Println(errText)
-	return fmt.Errorf("%s %s", errText, queryParam)
-
+	component := details.Component()
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
+	return Respond(c, "", component, layout)
 }
 
 // ShowFiles implements NodeRouter.
@@ -259,6 +242,7 @@ const (
 	TermDetails       = RouteHandlerName(GET + Term)
 	ShowTermCalendar  = RouteHandlerName(GET + TermCalendar)
 	CreateOccasion    = RouteHandlerName(POST + Occasions)
+	DeleteOccasion    = RouteHandlerName(DELETE + Occasion)
 	ShowEditOccasion  = RouteHandlerName(GET + Occasion)
 	PostEditOccasion  = RouteHandlerName(POST + Occasion)
 	ShowEditTermDates = RouteHandlerName(GET + TermDates)
@@ -279,8 +263,9 @@ func TermHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 		{Occasions, CreateOccasion, POST, termRouter.CreateOccasion},
 		{Occasion, ShowEditOccasion, GET, termRouter.ShowEditOccasion},
 		{Occasion, PostEditOccasion, POST, termRouter.PostEditOccasion},
+		{Occasion, DeleteOccasion, DELETE, termRouter.DeleteOccasion},
 		{TermDates, ShowEditTermDates, GET, termRouter.ShowEditTermDates},
-		{TermDates, PostEditTermDates, POST, termRouter.PostEditOccasion},
+		{TermDates, PostEditTermDates, POST, termRouter.PostEditTermDates},
 	}
 	routeHandlers = append(routeHandlers, termRouteHandlers...)
 	routeHandlers = append(routeHandlers, NodeHandlers(nodeRouter)...)
@@ -305,6 +290,7 @@ func (r *termRouter) ShowTermCalendar(c echo.Context) error {
 		Term:                r.nodes.Term,
 		GetEditOccasionRHN:  ShowEditOccasion.String(),
 		PostEditOccasionRHN: PostEditOccasion.String(),
+		DeleteOccasionRHN:   DeleteOccasion.String(),
 		ListTermsURL:        ListSiblingsURL(r),
 		TermDetailsURL:      ShowDetailsURL(r),
 		CreateOccasionURL:   r.app.Reverse(CreateOccasion.String(), r.params.ToSlice()...),
@@ -405,6 +391,33 @@ func (r *termRouter) PostEditOccasion(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(303, r.app.Reverse(ShowTermCalendar.String(), r.params.ToSlice()...))
+}
+
+func (r *termRouter) DeleteOccasion(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	occasionID, err := ParseRouteParam(c, OccasionID)
+	if err != nil {
+		return err
+	}
+	err = r.svc.DeleteOccasion(occasionID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(200)
+
 }
 
 func (r *termRouter) ShowEditTermDates(c echo.Context) error {

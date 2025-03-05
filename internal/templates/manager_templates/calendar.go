@@ -31,6 +31,7 @@ type TermCalendar struct {
 	CreateOccasionURL    string
 	GetEditOccasionRHN   string
 	PostEditOccasionRHN  string
+	DeleteOccasionRHN    string
 	CurrentOccasionIndex int
 	E                    *echo.Echo
 }
@@ -56,6 +57,7 @@ func (page TermCalendar) TermOccasionEditor(occasion domain.Occasion) templ.Comp
 		IsEditing:           false,
 		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
 		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
+		DeleteOccasionURL:   page.E.Reverse(page.DeleteOccasionRHN, AddParams(page.Params, occasion.ID)...),
 	}.Component()
 
 }
@@ -161,6 +163,7 @@ type TermOccasionEditor struct {
 	IsEditing           bool
 	GetEditOccasionURL  string
 	PostEditOccasionURL string
+	DeleteOccasionURL   string
 }
 
 func (data TermOccasionEditor) ComponentID() string {
@@ -288,11 +291,17 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 }
 
 type AddLessonToDatePage struct {
-	Date             time.Time
-	Params           domain.NodePath
-	Course           domain.Course
-	AddLessonDateRHN string
-	E                *echo.Echo
+	Date              time.Time
+	Nodes             domain.Nodes
+	Params            domain.NodePath
+	Course            domain.Course
+	ListLessonsRHN    string
+	AddLessonDateRHN  string
+	E                 *echo.Echo
+	TermDetailsURL    string
+	BreadCrumbsData   BreadCrumbs
+	CourseDetailsURL  string
+	CourseCalendarURL string
 }
 
 func (page AddLessonToDatePage) Component() templ.Component {
@@ -312,4 +321,89 @@ func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {
 		Static: true,
 		Course: course,
 	}
+}
+
+func (data AddLessonToDatePage) PageLayout() PageLayout {
+	return PageLayout{
+		PageTitle: "Add Lesson to " + data.Date.Format(time.DateOnly),
+		UpNav: UpNav{
+			URL:  data.CourseCalendarURL,
+			Text: "Back to Calendar",
+		},
+	}
+
+}
+
+func (data AddLessonToDatePage) BreadCrumbs() BreadCrumbs {
+	return data.BreadCrumbsData
+}
+
+func (data AddLessonToDatePage) UnitPicker() templ.Component {
+	return UnitPicker{
+		Date:           data.Date,
+		Params:         data.Params,
+		Units:          data.Course.Units,
+		ListLessonsRHN: data.ListLessonsRHN,
+		Echo:           data.E,
+	}.Component()
+}
+
+type UnitPicker struct {
+	Date           time.Time
+	Params         domain.NodePath
+	Units          []domain.Unit
+	ListLessonsRHN string
+	Echo           *echo.Echo
+}
+
+func (data UnitPicker) ListLessonsButton(unit domain.Unit) templ.Component {
+	return HXButton{
+		Text:     unit.Designation(),
+		Method:   HxGet,
+		URL:      data.SelectUnitURL(unit.ID),
+		HxTarget: "#picker",
+	}.Component()
+}
+
+func (data UnitPicker) SelectUnitURL(unitID int) string {
+	return data.Echo.Reverse(data.ListLessonsRHN, AddParams(data.Params, data.Date.Format(time.DateOnly), unitID)...)
+}
+
+func (data UnitPicker) Component() templ.Component {
+	return UnitPickerComponent(data)
+}
+
+type LessonPicker struct {
+	Date            time.Time
+	Params          domain.NodePath
+	ListUnitsURL    string
+	Lessons         []domain.Lesson
+	SelectLessonRHN string
+	Echo            *echo.Echo
+}
+
+func (data LessonPicker) ListUnitsButton() templ.Component {
+	return HXButton{
+		Text:     "Back to units",
+		Method:   HxGet,
+		URL:      data.ListUnitsURL,
+		HxTarget: "#page",
+	}.Component()
+}
+
+func (data LessonPicker) Component() templ.Component {
+	return LessonPickerComponent(data)
+}
+
+func (data LessonPicker) SelectLessonButton(lesson domain.Lesson) templ.Component {
+	return HXButton{
+		Text:     lesson.Designation(),
+		Method:   HxPost,
+		URL:      data.SelectLessonURL(lesson.ID),
+		HxTarget: "#picker",
+	}.Component()
+}
+
+func (data LessonPicker) SelectLessonURL(lessonID int) string {
+	return data.Echo.Reverse(data.SelectLessonRHN, AddParams(data.Params, lessonID, data.Date.Format(time.DateOnly))...)
 }

@@ -24,7 +24,7 @@ func NewSelectWithLabel(name string, options []Option) SelectWithLabel {
 			Element: Element{
 				ID: id,
 			},
-			Name:    name,
+			Name:    Kebab(name),
 			Options: options,
 		},
 	}

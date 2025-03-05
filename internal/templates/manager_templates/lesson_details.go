@@ -3,7 +3,10 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/components"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -83,4 +86,55 @@ type EditAssessmentForm struct {
 
 func (data EditAssessmentForm) Component() templ.Component {
 	return EditAssessmentFormComponent(data)
+}
+
+func (page LessonDetailsPage) NewAssessmentForm() templ.Component {
+	form := cmp.NewForm(cmp.NewFormParams{
+		Title:     "New Assessment",
+		Subtitle:  "Placeholder",
+		PostURL:   page.PostAssessmentURL,
+		CancelURL: page.CancelEditURL,
+		HxTarget:  "#page",
+	})
+	nameInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "Name",
+		Type: cmp.Text,
+	})
+	var date string
+	if page.Lesson().Dates != nil {
+		date = page.Lesson().Dates[0].Format(time.DateOnly)
+	}
+	assignedInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "Date Assigned",
+		Type:  cmp.Date,
+		Value: date,
+	})
+	dueInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "Date Due",
+		Type:  cmp.Date,
+		Value: date,
+	})
+	var options []cmp.Option
+	for _, category := range domain.Categories {
+		catOption := cmp.Option{
+			Value:   strconv.Itoa(int(category)),
+			Content: category.String(),
+		}
+		options = append(options, catOption)
+	}
+	categorySelect := cmp.NewSelectWithLabel("Category", options)
+	fileInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "File",
+		Type: cmp.File,
+	})
+	instructionsTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+		Name: "Instructions",
+	})
+	hiddenIdInput := cmp.NewHiddenInput(cmp.HiddenInputParams{
+		Name:  "Lesson ID",
+		Value: strconv.Itoa(page.Lesson().GetID().(int)),
+	})
+	form = form.AddElement(nameInput, assignedInput, dueInput, categorySelect, fileInput, instructionsTextArea, hiddenIdInput)
+	return form.Component()
+
 }
