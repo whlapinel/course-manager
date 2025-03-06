@@ -3,8 +3,6 @@ package service
 import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
-	managertemplates "gh_static_portfolio/internal/templates/manager_templates"
-	"log"
 	"os"
 	"testing"
 )
@@ -25,20 +23,4 @@ func TestMain(m *testing.M) {
 	defer db.Close()
 	code := m.Run()
 	os.Exit(code)
-}
-
-func TestCalendarDates(t *testing.T) {
-
-	course, err := svc.GetCourseForCalendar(5)
-	if err != nil {
-		t.Error(err)
-	}
-	courseCal := managertemplates.CourseCalendar{
-		Course: course,
-	}
-	calData := courseCal.CalendarDates()
-	for date, data := range calData {
-		log.Println(date, data)
-	}
-
 }

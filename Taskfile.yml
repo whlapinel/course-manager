@@ -5,35 +5,46 @@ tasks:
     desc: Export all secret files in a separate folder for publishing elsewhere
     cmds:
       - go run ./cmd/export_secret
-  hello:
-    cmds:
-      - echo 'Hello World from Task!'
-    silent: true
 
   generate:
     desc: Generate stuff and things
     cmds:
       - go generate ./...
 
-  sync-site:
-    desc: Push generated site code to GitHub to make publicly available
-    cmds:
-      - cd python && git add .
-      - cd python && git commit -m "auto-sync"
-      - cd python && git push
-
-  run-fyne-manager:
-    desc: Start Fyne course manager app locally
-    deps:
-      - generate
-    cmds:
-      - echo 'Starting Course Manager'
-      - go run ./cmd/fyne_app
-
-  run-web-manager:
-    desc: Start server for course manager web application
+  dev-run-full:
+    desc: Generate then run
     deps:
       - generate
     cmds:
       - echo 'Starting Course Manager'
       - go run ./cmd/web_app
+
+  dev-run:
+    desc: Build and run without generate (for when we're not changing UI)
+    cmds:
+      - go run ./cmd/web_app
+
+  tar-data:
+    desc: Prepare database and files for sending to remote server
+    cmds:
+      - mkdir build \
+        build/internal \
+        build/internal/data \
+        build/internal/data/users \
+        build/internal/data/database \
+      - cp -r ./internal/data/users ./build/internal/data/users
+      - cp internal/data/database/course_manager.db ./build/internal/data/database/course_manager.db
+      - tar -czf data.tar.gz -C ./build .
+
+  build:
+    desc: Self-explanatory
+    cmds:
+      - mkdir build \
+        build/cmd/ \
+        build/cmd/web_app \
+        build/internal \
+        build/internal/data \
+        build/internal/data/database \
+        build/internal/data/database/migrations \
+      - go build ./cmd/web_app -o ./build/cmd/web_app/main
+      - tar -czf web_app.tar.gz -C ./build .
