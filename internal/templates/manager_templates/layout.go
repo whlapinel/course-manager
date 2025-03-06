@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/components"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -39,9 +40,9 @@ func (data BreadCrumbs) Component() templ.Component {
 }
 
 func (data CourseManagerLayout) SigninButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Sign In",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.SigninURL,
 		HxTarget: "#page",
 		PushURL:  true,
@@ -49,9 +50,9 @@ func (data CourseManagerLayout) SigninButton() templ.Component {
 }
 
 func (data CourseManagerLayout) SignupButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Sign Up",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.SignupURL,
 		HxTarget: "#page",
 		PushURL:  true,
@@ -59,10 +60,10 @@ func (data CourseManagerLayout) SignupButton() templ.Component {
 }
 
 func (data CourseManagerLayout) SignoutButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:      "Sign Out",
 		HxConfirm: "Are you sure you want to sign out?",
-		Method:    HxPost,
+		Method:    cmp.HxPost,
 		URL:       data.SignoutURL,
 		HxTarget:  "#page",
 		PushURL:   true,

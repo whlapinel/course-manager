@@ -38,9 +38,9 @@ func (page LessonDetailsPage) Lesson() domain.Lesson {
 }
 
 func (page LessonDetailsPage) EditSlidesButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Edit Slides",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      page.EditSlidesURL,
 		HxTarget: EditSlidesContainerID.Selector(),
 		PushURL:  true,
@@ -49,9 +49,9 @@ func (page LessonDetailsPage) EditSlidesButton() templ.Component {
 }
 
 func (data LessonDetailsPage) ViewMarkdownButton(filepath string) templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "View As HTML",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		HxTarget: "#markdown",
 		URL:      data.FileURL(filepath),
 		PushURL:  true,

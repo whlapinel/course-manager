@@ -3,6 +3,7 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates/components"
 	cmp "gh_static_portfolio/internal/templates/components"
 	"strconv"
 
@@ -44,9 +45,9 @@ func (page NodeDetailsPage) PageLayout() PageLayout {
 }
 
 func (page NodeDetailsPage) CalendarButton() templ.Component {
-	return HXButton{
+	return components.HXButton{
 		Text:     "📅",
-		Method:   HxGet,
+		Method:   components.HxGet,
 		URL:      page.CourseCalendarURL,
 		HxTarget: "#page",
 		PushURL:  true,
@@ -72,9 +73,9 @@ func (page NodeDetailsPage) upNavText() string {
 }
 
 func (page NodeDetailsPage) ListChildrenButton() templ.Component {
-	return HXButton{
+	return components.HXButton{
 		Text:     fmt.Sprintf("%ss", page.Node.ChildTypeName()),
-		Method:   HxGet,
+		Method:   components.HxGet,
 		URL:      page.ListChildrenURL,
 		HxTarget: "#page",
 		PushURL:  true,
@@ -82,8 +83,8 @@ func (page NodeDetailsPage) ListChildrenButton() templ.Component {
 }
 
 func (page NodeDetailsPage) ViewFilesButton() templ.Component {
-	return HXButton{
-		Method:   HxGet,
+	return components.HXButton{
+		Method:   components.HxGet,
 		URL:      page.ServerFilesURL,
 		Text:     "📂",
 		HxTarget: "#page",

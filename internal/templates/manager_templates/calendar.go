@@ -1,9 +1,12 @@
 package managertemplates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
+	cmp "gh_static_portfolio/internal/templates/components"
 	"gh_static_portfolio/internal/util"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +16,7 @@ import (
 )
 
 type CalendarPage interface {
+	GetCalendarDates() CalendarDates
 	GetTerm() domain.Term
 	IsStatic() bool
 	Page
@@ -34,6 +38,38 @@ type TermCalendar struct {
 	DeleteOccasionRHN    string
 	CurrentOccasionIndex int
 	E                    *echo.Echo
+	CalendarDates        CalendarDates
+}
+
+func DateData(date time.Time, page CalendarPage) CalendarDate {
+	dataMap := page.GetCalendarDates()
+	date = ZeroizeDate(date)
+	data := dataMap[date]
+	// even if the data was zero, we still want the data.Date
+	data.Date = date
+	log.Println("DateData():", "date:", date, "data:", data)
+	return data
+}
+
+// so we can reliably use dates as map keys
+func ZeroizeDate(date time.Time) time.Time {
+	y, m, d := date.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+}
+
+func (data TermCalendar) GetCalendarDates() CalendarDates {
+	return data.CalendarDates
+}
+
+func (data TermCalendar) ProcessCalendarDates() CalendarDates {
+	var calendarDates CalendarDates = make(map[time.Time]CalendarDate)
+	for _, occasion := range data.Term.Occasions {
+		data := calendarDates[occasion.Date]
+		data.Date = occasion.Date
+		data.Occasions = append(data.Occasions, occasion)
+		calendarDates[occasion.Date] = data
+	}
+	return calendarDates
 }
 
 func (term TermCalendar) GetTerm() domain.Term {
@@ -81,6 +117,7 @@ func (button AddOccasionButton) Component() templ.Component {
 }
 
 func (data TermCalendar) Component() templ.Component {
+	data.CalendarDates = data.ProcessCalendarDates()
 	return TermCalendarComponent(data)
 }
 
@@ -120,6 +157,45 @@ type CourseCalendar struct {
 	ShowAddLessonDateRHN          string
 	RemoveLessonDateRHN           string
 	E                             *echo.Echo
+	CalendarDates                 CalendarDates
+}
+
+func (data CourseCalendar) GetCalendarDates() CalendarDates {
+	return data.CalendarDates
+}
+
+func (data CourseCalendar) ProcessCalendarDates() CalendarDates {
+	var datesMap = make(map[time.Time]CalendarDate)
+	for _, occasion := range data.Course.Term.Occasions {
+		data := datesMap[occasion.Date]
+		data.Date = occasion.Date
+		data.Occasions = append(data.Occasions, occasion)
+		datesMap[occasion.Date] = data
+	}
+	for _, unit := range data.Course.Units {
+		for _, lesson := range unit.Lessons {
+			for _, date := range lesson.Dates {
+				data := datesMap[date]
+				data.Date = date
+				data.Lessons = append(data.Lessons, lesson)
+				datesMap[date] = data
+			}
+		}
+	}
+	for date, data := range datesMap {
+		line := fmt.Sprintf(
+			`
+datesMap: Key Date: %v
+data.Date: %v
+data.Occasions: %v
+data.Lessons: %v
+`,
+			date, data.Date, data.Occasions, data.Lessons,
+		)
+		log.Println(line)
+	}
+	log.Println("CourseCalendar.ProcessCalendarDates: length of datesMap:", len(datesMap))
+	return datesMap
 }
 
 func (page CourseCalendar) IsStatic() bool {
@@ -179,6 +255,7 @@ func (data TermOccasionEditor) Component() templ.Component {
 }
 
 func (data CourseCalendar) Component() templ.Component {
+	data.CalendarDates = data.ProcessCalendarDates()
 	return DynamicCourseCalendarComponent(data)
 }
 
@@ -357,9 +434,9 @@ type UnitPicker struct {
 }
 
 func (data UnitPicker) ListLessonsButton(unit domain.Unit) templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     unit.Designation(),
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.SelectUnitURL(unit.ID),
 		HxTarget: "#picker",
 	}.Component()
@@ -383,9 +460,9 @@ type LessonPicker struct {
 }
 
 func (data LessonPicker) ListUnitsButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Back to units",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.ListUnitsURL,
 		HxTarget: "#page",
 	}.Component()
@@ -396,9 +473,9 @@ func (data LessonPicker) Component() templ.Component {
 }
 
 func (data LessonPicker) SelectLessonButton(lesson domain.Lesson) templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     lesson.Designation(),
-		Method:   HxPost,
+		Method:   cmp.HxPost,
 		URL:      data.SelectLessonURL(lesson.ID),
 		HxTarget: "#picker",
 	}.Component()
@@ -407,3 +484,11 @@ func (data LessonPicker) SelectLessonButton(lesson domain.Lesson) templ.Componen
 func (data LessonPicker) SelectLessonURL(lessonID int) string {
 	return data.Echo.Reverse(data.SelectLessonRHN, AddParams(data.Params, lessonID, data.Date.Format(time.DateOnly))...)
 }
+
+type CalendarDate struct {
+	Date      time.Time
+	Lessons   []domain.Lesson
+	Occasions []domain.Occasion
+}
+
+type CalendarDates map[time.Time]CalendarDate

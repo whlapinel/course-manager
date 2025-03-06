@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates/components"
 
 	"github.com/a-h/templ"
 )
@@ -14,25 +15,25 @@ type UserHomePage struct {
 }
 
 func (page UserHomePage) GenerateSiteButton() templ.Component {
-	return HXButton{
+	return components.HXButton{
 		Text:     "Generate Site",
-		Method:   HxPost,
+		Method:   components.HxPost,
 		URL:      page.GenerateSiteURL,
 		HxTarget: "#confirmation",
 	}.Component()
 }
 func (page UserHomePage) SyncButton() templ.Component {
-	return HXButton{
+	return components.HXButton{
 		Text:     "Sync Site",
-		Method:   HxPost,
+		Method:   components.HxPost,
 		URL:      page.SyncSiteURL,
 		HxTarget: "#confirmation",
 	}.Component()
 }
 func (page UserHomePage) ViewTermsButton() templ.Component {
-	return HXButton{
+	return components.HXButton{
 		Text:     "View Terms",
-		Method:   HxGet,
+		Method:   components.HxGet,
 		URL:      page.ListTermsURL,
 		HxTarget: "#page",
 		PushURL:  true,

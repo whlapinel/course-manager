@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates/components"
 	"github.com/labstack/echo/v4"
 )
 
@@ -71,7 +72,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(listCourseUnitsRHN, termID, courseID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 14, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 15, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -84,7 +85,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(pageElementID.Selector())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 14, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 15, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -102,7 +103,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(lessonRouteName, termID, courseID, unitID, lesson.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 20, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 21, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -115,7 +116,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(pageElementID.Selector())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 20, Col: 123}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 21, Col: 123}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -128,7 +129,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(lesson.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 21, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lessons.templ`, Line: 22, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -157,7 +158,7 @@ func OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Lesso
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = NewHXButton(HxGet, "", e.Reverse(createLessonRHN, termID, courseID, unitID), "#page", true).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.NewHXButton(components.HxGet, "", e.Reverse(createLessonRHN, termID, courseID, unitID), "#page", true).Component().Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

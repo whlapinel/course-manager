@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/templates/components"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,7 +24,7 @@ templ OldLessonListTemplate(termID, courseID, unitID int, lessons []*domain.Less
 			</li>
 		</ul>
 	}
-	@NewHXButton(HxGet, "", e.Reverse(createLessonRHN, termID, courseID, unitID), "#page", true).Component() {
+	@components.NewHXButton(components.HxGet, "", e.Reverse(createLessonRHN, termID, courseID, unitID), "#page", true).Component() {
 		Add Lesson
 	}
 }

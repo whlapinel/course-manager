@@ -117,43 +117,6 @@ func AddQueryParam(path, key, value string) string {
 	return u.String()
 }
 
-type HXButton struct {
-	Text      string
-	HxConfirm string
-	Method    HXMethod
-	URL       string
-	HxTarget  string
-	PushURL   bool
-	HxSwap    HxSwap
-}
-
-type HxSwap string
-
-const (
-	AfterEnd HxSwap = "afterend"
-)
-
-func (button HXButton) Component() templ.Component {
-	return HxButtonComponent(button)
-}
-func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL bool) HXButton {
-	return HXButton{
-		Method:   method,
-		URL:      url,
-		HxTarget: hxTargetID,
-		PushURL:  pushURL,
-		HxSwap:   hxSwap,
-	}
-}
-
-type HXMethod string
-
-const (
-	HxGet    HXMethod = "hx-get"
-	HxPost   HXMethod = "hx-post"
-	HxDelete HXMethod = "hx-delete"
-)
-
 type EditField struct {
 	Params           domain.NodePath
 	FieldName        string

@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/components"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -65,9 +66,9 @@ type ShowCalendarButton struct {
 }
 
 func (data ShowCalendarButton) Component() templ.Component {
-	button := HXButton{
+	button := cmp.HXButton{
 		Text:     "Calendar",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.ShowCalendarURL,
 		HxTarget: pageElementID.Selector(),
 		PushURL:  true,
@@ -80,9 +81,9 @@ type ShowAssessmentsButton struct {
 }
 
 func (data ShowAssessmentsButton) Component() templ.Component {
-	button := HXButton{
+	button := cmp.HXButton{
 		Text:     "Assessments",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      data.ShowAssessmentsURL,
 		HxTarget: pageElementID.Selector(),
 		PushURL:  true,

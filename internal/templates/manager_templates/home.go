@@ -1,6 +1,10 @@
 package managertemplates
 
-import "github.com/a-h/templ"
+import (
+	cmp "gh_static_portfolio/internal/templates/components"
+
+	"github.com/a-h/templ"
+)
 
 type HomePage struct {
 	UsersURL   string
@@ -10,9 +14,9 @@ type HomePage struct {
 }
 
 func (page HomePage) UsersAuthButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Dashboard",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      page.UsersURL,
 		HxTarget: "#page",
 		PushURL:  true,
@@ -20,27 +24,27 @@ func (page HomePage) UsersAuthButton() templ.Component {
 }
 
 func (page HomePage) SignupButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Sign Up",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      page.SignupURL,
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
 }
 func (page HomePage) SigninButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Sign In",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		URL:      page.SigninURL,
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
 }
 func (page HomePage) SignoutButton() templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "Sign Out 🛑",
-		Method:   HxPost,
+		Method:   cmp.HxPost,
 		URL:      page.SignoutURL,
 		HxTarget: "#page",
 		PushURL:  true,

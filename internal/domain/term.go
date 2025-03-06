@@ -180,3 +180,20 @@ func (t Term) SortOccasions() {
 		}
 	})
 }
+
+type Date time.Time
+
+type Dates []Date
+
+func (dates Dates) SortAscending() {
+	slices.SortFunc(dates, func(a, b Date) int {
+		if IsSameDate(time.Time(a), time.Time(b)) {
+			return 0
+		}
+		if time.Time(a).Before(time.Time(b)) {
+			return -1
+		} else {
+			return 1
+		}
+	})
+}

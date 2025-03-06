@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/components"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -51,9 +52,9 @@ func (data FilesPage) PageLayout() PageLayout {
 
 // view as HTML
 func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
-	return HXButton{
+	return cmp.HXButton{
 		Text:     "View As HTML",
-		Method:   HxGet,
+		Method:   cmp.HxGet,
 		HxTarget: "#markdown",
 		URL:      data.FileURL(file),
 		PushURL:  true,
