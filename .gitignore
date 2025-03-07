@@ -1,5 +1,9 @@
-python
+# python is its own repo
+python 
+# secret_files is its own repo
 secret_files
+
+
 node_modules
 .vscode
 **/__pycache__/

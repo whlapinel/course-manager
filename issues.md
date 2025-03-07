@@ -2,6 +2,8 @@
 
 ## Pending
 
+- (major) Static calendar not displaying data
+- (major) Sync does not seem to work
 - No way to delete occasions from term calendar
 - Select lesson to add to date page needs major upgrade (functionality is ok)
 - Assessments list page UI needs major upgrade (functionality is ok)

@@ -11,6 +11,13 @@ tasks:
     cmds:
       - go generate ./...
 
+  sync-site:
+    desc: Push generated site code to GitHub to make publicly available
+    cmds:
+      - cd python && git add .
+      - cd python && git commit -m "auto-sync"
+      - cd python && git push
+
   dev-run-full:
     desc: Generate then run
     deps:
@@ -27,24 +34,24 @@ tasks:
   tar-data:
     desc: Prepare database and files for sending to remote server
     cmds:
-      - mkdir build \
-        build/internal \
-        build/internal/data \
-        build/internal/data/users \
-        build/internal/data/database \
-      - cp -r ./internal/data/users ./build/internal/data/users
+      - mkdir build
+      - mkdir build/internal
+      - mkdir build/internal/data
+      - mkdir build/internal/data/database
+      - cp -r ./internal/data/users ./build/internal/data
       - cp internal/data/database/course_manager.db ./build/internal/data/database/course_manager.db
       - tar -czf data.tar.gz -C ./build .
 
-  build:
+  tar-build:
     desc: Self-explanatory
     cmds:
-      - mkdir build \
-        build/cmd/ \
-        build/cmd/web_app \
-        build/internal \
-        build/internal/data \
-        build/internal/data/database \
-        build/internal/data/database/migrations \
-      - go build ./cmd/web_app -o ./build/cmd/web_app/main
+      - mkdir build
+      - mkdir build/cmd
+      - mkdir build/cmd/web_app
+      - mkdir build/internal
+      - mkdir build/internal/data
+      - mkdir build/internal/data/database
+      - mkdir build/internal/data/database/migrations
+      - go build -o ./build/cmd/web_app ./cmd/web_app
+      - cp -r internal/data/database/migrations ./build/internal/data/database/migrations
       - tar -czf web_app.tar.gz -C ./build .

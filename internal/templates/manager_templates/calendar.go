@@ -393,11 +393,13 @@ func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
 }
 
 func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {
-	return CourseCalendar{
+	cc := CourseCalendar{
 		Admin:  false,
 		Static: true,
 		Course: course,
 	}
+	cc.CalendarDates = cc.ProcessCalendarDates()
+	return cc
 }
 
 func (data AddLessonToDatePage) PageLayout() PageLayout {
