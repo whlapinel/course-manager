@@ -6,7 +6,11 @@ import (
 )
 
 func (svc CourseService) GenerateSite(userID string) error {
-	err := sitegenerator.Generate(svc.repo, userID)
+	user, err := svc.GetUser(userID)
+	if err != nil {
+		return err
+	}
+	err = sitegenerator.Generate(svc.repo, user)
 	if err != nil {
 		return err
 	}

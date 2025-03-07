@@ -33,12 +33,8 @@ import (
 )
 
 // Generate creates the static site using concurrent operations.
-func Generate(courseRepo data.CourseRepo, userID string) error {
-	user := domain.User{
-		ID: userID,
-	}
+func Generate(courseRepo data.CourseRepo, user domain.User) error {
 	log.Println("sitegenerator.Generate(): generating site")
-
 	// Run build commands concurrently.
 	g, ctx := errgroup.WithContext(context.Background())
 	g.Go(func() error {
@@ -102,7 +98,7 @@ func Generate(courseRepo data.CourseRepo, userID string) error {
 	}
 
 	// Get the terms from the course repository and select the current term.
-	terms, err := courseRepo.GetTerms(userID)
+	terms, err := courseRepo.GetTerms(user.ID)
 	if err != nil {
 		return fmt.Errorf("error fetching term: %s", err)
 	}

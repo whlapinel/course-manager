@@ -2,23 +2,20 @@
 
 ## Pending
 
-- (major) Static calendar not displaying data
-- (major) Sync does not seem to work
-- No way to delete occasions from term calendar
-- Select lesson to add to date page needs major upgrade (functionality is ok)
+- Select lesson to add to date page needs major cosmetic upgrade (functionality is ok)
 - Assessments list page UI needs major upgrade (functionality is ok)
 - (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.
-
 - (major) forgot to add ON CASCADE DELETE to assessments.lesson_id column; this means deleting a lesson will give a foriegn key error upon attempting to delete a lesson that has assignments. Which might be ok, but will need to adjust the UI accordingly.
-
 - (major) attempting to view lesson files returns a server error rather than a simple message stating that no files exist for the lesson
 - (major) similarly, attempting to view lesson slides returns a server error
-
 - 1/23/25 (minor) Deleting a course (unit, lesson may take a while as well) takes a long time. Maybe after a course row itself is deleted we should go ahead and return the response to the user and do the rest in the background. If child elements and files are not deleted we should log an error but the user doesn't need to wait on all of that, maybe?
 - (minor) I think FitToTerm won't respect out of order units or lessons, it will put units and lessons in order using sequence and numbers rather than keeping the order as it was in the previous term.
 
 ## Complete
 
+- (major) Sync does not seem to work
+- (major) Static calendar not displaying data
+- No way to delete occasions from term calendar
 - (major) under certain conditions, have to generate site a second or third time for slides to show up. suspect there's an issue with the files modification times falsely reporting no changes. Resolved by removing slides.html from data directory. Copying the slides.html in to the static site was causing the html mod time to be later than the markdown mod time. Not sure why it ever worked actually. (Note: I re-added the slides.html to the data directory and removed the slide generation phase from the site generator, and  made sure that every time an edit is made to the slides, the html is regenerated)
 
 - 2/23/25 (major) 405 error (method not allowed) when attempting to post a file to a course. Resolved by adding the necessary functions to handlers/node.go to ensure the route was registered.
