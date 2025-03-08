@@ -62,7 +62,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.ParentNum))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 17, Col: 41}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 17, Col: 41}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -75,7 +75,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.Number))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 17, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 17, Col: 76}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -88,7 +88,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(objective.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 17, Col: 95}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 17, Col: 95}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -101,7 +101,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(props.DeleteStandardURL(objective.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 18, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 18, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -134,7 +134,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(standard.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 30, Col: 30}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 30, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -147,7 +147,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("objective-select-" + strconv.Itoa(standard.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 31, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 31, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -165,7 +165,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 33, Col: 50}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 33, Col: 50}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -178,7 +178,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.ParentNum))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 34, Col: 44}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 34, Col: 44}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(".")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 34, Col: 51}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 34, Col: 51}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -196,7 +196,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.Number))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 34, Col: 85}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 34, Col: 85}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -205,7 +205,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(" ")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 34, Col: 92}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 34, Col: 92}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -214,7 +214,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(objective.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 34, Col: 110}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 34, Col: 110}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -232,7 +232,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostLessonStandardURL)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 38, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 38, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -245,7 +245,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("#objective-select-" + strconv.Itoa(standard.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 38, Col: 115}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 38, Col: 115}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -273,7 +273,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 49, Col: 25}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 49, Col: 25}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
@@ -286,7 +286,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(DisplayCategory(assessment.Category))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 51, Col: 48}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 51, Col: 48}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -299,7 +299,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.DateDue.Format(time.DateOnly))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 52, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 52, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -312,7 +312,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.Instructions)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 53, Col: 37}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 53, Col: 37}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -339,7 +339,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 						var templ_7745c5c3_Var22 string
 						templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(assessment.File)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 56, Col: 32}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 56, Col: 32}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 						if templ_7745c5c3_Err != nil {
@@ -363,7 +363,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var23 string
 					templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(props.E.Reverse(props.GetEditAssessmentRHN, AddParams(props.Params, assessment.ID)...))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 64, Col: 102}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 64, Col: 102}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 					if templ_7745c5c3_Err != nil {
@@ -376,7 +376,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 					var templ_7745c5c3_Var24 string
 					templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.DeleteAssessmentURL(assessment.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 69, Col: 66}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 69, Col: 66}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 					if templ_7745c5c3_Err != nil {
@@ -412,7 +412,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(EditSlidesContainerID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 80, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 80, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -458,7 +458,7 @@ func LessonDetailsComponent(props LessonDetailsPage, components ...templ.Compone
 						var templ_7745c5c3_Var27 string
 						templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.DateOnly))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 90, Col: 35}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 90, Col: 35}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 						if templ_7745c5c3_Err != nil {
@@ -533,7 +533,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.Assessment.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 114, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 114, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -546,7 +546,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(props.Assessment.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 116, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 116, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -559,7 +559,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(props.Assessment.Instructions)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 118, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 118, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -572,7 +572,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(props.Assessment.DateAssigned.Format(time.DateOnly))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 120, Col: 121}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 120, Col: 121}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -585,7 +585,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(props.Assessment.DateDue.Format(time.DateOnly))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 122, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 122, Col: 106}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -598,7 +598,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Prepare)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 126, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 126, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -621,7 +621,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Rehearse)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 130, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 130, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -644,7 +644,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Perform)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 134, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 134, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -667,7 +667,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Midterm)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 138, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 138, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
@@ -690,7 +690,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Final)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 142, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 142, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -713,7 +713,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(props.Assessment.File)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 147, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 147, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -746,7 +746,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(props.LessonDetailsURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 160, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 160, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
@@ -759,7 +759,7 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditAssessmentURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 161, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 161, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
@@ -806,7 +806,7 @@ func ObjectiveSelectComponent(props ObjectiveSelect) templ.Component {
 			var templ_7745c5c3_Var43 string
 			templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(objective.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 168, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 168, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 			if templ_7745c5c3_Err != nil {
@@ -819,7 +819,7 @@ func ObjectiveSelectComponent(props ObjectiveSelect) templ.Component {
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(objective.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 168, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 168, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 			if templ_7745c5c3_Err != nil {
@@ -866,7 +866,7 @@ func Slides(htmlContent string) templ.Component {
 		var templ_7745c5c3_Var46 string
 		templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(htmlContent)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 174, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 174, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 		if templ_7745c5c3_Err != nil {
@@ -925,7 +925,7 @@ func EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 211, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 211, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 		if templ_7745c5c3_Err != nil {
@@ -938,7 +938,7 @@ func EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 212, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 212, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 		if templ_7745c5c3_Err != nil {
@@ -951,7 +951,7 @@ func EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(contents)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 216, Col: 12}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 216, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 		if templ_7745c5c3_Err != nil {
@@ -984,7 +984,7 @@ func EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostR
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(editSlidesPostRouteHandler, params.ToSlice()...))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 236, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 236, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 			if templ_7745c5c3_Err != nil {
@@ -997,7 +997,7 @@ func EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostR
 			var templ_7745c5c3_Var53 string
 			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(string(EditSlidesTextAreaID.Selector()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 236, Col: 151}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 236, Col: 151}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 			if templ_7745c5c3_Err != nil {
@@ -1051,7 +1051,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 			var templ_7745c5c3_Var55 string
 			templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(props.Lesson().Dates[0].Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 254, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 254, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 			if templ_7745c5c3_Err != nil {
@@ -1069,7 +1069,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var56 string
 		templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Prepare)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 261, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 261, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 		if templ_7745c5c3_Err != nil {
@@ -1082,7 +1082,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var57 string
 		templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Rehearse)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 262, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 262, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 		if templ_7745c5c3_Err != nil {
@@ -1095,7 +1095,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var58 string
 		templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Perform)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 263, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 263, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 		if templ_7745c5c3_Err != nil {
@@ -1108,7 +1108,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var59 string
 		templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Midterm)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 264, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 264, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 		if templ_7745c5c3_Err != nil {
@@ -1121,7 +1121,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var60 string
 		templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Final)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 265, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 265, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 		if templ_7745c5c3_Err != nil {
@@ -1134,7 +1134,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var61 string
 		templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(props.Lesson().ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 271, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 271, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 		if templ_7745c5c3_Err != nil {
@@ -1147,7 +1147,7 @@ func OldAssessmentForm(props LessonDetailsPage) templ.Component {
 		var templ_7745c5c3_Var62 string
 		templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostAssessmentURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/lesson_details.templ`, Line: 272, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/lesson_details.templ`, Line: 272, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 		if templ_7745c5c3_Err != nil {

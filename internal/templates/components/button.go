@@ -2,8 +2,9 @@ package components
 
 import "github.com/a-h/templ"
 
-
 type HXButton struct {
+	Element
+	Name      string
 	Text      string
 	Image     templ.Component
 	HxConfirm string
@@ -12,6 +13,7 @@ type HXButton struct {
 	HxTarget  string
 	PushURL   bool
 	HxSwap    HxSwap
+	HxSelect  string
 }
 
 type HxSwap string
@@ -23,14 +25,13 @@ const (
 func (button HXButton) Component() templ.Component {
 	return HxButtonComponent(button)
 }
-func NewHXButton(method HXMethod, hxSwap HxSwap, url, hxTargetID string, pushURL bool) HXButton {
-	return HXButton{
-		Method:   method,
-		URL:      url,
-		HxTarget: hxTargetID,
-		PushURL:  pushURL,
-		HxSwap:   hxSwap,
-	}
+
+type NewButtonParams struct {
+	HXButton
+}
+
+func NewHXButton(params NewButtonParams) HXButton {
+	return params.HXButton
 }
 
 type HXMethod string

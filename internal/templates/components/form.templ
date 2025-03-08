@@ -8,10 +8,7 @@ templ FormComponent(el Form) {
 	>
 		<div class="space-y-12">
 			<div class="border-b border-white/10 pb-12">
-				<h2 class="text-base/7 font-semibold text-white">{ el.Title }</h2>
-				<p class="mt-1 text-sm/6 text-gray-400">
-					{ el.Subtitle }
-				</p>
+				@FormTitleComponent(el.Title, el.Subtitle)
 				for _, component := range el.Components {
 					@component.Component()
 				}
@@ -33,15 +30,23 @@ templ FormComponent(el Form) {
 	</form>
 }
 
+templ FormTitleComponent(title, subtitle string) {
+	if title != "" {
+		<h2 class="text-base/7 font-semibold text-white">{ title }</h2>
+	}
+	if subtitle != "" {
+		<p class="mt-1 text-sm/6 text-gray-400">
+			{ subtitle }
+		</p>
+	}
+}
+
 // this is designed for editable information
 templ EditableInfoComponent(el EditableInfo) {
 	<div id={ el.ID }>
 		<div class="space-y-12">
 			<div class="border-b border-white/10 pb-12">
-				<h2 class="text-base/7 font-semibold text-white">{ el.Title }</h2>
-				<p class="mt-1 text-sm/6 text-gray-400">
-					{ el.Subtitle }
-				</p>
+				@FormTitleComponent(el.Title, el.Subtitle)
 				for _, component := range el.Components {
 					@component.Component()
 				}

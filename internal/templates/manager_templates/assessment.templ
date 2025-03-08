@@ -1,42 +1,11 @@
 package managertemplates
 
-import "gh_static_portfolio/internal/domain"
-import "gh_static_portfolio/internal/util"
-
 templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
-	<select
-		class="bg-black"
-		name="category"
-		id="category"
-	>
-		for _, category := range domain.Categories {
-			<option value={ category.String() }
-			
-			
-			>{ util.Capitalize(category.String()) }</option>
-		}
-	</select>
-	<button
-		hx-get={ data.GetAssessmentsURL }
-		id="filter-button"
-		hx-select="#assessments"
-		hx-target="#assessments"
-		hx-push-url="true"
-	>
-		Apply
-	</button>
-	<input
-		class="bg-black"
-		id="start"
-		type="date"
-		name="start"
-	/>
-	<input
-		class="bg-black"
-		id="end"
-		type="date"
-		name="end"
-	/>
+	@PageLayoutComponent(data)
+	@data.CategorySelectComponent()
+	@data.ApplyFilterButton()
+	@data.StartDateComponent()
+	@data.EndDateComponent()
 	<script type="module" src="/dist/assessments.js">
 	</script>
 	<div id="assessments">
