@@ -1,17 +1,9 @@
 package managertemplates
 
+import "gh_static_portfolio/internal/templates/components"
+
 type Page interface {
 	ComponentData
-	PageLayout() PageLayout
+	PageLayout() components.PageLayout
 	BreadCrumbs() BreadCrumbs
-}
-
-type UpNav struct {
-	URL  string
-	Text string
-}
-
-type PageLayout struct {
-	PageTitle string
-	UpNav     UpNav
 }

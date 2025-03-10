@@ -5,6 +5,12 @@ import "github.com/a-h/templ"
 type PageLayout struct {
 	PageTitle string
 	Crumbs    BreadCrumbs
+	UpNav     UpNav
+}
+
+type UpNav struct {
+	URL  string
+	Text string
 }
 
 type BreadCrumbs struct {

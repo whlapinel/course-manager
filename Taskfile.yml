@@ -18,7 +18,7 @@ tasks:
       - cd python && git commit -m "auto-sync"
       - cd python && git push
 
-  dev-run-full:
+  gen-run-dev:
     desc: Generate then run
     deps:
       - generate
@@ -26,7 +26,7 @@ tasks:
       - echo 'Starting Course Manager'
       - go run ./cmd/web_app
 
-  dev-run:
+  run-dev:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
       - go run ./cmd/web_app

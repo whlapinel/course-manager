@@ -2,6 +2,7 @@
 
 ## Pending
 
+- (major) Attempting to view or download file that does not exist (e.g. in the assessments part of lesson details) will crash the server completely.
 - Select lesson to add to date page needs major cosmetic upgrade (functionality is ok)
 - Assessments list page UI needs major upgrade (functionality is ok)
 - (major) if there's a lesson on 2 dates, bumping that date left or right on the calendar page will bump BOTH instances, not just the one that's clicked on.

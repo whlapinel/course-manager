@@ -51,7 +51,7 @@ func (data BreadCrumbs) Component() templ.Component {
 	return NewBreadCrumbsComponent(data)
 }
 
-func NewBreadCrumbsComponent(data BreadCrumbs) templ.Component {
+func (data BreadCrumbs) BreadCrumbs() components.BreadCrumbs {
 	var items []cmp.BreadCrumbsItem
 	if data.User.ID != "" {
 		item := cmp.BreadCrumbsItem{
@@ -105,6 +105,11 @@ func NewBreadCrumbsComponent(data BreadCrumbs) templ.Component {
 	bc := cmp.BreadCrumbs{
 		Items: items,
 	}
+	return bc
+}
+
+func NewBreadCrumbsComponent(data BreadCrumbs) templ.Component {
+	bc := data.BreadCrumbs()
 	return bc.Component()
 }
 

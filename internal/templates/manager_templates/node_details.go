@@ -34,13 +34,14 @@ func (page NodeDetailsPage) Component() templ.Component {
 	return NodeDetailsComponent(page)
 }
 
-func (page NodeDetailsPage) PageLayout() PageLayout {
-	return PageLayout{
+func (page NodeDetailsPage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: page.PageTitle(),
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  page.UpNavURL,
 			Text: page.upNavText(),
 		},
+		Crumbs: page.BreadCrumbs().BreadCrumbs(),
 	}
 }
 

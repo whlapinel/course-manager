@@ -78,13 +78,14 @@ func (page CourseAssessmentsPage) GetAssessmentsWithCategoryFilter(category doma
 	return parsedURL.String()
 }
 
-func (page CourseAssessmentsPage) PageLayout() PageLayout {
-	return PageLayout{
+func (page CourseAssessmentsPage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: "Assessments",
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  page.CourseListURL,
 			Text: "Up to courses",
 		},
+		Crumbs: page.BreadCrumbs().BreadCrumbs(),
 	}
 
 }

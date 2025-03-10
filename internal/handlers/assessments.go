@@ -100,6 +100,8 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	page := mt.CourseAssessmentsPage{
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,
+		CourseListURL:     h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
+		BreadCrumbsData:   BreadCrumbs(h.e, params, nodes.ToSlice()...),
 	}
 	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), nodes.User))
 }

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"gh_static_portfolio/internal/templates/components"
 )
 
 // places buttons side by side
@@ -22,7 +23,7 @@ templ CancelEditButton() {
 	</button>
 }
 
-templ UpNavComponent(props UpNav) {
+templ UpNavComponent(props components.UpNav) {
 	if props.URL != "" {
 		<button hx-get={ props.URL } hx-target={ string(pageElementID.Selector()) } hx-push-url="true" class="text-xl">
 			{ props.Text }

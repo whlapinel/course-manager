@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/templates"
+	"gh_static_portfolio/internal/templates/components"
 	cmp "gh_static_portfolio/internal/templates/components"
 	"gh_static_portfolio/internal/util"
 	"log"
@@ -121,10 +122,10 @@ func (data TermCalendar) Component() templ.Component {
 	return TermCalendarComponent(data)
 }
 
-func (data TermCalendar) PageLayout() PageLayout {
-	return PageLayout{
+func (data TermCalendar) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: data.Term.Name + " Calendar",
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  data.ListTermsURL,
 			Text: "Back to Terms",
 		},
@@ -289,19 +290,19 @@ func (data CourseCalendar) ShowAddLessonDatePageURL(date time.Time) string {
 	)
 }
 
-func (data CourseCalendar) PageLayout() PageLayout {
+func (data CourseCalendar) PageLayout() cmp.PageLayout {
 	if data.Static {
-		return PageLayout{
+		return cmp.PageLayout{
 			PageTitle: data.Course.Name + " Course Calendar",
-			UpNav: UpNav{
+			UpNav: cmp.UpNav{
 				URL:  RemoveDocsFromPath(templates.StaticSiteCoursesDir + "courses.html"),
 				Text: "Back to Courses",
 			},
 		}
 	}
-	return PageLayout{
+	return cmp.PageLayout{
 		PageTitle: data.Course.Name + " Course Calendar",
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  data.E.Reverse(data.ListTermCoursesRHN, data.Params.ToSlice()...),
 			Text: "Back to Courses",
 		},
@@ -346,6 +347,34 @@ func (data CalendarLessonContainerNew) LinkWithInfoDialog() templ.Component {
 
 func (data CalendarLessonContainerNew) Component() templ.Component {
 	return CalendarLessonContainer(data)
+}
+
+func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
+	button := components.HXButton{
+		HxConfirm: "Are you sure you want to remove this lesson date? The lesson itself will not be deleted.",
+		Method:    cmp.HxDelete,
+		URL:       data.RemoveLessonDateURL,
+		HxTarget:  "#page",
+		Image:     cmp.DeleteImage(),
+		Class:     "bg-red-700 p-1 rounded",
+	}
+	return button.Component()
+	//	<div class="flex flex-col gap-1 items-center">
+	//	<div class="flex">
+	//		if !data.Static {
+	//			<button
+	//				class="bg-red-700 p-1 rounded"
+	//				hx-confirm={ "Are you sure you want to remove this lesson date? The lesson itself will not be deleted." }
+	//				hx-delete={ data.RemoveLessonDateURL }
+	//				hx-target="#page"
+	//			>
+	//				Remove Lesson
+	//			</button>
+	//		}
+	//		@data.LinkWithInfoDialog()
+	//	</div>
+	//
+	// </div>
 }
 
 func (data CourseCalendar) BreadCrumbs() BreadCrumbs {
@@ -402,10 +431,10 @@ func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {
 	return cc
 }
 
-func (data AddLessonToDatePage) PageLayout() PageLayout {
-	return PageLayout{
+func (data AddLessonToDatePage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: "Add Lesson to " + data.Date.Format(time.DateOnly),
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  data.CourseCalendarURL,
 			Text: "Back to Calendar",
 		},

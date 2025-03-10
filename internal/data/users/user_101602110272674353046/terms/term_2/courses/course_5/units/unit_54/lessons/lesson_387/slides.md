@@ -19,8 +19,9 @@ Write a function that accepts two numbers a and b and returns True if a is evenl
 
 # Looking ahead
 
-- Unit 5 Test Thursday 10/24
-- Midterm: Monday 10/28
+- PE2 Module 3 Quiz due Friday
+- Unit 5 Exam on Thursday 3/20
+- Midterm on 3/25 or 3/26
 
 # Introduction to Object-Oriented Programming (OOP) in Python
 
@@ -28,18 +29,6 @@ Write a function that accepts two numbers a and b and returns True if a is evenl
 - Key concepts:
   - **Class**: Blueprint for creating objects.
   - **Object**: Instance of a class.
-
-<!-- ### Key Concepts Covered:
-1. **What is a Class?**
-2. **What is an Object?**
-3. **The `__init__()` Method (Constructor)**
-4. **Attributes: Instance vs. Class**
-5. **Methods**
-6. **The `self` Keyword**
-7. **Inheritance**
-8. **Encapsulation**
-9. **Polymorphism**
-10. **Abstraction** (briefly mentioned as optional) -->
 
 # What is a Class?
 
@@ -160,59 +149,6 @@ class Dog(Animal):
         print("Dog barks")
 ```
 
-# Encapsulation
-
-- **Encapsulation** restricts direct access to some of an object’s components.
-- Use **private** attributes by prefixing them with `__`.
-
-**Example:**
-
-```python
-class Person:
-    def __init__(self, name):
-        self.__name = name  # Private attribute
-
-    def get_name(self):
-        return self.__name  # Getter method
-```
-
-# Polymorphism
-
-- **Polymorphism** allows different classes to be treated the same way through a common interface.
-- Achieved by overriding methods in different classes.
-
-**Example:**
-
-```python
-class Cat:
-    def speak(self):
-        return "Meow"
-
-class Dog:
-    def speak(self):
-        return "Woof"
-
-def animal_sound(animal):
-    print(animal.speak())
-
-animal_sound(Cat())  # Output: Meow
-animal_sound(Dog())  # Output: Woof
-```
-
-# Abstraction
-
-- **Abstraction** hides complex details and shows only the essential features.
-- In Python, we can use **abstract base classes** via the `abc` module (optional for this intro).
-
-# Summary of OOP Concepts
-
-- **Class**: Blueprint for objects.
-- **Object**: Instance of a class.
-- **Attributes**: Data stored in an object.
-- **Methods**: Functions defined inside a class.
-- **Inheritance**: One class inherits from another.
-- **Encapsulation**: Restrict access to some attributes.
-- **Polymorphism**: Different classes with the same interface.
 
 # Exercise: Create a Class
 

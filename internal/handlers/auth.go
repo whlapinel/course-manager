@@ -54,6 +54,7 @@ func (h CourseHandler) PostSignin(c echo.Context) error {
 	sub := payload.Claims["sub"].(string)
 	user, err := h.svc.GetUser(sub)
 	if err != nil {
+		
 		log.Println(err)
 		return c.String(500, err.Error())
 	}

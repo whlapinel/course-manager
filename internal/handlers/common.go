@@ -324,7 +324,7 @@ func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.Use
 		SignupURL:  h.e.Reverse(GetSignup.String()),
 		SignoutURL: h.e.Reverse(PostSignout.String()),
 	}
-	return mt.CourseManagerLayoutComponent(cml)
+	return cml.Component()
 
 }
 
@@ -337,7 +337,7 @@ func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.Us
 		SignupURL:  router.Reverse(GetSignup.String()),
 		SignoutURL: router.Reverse(PostSignout.String()),
 	}
-	return mt.CourseManagerLayoutComponent(cml)
+	return cml.Component()
 
 }
 

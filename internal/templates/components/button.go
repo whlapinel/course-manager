@@ -14,6 +14,7 @@ type HXButton struct {
 	PushURL   bool
 	HxSwap    HxSwap
 	HxSelect  string
+	Class     string
 }
 
 type HxSwap string

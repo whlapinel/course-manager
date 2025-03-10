@@ -11,7 +11,11 @@ templ HxButtonComponent(props HXButton) {
 		if props.Method == HxDelete {
 			hx-delete={ props.URL }
 		}
-		class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+		if props.Class == "" {
+			class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+		} else {
+			class={ props.Class }
+		}
 		if props.HxTarget != "" {
 			hx-target={ props.HxTarget }
 		}
@@ -25,6 +29,9 @@ templ HxButtonComponent(props HXButton) {
 			hx-confirm={ props.HxConfirm }
 		}
 	>
+		if props.Image != nil {
+			@props.Image
+		}
 		{ props.Text }
 		{ children... }
 	</button>

@@ -40,13 +40,14 @@ func (data FilesPage) FileURL(file FilesPageItem) string {
 
 }
 
-func (data FilesPage) PageLayout() PageLayout {
-	return PageLayout{
+func (data FilesPage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: "Files for " + data.Node.GetName(),
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  data.E.Reverse(data.PopRouteSegmentRHN, data.Params.ToSlice()...),
 			Text: "Up one level",
 		},
+		Crumbs: data.BreadCrumbs().BreadCrumbs(),
 	}
 }
 

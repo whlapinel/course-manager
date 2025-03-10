@@ -125,7 +125,7 @@ func (page LessonDetailsPage) NewAssessmentForm() templ.Component {
 	categorySelect := cmp.NewSelectWithLabel("Category", options)
 	fileInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 		Name: "File",
-		Type: cmp.File,
+		Type: cmp.Text,
 	})
 	instructionsTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
 		Name: "Instructions",

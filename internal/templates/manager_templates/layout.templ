@@ -1,9 +1,13 @@
 
 package managertemplates
+import "gh_static_portfolio/internal/templates/components"
+
 
 templ PageLayoutComponent(props Page) {
-	@props.BreadCrumbs().Component()
-	@PageHeadingComponent(props.PageLayout().PageTitle)
+
+	// @props.BreadCrumbs().Component()
+	// @PageHeadingComponent(props.PageLayout().PageTitle)
+	@components.PageHeadingComponent(props.PageLayout())
 	@UpNavComponent(props.PageLayout().UpNav)
 	{ children... }
 }

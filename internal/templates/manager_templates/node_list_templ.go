@@ -59,7 +59,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.ListItemElementID(node).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/node_list.templ`, Line: 11, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node_list.templ`, Line: 11, Col: 49}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -97,7 +97,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 						var templ_7745c5c3_Var4 string
 						templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(node.Designation())
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/node_list.templ`, Line: 22, Col: 33}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node_list.templ`, Line: 22, Col: 33}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 						if templ_7745c5c3_Err != nil {
@@ -115,7 +115,7 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(node.GetName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/node_list.templ`, Line: 24, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/node_list.templ`, Line: 24, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {

@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	cmp "gh_static_portfolio/internal/templates/components"
 	"log"
 
 	"github.com/a-h/templ"
@@ -12,10 +13,10 @@ type TermDetailsPage struct {
 	ShowEditTermDatesURL string
 }
 
-func (page TermDetailsPage) PageLayout() PageLayout {
-	return PageLayout{
+func (page TermDetailsPage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: page.PageTitle(),
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  page.UpNavURL,
 			Text: "Back to Term Details",
 		},
@@ -53,13 +54,14 @@ type AddNonInstructDayPage struct {
 	TermDetailsURL string
 }
 
-func (page AddNonInstructDayPage) PageLayout() PageLayout {
-	return PageLayout{
+func (page AddNonInstructDayPage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: "Add Non-Instructional Day",
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  page.TermDetailsURL,
 			Text: "Term Details",
 		},
+		Crumbs: page.BreadCrumbs().BreadCrumbs(),
 	}
 }
 

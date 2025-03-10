@@ -51,8 +51,8 @@ func (page HomePage) SignoutButton() templ.Component {
 	}.Component()
 }
 
-func (page HomePage) PageLayout() PageLayout {
-	return PageLayout{
+func (page HomePage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: "Home",
 	}
 }

@@ -36,7 +36,7 @@ func newLessonFormComponent(props newLessonForm) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(props.e.Reverse(props.postNewLessonRHN, props.params.ToSlice()...))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `manager_templates/new_lesson.templ`, Line: 11, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/manager_templates/new_lesson.templ`, Line: 11, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

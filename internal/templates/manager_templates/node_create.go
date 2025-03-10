@@ -27,13 +27,15 @@ func (page NodeCreatePage) FormComponent() templ.Component {
 	return CreateNodeFormComponent(page)
 }
 
-func (page NodeCreatePage) PageLayout() PageLayout {
-	return PageLayout{
+func (page NodeCreatePage) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
 		PageTitle: fmt.Sprintf("New %s for %s", page.NodeType.String(), page.ParentNode.GetName()),
-		UpNav: UpNav{
+		UpNav: cmp.UpNav{
 			URL:  page.CancelURL,
 			Text: "Cancel",
 		},
+		Crumbs: page.BreadCrumbs().BreadCrumbs(),
+
 	}
 }
 
