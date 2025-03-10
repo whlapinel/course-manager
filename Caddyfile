@@ -1,0 +1,14 @@
+localhost {
+	root * /home/whlapinel/personal_projects/course_manager/python/docs
+	handle_path /python/* { # serve from /sites/*
+		file_server
+	}
+
+	handle_path /* {
+		reverse_proxy localhost:1323
+	}
+}
+
+# Should modify so that static sites are served from /sites/
+# /sites
+#   /user_name
