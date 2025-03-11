@@ -35,40 +35,12 @@ import (
 // Generate creates the static site using concurrent operations.
 func Generate(courseRepo data.CourseRepo, user domain.User) error {
 	log.Println("sitegenerator.Generate(): generating site")
-	// Run build commands concurrently.
-	g, ctx := errgroup.WithContext(context.Background())
-	g.Go(func() error {
-		GenerateTempl()
-		return nil
-	})
-	g.Go(func() error {
-		BuildTailwind()
-		return nil
-	})
-	g.Go(func() error {
-		BuildTypeScript()
-		return nil
-	})
-	if err := g.Wait(); err != nil {
-		return err
-	}
 
 	// Clear HTML files concurrently in each directory.
-	clearDirs := templates.DirectoriesClearList()
-	g, ctx = errgroup.WithContext(ctx)
-	for _, dir := range clearDirs {
-		directory := dir // capture loop variable
-		g.Go(func() error {
-			return ClearHTMLFiles(directory)
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return err
-	}
 
 	// Delete directories concurrently.
 	deleteDirs := templates.DeleteDirList()
-	g, ctx = errgroup.WithContext(ctx)
+	g, ctx := errgroup.WithContext(context.Background())
 	for _, dir := range deleteDirs {
 		directory := dir
 		g.Go(func() error {

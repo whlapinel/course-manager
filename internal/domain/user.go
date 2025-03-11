@@ -1,11 +1,18 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type User struct {
 	ID                                  string
 	Email, FirstName, LastName, Picture string
 	Terms                               []Term
+}
+
+func (u User) Username() string {
+	return strings.ToLower(u.FirstName[:1] + u.LastName)
 }
 
 // ChildTypeName implements CourseNode.
