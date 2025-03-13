@@ -20,8 +20,8 @@ templ TableComponent(data Table) {
 								<table class="min-w-full divide-y divide-gray-700">
 									<thead>
 										<tr>
-											for i, header := range data.Headers {
-												@tableHeaderComponent(i == 0) {
+											for _, header := range data.Headers {
+												@tableHeaderComponent() {
 													{ header }
 												}
 											}
@@ -30,10 +30,8 @@ templ TableComponent(data Table) {
 									<tbody class="divide-y divide-gray-800">
 										for _, row := range data.Rows {
 											<tr>
-												for i, cell := range row {
-													@tableCellComponent(i == 0) {
-														@cell
-													}
+												for _, cell := range row {
+													@cell
 												}
 											</tr>
 										}
@@ -48,32 +46,31 @@ templ TableComponent(data Table) {
 	</div>
 }
 
-templ tableCellComponent(initial bool) {
-	if initial {
-		<td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-white sm:pl-0">
-			{ children... }
-		</td>
-	} else {
-		<td class="px-3 py-4 text-sm whitespace-nowrap text-gray-300">
-			{ children... }
-		</td>
-	}
+templ tableCellComponent() {
+	<td class="px-3 py-4 text-sm whitespace-nowrap text-gray-300">
+		{ children... }
+	</td>
 }
 
 templ tableTextCellComponent(data TableTextCell) {
-	@tableCellComponent(false) {
+	@tableCellComponent() {
 		{ data.Text }
 	}
 }
 
-templ tableHeaderComponent(initial bool) {
-	if initial {
-		<th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-white sm:pl-0">
-			{ children... }
-		</th>
-	} else {
-		<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">
-			{ children... }
-		</th>
+templ tableLinkCellComponent(data TableLinkCell) {
+	@tableCellComponent() {
+		<a
+			class="block rounded-md bg-indigo-500 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+			href={ templ.SafeURL(data.URL) }
+		>
+			{ data.Text }
+		</a>
 	}
+}
+
+templ tableHeaderComponent() {
+	<th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">
+		{ children... }
+	</th>
 }

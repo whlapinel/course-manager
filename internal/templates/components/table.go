@@ -17,6 +17,15 @@ type TableTextCell struct {
 	Text string
 }
 
+type TableLinkCell struct {
+	Text string
+	URL  string
+}
+
 func (data TableTextCell) Component() templ.Component {
-	return tableCellComponent(false)
+	return tableTextCellComponent(data)
+}
+
+func (data TableLinkCell) Component() templ.Component {
+	return tableLinkCellComponent(data)
 }

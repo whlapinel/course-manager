@@ -7,7 +7,7 @@ templ PageLayoutComponent(props Page) {
 
 	// @props.BreadCrumbs().Component()
 	// @PageHeadingComponent(props.PageLayout().PageTitle)
-	@components.PageHeadingComponent(props.PageLayout())
+	@components.PageLayoutComponent(props.PageLayout())
 	@UpNavComponent(props.PageLayout().UpNav)
 	{ children... }
 }

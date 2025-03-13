@@ -13,6 +13,10 @@ type Layout struct {
 	Page      templ.Component
 }
 
+func (data Layout) Component() templ.Component {
+	return LayoutComponent(data)
+}
+
 type NavItem struct {
 	Method    HXMethod
 	Text      string

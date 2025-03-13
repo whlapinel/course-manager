@@ -1,4 +1,8 @@
 {
+    "exclude": [
+        "python/docs/ts/**/*.ts"
+      ],
+    
     "references": [
         {
             "path": "./tsconfig.server.json"

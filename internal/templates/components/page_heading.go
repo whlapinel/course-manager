@@ -2,6 +2,14 @@ package components
 
 import "github.com/a-h/templ"
 
+type PageHeading struct {
+	Title string
+}
+
+func (data PageHeading) Component() templ.Component {
+	return PageHeadingComponent(data)
+}
+
 type PageLayout struct {
 	PageTitle string
 	Crumbs    BreadCrumbs
@@ -13,23 +21,12 @@ type UpNav struct {
 	Text string
 }
 
-type BreadCrumbs struct {
-	Items []BreadCrumbsItem
-}
-
 func (data PageLayout) BreadCrumbs() templ.Component {
 	return data.Crumbs.Component()
 }
 
-func (data BreadCrumbs) Component() templ.Component {
-	return BreadCrumbsComponent(data)
-}
-
-type BreadCrumbsItem struct {
-	NavItem
-}
-
-func (data BreadCrumbsItem) Component() templ.Component {
-	data.Class = "text-sm font-medium text-gray-400 hover:text-gray-200"
-	return data.NavItem.Component()
+func (data PageLayout) PageHeading() templ.Component {
+	return PageHeading{
+		Title: data.PageTitle,
+	}.Component()
 }

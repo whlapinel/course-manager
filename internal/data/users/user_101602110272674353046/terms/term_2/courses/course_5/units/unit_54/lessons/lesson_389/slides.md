@@ -9,32 +9,16 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
-# Warmup 10/14/24
+# Warmup 
 
-![bg cover invert opacity:.1](./ddc48750-85f8-4cf0-a2ea-cbb27cd813c7.webp)
+- Phones in bags, bags against the wall
+- Create the following and open it in VS Code
 
-- Create a class `NinjaTurtle`.
-  - Add the constructor `__init__` which accepts a parameter `name` and `fav_word` such as `cowabunga`
-  - Add another method where the output can be observed, for example: `celebrate` which prints their `fav_word`
-- create four objects of the `NinjaTurtle` class and call your method on each one.
-
-# Agenda 10/14/24
-
-- Generators and assignment 5.3
-- Unit 5 Project discussion
-- Midterm Project discussion
-
-# Announcements 10/14/24
-
-- Late points deduction is automatic 5% per day, please see me if you have extenuating circumstances
-- I will be absent on Thursday and Friday 10/17 and 10/18.
-
-# Looking ahead
-
-- Unit 5 Perform: Monday 10/21 (Alien attack project due)
-- Midterm: Monday 10/28 (Multiple choice test and project)
-
-# Unit 5 Project
+```text
+/python
+  /unit_5
+    /lesson_3
+```
 
 # Python Generators
 

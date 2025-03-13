@@ -2,37 +2,18 @@ package templates
 
 // Student-facing site
 templ StaticNodeListComponent(page StaticNodeListPage) {
-	<p>{ page.Parent.GetName() }</p>
-	<ul>
-		for _, child := range page.ChildLinks {
-			<a href={ templ.SafeURL(child.URL) }>{ child.Text }</a>
-		}
-	</ul>
+	@page.BreadCrumbs()
+	@page.PageHeading()
+	@page.TableComponent()
+	// for _, child := range page.ChildLinks {
+	// 	<li>
+	// 		<a href={ templ.SafeURL(child.URL) }>{ child.Text }</a>
+	// 	</li>
+	// }
 }
 
 templ StaticNodeDetailsComponent(page StaticNodeDetailsPage) {
+	@page.BreadCrumbs()
 	<p>{ page.Node.GetName() }</p>
 	<p>{ page.Node.GetDescription() }</p>
-}
-
-templ StaticLayoutComponent(data StaticLayout) {
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Will Lapinel</title>
-			<link rel="stylesheet" href="/python/styles/styles.css"/>
-			<link rel="icon" href="/python/images/favicon.png"/>
-			<script src={ data.AssetsURL("js/htmx.js") } defer></script>
-			<script src={ data.AssetsURL("js/index.js") } defer></script>
-		</head>
-		<header></header>
-		<body>
-			<main>
-				{ children... }
-			</main>
-		</body>
-		<footer></footer>
-	</html>
 }

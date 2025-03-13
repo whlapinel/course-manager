@@ -128,6 +128,7 @@ class Car:
 
 - Inheritance allows a class to inherit attributes and methods from another class.
 - Helps reuse code and create relationships between classes.
+- Caution! Use is typically discouraged nowadays due to potential for complexity and tight coupling
 
 ```python
 class ParentClass:

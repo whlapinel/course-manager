@@ -1,0 +1,13 @@
+package templates
+
+templ HeadComponent(data Head) {
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>{ data.User.FirstName }</title>
+		<link rel="stylesheet" href={ data.AssetsURL("styles/styles.css") }/>
+		<link rel="icon" href={ data.AssetsURL("images/favicon.png") }/>
+		<script src={ data.AssetsURL("js/htmx.js") } defer></script>
+		<script src={ data.AssetsURL("js/index.js") } defer></script>
+	</head>
+}

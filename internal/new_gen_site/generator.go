@@ -6,7 +6,6 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/new_gen_site/templates"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,10 +13,24 @@ import (
 
 const AssetsDir = "./sites/assets"
 
-func NodePageURL(nodes ...domain.CourseNode) string {
-	path := NodePagePath(nodes...)
-	log.Println("NodePageURL: path:", path)
+func NodeListPageURL(nodes ...domain.CourseNode) string {
+	path := NodeListPagePath(nodes...)
 	return URL(path)
+}
+
+func NodeDetailsPageURL(nodes ...domain.CourseNode) string {
+	path := NodeDetailsPagePath(nodes...)
+	return URL(path)
+}
+
+// intended as a callback for breadcrumbs
+func NodeURL(nodes ...domain.CourseNode) string {
+	currNode := nodes[len(nodes)-1]
+	if currNode.ChildTypeName() == "" {
+		return NodeDetailsPageURL(nodes...)
+	} else {
+		return NodeListPageURL(nodes...)
+	}
 }
 
 // remove sites/{username} from path for URL
@@ -29,8 +42,8 @@ func URL(path string) string {
 	return "/" // Return root if there aren't enough segments
 }
 
-func StaticAssetsPath(relPath string) string {
-	path := filepath.Join("/sites", relPath)
+func StaticAssetsURL(relPath string) string {
+	path := filepath.Join("/sites/assets", relPath)
 	return URL(path)
 }
 
@@ -45,6 +58,9 @@ func StaticNodePath(nodes ...domain.CourseNode) string {
 	}
 	path := StaticSiteRootDir(user)
 	// should skip term and start with courses, which is third node
+	if len(nodes) < 3 {
+		return "/index.html"
+	}
 	for _, node := range nodes[2:] {
 		path = strings.ToLower(filepath.Join(path, node.TypeName()+"s"))
 		path = strings.ToLower(filepath.Join(
@@ -61,10 +77,17 @@ func CoursesListPagePath(user domain.User) string {
 	return filepath.Join(path, "courses.html")
 }
 
-func NodePagePath(nodes ...domain.CourseNode) string {
-	leafNode := nodes[len(nodes)-1]
+func NodeListPagePath(nodes ...domain.CourseNode) string {
 	path := StaticNodePath(nodes...)
+	leafNode := nodes[len(nodes)-1] // last node is current node
 	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", strings.ToLower(leafNode.TypeName()), leafNode.GetID()))
+	return path
+}
+
+func NodeDetailsPagePath(nodes ...domain.CourseNode) string {
+	path := StaticNodePath(nodes...)
+	currNode := nodes[len(nodes)-1] // last node is current node
+	path = filepath.Join(path, fmt.Sprintf("%s_%d_details.html", strings.ToLower(currNode.TypeName()), currNode.GetID()))
 	return path
 }
 
@@ -79,20 +102,65 @@ func NodeFilesPath(nodes ...domain.CourseNode) string {
 	return filepath.Join(dir, "files")
 }
 
+func NodeSlidesPath(nodes ...domain.CourseNode) string {
+	dir := StaticNodePath(nodes...)
+	return filepath.Join(dir, "slides.html")
+}
+
+func NodeDetailsPage(user domain.User, nodes domain.Nodes) templates.StaticNodeDetailsPage {
+	return templates.NewStaticNodeDetailsPage(templates.StaticNodeDetailsParams{
+		Node:         nodes.CurrentNode(),
+		Path:         NodeDetailsPagePath(nodes.ToSlice()...),
+		StaticLayout: Layout(user, nodes),
+	})
+}
+
+func NodeListPage(user domain.User, nodes domain.Nodes) (templates.StaticNodeListPage, error) {
+	page, err := templates.NewStaticNodeListPage(templates.StaticNodeListParams{
+		StaticLayout:             Layout(user, nodes),
+		Nodes:                    nodes,
+		ListChildChildrenURLFunc: NodeListPageURL,
+		ChildDetailsURLFunc:      NodeDetailsPageURL,
+		Path:                     NodeListPagePath(nodes.ToSlice()...),
+	})
+	if err != nil {
+		return templates.StaticNodeListPage{}, err
+	}
+	return page, nil
+}
+
+func Layout(user domain.User, nodes domain.Nodes) templates.StaticLayout {
+	return templates.StaticLayout{
+		User:        user,
+		AssetsURL:   StaticAssetsURL,
+		BreadCrumbs: templates.BreadCrumbs(nodes, NodeURL),
+	}
+}
+
 func Generate(user domain.User, term domain.Term) error {
 	nodes := domain.Nodes{
 		User: user,
 		Term: term,
 	}
-	courseListPage, err := templates.NewStaticNodeListPage(templates.StaticNodeListParams{
-		Nodes:        nodes,
-		ChildUrlFunc: NodePageURL,
-		Path:         CoursesListPagePath(user),
-	})
+	courseListPage, err := NodeListPage(user, nodes)
+	courseListPage.Path = CoursesListPagePath(user) // need to override default path
 	if err != nil {
 		return err
 	}
 	err = RenderPage(courseListPage)
+	if err != nil {
+		return err
+	}
+	homePage := templates.NewHomePage(templates.StaticHomePageParams{
+		HomePage: templates.HomePage{
+			Path: filepath.Join(StaticSiteRootDir(user), "index.html"),
+			StaticLayout: templates.StaticLayout{
+				User:      user,
+				AssetsURL: StaticAssetsURL,
+			},
+		},
+	})
+	err = RenderPage(homePage)
 	if err != nil {
 		return err
 	}
@@ -106,11 +174,12 @@ func Generate(user domain.User, term domain.Term) error {
 		if err != nil {
 			return err
 		}
-		unitListPage, err := templates.NewStaticNodeListPage(templates.StaticNodeListParams{
-			Nodes:        nodes,
-			ChildUrlFunc: NodePageURL,
-			Path:         NodePagePath(nodes.ToSlice()...),
-		})
+		courseDetailsPage := NodeDetailsPage(user, nodes)
+		err = RenderPage(courseDetailsPage)
+		if err != nil {
+			return err
+		}
+		unitListPage, err := NodeListPage(user, nodes)
 		if err != nil {
 			return err
 		}
@@ -125,12 +194,12 @@ func Generate(user domain.User, term domain.Term) error {
 				Course: course,
 				Unit:   unit,
 			}
-			log.Println("nodes.Lesson:", nodes.Lesson.GetName())
-			lessonListPage, err := templates.NewStaticNodeListPage(templates.StaticNodeListParams{
-				Nodes:        nodes,
-				ChildUrlFunc: NodePageURL,
-				Path:         NodePagePath(nodes.ToSlice()...),
-			})
+			unitDetailsPage := NodeDetailsPage(user, nodes)
+			err = RenderPage(unitDetailsPage)
+			if err != nil {
+				return err
+			}
+			lessonListPage, err := NodeListPage(user, nodes)
 			if err != nil {
 				return err
 			}
@@ -147,10 +216,7 @@ func Generate(user domain.User, term domain.Term) error {
 					Lesson: lesson,
 				}
 				nodes.Lesson = lesson
-				lessonDetailsPage := templates.NewStaticNodeDetailsPage(templates.StaticNodeDetailsParams{
-					Node: nodes.CurrentNode(),
-					Path: NodePagePath(nodes.ToSlice()...),
-				})
+				lessonDetailsPage := NodeDetailsPage(user, nodes)
 				err = RenderPage(lessonDetailsPage)
 				if err != nil {
 					return err
