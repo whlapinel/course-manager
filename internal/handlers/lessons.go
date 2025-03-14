@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 )
 

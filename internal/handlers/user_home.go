@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -140,7 +140,7 @@ func (r *userRouter) UserAuth(c echo.Context) error {
 
 func (r *userRouter) GenerateSite(c echo.Context) error {
 	userID := c.Get("id").(string)
-	r.svc.GenerateSite(userID)
+	r.svc.NewGenerateSite(userID)
 	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
 }
 

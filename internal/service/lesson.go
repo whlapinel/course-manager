@@ -130,6 +130,11 @@ func (svc CourseService) GetLessons(unitID int) ([]domain.Lesson, error) {
 		if err != nil {
 			return nil, err
 		}
+		assessments, err := svc.GetLessonAssessments(lesson.ID)
+		if err != nil {
+			return nil, err
+		}
+		lesson.Assessments = assessments
 		lesson.Standards = objectives
 		lessons[i] = lesson
 	}

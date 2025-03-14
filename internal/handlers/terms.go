@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"net/http"
 	"time"

@@ -4,7 +4,7 @@ import (
 	auth "gh_static_portfolio/internal/authentication"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"os"
 
@@ -54,7 +54,7 @@ func (h CourseHandler) PostSignin(c echo.Context) error {
 	sub := payload.Claims["sub"].(string)
 	user, err := h.svc.GetUser(sub)
 	if err != nil {
-		
+
 		log.Println(err)
 		return c.String(500, err.Error())
 	}

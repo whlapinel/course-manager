@@ -1,0 +1,66 @@
+package templates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/util"
+)
+
+templ StaticLessonDetailsComponent(page StaticLessonDetailsPage) {
+	@StaticNodeDetailsComponent(page.StaticNodeDetailsPage)
+	<div class="flex">
+		@page.Slides()
+		@page.Assessments()
+	</div>
+}
+
+templ SlidesComponent() {
+}
+
+templ AssessmentsComponent(assessments []domain.Assessment, data StaticLessonDetailsPage) {
+	<ul>
+		for _, assessment := range assessments {
+			<li class="flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4">
+				<span class="text-2xl">
+					{ assessment.Name }
+				</span>
+				<span>
+					Category: { util.Capitalize(assessment.Category.String()) }
+				</span>
+				if assessment.Instructions != "" {
+					<span class="border border-green-500 rounded bg-slate-900 text-green-500 p-2 w-min">
+						<pre>
+							{ assessment.Instructions }
+						</pre>
+					</span>
+				}
+				<span>
+					Due: { assessment.DateDue.Format("Mon 1/2/2006") }
+				</span>
+				if assessment.Dropped {
+					<span>
+						Status: Dropped
+					</span>
+				} else {
+					<span>
+						Status: Active
+					</span>
+				}
+				if assessment.File != "" {
+					<a
+						href={ templ.SafeURL(data.FilesURLFunc(assessment.File, data.Nodes.ToSlice()...)) }
+						target="_blank"
+					>
+						{ assessment.File }
+					</a>
+				}
+				if util.IsMarkdown(assessment.File) {
+					<a
+						href={ templ.SafeURL(data.ViewMarkdownURL(assessment.File, data.Nodes.ToSlice()...)) }
+						target="_blank"
+						class="bg-green-700 p-3 rounded max-w-fit text-lg"
+					>View File</a>
+				}
+			</li>
+		}
+	</ul>
+}

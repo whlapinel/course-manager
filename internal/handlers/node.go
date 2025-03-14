@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"gh_static_portfolio/internal/util"
 	"io"
 	"log"
@@ -504,7 +504,7 @@ func ViewFile(c echo.Context, router NodeRouter, redirect string) error {
 	}
 	pathRoot := data.NodeFilesDirPath(nodes.ToSlice()...)
 	path = filepath.Join(pathRoot, path)
-	content, err := RenderMarkdownFile(path)
+	content, err := r.svc.RenderMarkdownFile(path)
 	if err != nil {
 		return err
 	}
@@ -554,9 +554,10 @@ func PostFile(c echo.Context, router NodeRouter) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
 	}
 	defer src.Close()
+	dstPath := filepath.Join(path, file.Filename)
 
 	// Create a destination file
-	dst, err := os.Create(filepath.Join(path, file.Filename))
+	dst, err := os.Create(dstPath)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
 	}
@@ -566,6 +567,7 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if _, err := io.Copy(dst, src); err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to save file")
 	}
+	go r.svc.MarkdownToHTML(dstPath)
 
 	// Respond to the client
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))

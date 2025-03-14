@@ -2,6 +2,9 @@
 
 ## Pending
 
+- (major) signin page after redirect following token expiration does not seem to render properly under certain circumstances
+  - in particular when I clicked Generate from the home page, the signin component was sent but not as a complete page including layout
+  - maybe htmx problem not redirect problem
 - (major) Attempting to view or download file that does not exist (e.g. in the assessments part of lesson details) will crash the server completely.
 - Select lesson to add to date page needs major cosmetic upgrade (functionality is ok)
 - Assessments list page UI needs major upgrade (functionality is ok)

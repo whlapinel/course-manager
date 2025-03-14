@@ -1,0 +1,76 @@
+package templates
+
+import (
+	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/util"
+	"strconv"
+	"time"
+)
+
+templ CourseCalendarComponent(page CourseCalendarPage) {
+	<div id="calendar" class="flex flex-col gap-4">
+		for _, day := range MonthDates(page.Nodes.Term) {
+			<h1
+				id={ util.KebabCase(day.Month().String()) }
+				class="text-2xl text-center"
+			>
+				Month of { day.Month().String() } { strconv.Itoa(day.Year()) }
+			</h1>
+			<div id="month-container" class="flex flex-col border border-solid">
+				for _, week := range util.GetMonthDates(day) {
+					if HasNonZeroWeekDay(week) && WithinTerm(week, page.Nodes.Term) {
+						<div id="week-container" class="grid grid-cols-5">
+							for _, calDate := range week[time.Monday:time.Saturday] {
+								@NewCalendarDateComponent(page, DateData(calDate, page))
+							}
+						</div>
+					}
+				}
+			</div>
+		}
+	</div>
+}
+
+templ NewCalendarDateComponent(page CourseCalendarPage, data CalendarDate) {
+	<div id="date-container" class="justify-items-center border min-h-32">
+		if (!data.Date.Before(page.Nodes.Term.Start) && 
+								!data.Date.After(page.Nodes.Term.End)) ||
+								util.IsSameDate(data.Date, page.Nodes.Term.Start) ||
+								util.IsSameDate(data.Date, page.Nodes.Term.End) {
+			{ data.Date.Format("Mon 1/02/06") }
+			for _, occasion := range data.Occasions {
+				@OccasionComponent(occasion)
+			}
+			@NewCalendarLessonListComponent(page, data)
+			<ul class="justify-items-center">
+				if !page.Nodes.Term.IsInstructionDay(data.Date) {
+					<p>No School</p>
+				}
+			</ul>
+		}
+	</div>
+}
+
+templ NewCalendarLessonListComponent(page CourseCalendarPage, data CalendarDate) {
+	<ul class="justify-items-center">
+		if page.Nodes.Course.Term.IsInstructionDay(data.Date) {
+			for _, lesson := range data.Lessons {
+				<a
+					href={ templ.SafeURL(page.LessonPageURL(page.Nodes.ToSlice(domain.Unit{ID: lesson.UnitID}, lesson)...)) }
+					class="group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group"
+				>
+					<p>
+						{ lesson.Designation() }
+					</p>
+					<p class="left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none">
+						{ lesson.Name }
+					</p>
+				</a>
+			}
+		}
+	</ul>
+}
+
+templ OccasionComponent(occasion domain.Occasion) {
+	<p class="text-lg text-blue-300 font-extrabold">{ occasion.Name }</p>
+}

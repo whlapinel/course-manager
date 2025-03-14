@@ -3,7 +3,7 @@ package service
 import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"os"
 	"path/filepath"

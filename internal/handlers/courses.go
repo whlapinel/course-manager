@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/service"
-	"gh_static_portfolio/internal/templates"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	"gh_static_portfolio/internal/templates/shared"
+	mt "gh_static_portfolio/internal/templates/app"
 	"io"
 	"log"
 	"net/http"
@@ -152,16 +152,16 @@ func (r *courseRouter) ShowDetails(c echo.Context) error {
 		StandardSets:             sets,
 		PostSelectStandardSetURL: r.app.Reverse(string(PostSelectStandardSet), r.params.ToSlice()...),
 		NodeDetailsPage: mt.NodeDetailsPage{
-			Params:          r.params,
-			Node:            nodes.Course,
+			Params:            r.params,
+			Node:              nodes.Course,
 			CourseCalendarURL: r.app.Reverse(ShowCourseCalendar.String(), r.params.ToSlice()...),
-			GetEditNodeURL:  r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
-			PostEditNodeURL: r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
-			ListChildrenURL: r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),
-			UpNavURL:        r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...),
-			IsEdit:          false,
-			BreadCrumbsData: BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
-			ServerFilesURL:  r.app.Reverse(ShowCourseFiles.String(), AddParams(params, "")...),
+			GetEditNodeURL:    r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
+			PostEditNodeURL:   r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
+			ListChildrenURL:   r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),
+			UpNavURL:          r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...),
+			IsEdit:            false,
+			BreadCrumbsData:   BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
+			ServerFilesURL:    r.app.Reverse(ShowCourseFiles.String(), AddParams(params, "")...),
 		},
 	}
 	component := page.Component()

@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"time"
 

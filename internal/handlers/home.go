@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 
 	"github.com/labstack/echo/v4"
 )

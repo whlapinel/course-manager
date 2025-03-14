@@ -9,99 +9,133 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
-# Warmup 10/15/24
+# Warmup
 
-- Create the following:
-  - Create 1 class
-  - Define the constructor (`__init__`)
-  - 1 other method
-  - create an object of your class
-  - call your method
+- Phones in bags, bags against the wall
+- Create the following and open it in VS Code
 
-# Agenda 10/15/24
-
-- Closures and assignment 5.4
-
-# Announcements 10/15/24
-
-- I will be absent on Thursday and Friday 10/17 and 10/18.
-
-# Looking ahead
-
-- Unit 5 Perform: Monday 10/21 (Alien attack project due)
-- Midterm: Monday 10/28 (Multiple choice test and project)
+```text
+/python
+  /unit_5
+    /lesson_4
+```
 
 # Closures in Python
 
+## Understanding Closures and How They Work
+
 # What is a Closure?
+- A **closure** is a function object that remembers values in the enclosing lexical scope even when the scope is no longer available.
+- Closures allow functions to:
+  - Retain state between calls
+  - Encapsulate logic and data
 
-- A closure is a function object that remembers values in enclosing scopes even if they are not present in memory.
-- Closures provide a way to retain access to variables after the outer function has finished execution.
-
-# Components of a Closure
-
-1. **Nested Function**: A function defined inside another function.
-2. **Enclosing Variables**: Variables that are captured from the outer function.
-3. **Return of Nested Function**: The inner function is returned from the outer function.
-
-# Example of a Closure
-
+# **Example:**  
 ```python
-def outer_func(msg):
-    def inner_func():
-        print(msg)
-    return inner_func
+def outer(x):
+    def inner(y):
+        return x + y
+    return inner
 
-closure = outer_func('Hello, World!')
-closure()  # Output: Hello, World!
+closure = outer(10)
+print(closure(5))  # Output: 15
 ```
+- `inner` remembers the value of `x` even after `outer` has returned.
 
 # How Closures Work
+1. A nested function is defined within another function.
+2. The inner function references variables from the outer function.
+3. The outer function returns the inner function.
+4. The inner function **retains access** to the outer function's scope.
 
-- In the example, `msg` is an enclosed variable.
-- The `inner_func` retains the value of `msg` after `outer_func` finishes.
-- When `closure()` is called, it prints the value of `msg`.
-
-# Changing closure state
-
-**New:** to modify an outer variable you must use the `nonlocal` keyword like this:
-
+# **Example:**  
 ```python
-def divider(start: int):
-    def divide():
-        nonlocal start # need this to be able to modify the variable 'start' which is declared in the outer function
-        start //= 2 # assign to start half of itself ('//' means integer division)
-        return start
+def multiplier(factor):
+    def multiply_by(x):
+        return x * factor
+    return multiply_by
 
-    return divide # return the inner function
-
-divide = divider(1000)
-print(divide())
-print(divide())
-
-divide2 = divider(200)
-print(divide2())
-print(divide2())
+double = multiplier(2)
+print(double(10))  # Output: 20
 ```
 
-# Use Cases of Closures
+# Why Use Closures?
+✅ Encapsulation  
+✅ State Retention  
+✅ Avoids Global Variables  
+✅ Useful for Factory Functions
 
-- **Data hiding**: Closures can encapsulate data.
-- **Factory functions**: Closures can generate functions with different behaviors based on arguments.
-- **Callback functions**: Closures are useful in event-driven programming.
+# **Example: Counter**  
+```python
+def make_counter():
+    count = 0
+    def counter():
+        nonlocal count
+        count += 1
+        return count
+    return counter
 
-# Important Points
+counter = make_counter()
+print(counter())  # Output: 1
+print(counter())  # Output: 2
+```
 
-- Closures are created by nested functions.
-- Enclosed variables are captured by the inner function.
-- Functions returned by closures can access those captured variables even after the outer function has finished.
+# Comparison with Other Approaches
+## 1. Global Variables (Less Encapsulation)
+```python
+count = 0
 
-# Limitations
+def counter():
+    global count
+    count += 1
+    return count
 
-- Closures can sometimes lead to unintuitive behavior, especially with mutable variables.
-- They can make code harder to debug due to the hidden state.
+print(counter())  # Output: 1
+print(counter())  # Output: 2
+```
+- **Downside:** Pollutes global namespace  
+- **Closures:** Keep state private and encapsulated
 
-# Conclusion
+# 2. Using a Class (More Boilerplate)
+```python
+class Counter:
+    def __init__(self):
+        self.count = 0
 
-- Closures are a powerful tool in Python for managing state in a clean, functional style.
-- They provide a way to encapsulate data and logic in a single object, making the code modular and reusable.
+    def __call__(self):
+        self.count += 1
+        return self.count
+
+counter = Counter()
+print(counter())  # Output: 1
+print(counter())  # Output: 2
+```
+- **Downside:** More code to maintain state  
+- **Closures:** Less code, easier to use
+
+# When to Use Closures
+✅ When you want to retain state between function calls  
+✅ When you want to avoid global variables  
+✅ When you need a factory function  
+✅ When you need lightweight objects without a class  
+
+# When NOT to Use Closures
+❌ When state becomes too complex (use a class instead)  
+❌ When multiple levels of nesting make the code hard to follow  
+❌ When the function needs to be serialized or copied  
+
+# Summary
+- Closures capture and retain state from their enclosing scope.  
+- They are simpler and more lightweight than classes for many tasks.  
+- Great for small, stateful, reusable functions.  
+
+**Example:**  
+```python
+def adder(x):
+    def add(y):
+        return x + y
+    return add
+
+add_five = adder(5)
+print(add_five(3))  # Output: 8
+```

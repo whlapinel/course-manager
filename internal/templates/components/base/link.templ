@@ -1,0 +1,9 @@
+package components
+
+templ LinkComponent(data Link) {
+	<a
+		href={ templ.SafeURL(data.URL) }
+	>
+		{ data.Text }
+	</a>
+}
