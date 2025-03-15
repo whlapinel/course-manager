@@ -567,7 +567,9 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if _, err := io.Copy(dst, src); err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to save file")
 	}
-	go r.svc.MarkdownToHTML(dstPath)
+	if util.IsMarkdown(dstPath) {
+		go r.svc.MarkdownToHTML(dstPath)
+	}
 
 	// Respond to the client
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))

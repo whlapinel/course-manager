@@ -18,7 +18,8 @@ func (svc CourseService) MarkdownToHTML(srcPath string) error {
 	if err != nil {
 		return err
 	}
-	outputPath := filepath.Join(filepath.Dir(srcPath), strings.TrimSuffix(srcPath, ".md")+".html")
+	fileName := filepath.Base(srcPath)
+	outputPath := filepath.Join(filepath.Dir(srcPath), strings.TrimSuffix(fileName, ".md")+".html")
 	output, err := os.Create(outputPath)
 	if err != nil {
 		log.Fatalf("Failed to create output file %s: %v", outputPath, err)

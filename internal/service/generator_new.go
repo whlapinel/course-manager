@@ -201,6 +201,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 				LessonPageURL: NodeDetailsPageURL,
 			},
 		})
+		svc.renderMarkdownFiles(course.GetName(), data.NodeFilesDirPath(nodes.ToSlice()...))
 		svc.renderMarkdownFiles(course.GetName(), NodeFilesPath(nodes.ToSlice()...))
 		wg.Add(1)
 		go RenderPage(cc, errChan, wg, cancel)
@@ -219,6 +220,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 				Course: course,
 				Unit:   unit,
 			}
+			svc.renderMarkdownFiles(unit.Designation(), data.NodeFilesDirPath(nodes.ToSlice()...))
 			svc.renderMarkdownFiles(unit.Designation(), NodeFilesPath(nodes.ToSlice()...))
 			err = renderNodePages(nodes, errChan, wg, ctx, cancel)
 			if err != nil {
@@ -232,6 +234,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 					Unit:   unit,
 					Lesson: lesson,
 				}
+				svc.renderMarkdownFiles(lesson.Designation(), data.NodeFilesDirPath(nodes.ToSlice()...))
 				svc.renderMarkdownFiles(lesson.Designation(), NodeFilesPath(nodes.ToSlice()...))
 				renderNodePages(nodes, errChan, wg, ctx, cancel)
 			}
