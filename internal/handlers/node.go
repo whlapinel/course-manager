@@ -8,10 +8,8 @@ import (
 	"gh_static_portfolio/internal/domain"
 	mt "gh_static_portfolio/internal/templates/app"
 	"gh_static_portfolio/internal/util"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 
 	"github.com/labstack/echo/v4"
@@ -536,9 +534,6 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	r.nodes = nodes
-	nodeDirPath := data.NodeFilesDirPath(r.nodes.ToSlice()...)
-	path = filepath.Join(nodeDirPath, path)
 	// Parse the form to retrieve the file
 	err = c.Request().ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -548,29 +543,10 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	// Open the file
-	src, err := file.Open()
+	err = r.svc.WriteFile(file, path, nodes)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
+		return err
 	}
-	defer src.Close()
-	dstPath := filepath.Join(path, file.Filename)
-
-	// Create a destination file
-	dst, err := os.Create(dstPath)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
-	}
-	defer dst.Close()
-
-	// Copy the content of the uploaded file to the destination
-	if _, err := io.Copy(dst, src); err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to save file")
-	}
-	if util.IsMarkdown(dstPath) {
-		go r.svc.MarkdownToHTML(dstPath)
-	}
-
 	// Respond to the client
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
 

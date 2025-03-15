@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 5.4</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="assignment-54-closures">Assignment 5.4: Closures</h1>
+<h2 id="problems">Problems</h2>
+<h3 id="1-create-an-adder">1. <strong>Create an Adder</strong></h3>
+<p>Write a function <code>make_adder</code> that takes a number <code>x</code> and returns a function that takes another number <code>y</code> and returns the sum of <code>x</code> and <code>y</code>.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>add_five <span style="color:#ff79c6">=</span> make_adder(<span style="color:#bd93f9">5</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(add_five(<span style="color:#bd93f9">10</span>))  <span style="color:#6272a4"># Output: 15</span>
+</span></span></code></pre><hr />
+<h3 id="2-create-a-multiplier">2. <strong>Create a Multiplier</strong></h3>
+<p>Write a function <code>make_multiplier</code> that takes a number <code>n</code> and returns a function that multiplies its input by <code>n</code>.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>double <span style="color:#ff79c6">=</span> make_multiplier(<span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(double(<span style="color:#bd93f9">4</span>))  <span style="color:#6272a4"># Output: 8</span>
+</span></span></code></pre><hr />
+<h3 id="3-counter">3. <strong>Counter</strong></h3>
+<p>Write a function <code>make_counter</code> that returns a function. Each time the inner function is called, it should increase a count by 1 and return the new value.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>counter <span style="color:#ff79c6">=</span> make_counter()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(counter())  <span style="color:#6272a4"># Output: 1</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#8be9fd;font-style:italic">print</span>(counter())  <span style="color:#6272a4"># Output: 2</span>
+</span></span></code></pre><hr />
+<h3 id="4-power-function">4. <strong>Power Function</strong></h3>
+<p>Write a function <code>make_power</code> that takes an exponent <code>n</code> and returns a function that raises its input to the power of <code>n</code>.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>square <span style="color:#ff79c6">=</span> make_power(<span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(square(<span style="color:#bd93f9">3</span>))  <span style="color:#6272a4"># Output: 9</span>
+</span></span></code></pre><hr />
+<h3 id="5-string-formatter">5. <strong>String Formatter</strong></h3>
+<p>Write a function <code>make_greeter</code> that takes a greeting string (<code>&quot;Hello&quot;</code>, <code>&quot;Hi&quot;</code>, etc.) and returns a function that takes a name and returns the greeting followed by the name.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>greet <span style="color:#ff79c6">=</span> make_greeter(<span style="color:#f1fa8c">&#34;Hello&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(greet(<span style="color:#f1fa8c">&#34;Alice&#34;</span>))  <span style="color:#6272a4"># Output: Hello Alice</span>
+</span></span></code></pre><hr />
+<h3 id="6-discount-calculator">6. <strong>Discount Calculator</strong></h3>
+<p>Write a function <code>make_discount</code> that takes a discount percentage and returns a function that applies the discount to a price.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>ten_percent_off <span style="color:#ff79c6">=</span> make_discount(<span style="color:#bd93f9">10</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(ten_percent_off(<span style="color:#bd93f9">100</span>))  <span style="color:#6272a4"># Output: 90.0</span>
+</span></span></code></pre><hr />
+<h3 id="7-repeater">7. <strong>Repeater</strong></h3>
+<p>Write a function <code>make_repeater</code> that takes an integer <code>n</code> and returns a function that repeats a string <code>n</code> times.</p>
+<p><strong>Example:</strong></p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>repeat_three_times <span style="color:#ff79c6">=</span> make_repeater(<span style="color:#bd93f9">3</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#8be9fd;font-style:italic">print</span>(repeat_three_times(<span style="color:#f1fa8c">&#34;Hi&#34;</span>))  <span style="color:#6272a4"># Output: HiHiHi</span>
+</span></span></code></pre></body></html>

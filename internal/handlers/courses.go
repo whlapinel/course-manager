@@ -2,15 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/service"
-	"gh_static_portfolio/internal/templates/shared"
 	mt "gh_static_portfolio/internal/templates/app"
-	"io"
+	templates "gh_static_portfolio/internal/templates/shared"
 	"log"
-	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -42,48 +37,7 @@ func (r *courseRouter) SetRouter(router Router) {
 
 // PostFile implements NodeRouter.
 func (r *courseRouter) PostFile(c echo.Context) error {
-	path := c.Param("*")
-	log.Println("path: ", path)
-	params, err := ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	nodes, err := r.svc.Nodes(params)
-	if err != nil {
-		return err
-	}
-	dirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
-	path = filepath.Join(dirPath, path)
-	// Parse the form to retrieve the file
-	err = c.Request().ParseMultipartForm(10 << 20)
-	if err != nil {
-		return err
-	}
-	file, err := c.FormFile("file")
-	if err != nil {
-		return err
-	}
-	// Open the file
-	src, err := file.Open()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
-	}
-	defer src.Close()
-
-	// Create a destination file
-	dst, err := os.Create(filepath.Join(path, file.Filename))
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
-	}
-	defer dst.Close()
-
-	// Copy the content of the uploaded file to the destination
-	if _, err := io.Copy(dst, src); err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to save file")
-	}
-
-	// Respond to the client
-	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
+	return PostFile(c, r)
 
 }
 

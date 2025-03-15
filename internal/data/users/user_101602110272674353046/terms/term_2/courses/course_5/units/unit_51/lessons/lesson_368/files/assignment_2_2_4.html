@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 2.4</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="practice-problems-using-modules--datetime">Practice Problems: Using Modules &amp; datetime</h1>
+<h2 id="problem-1-importing-a-module">Problem 1: Importing a Module</h2>
+<p>Import the <code>math</code> module and use it to find the square root of 144.</p>
+<p><strong>Hint:</strong> Use <code>import math</code> and find the appropriate function in the <code>math</code> module.</p>
+<hr />
+<h2 id="problem-2-importing-specific-functions">Problem 2: Importing Specific Functions</h2>
+<p>Import only the <code>choice</code> function from the <code>random</code> module and use it to pick a random item from a list: <code>['apple', 'banana', 'cherry']</code>.</p>
+<p><strong>Hint:</strong> Use <code>from random import choice</code> to access the function directly.</p>
+<hr />
+<h2 id="problem-3-importing-with-an-alias">Problem 3: Importing with an Alias</h2>
+<p>Import the <code>datetime</code> module with an alias <code>dt</code> and print the current date and time.</p>
+<p><strong>Hint:</strong> Use <code>import datetime as dt</code> and find a function that gives you the current date and time.</p>
+<hr />
+<h2 id="problem-4-creating-your-own-module">Problem 4: Creating Your Own Module</h2>
+<p>Create a module called <code>greetings.py</code> that contains a function <code>say_hello(name)</code> which prints <code>Hello, &lt;name&gt;!</code>. Import and use this module in another script.</p>
+<p><strong>Hint:</strong> Create a <code>.py</code> file, define a function, then import it using <code>import greetings</code>.</p>
+<hr />
+<h2 id="problem-5-formatting-dates">Problem 5: Formatting Dates</h2>
+<p>Use the <code>datetime</code> module to print today’s date in the format <code>YYYY-MM-DD</code>.</p>
+<p><strong>Hint:</strong> Use <code>strftime()</code> to format the date.</p>
+<hr />
+<h2 id="problem-6-using---name------main--">Problem 6: Using <code>__name__ == &quot;__main__&quot;</code></h2>
+<p>Write a script that defines a function <code>display_message()</code> that prints <code>This script is running directly!</code>. Ensure that the function only runs when the script is executed directly and not when imported.</p>
+<p><strong>Hint:</strong> Use <code>if __name__ == &quot;__main__&quot;:</code> to control execution.</p>
+<hr />
+<h2 id="problem-7-calculating-age">Problem 7: Calculating Age</h2>
+<p>Write a script that asks the user for their birth year and calculates their age using the <code>datetime</code> module.</p>
+<p><strong>Hint:</strong> Get the current year from <code>datetime.date.today().year</code> and subtract the birth year.</p>
+<hr />
+<h2 id="problem-8-importing-everything-use-with-caution">Problem 8: Importing Everything (Use with Caution)</h2>
+<p>Import all functions from the <code>math</code> module and use the <code>ceil()</code> function to round <code>3.4</code> up to the nearest integer.</p>
+<p><strong>Hint:</strong> Use <code>from math import *</code>, but be aware of potential naming conflicts.</p>
+<hr />
+<h2 id="problem-9-finding-the-difference-between-two-dates">Problem 9: Finding the Difference Between Two Dates</h2>
+<p>Use the <code>datetime</code> module to find the number of days between January 1, 2023, and today.</p>
+<p><strong>Hint:</strong> Subtract two <code>datetime.date</code> objects to get the difference.</p>
+<hr />
+<h2 id="problem-10-generating-a-timestamp">Problem 10: Generating a Timestamp</h2>
+<p>Write a script that prints the current timestamp (seconds since the epoch) using the <code>datetime</code> module.</p>
+<p><strong>Hint:</strong> Use <code>datetime.datetime.timestamp()</code> on the current datetime object.</p>
+</body></html>

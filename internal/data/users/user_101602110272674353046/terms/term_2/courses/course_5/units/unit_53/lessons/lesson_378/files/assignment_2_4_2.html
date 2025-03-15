@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 4.2</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="python-2-assignment-42">Python 2: Assignment 4.2</h1>
+<h2 id="challenge-1-read-and-print-a-csv-file"><strong>Challenge 1: Read and Print a CSV File</strong></h2>
+<p>Write a Python script that reads a CSV file (<code>data.csv</code>) and prints its contents line by line.</p>
+<p>Example CSV (<code>data.csv</code>):</p>
+<pre><code class="language-csv">Name,Age,City
+Alice,25,New York
+Bob,30,Los Angeles
+Charlie,22,Chicago
+</code></pre>
+<p><strong>Hint:</strong> Use <code>csv.reader()</code>.</p>
+<hr />
+<h2 id="challenge-2-count-the-number-of-rows"><strong>Challenge 2: Count the Number of Rows</strong></h2>
+<p>Modify your script to count and print how many rows are in the CSV file (excluding the header).</p>
+<p><strong>Hint:</strong> Use a counter variable while iterating through the rows.</p>
+<hr />
+<h2 id="challenge-3-write-data-to-a-csv-file"><strong>Challenge 3: Write Data to a CSV File</strong></h2>
+<p>Create a Python script that writes the following data to a new CSV file (<code>new_data.csv</code>):</p>
+<pre><code class="language-csv">Product,Price,Quantity
+Laptop,1000,5
+Phone,500,10
+Tablet,300,7
+</code></pre>
+<p><strong>Hint:</strong> Use <code>csv.writer()</code> and <code>writerows()</code>.</p>
+<hr />
+<h2 id="challenge-4-filter-data-from-a-csv-file"><strong>Challenge 4: Filter Data from a CSV File</strong></h2>
+<p>Write a script that reads <code>data.csv</code> and prints only the names of people who are younger than 30.</p>
+<p><strong>Hint:</strong> Use <code>csv.DictReader()</code> to access values by column name.</p>
+<hr />
+<h2 id="challenge-5-add-a-new-row-to-an-existing-csv"><strong>Challenge 5: Add a New Row to an Existing CSV</strong></h2>
+<p>Modify <code>new_data.csv</code> by adding a new product: <code>&quot;Headphones&quot;, 150, 20</code>.</p>
+<p><strong>Hint:</strong> Open the file in <code>append</code> mode (<code>&quot;a&quot;</code>) and use <code>csv.writer()</code>.</p>
+<hr />
+<h2 id="challenge-6-convert-csv-to-dictionary"><strong>Challenge 6: Convert CSV to Dictionary</strong></h2>
+<p>Read <code>data.csv</code> and store its contents in a dictionary where names are the keys and the rest of the row is stored as values.</p>
+<p>Example output:</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>{
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#f1fa8c">&#34;Alice&#34;</span>: {<span style="color:#f1fa8c">&#34;Age&#34;</span>: <span style="color:#bd93f9">25</span>, <span style="color:#f1fa8c">&#34;City&#34;</span>: <span style="color:#f1fa8c">&#34;New York&#34;</span>},
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#f1fa8c">&#34;Bob&#34;</span>: {<span style="color:#f1fa8c">&#34;Age&#34;</span>: <span style="color:#bd93f9">30</span>, <span style="color:#f1fa8c">&#34;City&#34;</span>: <span style="color:#f1fa8c">&#34;Los Angeles&#34;</span>},
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    <span style="color:#f1fa8c">&#34;Charlie&#34;</span>: {<span style="color:#f1fa8c">&#34;Age&#34;</span>: <span style="color:#bd93f9">22</span>, <span style="color:#f1fa8c">&#34;City&#34;</span>: <span style="color:#f1fa8c">&#34;Chicago&#34;</span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>}
+</span></span></code></pre><p><strong>Hint:</strong> Use <code>csv.DictReader()</code>.</p>
+<hr />
+<h2 id="challenge-7-calculate-the-average-age"><strong>Challenge 7: Calculate the Average Age</strong></h2>
+<p>Read <code>data.csv</code> and compute the average age of all people in the file.</p>
+<p><strong>Hint:</strong> Convert the age values to integers and sum them.</p>
+</body></html>

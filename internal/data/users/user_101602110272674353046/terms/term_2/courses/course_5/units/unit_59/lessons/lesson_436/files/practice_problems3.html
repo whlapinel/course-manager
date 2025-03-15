@@ -1,0 +1,156 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 9.3</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="practice-problems-93-object-oriented-programming">Practice Problems 9.3 (Object-Oriented Programming)</h1>
+<h2 id="1-class-definition"><strong>1. Class Definition</strong></h2>
+<p><strong>Question</strong>: What is the output of the following code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Animal</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> __init__(self, name):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        self<span style="color:#ff79c6">.</span>name <span style="color:#ff79c6">=</span> name
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>cat <span style="color:#ff79c6">=</span> Animal(<span style="color:#f1fa8c">&#34;Whiskers&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#8be9fd;font-style:italic">print</span>(cat<span style="color:#ff79c6">.</span>name)
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Whiskers&quot;</code></li>
+<li>B) <code>cat</code></li>
+<li>C) <code>&quot;Animal&quot;</code></li>
+<li>D) <code>None</code></li>
+</ul>
+<h2 id="2-encapsulation"><strong>2. Encapsulation</strong></h2>
+<p><strong>Question</strong>: What will this code output?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Animal</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        self<span style="color:#ff79c6">.</span>__hidden <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;Secret&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">reveal_secret</span>(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>        <span style="color:#ff79c6">return</span> self<span style="color:#ff79c6">.</span>__hidden
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>animal <span style="color:#ff79c6">=</span> Animal()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9</span><span><span style="color:#8be9fd;font-style:italic">print</span>(animal<span style="color:#ff79c6">.</span>reveal_secret())
+</span></span></code></pre><ul>
+<li>A) <code>Secret</code></li>
+<li>B) <code>None</code></li>
+<li>C) <code>Error</code></li>
+<li>D) <code>&quot;__hidden&quot;</code></li>
+</ul>
+<h2 id="3-inheritance"><strong>3. Inheritance</strong></h2>
+<p><strong>Question</strong>: What is the output of this code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Parent</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">speak</span>(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;Parent says hello&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Child</span>(Parent):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>    <span style="color:#ff79c6">pass</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span>c <span style="color:#ff79c6">=</span> Child()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9</span><span><span style="color:#8be9fd;font-style:italic">print</span>(c<span style="color:#ff79c6">.</span>speak())
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Child says hello&quot;</code></li>
+<li>B) <code>&quot;Parent says hello&quot;</code></li>
+<li>C) <code>Error</code></li>
+<li>D) <code>None</code></li>
+</ul>
+<h2 id="4-method-overriding"><strong>4. Method Overriding</strong></h2>
+<p><strong>Question</strong>: What will this code output?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Parent</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">greet</span>(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;Hello from Parent&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Child</span>(Parent):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">greet</span>(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;Hello from Child&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>c <span style="color:#ff79c6">=</span> Child()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#8be9fd;font-style:italic">print</span>(c<span style="color:#ff79c6">.</span>greet())
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Hello from Parent&quot;</code></li>
+<li>B) <code>&quot;Hello from Child&quot;</code></li>
+<li>C) <code>Error</code></li>
+<li>D) <code>&quot;Child&quot;</code></li>
+</ul>
+<h2 id="5-class-attribute"><strong>5. Class Attribute</strong></h2>
+<p><strong>Question</strong>: What is the output of this code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Animal</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    species <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;Mammal&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#8be9fd;font-style:italic">print</span>(Animal<span style="color:#ff79c6">.</span>species)
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Mammal&quot;</code></li>
+<li>B) <code>Error</code></li>
+<li>C) <code>None</code></li>
+<li>D) <code>&quot;Animal&quot;</code></li>
+</ul>
+<h2 id="6-static-method"><strong>6. Static Method</strong></h2>
+<p><strong>Question</strong>: What does the following code print?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Utility</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    @staticmethod
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">add</span>(a, b):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>        <span style="color:#ff79c6">return</span> a <span style="color:#ff79c6">+</span> b
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#8be9fd;font-style:italic">print</span>(Utility<span style="color:#ff79c6">.</span>add(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>))
+</span></span></code></pre><ul>
+<li>A) <code>5</code></li>
+<li>B) <code>Error</code></li>
+<li>C) <code>None</code></li>
+<li>D) <code>&quot;add&quot;</code></li>
+</ul>
+<h2 id="7---str---method"><strong>7. <code>__str__</code> Method</strong></h2>
+<p><strong>Question</strong>: What will the following code output?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Car</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> __str__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;Car object&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>car <span style="color:#ff79c6">=</span> Car()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#8be9fd;font-style:italic">print</span>(car)
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Car object&quot;</code></li>
+<li>B) <code>Car</code></li>
+<li>C) <code>None</code></li>
+<li>D) <code>Error</code></li>
+</ul>
+<h2 id="8-superclass-call"><strong>8. Superclass Call</strong></h2>
+<p><strong>Question</strong>: What will the output of this code be?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Parent</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Parent constructor&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Child</span>(Parent):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#8be9fd;font-style:italic">super</span>()<span style="color:#ff79c6">.</span>__init__()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Child constructor&#34;</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>child <span style="color:#ff79c6">=</span> Child()
+</span></span></code></pre><ul>
+<li>A) <code>&quot;Parent constructor\nChild constructor&quot;</code></li>
+<li>B) <code>&quot;Child constructor&quot;</code></li>
+<li>C) <code>&quot;Parent constructor&quot;</code></li>
+<li>D) <code>Error</code></li>
+</ul>
+<h2 id="9-private-attributes"><strong>9. Private Attributes</strong></h2>
+<p><strong>Question</strong>: What happens when this code is executed?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Dog</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        self<span style="color:#ff79c6">.</span>__name <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;Buddy&#34;</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>dog <span style="color:#ff79c6">=</span> Dog()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#8be9fd;font-style:italic">print</span>(dog<span style="color:#ff79c6">.</span>__name)
+</span></span></code></pre><ul>
+<li>A) <code>Buddy</code></li>
+<li>B) <code>Error</code></li>
+<li>C) <code>None</code></li>
+<li>D) <code>&quot;__name&quot;</code></li>
+</ul>
+<h2 id="10-instance-and-class-attributes"><strong>10. Instance and Class Attributes</strong></h2>
+<p><strong>Question</strong>: What is the output of this code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Counter</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    value <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    <span style="color:#ff79c6">def</span> __init__(self):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>        self<span style="color:#ff79c6">.</span>value <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>counter <span style="color:#ff79c6">=</span> Counter()
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8</span><span><span style="color:#8be9fd;font-style:italic">print</span>(counter<span style="color:#ff79c6">.</span>value, Counter<span style="color:#ff79c6">.</span>value)
+</span></span></code></pre><ul>
+<li>A) <code>0 1</code></li>
+<li>B) <code>1 0</code></li>
+<li>C) <code>Error</code></li>
+<li>D) <code>None</code></li>
+</ul>
+</body></html>
