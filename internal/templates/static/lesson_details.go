@@ -31,7 +31,7 @@ func (page StaticLessonDetailsPage) Component() templ.Component {
 }
 
 func (page StaticLessonDetailsPage) Slides() templ.Component {
-	return SlidesComponent()
+	return SlidesComponent(page)
 }
 
 func (page StaticLessonDetailsPage) Assessments() templ.Component {

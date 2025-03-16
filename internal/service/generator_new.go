@@ -164,6 +164,10 @@ func Layout(nodes domain.Nodes) templates.PageData {
 }
 
 func (svc CourseService) generate(user domain.User, term domain.Term) error {
+	nodes := domain.Nodes{
+		User: user,
+		Term: term,
+	}
 	homePage := templates.NewHomePage(templates.StaticHomePageParams{
 		HomePage: templates.HomePage{
 			Path: filepath.Join(StaticSiteRootDir(user), "index.html"),
@@ -171,6 +175,8 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 				User:      user,
 				AssetsURL: StaticAssetsURL,
 			},
+			Term:    term,
+			TermURL: NodeListPageURL(nodes.ToSlice()...),
 		},
 	})
 	errChan := make(chan error, 1000)
@@ -179,10 +185,6 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 
 	wg.Add(1)
 	go RenderPage(homePage, errChan, wg, cancel)
-	nodes := domain.Nodes{
-		User: user,
-		Term: term,
-	}
 	err := renderNodePages(nodes, errChan, wg, ctx, cancel)
 	if err != nil {
 		return err
@@ -253,7 +255,7 @@ func renderNodePages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGrou
 		lessonpage := templates.StaticLessonDetailsPage{
 			Nodes:                 nodes,
 			StaticNodeDetailsPage: detailsPage,
-			LessonSlidesURL:       NodeSlidesPath(nodes.ToSlice()...),
+			LessonSlidesURL:       URL(NodeSlidesPath(nodes.ToSlice()...)),
 			ViewMarkdownURL:       ViewMarkdownURL,
 			FilesURLFunc:          FileURL,
 		}

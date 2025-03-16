@@ -31,6 +31,33 @@ tasks:
     cmds:
       - go run ./cmd/web_app
 
+  make-build-dirs:
+    desc: create the directories for the build
+    cmds:
+      - mkdir -p build
+      - mkdir -p build/cmd
+      - mkdir -p build/cmd/web_app
+      - mkdir -p build/internal
+      - mkdir -p build/internal/data
+      - mkdir -p build/internal/data/database
+      - mkdir -p build/internal/data/database/migrations
+
+  build:
+    desc: Build the go binary and copy into build directory
+    deps:
+      - make-build-dirs
+    cmds:
+      - cp -r internal/data/database/migrations ./build/internal/data/database
+      - go build -o ./build/cmd/web_app ./cmd/web_app
+
+  copy-data:
+    desc: Copy data to build directory, including database and user files
+    deps:
+      - make-build-dirs
+    cmds:
+      - cp -r ./internal/data/users ./build/internal/data
+      - cp internal/data/database/course_manager.db ./build/internal/data/database/course_manager.db
+
   tar-data:
     desc: Prepare database and files for sending to remote server
     cmds:
@@ -44,14 +71,7 @@ tasks:
 
   tar-build:
     desc: Self-explanatory
+    deps:
+      - build
     cmds:
-      - mkdir build
-      - mkdir build/cmd
-      - mkdir build/cmd/web_app
-      - mkdir build/internal
-      - mkdir build/internal/data
-      - mkdir build/internal/data/database
-      - mkdir build/internal/data/database/migrations
-      - go build -o ./build/cmd/web_app ./cmd/web_app
-      - cp -r internal/data/database/migrations ./build/internal/data/database/migrations
       - tar -czf web_app.tar.gz -C ./build .

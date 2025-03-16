@@ -16,8 +16,8 @@ The application began as a personal Fyne desktop application, just for my own pe
 
 It features a Go server on the backend, generating HTML with Templ, and HTMX on the frontend and Tailwind for styles. I thought I'd be writing more Typescript but I haven't needed to yet thanks to the marvelous HTMX, which, as always, greatly simplifies the overall problem by eliminating the problem of having two states to manage. Marp is used for slide generation from markdown.  I use SQLC for generating Go code from SQL queries and Goose for database migrations.
 
-![screenshot 1](screenshot1.png)
+![screenshot 1](./notes/screenshot1.png)
 
-![screenshot 2](screenshot2.png)
+![screenshot 2](./notes/screenshot2.png)
 
 ![Demo](./course-mgr-demo.gif)

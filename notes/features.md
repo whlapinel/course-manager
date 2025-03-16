@@ -3,6 +3,12 @@
 
 ## Pending (keep in priority order)
 
+- Automatic site regeneration for every change (??)
+- Publish/unpublish for all nodes and assessments
+- Password protection for assessment files
+  - Add table for assessment files
+    - columns: title, relative path (relative to node files), password
+- Add password to assessment file
 - Allow user to modify unit sequence
 - Calendar should jump to current month
 - From lesson details: back to calendar

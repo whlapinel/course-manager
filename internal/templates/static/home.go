@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"gh_static_portfolio/internal/domain"
 	components "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
@@ -17,12 +18,16 @@ func NewHomePage(params StaticHomePageParams) HomePage {
 			User:      params.User,
 			AssetsURL: params.AssetsURL,
 		},
+		Term:    params.Term,
+		TermURL: params.TermURL,
 	}
 }
 
 type HomePage struct {
 	PageData
-	Path string
+	Path    string
+	Term    domain.Term
+	TermURL string
 }
 
 // Component implements StaticPage.
@@ -33,6 +38,13 @@ func (data HomePage) Component() templ.Component {
 			AssetsURL: data.AssetsURL,
 		}.Component(),
 		Page: HomeComponent(data),
+	}.Component()
+}
+
+func (h HomePage) ViewTermLink() templ.Component {
+	return components.Link{
+		Text:  "View " + h.Term.Name,
+		URL:   h.TermURL,
 	}.Component()
 }
 
