@@ -7,7 +7,7 @@ tasks:
       - go run ./cmd/export_secret
 
   generate:
-    desc: Generate stuff and things
+    desc: Generate tailwind, typescript, and templ. Run if typescript or templ files have been modified
     cmds:
       - go generate ./...
 
@@ -29,7 +29,7 @@ tasks:
   run-dev:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
-      - go run ./cmd/web_app
+      - export ENV=development && go run ./cmd/web_app
 
   make-build-dirs:
     desc: create the directories for the build
@@ -75,3 +75,20 @@ tasks:
       - build
     cmds:
       - tar -czf web_app.tar.gz -C ./build .
+
+  docker:build:
+    desc: Build docker image
+    cmds:
+      - docker build -t whlapinel/course-manager .
+
+  docker:run:
+    desc: Run with .env files as volumes
+    cmds:
+      - ./scripts/docker_run.sh
+
+  full-monty:
+    desc: This regenerates the templates, javascript and stylesheets, builds the binary and copies it to build, and rebuilds the docker image.
+    deps:
+      - generate
+      - build
+      - docker:build

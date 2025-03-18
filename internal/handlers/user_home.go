@@ -140,7 +140,7 @@ func (r *userRouter) UserAuth(c echo.Context) error {
 
 func (r *userRouter) GenerateSite(c echo.Context) error {
 	userID := c.Get("id").(string)
-	r.svc.NewGenerateSite(userID)
+	r.svc.GenerateSite(userID)
 	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
 }
 

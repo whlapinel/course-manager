@@ -3,14 +3,19 @@ python
 # secret_files is its own repo
 secret_files
 
-
 node_modules
 .vscode
 **/__pycache__/
 /temp
 .env*
 **/public/
-build
 **.tar.gz
 
+
 sites
+internal/data/users
+internal/data/database/course_manager.db
+
+package.json
+package-lock.json
+.markdownlint.json

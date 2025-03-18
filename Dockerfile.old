@@ -1,0 +1,41 @@
+# Use Alpine as the base image
+FROM ubuntu:latest
+
+RUN apt update && apt install -y wget tar curl
+
+# Download and install Marp binary
+RUN wget -O marp.tar.gz https://github.com/marp-team/marp-cli/releases/download/v4.1.2/marp-cli-v4.1.2-linux.tar.gz \
+    && tar -xzf marp.tar.gz -C /usr/local/bin/ \
+    && chmod +x /usr/local/bin/marp 
+
+ENV PATH="/usr/local/bin:$PATH"
+
+RUN apt install -y debian-keyring debian-archive-keyring apt-transport-https curl \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list \
+    && apt update \
+    && apt install caddy
+
+EXPOSE 443
+
+# Verify Marp installation
+RUN marp --version
+
+# Set working directory
+WORKDIR /app
+
+COPY ./Caddyfile.dev .
+COPY ./Caddyfile.prod .
+
+COPY ./sites/assets ./sites/assets
+
+COPY ./scripts/run_dev.sh .
+COPY ./scripts/run_prod.sh .
+
+RUN chmod +x ./run_dev.sh
+RUN chmod +x ./run_prod.sh
+
+# Copy Go app files
+COPY ./build .
+
+CMD [ "./run_dev.sh" ]
