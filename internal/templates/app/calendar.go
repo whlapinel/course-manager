@@ -3,9 +3,9 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates/shared"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	components "gh_static_portfolio/internal/templates/components/base"
+	templates "gh_static_portfolio/internal/templates/shared"
 	"gh_static_portfolio/internal/util"
 	"log"
 	"strconv"
@@ -350,7 +350,7 @@ func (data CalendarLessonContainerNew) Component() templ.Component {
 }
 
 func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
-	button := components.HXButton{
+	button := components.Button{
 		HxConfirm: "Are you sure you want to remove this lesson date? The lesson itself will not be deleted.",
 		Method:    cmp.HxDelete,
 		URL:       data.RemoveLessonDateURL,
@@ -465,7 +465,7 @@ type UnitPicker struct {
 }
 
 func (data UnitPicker) ListLessonsButton(unit domain.Unit) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     unit.Designation(),
 		Method:   cmp.HxGet,
 		URL:      data.SelectUnitURL(unit.ID),
@@ -491,7 +491,7 @@ type LessonPicker struct {
 }
 
 func (data LessonPicker) ListUnitsButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Back to units",
 		Method:   cmp.HxGet,
 		URL:      data.ListUnitsURL,
@@ -504,7 +504,7 @@ func (data LessonPicker) Component() templ.Component {
 }
 
 func (data LessonPicker) SelectLessonButton(lesson domain.Lesson) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     lesson.Designation(),
 		Method:   cmp.HxPost,
 		URL:      data.SelectLessonURL(lesson.ID),

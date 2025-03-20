@@ -15,7 +15,7 @@ type UserHomePage struct {
 }
 
 func (page UserHomePage) GenerateSiteButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Generate Site",
 		Method:   cmp.HxPost,
 		URL:      page.GenerateSiteURL,
@@ -24,7 +24,7 @@ func (page UserHomePage) GenerateSiteButton() templ.Component {
 }
 
 func (page UserHomePage) ViewTermsButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "View Terms",
 		Method:   cmp.HxGet,
 		URL:      page.ListTermsURL,

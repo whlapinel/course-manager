@@ -14,7 +14,7 @@ type HomePage struct {
 }
 
 func (page HomePage) UsersAuthButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Dashboard",
 		Method:   cmp.HxGet,
 		URL:      page.UsersURL,
@@ -24,7 +24,7 @@ func (page HomePage) UsersAuthButton() templ.Component {
 }
 
 func (page HomePage) SignupButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Sign Up",
 		Method:   cmp.HxGet,
 		URL:      page.SignupURL,
@@ -33,7 +33,7 @@ func (page HomePage) SignupButton() templ.Component {
 	}.Component()
 }
 func (page HomePage) SigninButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Sign In",
 		Method:   cmp.HxGet,
 		URL:      page.SigninURL,
@@ -42,7 +42,7 @@ func (page HomePage) SigninButton() templ.Component {
 	}.Component()
 }
 func (page HomePage) SignoutButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "Sign Out 🛑",
 		Method:   cmp.HxPost,
 		URL:      page.SignoutURL,

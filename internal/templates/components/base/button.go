@@ -2,8 +2,9 @@ package components
 
 import "github.com/a-h/templ"
 
-type HXButton struct {
+type Button struct {
 	Element
+	templ.Attributes
 	Name      string
 	Text      string
 	Image     templ.Component
@@ -23,16 +24,16 @@ const (
 	AfterEnd HxSwap = "afterend"
 )
 
-func (button HXButton) Component() templ.Component {
+func (button Button) Component() templ.Component {
 	return HxButtonComponent(button)
 }
 
 type NewButtonParams struct {
-	HXButton
+	Button
 }
 
-func NewHXButton(params NewButtonParams) HXButton {
-	return params.HXButton
+func NewButton(params NewButtonParams) Button {
+	return params.Button
 }
 
 type HXMethod string

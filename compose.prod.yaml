@@ -1,48 +1,8 @@
 
 services:
-  marp:
-    image: whlapinel/course-manager-marp:latest
-    build:
-      context: .
-      dockerfile: "Dockerfile.marp"
-    command: ["--server", "./internal/data"]
-    volumes:
-      - ./internal/data/users:/home/marp/app/internal/data/users
-    networks:
-      - app-network
 
   caddy:
-    image: whlapinel/course-manager-caddy:latest
-    build:
-      context: .
-      dockerfile: Dockerfile.caddy
-    ports:
-      - 443:443
-      - 80:80
-    networks:
-      - app-network
-    volumes:
-      - ./caddy_data:/root/.local/share/caddy
-      - ./caddy_config:/root/.config/caddy
-    env_file:
-      - .env
-    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.prod", "--adapter", "caddyfile"]
-    
-  echo:
-    image: whlapinel/course-manager:latest
-    command: ["./cmd/web_app/web_app"]
-    networks:
-      - app-network
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile.echo
-    ports:
-      - "1323:1323"
-    volumes:
-      - ./internal/data/users:/app/internal/data/users
-      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.prod", "--adapter", "caddyfile"]  
 
 networks:
   app-network:

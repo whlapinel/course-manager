@@ -34,7 +34,7 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 }
 
 func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:      "❌",
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    cmp.HxDelete,
@@ -44,7 +44,7 @@ func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Componen
 }
 
 func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     node.ChildTypeName() + "s",
 		Method:   cmp.HxGet,
 		URL:      page.E.Reverse(page.ChildChildrenRHN, AddParams(page.Params, node.GetID())...),
@@ -54,7 +54,7 @@ func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Compon
 }
 
 func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "🔍",
 		Method:   cmp.HxGet,
 		URL:      page.E.Reverse(page.ChildDetailsRHN, AddParams(page.Params, node.GetID())...),
@@ -64,7 +64,7 @@ func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Compone
 }
 
 func (page NodeListPage) NodeCreateButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     fmt.Sprintf("➕ %s", page.ParentNode.ChildTypeName()),
 		Method:   cmp.HxGet,
 		URL:      page.ShowNewChildURL,

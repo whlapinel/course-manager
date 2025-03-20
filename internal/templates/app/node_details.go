@@ -45,7 +45,7 @@ func (page NodeDetailsPage) PageLayout() cmp.PageLayout {
 }
 
 func (page NodeDetailsPage) CalendarButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "📅",
 		Method:   cmp.HxGet,
 		URL:      page.CourseCalendarURL,
@@ -73,7 +73,7 @@ func (page NodeDetailsPage) upNavText() string {
 }
 
 func (page NodeDetailsPage) ListChildrenButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     fmt.Sprintf("%ss", page.Node.ChildTypeName()),
 		Method:   cmp.HxGet,
 		URL:      page.ListChildrenURL,
@@ -83,7 +83,7 @@ func (page NodeDetailsPage) ListChildrenButton() templ.Component {
 }
 
 func (page NodeDetailsPage) ViewFilesButton() templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Method:   cmp.HxGet,
 		URL:      page.ServerFilesURL,
 		Text:     "📂",
@@ -93,8 +93,6 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 }
 
 func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
-	title := "Title placeholder"
-	subtitle := "Subtitle placeholder"
 	if editing {
 		var comps []cmp.Component
 		numItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
@@ -115,8 +113,6 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 		})
 		comps = append(comps, descriptionItem)
 		form := cmp.NewForm(cmp.NewFormParams{
-			Title:     title,
-			Subtitle:  subtitle,
 			PostURL:   page.PostEditNodeURL,
 			CancelURL: page.CancelEditURL,
 			HxTarget:  "#page",
@@ -125,31 +121,33 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 		return form.Component()
 	} else {
 		var numItem, nameItem, descriptionItem cmp.EditableInfoItem
-		numItem = cmp.EditableInfoItem{
-			Element: cmp.Element{ID: cmp.Kebab("Number")},
-			Field:   "Number",
-			Value:   strconv.Itoa(page.Node.GetNumber()),
+		var components []cmp.EditableInfoItem
+		if page.Node.GetNumber() >= 0 {
+			numItem = cmp.EditableInfoItem{
+				Element: cmp.Element{ID: cmp.Kebab("Number")},
+				Field:   "Number",
+				Value:   strconv.Itoa(page.Node.GetNumber()),
+			}
+			components = append(components, numItem)
 		}
 		nameItem = cmp.EditableInfoItem{
 			Element: cmp.Element{ID: cmp.Kebab("Name")},
 			Field:   "Name",
 			Value:   page.Node.GetName(),
 		}
+		components = append(components, nameItem)
 		descriptionItem = cmp.EditableInfoItem{
 			Element: cmp.Element{ID: cmp.Kebab("Description")},
 			Field:   "Description",
 			Value:   page.Node.GetDescription(),
 		}
+		components = append(components, descriptionItem)
 		info := cmp.EditableInfo{
 			Element: cmp.Element{
 				ID: cmp.Kebab("lesson-form"),
 			},
-			Title:      title,
-			Subtitle:   subtitle,
 			GetEditURL: page.GetEditNodeURL,
-			Components: []cmp.EditableInfoItem{
-				numItem, nameItem, descriptionItem,
-			},
+			Components: components,
 		}
 
 		return info.Component()

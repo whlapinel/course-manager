@@ -1,6 +1,8 @@
 
 services:
   marp:
+    # marp doesn't shut down gracefully with SIGINT or SIGTERM so just kill it immediately
+    stop_grace_period: 0s
     image: whlapinel/course-manager-marp
     build:
       context: .
@@ -12,7 +14,7 @@ services:
       - app-network
 
   caddy:
-    image: whlapinel/course-manager-caddy
+    image: whlapinel/course-manager-caddy:latest
     build:
       context: .
       dockerfile: Dockerfile.caddy
@@ -24,12 +26,13 @@ services:
     env_file:
       - .env
     volumes:
+      - ./sites:/app/sites
       - ./caddy_data:/root/.local/share/caddy
       - ./caddy_config:/root/.config/caddy
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.dev", "--adapter", "caddyfile"]
     
   echo:
-    image: whlapinel/course-manager
+    image: whlapinel/course-manager:0.2.0-dev
     command: ["./cmd/web_app/web_app"]
     networks:
       - app-network
@@ -38,10 +41,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.echo
-    ports:
-      - "1323:1323"
     volumes:
       - ./internal/data/users:/app/internal/data/users
+      - ./sites:/app/sites
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
 
 networks:

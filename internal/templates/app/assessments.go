@@ -20,8 +20,8 @@ type CourseAssessmentsPage struct {
 
 func (page CourseAssessmentsPage) ApplyFilterButton() templ.Component {
 
-	applyButton := cmp.NewHXButton(cmp.NewButtonParams{
-		HXButton: cmp.HXButton{
+	applyButton := cmp.NewButton(cmp.NewButtonParams{
+		Button: cmp.Button{
 			Text: "Apply",
 			Element: cmp.Element{
 				ID: "apply-filter-button",

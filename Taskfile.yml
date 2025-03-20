@@ -12,7 +12,7 @@ tasks:
       - go generate ./...
 
   sync-site:
-    desc: Push generated site code to GitHub to make publicly available
+    desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
     cmds:
       - cd python && git add .
       - cd python && git commit -m "auto-sync"
@@ -21,7 +21,8 @@ tasks:
   run-dev:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
-      - docker compose up --build
+      - go build -o ./cmd/web_app/web_app ./cmd/web_app
+      - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
 
   run-prod:
     desc: To be run from production server
@@ -44,7 +45,8 @@ tasks:
   deploy:
     desc: Build image, push to docker hub, copy scripts to remote server, ssh to server
     cmds:
-      - docker push whlapinel/course-manager
+      - docker compose -f compose.yaml -f compose.prod.yaml build
+      - docker push whlapinel/course-manager:latest
       - ./scripts/copy_config.sh
       - echo 'after ssh started, run task run-prod'
       - ssh root@159.223.174.80

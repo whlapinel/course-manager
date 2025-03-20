@@ -53,7 +53,7 @@ func (data FilesPage) PageLayout() cmp.PageLayout {
 
 // view as HTML
 func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
-	return cmp.HXButton{
+	return cmp.Button{
 		Text:     "View As HTML",
 		Method:   cmp.HxGet,
 		HxTarget: "#markdown",

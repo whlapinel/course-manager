@@ -66,7 +66,7 @@ type ShowCalendarButton struct {
 }
 
 func (data ShowCalendarButton) Component() templ.Component {
-	button := cmp.HXButton{
+	button := cmp.Button{
 		Text:     "Calendar",
 		Method:   cmp.HxGet,
 		URL:      data.ShowCalendarURL,
@@ -81,7 +81,7 @@ type ShowAssessmentsButton struct {
 }
 
 func (data ShowAssessmentsButton) Component() templ.Component {
-	button := cmp.HXButton{
+	button := cmp.Button{
 		Text:     "Assessments",
 		Method:   cmp.HxGet,
 		URL:      data.ShowAssessmentsURL,
