@@ -16,3 +16,4 @@ build
 sites
 caddy_data
 caddy_config
+cmd/web_app/web_app
