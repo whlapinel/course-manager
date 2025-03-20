@@ -1,0 +1,49 @@
+
+services:
+  marp:
+    image: whlapinel/course-manager-marp
+    build:
+      context: .
+      dockerfile: "Dockerfile.marp"
+    command: ["--server", "./internal/data"]
+    volumes:
+      - ./internal/data/users:/home/marp/app/internal/data/users
+    networks:
+      - app-network
+
+  caddy:
+    image: whlapinel/course-manager-caddy
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    ports:
+      - 443:443
+      - 80:80
+    networks:
+      - app-network
+    env_file:
+      - .env
+    volumes:
+      - ./caddy_data:/root/.local/share/caddy
+      - ./caddy_config:/root/.config/caddy
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.dev", "--adapter", "caddyfile"]
+    
+  echo:
+    image: whlapinel/course-manager
+    command: ["./cmd/web_app/web_app"]
+    networks:
+      - app-network
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.echo
+    ports:
+      - "1323:1323"
+    volumes:
+      - ./internal/data/users:/app/internal/data/users
+      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+
+networks:
+  app-network:
+    driver: bridge

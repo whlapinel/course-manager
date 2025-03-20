@@ -1,5 +1,29 @@
 # Course Manager
 
+## Workflows
+
+### Build (same for dev and prod)
+
+```bash
+task docker:build
+```
+
+### Deploy
+
+```bash
+
+```
+
+### Run in production (remote)
+```bash
+task docker:run-prod
+```
+
+### Run in development (local)
+```bash
+task docker:run-dev
+```
+
 ## Progress Log
 
 ### 2/19/25

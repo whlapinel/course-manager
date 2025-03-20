@@ -13,7 +13,9 @@ import (
 )
 
 func marpSlidesPath(params domain.NodePath) (string, error) {
-	baseURL := "http://localhost:8080"
+	marpHost := os.Getenv("MARP_HOST")
+	marpPort := os.Getenv("MARP_PORT")
+	baseURL := fmt.Sprintf("http://%s:%s", marpHost, marpPort)
 	userParam := fmt.Sprintf("user_%s", params.UserID)
 	termParam := fmt.Sprintf("term_%d", params.TermID)
 	courseParam := fmt.Sprintf("course_%d", params.CourseID)

@@ -1,0 +1,4 @@
+FROM marpteam/marp-cli
+
+# Expose HTTPS port
+EXPOSE 8080

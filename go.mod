@@ -6,7 +6,6 @@ require (
 	github.com/a-h/templ v0.3.833
 	github.com/alecthomas/chroma/v2 v2.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
-	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-jwt/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/mattn/go-sqlite3 v1.14.24

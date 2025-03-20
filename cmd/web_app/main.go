@@ -8,15 +8,10 @@ import (
 	"gh_static_portfolio/internal/service"
 	"log"
 	"os"
-	"os/exec"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-const production = "production"
-const development = "development"
 
 func main() {
 	e := echo.New()
@@ -26,14 +21,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	startMarp := exec.Command("marp", "-s", "internal/data")
-	err = startMarp.Start()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func() {
-		startMarp.Process.Signal(os.Interrupt)
-	}()
+	// moved to starting marp with script rather than in go app
+	// startMarp := exec.Command("marp", "-s", "internal/data/users")
+	// err = startMarp.Start()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// go func() {
+	// 	if err := startMarp.Wait(); err != nil {
+	// 		log.Printf("Marp exited with error: %v", err)
+	// 	} else {
+	// 		log.Printf("Marp exited normally")
+	// 	}
+	// }()
+	// defer func() {
+	// 	startMarp.Process.Signal(os.Interrupt)
+	// }()
 	defer db.Close()
 	courseRepo := data.NewCourseRepo(queries)
 	service := service.NewCourseService(courseRepo)
@@ -45,13 +48,9 @@ func main() {
 	}
 	courseHandler.Mount() // old way
 	assets.RegisterStatic(e)
-	_, err = LoadEnvironment()
-	if err != nil {
-		log.Fatal("error loading environment")
-	}
-	host := os.Getenv("HOST")
+	host := os.Getenv("ECHO_HOST")
 	log.Println("Host:", host)
-	port := os.Getenv("PORT")
+	port := os.Getenv("ECHO_PORT")
 	log.Println("Port:", port)
 	startString := fmt.Sprintf("%s:%s", host, port)
 	e.Logger.Fatal(e.Start(startString))
@@ -62,16 +61,4 @@ func main() {
 	// 	e.Logger.Fatal(e.StartAutoTLS(startString))
 	// }
 
-}
-
-func LoadEnvironment() (string, error) {
-	if os.Getenv("ENV") == development {
-		godotenv.Load(".env.development")
-		return development, nil
-	}
-	if os.Getenv("ENV") == production {
-		godotenv.Load(".env.production")
-		return production, nil
-	}
-	return "", fmt.Errorf("environment not expected:'%s'", os.Getenv("ENV"))
 }

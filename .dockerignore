@@ -19,3 +19,15 @@ internal/data/database/course_manager.db
 package.json
 package-lock.json
 .markdownlint.json
+
+.git
+*.log
+node_modules
+*.tmp
+*.css
+sqlc.yml
+tailwind.config.js
+Taskfile.yml
+tsconfig.*
+LICENSE
+notes

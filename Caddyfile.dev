@@ -1,8 +1,8 @@
 localhost {
-	reverse_proxy localhost:1323
+	reverse_proxy echo:1323
 }
 
-*.localhost {
+*.echo {
 	@assets path /assets/*
 	root @assets /app/sites
 	file_server

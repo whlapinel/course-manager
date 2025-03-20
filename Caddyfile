@@ -8,6 +8,8 @@ localhost {
 	reverse_proxy localhost:1323
 }
 
+localhost 
+
 *.localhost {
 	@assets path /assets/*
 	root @assets /app/sites

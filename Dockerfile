@@ -8,10 +8,15 @@ RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest && \
 # Set working directory for app build
 WORKDIR /app
 
-# Copy source code for the app
-COPY . .
+# ✅ Step 1: Copy dependency files first to cache go.mod and go.sum
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Build the app binary
+# ✅ Step 2: Copy the rest of the source code separately
+COPY cmd cmd
+COPY internal internal
+
+# ✅ Step 3: Build the app binary
 RUN go build -o /app/cmd/web_app/web_app ./cmd/web_app
 
 # Stage 2: Final Image
@@ -25,24 +30,23 @@ RUN wget -O marp.tar.gz https://github.com/marp-team/marp-cli/releases/download/
     && tar -xzf marp.tar.gz -C /usr/local/bin/ \
     && chmod +x /usr/local/bin/marp 
 
-# Copy Caddy and app from builder stage
+# ✅ Copy Caddy and app from builder stage
 COPY --from=builder /go/bin/caddy /usr/bin/caddy
 COPY --from=builder /app/cmd/web_app/web_app /app/cmd/web_app/web_app
 
 # Set working directory
 WORKDIR /app
 
-# Copy app config and assets
-COPY ./Caddyfile.dev .
-COPY ./Caddyfile.prod .
-COPY ./scripts/run_dev.sh .
-COPY ./scripts/run_prod.sh .
+# ✅ Copy config and scripts AFTER the build stage to avoid cache invalidation
+COPY ./Caddyfile.dev . 
+COPY ./Caddyfile.prod . 
+COPY ./scripts/run.sh .
 
 # Set permissions for scripts
-RUN chmod +x ./run_dev.sh ./run_prod.sh /app/cmd/web_app/web_app
+RUN chmod +x ./run.sh /app/cmd/web_app/web_app
 
 # Expose HTTPS port
 EXPOSE 443
 
 # Start the app
-CMD ["./run_dev.sh"]
+CMD ["./run.sh"]

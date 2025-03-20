@@ -9,11 +9,22 @@ paginate: true
 <!-- backgroundColor: black -->
 <!-- class: invert -->
 
-# Warmup 10/21/24
+# Warmup
 
-- Write a function `first_name` that returns only the first name for a string that is formatted "last, first"
+- Phones in bags, bags against the wall
+- Create the following and open it in VS Code
 
-# Agenda 10/21/24
+```text
+/python
+  /unit_5
+    /lesson_7
+```
 
-- Begin midterm project
-- Grade unit 5 Project
+# Agenda
+
+- Permission forms
+- Email address for vouchers (google form assignment in Canvas)
+
+# Unit 5 Project (Perform)
+
+- Due tomorrow Thursday 3/20
