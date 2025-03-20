@@ -22,14 +22,7 @@ func (page UserHomePage) GenerateSiteButton() templ.Component {
 		HxTarget: "#confirmation",
 	}.Component()
 }
-func (page UserHomePage) SyncButton() templ.Component {
-	return cmp.HXButton{
-		Text:     "Sync Site",
-		Method:   cmp.HxPost,
-		URL:      page.SyncSiteURL,
-		HxTarget: "#confirmation",
-	}.Component()
-}
+
 func (page UserHomePage) ViewTermsButton() templ.Component {
 	return cmp.HXButton{
 		Text:     "View Terms",

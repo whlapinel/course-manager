@@ -140,16 +140,8 @@ func (r *userRouter) UserAuth(c echo.Context) error {
 
 func (r *userRouter) GenerateSite(c echo.Context) error {
 	userID := c.Get("id").(string)
-	r.svc.GenerateSite(userID)
+	r.svc.NewGenerateSite(userID)
 	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
-}
-
-func (r *userRouter) SyncSite(c echo.Context) error {
-	err := r.svc.SyncSite()
-	if err != nil {
-		return err
-	}
-	return Respond(c, "/", mt.Confirm("Sync Complete!"), nil)
 }
 
 func NewUserHandler(svc service.CourseService, app *echo.Echo) NodeRouter {
@@ -183,7 +175,6 @@ func UserHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 	userRouteHandlers := []RouteHandler{
 		{Users, UserAuth, GET, userRouter.UserAuth},
 		{Generate, GenerateSite, POST, userRouter.GenerateSite},
-		{Sync, SyncSite, POST, userRouter.SyncSite},
 	}
 	routeHandlers = append(routeHandlers, userRouteHandlers...)
 	routeHandlers = append(routeHandlers, NodeHandlers(nodeRouter)...)

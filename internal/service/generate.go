@@ -3,7 +3,6 @@ package service
 import (
 	"gh_static_portfolio/internal/domain"
 	sitegenerator "gh_static_portfolio/internal/gen_site"
-	"os/exec"
 	"time"
 )
 
@@ -71,14 +70,6 @@ func (svc CourseService) GenerateSite(userID string) error {
 		return err
 	}
 	err = sitegenerator.Generate(svc.repo, user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (svc CourseService) SyncSite() error {
-	err := exec.Command("task", "sync-site").Run()
 	if err != nil {
 		return err
 	}
