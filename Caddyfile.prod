@@ -1,22 +1,16 @@
 course-manager.app {
-	tls {
-		ca https://acme-staging-v02.api.letsencrypt.org/directory
-	}
 	reverse_proxy echo:1323
 }
 
-# *.course-manager.app {
-# 	tls {
-# 		ca https://acme-staging-v02.api.letsencrypt.org/directory
-# 	}
-# 	# tls {
-# 	# 	dns digitalocean {env.DO_AUTH_TOKEN}
-# 	# }
+*.course-manager.app {
+	tls {
+		dns digitalocean {env.DO_AUTH_TOKEN}
+	}
 
-# 	@assets path /assets/*
-# 	root @assets /app/sites
-# 	file_server
+	@assets path /assets/*
+	root @assets /app/sites
+	file_server
 
-# 	root * /app/sites/{labels.2}
-# 	file_server
-# }
+	root * /app/sites/{labels.2}
+	file_server
+}

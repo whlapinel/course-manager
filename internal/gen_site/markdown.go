@@ -57,7 +57,6 @@ func RenderMarkdownFiles(title, filesPath string) error {
 	)
 	var markdownGroup errgroup.Group
 	for _, entry := range mdFiles {
-		log.Println("rendering markdown for:", entry.Name())
 
 		inputPath := filepath.Join(filesPath, entry.Name())
 		markdownGroup.Go(func() error {

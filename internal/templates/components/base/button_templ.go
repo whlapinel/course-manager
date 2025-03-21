@@ -38,6 +38,10 @@ func HxButtonComponent(props Button) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, props.Attributes)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		if props.Method == HxGet {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " hx-get=\"")
 			if templ_7745c5c3_Err != nil {
@@ -46,7 +50,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 6, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 7, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -65,7 +69,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 9, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 10, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +88,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(props.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 12, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 13, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -96,7 +100,7 @@ func HxButtonComponent(props Button) templ.Component {
 			}
 		}
 		if props.Class == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " class=\"bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " class=\"max-w-fit flex gap-1 items-center rounded-md bg-indigo-500 px-3 py-2 font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +131,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.HxTarget)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 20, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 21, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -152,7 +156,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.HxSwap))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 26, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 27, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -171,7 +175,7 @@ func HxButtonComponent(props Button) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(props.HxConfirm)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 29, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 30, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -195,7 +199,7 @@ func HxButtonComponent(props Button) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(props.Text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 35, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/components/base/button.templ`, Line: 36, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

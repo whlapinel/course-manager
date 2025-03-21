@@ -31,7 +31,6 @@ func TestImportStandards(t *testing.T) {
 				t.Error("objectives is empty")
 			}
 			for _, obj := range objectives {
-				log.Println(obj)
 				_, err := cr.SaveObjective(obj)
 				if err != nil {
 					t.Error(err)

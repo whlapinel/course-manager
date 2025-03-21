@@ -1,27 +1,49 @@
 # Course Manager
 
+## Developer Environment Dependencies
+
+- Go (see go.mod for go dependencies)
+- Docker
+  - Marp runs in container
+  - Caddy runs in container
+- Sqlc CLI
+- Task CLI
+- Templ CLI
+- Goose (for db migrations)
+- Tailwind
+- Typescript
+
+## VS Code extensions used
+- [Task](https://marketplace.visualstudio.com/items?itemName=task.vscode-task)
+- [Task](https://marketplace.visualstudio.com/items?itemName=paulvarache.vscode-taskfile)
+- [Tailwind CSS Intellisense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+- [Tailwind Docs](https://marketplace.visualstudio.com/items?itemName=austenc.tailwind-docs)
+- [Tailwind Fold](https://marketplace.visualstudio.com/items?itemName=stivo.tailwind-fold)
+- [Templ](https://marketplace.visualstudio.com/items?itemName=a-h.templ)
+- 
+
 ## Workflows
 
-### Build (same for dev and prod)
+### Run in development (local)
+
+Builds binary and mounts as volume, runs all services with docker compose:
+- caddy
+- marp
+- echo app
 
 ```bash
-task docker:build
+task run-dev
 ```
-
 ### Deploy
 
 ```bash
-
+task deploy
 ```
 
-### Run in production (remote)
-```bash
-task docker:run-prod
-```
+### Run in production (remote, after deploy)
 
-### Run in development (local)
 ```bash
-task docker:run-dev
+task run-prod
 ```
 
 ## Progress Log

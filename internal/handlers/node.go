@@ -475,7 +475,6 @@ func ShowFiles(c echo.Context, r NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	log.Println(files)
 	r.SetRouter(router)
 	page := NodeFilesPage(r, path, files)
 	component := page.Component()

@@ -12,7 +12,3 @@ services:
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
-
-networks:
-  app-network:
-    driver: bridge

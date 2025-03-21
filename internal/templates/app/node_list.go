@@ -35,11 +35,11 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 
 func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
 	return cmp.Button{
-		Text:      "❌",
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    cmp.HxDelete,
 		URL:       page.E.Reverse(page.DeleteChildRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget:  page.ListItemElementID(node).Selector(),
+		Image:     cmp.DeleteImage(),
 	}.Component()
 }
 
@@ -55,21 +55,22 @@ func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Compon
 
 func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Component {
 	return cmp.Button{
-		Text:     "🔍",
 		Method:   cmp.HxGet,
 		URL:      page.E.Reverse(page.ChildDetailsRHN, AddParams(page.Params, node.GetID())...),
 		HxTarget: "#page",
 		PushURL:  true,
+		Image:    cmp.InfoIcon(),
 	}.Component()
 }
 
 func (page NodeListPage) NodeCreateButton() templ.Component {
 	return cmp.Button{
-		Text:     fmt.Sprintf("➕ %s", page.ParentNode.ChildTypeName()),
+		Text:     page.ParentNode.ChildTypeName(),
 		Method:   cmp.HxGet,
 		URL:      page.ShowNewChildURL,
 		HxTarget: "#page",
 		PushURL:  true,
+		Image:    cmp.AddImage(),
 	}.Component()
 }
 

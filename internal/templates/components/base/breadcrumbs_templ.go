@@ -39,7 +39,7 @@ func BreadCrumbsComponent(props BreadCrumbs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if i != 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " class=\"flex\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " class=\"flex gap-1\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

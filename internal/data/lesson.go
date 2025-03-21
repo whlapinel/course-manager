@@ -26,7 +26,6 @@ func SlidesHTMLFilePath(nodes ...domain.CourseNode) string {
 }
 
 func (cr CourseRepo) GetLesson(lessonID int) (domain.Lesson, error) {
-	log.Println("CourseRepo: GetLesson: lessonID:", lessonID)
 	dbLesson, err := cr.queries.GetLesson(context.Background(), int64(lessonID))
 	if err != nil {
 		return domain.Lesson{}, err
@@ -160,7 +159,6 @@ func (c CourseRepo) SaveLessonDate(lesson domain.Lesson) error {
 		if err != nil {
 			return fmt.Errorf("courseRepo.SaveInstance(), c.queries.GetDate(): %s", err)
 		}
-		log.Println("Saved date: ID:", dbDate.ID, "\nDay Number:", "\nTerm ID:", dbDate.TermID)
 		lessonDate, err := c.queries.SaveLessonDate(context.Background(), database.SaveLessonDateParams{
 			LessonID: int64(lesson.ID),
 			DateID:   dbDate.ID,
@@ -174,7 +172,6 @@ func (c CourseRepo) SaveLessonDate(lesson domain.Lesson) error {
 }
 
 func (c CourseRepo) SaveLesson(lesson domain.Lesson) (*domain.Lesson, error) {
-	log.Println("lesson name:", lesson.Name, "lesson number: ", lesson.Number)
 	dbLesson := database.Lesson{
 		UnitID: int64(lesson.UnitID),
 		Number: int64(lesson.Number),
@@ -223,8 +220,6 @@ func (c CourseRepo) SaveLessonTemplate(lesson domain.Lesson) (*domain.Lesson, er
 }
 
 func (lr CourseRepo) UpdateLesson(lesson domain.Lesson) error {
-	log.Println("CourseRepo.UpdateLesson: ")
-	log.Println("Descr:", lesson.Description)
 
 	err := lr.queries.UpdateLesson(context.Background(), database.UpdateLessonParams{
 		Name: sql.NullString{

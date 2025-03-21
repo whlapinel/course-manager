@@ -47,9 +47,7 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		return err
 	}
 	categoryParam := c.QueryParam("category")
-	log.Println(categoryParam)
 	startDateParam := c.QueryParam("start")
-	log.Println(startDateParam)
 	var start time.Time
 	if startDateParam != "" {
 		start, err = time.Parse(time.DateOnly, startDateParam)

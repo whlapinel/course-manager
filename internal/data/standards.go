@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
-	"log"
 	"os"
 	"strconv"
 )
@@ -211,7 +210,6 @@ func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, s
 		}
 		objectives = append(objectives, objective)
 	}
-	log.Println(objectives)
 	return objectives, nil
 
 }

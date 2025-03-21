@@ -171,7 +171,6 @@ func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
 }
 
 func ParseRouteStringParam(c echo.Context, param RouteParam) string {
-	log.Println("ParseRouteStringParam: ", c.Param(param.Name()))
 	return c.Param(param.Name())
 }
 

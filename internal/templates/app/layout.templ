@@ -8,7 +8,9 @@ templ PageLayoutComponent(props Page) {
 	// @PageHeadingComponent(props.PageLayout().PageTitle)
 	@components.PageLayoutComponent(props.PageLayout())
 	@UpNavComponent(props.PageLayout().UpNav)
-	{ children... }
+	<div class="p-4">
+		{ children... }
+	</div>
 }
 
 templ Confirm(msg string) {

@@ -3,7 +3,6 @@ package handlers
 import (
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/app"
-	"log"
 
 	"github.com/labstack/echo/v4"
 )
@@ -54,7 +53,6 @@ func (r *userRouter) ListChildren(c echo.Context) error {
 		ShowTermCalendarRHN: ShowTermCalendar.String(),
 		NodeListPage:        NodeListPage(r),
 	}
-	log.Println("TermsListPage initialized: ", page)
 	var component = page.Component()
 	layout := CourseManagerLayout(r.app, component, nodes.User)
 	return Respond(c, "", component, layout)

@@ -13,7 +13,7 @@ templ HxButtonComponent(props Button) {
 			hx-delete={ props.URL }
 		}
 		if props.Class == "" {
-			class="bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer"
+			class="max-w-fit flex gap-1 items-center rounded-md bg-indigo-500 px-3 py-2 font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
 		} else {
 			class={ props.Class }
 		}

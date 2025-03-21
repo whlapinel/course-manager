@@ -46,11 +46,11 @@ func (page NodeDetailsPage) PageLayout() cmp.PageLayout {
 
 func (page NodeDetailsPage) CalendarButton() templ.Component {
 	return cmp.Button{
-		Text:     "📅",
 		Method:   cmp.HxGet,
 		URL:      page.CourseCalendarURL,
 		HxTarget: "#page",
 		PushURL:  true,
+		Image:    cmp.CalendarIcon(),
 	}.Component()
 }
 
@@ -86,9 +86,9 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 	return cmp.Button{
 		Method:   cmp.HxGet,
 		URL:      page.ServerFilesURL,
-		Text:     "📂",
 		HxTarget: "#page",
 		PushURL:  true,
+		Image:    cmp.FolderIcon(),
 	}.Component()
 }
 

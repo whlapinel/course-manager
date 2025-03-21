@@ -27,7 +27,6 @@ import (
 
 // Generate creates the static site using concurrent operations.
 func Generate(courseRepo data.CourseRepo, user domain.User) error {
-	log.Println("sitegenerator.Generate(): generating site")
 
 	// Clear HTML files concurrently in each directory.
 

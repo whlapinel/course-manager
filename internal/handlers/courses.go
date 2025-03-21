@@ -244,7 +244,6 @@ func (r *courseRouter) PostCopyCourseToTerm(c echo.Context) error {
 			return err
 		}
 		termIDParam := c.Request().Form.Get("term-id")
-		log.Println("selected termID: ", termIDParam)
 		termID, err := strconv.Atoi(termIDParam)
 		if err != nil {
 			return err
