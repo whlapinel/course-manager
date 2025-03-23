@@ -9,7 +9,7 @@ tasks:
   generate:
     desc: Generate sqlc (go), tailwind (css), typescript (js), and templ (go). Run if typescript or templ files have been modified
     cmds:
-      - go generate ./...
+      - go generate generate.go
 
   sync-site:
     desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
@@ -51,6 +51,10 @@ tasks:
     cmds:
       - chmod +x ./scripts/unpack_data.sh
       - ./scripts/unpack_data.sh
+  ssh:
+    desc: ssh into server
+    cmds:
+      - ssh root@159.223.174.80
 
   deploy:
     desc: Build image, push to docker hub, copy scripts to remote server, ssh to server

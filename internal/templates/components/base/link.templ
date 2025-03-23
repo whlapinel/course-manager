@@ -2,9 +2,13 @@ package components
 
 templ LinkComponent(data Link) {
 	<a
-		href={ templ.SafeURL(data.URL) }
-		if data.Target != "" {
-			target={ data.Target.String() }
+		{ data.Attributes... }
+		if !data.HTMX {
+			href={ templ.SafeURL(data.URL) }
+		} else {
+			if data.Target != "" {
+				target={ data.Target.String() }
+			}
 		}
 		if data.Class !="" {
 			class={ data.Class }

@@ -1,0 +1,129 @@
+<div class=\"flex gap-2 self-center\">
+</div>
+<button onclick=\"window.history.back()\">Cancel</button>
+<button hx-get=\"
+\" hx-target=\"
+\" hx-push-url=\"true\" class=\"text-xl\">
+</button>
+<div id=\"
+\" class=\"flex gap-2\"><p>
+:</p>
+ 
+ <button hx-post=\"
+\" hx-target=\"
+\" hx-include=\"
+\">Submit</button>
+<p>
+</p><button hx-get=\"
+\" hx-push-url=\"true\" hx-swap=\"
+\" hx-target=\"
+\">Edit</button>
+</div>
+<input class=\"bg-black\" type=\"text\" name=\"
+\" id=\"
+\" value=\"
+\">
+<input class=\"bg-black\" type=\"number\" name=\"
+\" id=\"
+\" value=\"
+\">
+<textarea class=\"bg-black\" id=\"
+\" name=\"
+\">
+</textarea>
+<h1 class=\"text-2xl\">
+</h1>
+<a href=\"
+\" target=\"
+\"><li class=\"bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none\">
+</li></a>
+<a href=\"
+\" target=\"
+\"><li>
+</li></a>
+<div class=\"flex flex-col gap-6 max-w-3xl\"><h1 class=\" text-4xl\">
+</h1><p class=\"text-2xl\">
+</p>
+<details><summary class=\"text-xl\">Standards/Objectives</summary><ul>
+<li>
+: 
+</li>
+</ul></details> 
+<img src=\"
+\" class=\"max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300\">
+<img src=\"
+\" class=\"max-w-full h-auto rounded border border-solid border-purple-400\">
+</div>
+<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Will Lapinel</title><link rel=\"stylesheet\" href=\"/python/styles/styles.css\"><link rel=\"icon\" href=\"/python/images/favicon.png\"><script src=\"/python/js/htmx.js\" defer></script><script src=\"/python/js/index.js\" defer></script></head><body class=\"bg-slate-800 text-white\"><header><div class=\"flex justify-between\"><a href=\"
+\" hx-select=\"#page\" hx-target=\"#page\" hx-swap=\"outerHTML\"><svg width=\"300\" height=\"80\" xmlns=\"http://www.w3.org/2000/svg\"><!-- Background --><rect width=\"250\" height=\"100\" fill=\"#1e293b\"></rect><!-- Text: Initials --><text x=\"10\" y=\"60\" font-family=\"Arial, sans-serif\" font-size=\"50\" font-weight=\"bold\" fill=\"#4ade80\">Will Lapinel</text><!-- Decorative Line --><line x1=\"10\" y1=\"70\" x2=\"290\" y2=\"70\" stroke=\"#3b82f6\" stroke-width=\"2\"></line></svg></a><div class=\"sm:hidden\" id=\"hamburger\"><svg width=\"64\" height=\"64\" viewBox=\"0 0 24.00 24.00\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"#a3a3a3\"><g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g> <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g> <g id=\"SVGRepo_iconCarrier\"><path d=\"M4 18L20 18\" stroke=\"#ffffff\" stroke-width=\"1.968\" stroke-linecap=\"round\"></path> <path d=\"M4 12L20 12\" stroke=\"#ffffff\" stroke-width=\"1.968\" stroke-linecap=\"round\"></path> <path d=\"M4 6L20 6\" stroke=\"#ffffff\" stroke-width=\"1.968\" stroke-linecap=\"round\"></path></g></svg></div></div><nav class=\"flex gap-2 text-white font-bold p-1 mb-5\">
+<div class=\"relative\"><a
+ href=\"
+\" hx-target=\"#page\" hx-select=\"#page\"
+ class=\"hover:bg-green-700 p-2 rounded-md cursor-pointer\"
+ id=\"
+\"
+ id=\"
+\"
+>
+</a></div>
+</nav></header><main id=\"page\">
+</main></body></html>
+<nav class=\"flex gap-2 ml-4\">
+<a href=\"
+\"><li class=\"flex gap-2 text-lg items-center bg-green-600 p-3 rounded hover:bg-green-500\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#e8eaed\"><path d=\"M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z\"></path></svg> 
+ Course Calendar</li></a> 
+</nav><div class=\"p-4 flex gap-3 flex-col md:flex-row\">
+</div>
+<a href=\"
+\"><li class=\"flex gap-2 text-lg mb-10 items-center bg-green-600 p-3 rounded hover:bg-green-500\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#e8eaed\"><path d=\"m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z\"></path></svg><p>Up to 
+</p></li></a>
+<ul class=\"max-w-fit min-w-fit\">
+</ul>
+<p>
+</p>
+ 
+: 
+ 
+<h1>Contact Me</h1><p>You can reach me at <a class=\"text-white\" href=\"mailto:williamh.lapinel@cms.k12.nc.us\">williamh.lapinel@cms.k12.nc.us</a></p>
+<strong>
+:</strong> 
+ 
+Slides
+<p>No content for this lesson yet!</p>
+ 
+Other Files
+ 
+<div class=\"flex flex-col gap-6 max-w-3xl\"><h1 class=\" text-4xl\">
+</h1><p class=\"text-2xl\">
+</p>
+<details><summary class=\"text-xl\">Standards/Objectives</summary><ul>
+<li>
+: 
+</li>
+</ul></details> 
+<details><summary class=\"text-xl\">Assignments</summary><ul class=\"flex flex-col gap-3 p-4\">
+<li class=\"flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4\"><span class=\"text-2xl\">
+</span> <span>Category: 
+</span> 
+<span class=\"border border-green-500 rounded bg-slate-900 text-green-500 p-2 w-min\"><pre>
+</pre></span> 
+<span>Due: 
+</span> 
+<span>Status: Dropped</span> 
+<span>Status: Active</span> 
+<a href=\"
+\" target=\"_blank\">
+</a> 
+<a href=\"
+\" target=\"_blank\" class=\"bg-green-700 p-3 rounded max-w-fit text-lg\">View File</a>
+</li>
+</ul></details> 
+<img src=\"
+\" class=\"max-w-full h-auto rounded border border-solid border-purple-400 bg-blue-300\">
+<img src=\"
+\" class=\"max-w-full h-auto rounded border border-solid border-purple-400\">
+</div>
+<a href=\"
+\" target=\"
+\"><li class=\"bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none\">
+</li></a>

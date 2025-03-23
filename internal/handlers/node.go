@@ -15,6 +15,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type Router interface {
+	GetRouter() router
+	SetRouter(router router)
+}
+
 type NodeRouter interface {
 	ListChildren(echo.Context) error
 	ShowFiles(echo.Context) error
@@ -26,8 +31,7 @@ type NodeRouter interface {
 	ShowEdit(echo.Context) error
 	PostEdit(echo.Context) error
 	Delete(echo.Context) error // i.e. delete node itself (not child)
-	GetRouter() Router
-	SetRouter(router Router)
+	Router
 }
 
 type EmptyNode domain.CourseNode

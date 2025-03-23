@@ -9,8 +9,11 @@ import (
 type Layout struct {
 	PageTitle        string
 	Head             templ.Component
+	UserMenu         templ.Component
 	NavItems         []NavItem
 	Page             templ.Component
+	UserImage        string
+	SignoutURL       string
 	templ.Attributes // will be added to body element
 }
 

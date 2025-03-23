@@ -1,0 +1,21 @@
+<div class=\"flex flex-col\">
+</div>
+<iframe src=\"
+\" class=\"h-[40rem] w-full\"></iframe>
+<div><ul>
+<li class=\"flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4\"><span class=\"text-2xl\">
+</span> <span>Category: 
+</span> 
+<span class=\"border border-green-500 rounded bg-slate-900 text-green-500 p-2 w-min\"><pre>
+</pre></span> 
+<span>Due: 
+</span> 
+<span>Status: Dropped</span> 
+<span>Status: Active</span> 
+<a href=\"
+\" target=\"_blank\">
+</a> 
+<a href=\"
+\" target=\"_blank\" class=\"bg-green-700 p-3 rounded max-w-fit text-lg\">View File</a>
+</li>
+</ul></div>

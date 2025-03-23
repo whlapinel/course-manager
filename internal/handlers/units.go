@@ -20,12 +20,12 @@ func UnitHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 }
 
 type unitRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *unitRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *unitRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // Delete implements NodeRouter.
@@ -147,8 +147,8 @@ func (r *unitRouter) PostNewChild(c echo.Context) error {
 }
 
 // Router implements NodeRouter.
-func (u *unitRouter) GetRouter() Router {
-	return u.Router
+func (u *unitRouter) GetRouter() router {
+	return u.router
 }
 
 // ShowDetails implements NodeRouter.
@@ -206,7 +206,7 @@ func (r *unitRouter) ViewFile(c echo.Context) error {
 
 func NewUnitRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &unitRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesUnit,

@@ -144,7 +144,7 @@ func SignupWithGoogleComponent(page SignUpPage) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p>Please Sign In With Your CMS Google Account</p><div id=\"g_id_onload\" data-client_id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p>Please Sign Up With Your CMS Google Account</p><div id=\"g_id_onload\" data-client_id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

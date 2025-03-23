@@ -1,0 +1,19 @@
+<button
+ hx-get=\"
+\"
+ hx-post=\"
+\"
+ hx-delete=\"
+\"
+ class=\"max-w-fit flex gap-1 items-center rounded-md bg-indigo-500 px-3 py-2 font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500\"
+ class=\"
+\"
+ hx-target=\"
+\"
+ hx-push-url=\"true\"
+ hx-swap=\"
+\"
+ hx-confirm=\"
+\"
+>
+</button>

@@ -27,12 +27,12 @@ func CourseHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 }
 
 type courseRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *courseRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *courseRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
@@ -41,8 +41,8 @@ func (r *courseRouter) PostFile(c echo.Context) error {
 
 }
 
-func (r *courseRouter) GetRouter() Router {
-	return r.Router
+func (r *courseRouter) GetRouter() router {
+	return r.router
 }
 
 // Delete implements NodeRouter.
@@ -172,7 +172,7 @@ func (r *courseRouter) ViewFile(c echo.Context) error {
 
 func NewCourseRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &courseRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesCourse,

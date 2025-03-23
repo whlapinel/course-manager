@@ -61,7 +61,7 @@ func (u User) GetParentID() int {
 
 // ParentTypeName implements CourseNode.
 func (u User) ParentTypeName() string {
-	return RootTypeName.String()
+	return UserTypeName.String()
 }
 
 // TypeName implements CourseNode.

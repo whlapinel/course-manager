@@ -3,10 +3,12 @@ package managertemplates
 templ HomePageComponent(props HomePage) {
 	@PageLayoutComponent(props) {
 		<h1 class="text-xl">Welcome to Course Manager</h1>
-		@props.SigninButton()
-		@props.SignupButton()
-		@props.SignoutButton()
-		@props.UsersAuthButton()
+		<div class="flex gap-2">
+			@props.SigninButton()
+			@props.SignupButton()
+			@props.SignoutButton()
+			@props.UsersAuthButton()
+		</div>
 	}
 }
 

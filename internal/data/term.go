@@ -101,7 +101,9 @@ func (cr CourseRepo) GetTerms(userID string) ([]domain.Term, error) {
 			term.InstructionalDays = append(term.InstructionalDays, parsedInstructDate)
 		}
 	}
-	terms = append(terms, term)
+	if term.ID != 0 {
+		terms = append(terms, term)
+	}
 	return terms, nil
 
 }

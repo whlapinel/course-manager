@@ -1,8 +1,8 @@
 {
     "exclude": [
-        "python/docs/ts/**/*.ts"
-      ],
-    
+        "python/docs/ts/**/*.ts",
+        "sites/assets/**/*.ts"
+    ],
     "references": [
         {
             "path": "./tsconfig.server.json"
@@ -11,5 +11,4 @@
             "path": "./tsconfig.static.json"
         }
     ],
-    
 }

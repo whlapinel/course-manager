@@ -8,12 +8,12 @@ import (
 )
 
 type userRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *userRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *userRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
@@ -27,8 +27,8 @@ func (r *userRouter) DownloadFile(echo.Context) error {
 }
 
 // Router implements NodeRouter.
-func (r *userRouter) GetRouter() Router {
-	return r.Router
+func (r *userRouter) GetRouter() router {
+	return r.router
 }
 
 // Delete implements NodeHandler.
@@ -144,7 +144,7 @@ func (r *userRouter) GenerateSite(c echo.Context) error {
 
 func NewUserHandler(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &userRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesUser,

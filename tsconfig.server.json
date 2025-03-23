@@ -1,10 +1,14 @@
 {
   "include": [
-    "internal/assets/ts**/*.ts"
+    "internal/assets/ts/*.ts"
+  ],
+  "exclude": [
+    "internal/assets/dist/**/*",
+    "caddy*/**/*",
   ],
   "compilerOptions": {
     "typeRoots": [
-      "internal/assets/ts/@types",
+      "./internal/assets/ts/types",
       "./node_modules/@types"
     ],
     "composite": true,

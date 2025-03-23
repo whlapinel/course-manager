@@ -1,0 +1,95 @@
+<ul>
+<li id=\"objective\">
+.
+ 
+ <button hx-delete=\"
+\" hx-target=\"#page\">Remove</button></li>
+</ul>
+<p>No standard selected</p>
+ <details><summary>Choose Standard</summary><ul>
+<details><summary>
+</summary> <select name=\"objective\" id=\"
+\" class=\"bg-black\">
+<option value=\"
+\">
+</option>
+</select> <button hx-post=\"
+\" hx-include=\"
+\" hx-target=\"#page\">Add</button></details>
+</ul></details> 
+<ul>
+<li id=\"assessment\"><details><summary>
+</summary><p>
+</p><p>Due: 
+</p><pre>
+</pre>
+<a href=\"
+\">File: 
+</a> 
+</details> <button hx-get=\"
+\" hx-target=\"#assessment\">Edit</button> <button hx-delete=\"
+\" hx-target=\"#page\">Remove</button></li>
+</ul>
+<p>No Assessment</p>
+ <details><summary>Add Assessment</summary>
+</details><div id=\"
+\" class=\"flex flex-col min-w-screen\">
+</div>
+<ul><li>
+</li></ul>
+<button id=\"show-slides-btn\">Show Slides</button><div id=\"slides\" class=\"flex justify-center h-0 overflow-hidden\"><script src=\"/dist/lesson-details.js\"></script>
+</div><div id=\"markdown\">
+</div>
+<form id=\"edit-assessment-form\"><div class=\"grid grid-cols-2 gap-1\"><input type=\"hidden\" class=\"bg-black\" value=\"
+\"> <label for=\"name\">Name</label> <input type=\"text\" name=\"name\" id=\"name\" value=\"
+\" class=\"bg-black\"> <label for=\"instructions\">Instructions</label> <textarea class=\"bg-black font-mono p-1 w-full\" id=\"instructions\" name=\"instructions\">
+</textarea> <label for=\"date-assigned\">Assigned</label> <input type=\"date\" name=\"date-assigned\" id=\"date-assigned\" value=\"
+\" class=\"bg-black\"> <label for=\"date-due\">Due</label> <input type=\"date\" name=\"date-due\" id=\"date-due\" value=\"
+\" class=\"bg-black\"> <label for=\"category\">Category</label> <select name=\"category\" id=\"category\" class=\"bg-black\"><option value=\"
+\"
+ selected
+>Prepare</option> <option value=\"
+\"
+ selected
+>Rehearse</option> <option value=\"
+\"
+ selected
+>Perform</option> <option value=\"
+\"
+ selected
+>Midterm</option> <option value=\"
+\"
+ selected
+>Final</option></select> <label for=\"file\">File</label> <input id=\"file\" name=\"file\" type=\"text\" class=\"bg-black\" value=\"
+\"><fieldset><legend>Status</legend><div><input type=\"radio\" id=\"active\" name=\"dropped\" value=\"false\"
+ checked
+> <label for=\"active\">Active</label></div><div><input type=\"radio\" id=\"dropped\" name=\"dropped\" value=\"true\"
+ checked
+> <label for=\"dropped\">Dropped</label></div></fieldset></div><button hx-get=\"
+\" hx-target=\"#page\">Cancel</button> <button type=\"submit\" hx-post=\"
+\" hx-target=\"#page\">Submit</button></form>
+<select id=\"objectives-select\" name=\"objective\">
+<option value=\"
+\">
+</option>
+</select>
+<iframe srcdoc=\"
+\" class=\"h-[40rem] w-full border-solid border-orange-500\"></iframe>
+<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css\"><style>\n        .CodeMirror {\n            height: auto;\n            /* Adjusts the editor height dynamically */\n        }\n    </style><!-- CodeMirror Editor --><textarea id=\"
+\" name=\"
+\" class=\"bg-slate-900 min-w-full min-h-96 font-mono p-2\" id=\"editor\">
+</textarea><!-- CodeMirror Scripts --><script defer src=\"https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js\"></script><script defer src=\"https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js\"></script><script>\n\n\t\tdocument.addEventListener(\"DOMContentLoaded\", function () {\n\t\t\tconsole.log(\"This runs after the DOM is fully loaded.\");\n\t\t\t// Initialize CodeMirror\n\t\t\tconst editor = CodeMirror.fromTextArea(document.getElementById(\"slides-editor-text-area\"), {\n\t\t\t\tlineNumbers: true,   // Display line numbers\n\t\t\t\tmode: \"markdown\",      // Set syntax highlighting mode\n\t\t\t\ttheme: \"default\",    // Set theme (default in this example)\n\t\t\t\ttabSize: 4           // Number of spaces for a tab\n\t\t\t});\n\t\t});\n    </script>
+ <button hx-post=\"
+\" hx-target=\"#page\" hx-include=\"
+\">Submit</button>
+<form id=\"add-assignment-form\"><label for=\"name\">Name</label> <input id=\"name\" name=\"name\" type=\"text\" class=\"bg-black\"> <label for=\"date-assigned\">Assigned</label> <input class=\"bg-black\" id=\"date-assigned\" name=\"date-assigned\" type=\"date\"
+ value=\"
+\"
+> <label for=\"date-due\">Due</label> <input class=\"bg-black\" id=\"date-due\" name=\"date-due\" type=\"date\"> <label for=\"category\">Category</label> <select name=\"category\" class=\"bg-black\"><option value=\"
+\">Prepare</option> <option value=\"
+\">Rehearse</option> <option value=\"
+\">Perform</option> <option value=\"
+\">Midterm</option> <option value=\"
+\">Final</option></select> <label for=\"file\">File</label> <input id=\"file\" name=\"file\" type=\"text\" class=\"bg-black\"> <label for=\"instructions\">Instructions</label> <textarea class=\"bg-black font-mono p-1 w-full\" id=\"instructions\" name=\"instructions\"></textarea> <input type=\"hidden\" name=\"lesson-id\" value=\"
+\"> <button hx-post=\"
+\" hx-target=\"#page\" hx-push-url=\"true\">Submit</button></form>

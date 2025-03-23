@@ -20,11 +20,10 @@ FROM ubuntu:latest
 
 # ✅ Set working directory
 WORKDIR /app
+RUN apt-get update && apt-get install -y ca-certificates
 
 # ✅ Copy only the built app binary from the builder stage
 COPY --from=builder /app/cmd/web_app/web_app /app/cmd/web_app/web_app
-
-RUN apt-get update && apt-get install -y ca-certificates
 
 # Expose HTTP port
 EXPOSE 1323

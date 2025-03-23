@@ -3,6 +3,9 @@ package managertemplates
 templ NodeListComponent(props NodeListPage) {
 	@PageLayoutComponent(props) {
 		<ul class="flex flex-col gap-2">
+			if len(props.Children) == 0 {
+				<h2>No { props.ParentNode.ChildTypeName() }s to display for this { props.ParentNode.ParentTypeName() }</h2>
+			}
 			for i, node := range props.Children {
 				if node == nil {
 					<p>Node is nil!</p>

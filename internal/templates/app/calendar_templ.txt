@@ -1,0 +1,90 @@
+<button hx-post=\"
+\" hx-target=\"#page\">
+<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#e8eaed\"><path d=\"M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z\"></path></svg>
+<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#e8eaed\"><path d=\"M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z\"></path></svg>
+</button>
+<li><div class=\"flex\">
+<div><div class=\"flex flex-col gap-1 items-center\"><div class=\"flex\">
+</div></div></div>
+</div></li>
+<p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max\">
+</p>
+<div class=\"group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group\" hx-get=\"
+\" hx-target=\"
+\" hx-push-url=\"
+\"><p>
+</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none\">
+</p></div>
+<h1>
+</h1><h2>
+</h2>
+<ul class=\"justify-items-center\">
+<button hx-get=\"
+\" hx-push-url=\"true\" hx-target=\"#page\">Add Lesson</button> 
+<div class=\"group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group\"><p>
+</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none\">
+</p></div>
+</ul>
+<ul class=\"justify-items-center\">
+<button hx-get=\"
+\" hx-push-url=\"true\" hx-target=\"#page\">Add Lesson</button> 
+<div class=\"group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group\"><p>
+</p><p class=\"left-1/2 -translate-x-1/2 absolute top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-green-800 rounded p-2 z-10 min-w-max pointer-events-none\">
+</p></div>
+</ul>
+ 
+<div id=\"calendar\" class=\"flex flex-col gap-4\">
+<h1 id=\"
+\" class=\"text-2xl text-center\">Month of 
+ 
+</h1><div id=\"month-container\" class=\"flex flex-col border border-solid\">
+<div id=\"week-container\" class=\"grid grid-cols-5\">
+</div>
+</div>
+</div>
+<div id=\"calendar\" class=\"flex flex-col gap-4\">
+<h1 id=\"
+\" class=\"text-2xl text-center\">Month of 
+ 
+</h1><div id=\"month-container\" class=\"flex flex-col border border-solid\">
+<div id=\"week-container\" class=\"grid grid-cols-5\">
+</div>
+</div>
+</div>
+<div id=\"
+\">
+<form id=\"
+\"><input type=\"text\" value=\"
+\" name=\"name\" class=\"bg-black\"> <button hx-post=\"
+\" hx-target=\"#page\">Submit</button></form>
+ <button hx-get=\"
+\" hx-target=\"
+\">📝</button> <button hx-delete=\"
+\" hx-target=\"
+\">❌</button>
+</div>
+<details><summary>Add Occasion</summary><form id=\"
+\" class=\"bg-black\"><label for=\"name\">Name</label> <input type=\"text\" class=\"bg-inherit\" id=\"
+\" name=\"name\"> <input type=\"hidden\" id=\"
+\" name=\"date\" value=\"
+\"> <button hx-post=\"
+\" hx-include=\"
+\" hx-target=\"#page\">Submit</button></form></details>
+<div id=\"date-container\" class=\"justify-items-center border min-h-32\">
+ 
+ 
+ <ul class=\"justify-items-center\">
+<p>No School</p>
+</ul>
+</div>
+<div id=\"date-container\" class=\"justify-items-center border min-h-32\">
+ 
+ 
+ <ul class=\"justify-items-center\">
+<p>No School</p>
+</ul>
+</div>
+<p class=\"text-lg text-blue-300 font-extrabold\">
+</p>
+<div id=\"picker\" class=\"flex flex-col max-w-fit\">
+</div>

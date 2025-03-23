@@ -7,6 +7,8 @@ type Link struct {
 	URL    string
 	Target LinkTarget
 	Class  string
+	HTMX   bool
+	templ.Attributes
 }
 
 type LinkTarget string

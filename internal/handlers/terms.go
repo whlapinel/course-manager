@@ -11,12 +11,12 @@ import (
 )
 
 type termRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *termRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *termRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
@@ -26,7 +26,7 @@ func (r *termRouter) PostFile(c echo.Context) error {
 
 func NewTermRouter(svc service.CourseService, e *echo.Echo) NodeRouter {
 	return &termRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          e,
 			emptyNodeSet: EmptyNodesTerm,
@@ -35,8 +35,8 @@ func NewTermRouter(svc service.CourseService, e *echo.Echo) NodeRouter {
 
 }
 
-func (r *termRouter) GetRouter() Router {
-	return r.Router
+func (r *termRouter) GetRouter() router {
+	return r.router
 }
 
 // PostNewChild implements NodeRouter. (implemented)

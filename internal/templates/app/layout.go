@@ -26,9 +26,24 @@ func (cml CourseManagerLayout) Component() templ.Component {
 	}
 	head := HeadComponent()
 	layout := cmp.Layout{
-		NavItems: navItems,
-		Head:     head,
-		Page:     cml.Page,
+		UserImage: cml.User.Picture,
+		NavItems:  navItems,
+		Head:      head,
+		Page:      cml.Page,
+		UserMenu: cmp.UserMenu{
+			Image: cml.User.Picture,
+			Links: []cmp.Link{
+				{
+					Text:   "Sign Out",
+					URL:    cml.SignoutURL,
+					Target: "#page",
+					HTMX:   true,
+					Attributes: templ.Attributes{
+						string(cmp.HxPost): cml.SignoutURL,
+					},
+				},
+			},
+		}.Component(),
 	}
 	return cmp.LayoutComponent(layout)
 }

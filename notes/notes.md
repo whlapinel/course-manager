@@ -20,7 +20,6 @@
 - [Tailwind Docs](https://marketplace.visualstudio.com/items?itemName=austenc.tailwind-docs)
 - [Tailwind Fold](https://marketplace.visualstudio.com/items?itemName=stivo.tailwind-fold)
 - [Templ](https://marketplace.visualstudio.com/items?itemName=a-h.templ)
-- 
 
 ## Workflows
 
@@ -34,6 +33,13 @@ Builds binary and mounts as volume, runs all services with docker compose:
 ```bash
 task run-dev
 ```
+
+To quickly regenerate templates and rebuild go code during development use:
+
+```bash
+task restart-echo
+```
+
 ### Deploy
 
 ```bash
@@ -47,6 +53,20 @@ task run-prod
 ```
 
 ## Progress Log
+
+### 3/22/25
+
+- Built a very smooth development and deployment setup this week with Docker compose including nice `task` shortcuts.
+- Decided yesterday that I eventually want to make the following changes:
+  - Use Kubernetes instead of Docker compose for production (probably overkill, but would facilitate scaling and need to learn it)
+  - Postgres instead of sqlite3
+  - Separate container for filesystem access to facilitate scaling up
+  - ValKey (open source fork of Redis) for caching files
+- But first I want to get this working completely for testing in beta so that I can share with a few select colleagues.
+- Lots of changes since last entry. Today is a day to celebrate, as I finally got the whole thing working on my remote server. 3 containers running caddy, echo app, and marp respectively. Caddy is reverse proxy for echo and at {username}.course-manager.app caddy serves static sites.  It all works! I can't believe it! 🥳😭
+- App is still registered as 'testing' not 'published' in google cloud console so I would need to add specific users until I publish it (authorized redirects cannot be http for published apps)
+- Created unauthorized page and types and functions for responding to various unauthorized user scenarios
+- Configured signin/signup route handlers to disallow non-cms gmail accounts
 
 ### 2/19/25
 

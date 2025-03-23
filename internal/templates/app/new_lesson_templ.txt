@@ -1,0 +1,2 @@
+<form id=\"new-lesson\"><label>Number</label> <label>Name</label> <label>Description</label> <input type=\"number\" id=\"number\"> <input type=\"text\" id=\"name\"> <textarea id=\"description\"></textarea> <button hx-post=\"
+\" hx-target=\"#page\" hx-include=\"#new-lesson\">Submit</button></form>

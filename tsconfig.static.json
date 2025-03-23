@@ -2,6 +2,9 @@
   "include": [
     "sites/assets/ts/**/*.ts"
   ],
+  "exclude": [
+    "internal/assets/**/*"
+  ],
   "compilerOptions": {
     "composite": true,
     "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
