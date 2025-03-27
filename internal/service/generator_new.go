@@ -27,8 +27,7 @@ func NodeDetailsPageURL(nodes ...domain.CourseNode) string {
 
 func NodeFilesPagePath(relPath string, nodes ...domain.CourseNode) string {
 	path := FilePath(relPath, nodes...)
-	currNode := nodes[len(nodes)-1] // last node is current node
-	path = filepath.Join(path, fmt.Sprintf("%s_%d_files.html", strings.ToLower(currNode.TypeName()), currNode.GetID()))
+	path = filepath.Join(path, "files.html")
 	return path
 }
 
@@ -52,7 +51,7 @@ func URL(path string) string {
 }
 
 func FilePath(relPath string, nodes ...domain.CourseNode) string {
-	path := NodeFilesPath(nodes...)
+	path := NodeFilesRootPath(nodes...)
 	path = filepath.Join(path, relPath)
 	return path
 }
@@ -135,7 +134,7 @@ func NodeImagePath(nodes ...domain.CourseNode) string {
 	return filepath.Join(dir, "image.png")
 }
 
-func NodeFilesPath(nodes ...domain.CourseNode) string {
+func NodeFilesRootPath(nodes ...domain.CourseNode) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "files")
 }
@@ -180,33 +179,56 @@ func NodeDetailsPage(nodes domain.Nodes) templates.StaticNodeDetailsPage {
 	}
 }
 
-func NodeFilesPage(nodes domain.Nodes) templates.FilesPageSection {
-	path := NodeFilesPath(nodes.ToSlice()...)
+func NodeFilesPages(relPath string, nodes domain.Nodes) []templates.FilesPageSection {
+	var pages []templates.FilesPageSection
+	path := FilePath(relPath, nodes.ToSlice()...)
 	files, _ := os.ReadDir(path)
 	var filesList []templates.File
 	for _, file := range files {
-		if file.Name() == filepath.Base(NodeFilesPagePath("", nodes.ToSlice()...)) {
+		if file.Name() == filepath.Base(NodeFilesPagePath(relPath, nodes.ToSlice()...)) {
 			continue
 		}
+		subRelPath := filepath.Join(relPath, file.Name())
 		item := templates.File{
 			Name:  file.Name(),
 			Path:  filepath.Join(path, file.Name()),
-			URL:   FileURL(file.Name(), nodes.ToSlice()...),
+			URL:   FileURL(subRelPath, nodes.ToSlice()...),
 			IsDir: file.IsDir(),
+		}
+		if item.IsDir {
+			item.URL = FilesPageURL(subRelPath, nodes.ToSlice()...)
+			pages = append(pages, NodeFilesPages(subRelPath, nodes)...)
 		}
 		filesList = append(filesList, item)
 	}
+	var dirName string
+	if relPath == "" {
+		dirName = "Root"
+	} else {
+		dirName = relPath
+	}
+	parentDir := filepath.Dir(relPath)
+	if parentDir == "." {
+		parentDir = "Root"
+	}
 	page := templates.FilesPageSection{
-		Path:         NodeFilesPagePath("", nodes.ToSlice()...),
-		ParentDirURL: FileURL("", nodes.ToSlice()...),
+		Root: relPath == "",
+		Path: NodeFilesPagePath(relPath, nodes.ToSlice()...),
+		ParentDirectory: templates.File{
+			Name:  parentDir,
+			URL:   URL(NodeFilesPagePath(filepath.Dir(relPath), nodes.ToSlice()...)),
+			Path:  FilePath(filepath.Dir(relPath), nodes.ToSlice()...),
+			IsDir: true,
+		},
 		CurrentDirectory: templates.File{
-			Path: NodeFilesPath(nodes.ToSlice()...),
-			Name: "files",
-			URL:  FileURL("", nodes.ToSlice()...),
+			Path: FilePath(relPath, nodes.ToSlice()...),
+			Name: dirName,
+			URL:  FileURL(relPath, nodes.ToSlice()...),
 		},
 		Files: filesList,
 	}
-	return page
+	pages = append(pages, page)
+	return pages
 
 }
 
@@ -327,9 +349,11 @@ func renderNodePages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGrou
 	default:
 		wg.Add(1)
 		go RenderPage(staticPage, errChan, wg, cancel)
-		filesPage := NodeFilesPage(nodes)
-		wg.Add(1)
-		go RenderPage(filesPage, errChan, wg, cancel)
+		filesPages := NodeFilesPages("", nodes)
+		for _, page := range filesPages {
+			wg.Add(1)
+			go RenderPage(page, errChan, wg, cancel)
+		}
 		if nodes.CurrentNode().ChildTypeName() != "" {
 			listPage, err := NodeListPage(nodes)
 			if err != nil {
@@ -369,9 +393,11 @@ func renderLessonPages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGr
 		assFrag := AssessmentsFragment(lessonpage, nodes.Lesson.Assessments, nodes)
 		wg.Add(1)
 		go RenderPage(assFrag, errChan, wg, cancel)
-		filesPage := NodeFilesPage(nodes)
-		wg.Add(1)
-		go RenderPage(filesPage, errChan, wg, cancel)
+		filesPages := NodeFilesPages("", nodes)
+		for _, page := range filesPages {
+			wg.Add(1)
+			go RenderPage(page, errChan, wg, cancel)
+		}
 	}
 	return nil
 }

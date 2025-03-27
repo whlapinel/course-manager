@@ -3,9 +3,9 @@ package templates
 import "github.com/a-h/templ"
 
 type FilesPageSection struct {
+	Root             bool
 	Empty            bool
 	Path             string
-	ParentDirURL     string
 	ParentDirectory  File
 	CurrentDirectory File
 	Files            []File

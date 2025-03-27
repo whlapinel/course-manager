@@ -22,7 +22,7 @@ type StaticLessonDetailsPage struct {
 }
 
 func (page StaticLessonDetailsPage) Component() templ.Component {
-	return components.Layout{
+	return Layout{
 		PageTitle: page.Node.GetName(),
 		Head: Head{
 			User:      page.User,
