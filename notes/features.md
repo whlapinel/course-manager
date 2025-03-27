@@ -3,6 +3,8 @@
 
 ## Pending (keep in priority order)
 
+- Markdown file editor (non slides)
+- Add hx-indicator to everything so user gets confirmation that request is pending
 - Automatic site regeneration for every change (??)
 - Publish/unpublish for all nodes and assessments
 - Password protection for assessment files

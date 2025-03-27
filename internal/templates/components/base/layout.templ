@@ -15,7 +15,9 @@ templ LayoutComponent(props Layout) {
 							<div class="border-b border-gray-700">
 								<div class="flex h-16 items-center justify-between px-4 sm:px-0">
 									<div class="flex items-center">
-										@RocketIcon()
+										<a hx-get={ props.HomeURL } hx-target="#page" class="cursor-pointer" hx-push-url="true">
+											@RocketIcon()
+										</a>
 										<div class="hidden md:block">
 											<div class="ml-10 flex items-baseline space-x-4">
 												<!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->

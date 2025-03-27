@@ -10,6 +10,7 @@ import (
 
 type CourseManagerLayout struct {
 	PageTitle  string
+	HomeURL    string
 	SigninURL  string
 	SignupURL  string
 	SignoutURL string
@@ -26,6 +27,7 @@ func (cml CourseManagerLayout) Component() templ.Component {
 	}
 	head := HeadComponent()
 	layout := cmp.Layout{
+		HomeURL:   cml.HomeURL,
 		UserImage: cml.User.Picture,
 		NavItems:  navItems,
 		Head:      head,

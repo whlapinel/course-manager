@@ -5,6 +5,7 @@ import (
 )
 
 type Layout struct {
+	HomeURL          string // clicking logo will send user to home e.g. index.html or "/"
 	PageTitle        string
 	Head             templ.Component
 	UserMenu         UserMenu

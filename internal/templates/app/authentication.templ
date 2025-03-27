@@ -11,7 +11,7 @@ templ SigninWithGoogleComponent(data SigninPage) {
 	<div
 		id="g_id_onload"
 		data-client_id={ os.Getenv("GOOGLE_CLIENT_ID") }
-		data-context="signin"
+		data-context="/signin"
 		data-ux_mode="popup"
 		data-login_uri={ data.GoogleSigninURL }
 		data-auto_prompt="false"
@@ -37,7 +37,7 @@ templ SignupWithGoogleComponent(page SignUpPage) {
 	<div
 		id="g_id_onload"
 		data-client_id={ page.GoogleClientID }
-		data-context="signup"
+		data-context="/signup"
 		data-ux_mode="popup"
 		data-login_uri={ page.GoogleSignupURL }
 		data-nonce=""

@@ -43,7 +43,7 @@ func (page HomePage) SigninButton() templ.Component {
 }
 func (page HomePage) SignoutButton() templ.Component {
 	return cmp.Button{
-		Text:     "Sign Out 🛑",
+		Text:     "Sign Out",
 		Method:   cmp.HxPost,
 		URL:      page.SignoutURL,
 		HxTarget: "#page",
