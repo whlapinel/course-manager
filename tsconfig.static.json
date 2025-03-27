@@ -3,7 +3,8 @@
     "sites/assets/ts/**/*.ts"
   ],
   "exclude": [
-    "internal/assets/**/*"
+    "internal/assets/**/*",
+    "internal/templates/**/*" /* don't want to generate js for components; instead these scripts should be copy-pasted to assets as needed*/
   ],
   "compilerOptions": {
     "composite": true,

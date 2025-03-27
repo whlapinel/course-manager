@@ -6,6 +6,7 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	templates "gh_static_portfolio/internal/templates/static"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,6 +23,13 @@ func NodeListPageURL(nodes ...domain.CourseNode) string {
 func NodeDetailsPageURL(nodes ...domain.CourseNode) string {
 	path := NodeDetailsPagePath(nodes...)
 	return URL(path)
+}
+
+func NodeFilesPagePath(relPath string, nodes ...domain.CourseNode) string {
+	path := FilePath(relPath, nodes...)
+	currNode := nodes[len(nodes)-1] // last node is current node
+	path = filepath.Join(path, fmt.Sprintf("%s_%d_files.html", strings.ToLower(currNode.TypeName()), currNode.GetID()))
+	return path
 }
 
 // intended as a callback for breadcrumbs
@@ -47,6 +55,11 @@ func FilePath(relPath string, nodes ...domain.CourseNode) string {
 	path := NodeFilesPath(nodes...)
 	path = filepath.Join(path, relPath)
 	return path
+}
+
+func FilesPageURL(relPath string, nodes ...domain.CourseNode) string {
+	return URL(NodeFilesPagePath(relPath, nodes...))
+
 }
 
 func FileURL(relPath string, nodes ...domain.CourseNode) string {
@@ -127,17 +140,74 @@ func NodeFilesPath(nodes ...domain.CourseNode) string {
 	return filepath.Join(dir, "files")
 }
 
+// file copied from data folder, simply marp written to a file
 func NodeSlidesPath(nodes ...domain.CourseNode) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "slides.html")
 }
 
+// iframe with src set to node slides path
+func SlidesFragmentPath(nodes ...domain.CourseNode) string {
+	dir := StaticNodePath(nodes...)
+	return filepath.Join(dir, "slides-fragment.html")
+}
+func AssessmentsFragmentPath(nodes ...domain.CourseNode) string {
+	dir := StaticNodePath(nodes...)
+	return filepath.Join(dir, "assessment-fragment.html")
+}
+
+func SlidesFragment(nodes domain.Nodes) templates.StaticPage {
+	return templates.SlidesFragment{
+		Path:            SlidesFragmentPath(nodes.ToSlice()...),
+		LessonSlidesURL: URL(NodeSlidesPath(nodes.ToSlice()...)),
+	}
+}
+
+func AssessmentsFragment(page templates.StaticLessonDetailsPage, assessments []domain.Assessment, nodes domain.Nodes) templates.StaticPage {
+	return templates.AssessmentsFragment{
+		StaticLessonDetailsPage: page,
+		Path:                    AssessmentsFragmentPath(nodes.ToSlice()...),
+		Assessments:             assessments,
+	}
+}
+
 func NodeDetailsPage(nodes domain.Nodes) templates.StaticNodeDetailsPage {
-	return templates.NewStaticNodeDetailsPage(templates.StaticNodeDetailsParams{
-		Node:     nodes.CurrentNode(),
-		Path:     NodeDetailsPagePath(nodes.ToSlice()...),
-		PageData: Layout(nodes),
-	})
+	return templates.StaticNodeDetailsPage{
+		Node:         nodes.CurrentNode(),
+		Path:         NodeDetailsPagePath(nodes.ToSlice()...),
+		PageData:     Layout(nodes),
+		FilesPageURL: FilesPageURL("", nodes.ToSlice()...),
+	}
+}
+
+func NodeFilesPage(nodes domain.Nodes) templates.FilesPageSection {
+	path := NodeFilesPath(nodes.ToSlice()...)
+	files, _ := os.ReadDir(path)
+	var filesList []templates.File
+	for _, file := range files {
+		if file.Name() == filepath.Base(NodeFilesPagePath("", nodes.ToSlice()...)) {
+			continue
+		}
+		item := templates.File{
+			Name:  file.Name(),
+			Path:  filepath.Join(path, file.Name()),
+			URL:   FileURL(file.Name(), nodes.ToSlice()...),
+			IsDir: file.IsDir(),
+		}
+		filesList = append(filesList, item)
+	}
+	page := templates.FilesPageSection{
+		Path:         NodeFilesPagePath("", nodes.ToSlice()...),
+		ParentDirURL: FileURL("", nodes.ToSlice()...),
+		CurrentDirectory: templates.File{
+			Path: NodeFilesPath(nodes.ToSlice()...),
+			Name: "files",
+			URL:  FileURL("", nodes.ToSlice()...),
+		},
+		Files: filesList,
+	}
+	return page
+
 }
 
 func NodeListPage(nodes domain.Nodes) (templates.StaticNodeListPage, error) {
@@ -168,6 +238,10 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 		User: user,
 		Term: term,
 	}
+	err := data.CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
+	if err != nil {
+		return err
+	}
 	homePage := templates.NewHomePage(templates.StaticHomePageParams{
 		HomePage: templates.HomePage{
 			Path: filepath.Join(StaticSiteRootDir(user), "index.html"),
@@ -185,7 +259,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 
 	wg.Add(1)
 	go RenderPage(homePage, errChan, wg, cancel)
-	err := renderNodePages(nodes, errChan, wg, ctx, cancel)
+	err = renderNodePages(nodes, errChan, wg, ctx, cancel)
 	if err != nil {
 		return err
 	}
@@ -205,10 +279,6 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 		})
 		wg.Add(1)
 		go RenderPage(cc, errChan, wg, cancel)
-		err := data.CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
-		if err != nil {
-			return err
-		}
 		err = renderNodePages(nodes, errChan, wg, ctx, cancel)
 		if err != nil {
 			return err
@@ -232,7 +302,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 					Unit:   unit,
 					Lesson: lesson,
 				}
-				renderNodePages(nodes, errChan, wg, ctx, cancel)
+				renderLessonPages(nodes, errChan, wg, ctx, cancel)
 			}
 		}
 	}
@@ -248,27 +318,18 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 	return nil
 }
 
+// renders details page and list page for each node
 func renderNodePages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
-	detailsPage := NodeDetailsPage(nodes)
-	var staticPage templates.StaticPage
-	if nodes.CurrentNode().TypeName() == domain.LessonTypeName.String() {
-		lessonpage := templates.StaticLessonDetailsPage{
-			Nodes:                 nodes,
-			StaticNodeDetailsPage: detailsPage,
-			LessonSlidesURL:       URL(NodeSlidesPath(nodes.ToSlice()...)),
-			ViewMarkdownURL:       ViewMarkdownURL,
-			FilesURLFunc:          FileURL,
-		}
-		staticPage = lessonpage
-	} else {
-		staticPage = detailsPage
-	}
+	staticPage := NodeDetailsPage(nodes)
 	select {
 	case <-ctx.Done():
 		return nil
 	default:
 		wg.Add(1)
 		go RenderPage(staticPage, errChan, wg, cancel)
+		filesPage := NodeFilesPage(nodes)
+		wg.Add(1)
+		go RenderPage(filesPage, errChan, wg, cancel)
 		if nodes.CurrentNode().ChildTypeName() != "" {
 			listPage, err := NodeListPage(nodes)
 			if err != nil {
@@ -282,6 +343,39 @@ func renderNodePages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGrou
 	return nil
 }
 
+// renders details page and list page for each node
+func renderLessonPages(nodes domain.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
+	nodePage := NodeDetailsPage(nodes)
+	if nodePage.AssetsURL == nil {
+		log.Fatal("AssetsURL func is nil!!")
+	}
+	lessonpage := templates.StaticLessonDetailsPage{
+		Nodes:                 nodes,
+		StaticNodeDetailsPage: nodePage,
+		LessonSlidesURL:       URL(SlidesFragmentPath(nodes.ToSlice()...)),
+		AssessmentsURL:        URL(AssessmentsFragmentPath(nodes.ToSlice()...)),
+		ViewMarkdownURL:       ViewMarkdownURL,
+		FilesURLFunc:          FileURL,
+	}
+	select {
+	case <-ctx.Done():
+		return nil
+	default:
+		wg.Add(1)
+		go RenderPage(lessonpage, errChan, wg, cancel)
+		slidesFrag := SlidesFragment(nodes)
+		wg.Add(1)
+		go RenderPage(slidesFrag, errChan, wg, cancel)
+		assFrag := AssessmentsFragment(lessonpage, nodes.Lesson.Assessments, nodes)
+		wg.Add(1)
+		go RenderPage(assFrag, errChan, wg, cancel)
+		filesPage := NodeFilesPage(nodes)
+		wg.Add(1)
+		go RenderPage(filesPage, errChan, wg, cancel)
+	}
+	return nil
+}
+
 func RenderPage(page templates.StaticPage, errChan chan<- error, wg *sync.WaitGroup, cancel context.CancelFunc) {
 	defer wg.Done()
 	err := os.MkdirAll(filepath.Dir(page.Filepath()), os.ModePerm)
@@ -290,8 +384,10 @@ func RenderPage(page templates.StaticPage, errChan chan<- error, wg *sync.WaitGr
 		cancel()
 		return
 	}
+	log.Println("creating file: ", page.Filepath())
 	file, err := os.Create(page.Filepath())
 	if err != nil {
+		log.Println("error creating file:", err)
 		errChan <- err
 		cancel()
 		return
@@ -299,6 +395,7 @@ func RenderPage(page templates.StaticPage, errChan chan<- error, wg *sync.WaitGr
 	defer file.Close()
 	err = page.Component().Render(context.Background(), file)
 	if err != nil {
+		log.Println("error rendering html to file: ", page.Filepath())
 		errChan <- err
 		cancel()
 		return

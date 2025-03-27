@@ -3,6 +3,7 @@ package templates
 import (
 	"gh_static_portfolio/internal/domain"
 	components "gh_static_portfolio/internal/templates/components/base"
+	"path/filepath"
 
 	"github.com/a-h/templ"
 )
@@ -15,6 +16,7 @@ type StaticLessonDetailsPage struct {
 	domain.Nodes
 	StaticNodeDetailsPage
 	LessonSlidesURL string
+	AssessmentsURL  string
 	ViewMarkdownURL func(relPath string, nodes ...domain.CourseNode) string
 	FilesURLFunc    func(relPath string, nodes ...domain.CourseNode) string
 }
@@ -30,18 +32,46 @@ func (page StaticLessonDetailsPage) Component() templ.Component {
 	}.Component()
 }
 
-func (page StaticLessonDetailsPage) Slides() templ.Component {
-	return SlidesComponent(page)
+func (page StaticLessonDetailsPage) Tabs() templ.Component {
+	assetsURLFunc := func(relPath string) string {
+		path := page.AssetsURL("js")
+		path = filepath.Join(path, relPath)
+		return path
+	}
+	data := components.TabSet{
+		AssetsURLFunc: assetsURLFunc,
+		Tabs: []components.TabLink{
+			{Name: "Slides", URL: page.LessonSlidesURL},
+			{Name: "Files", URL: page.StaticNodeDetailsPage.FilesPageURL},
+			{Name: "Assessments", URL: page.AssessmentsURL},
+		},
+	}
+	return data.Component()
 }
 
-func (page StaticLessonDetailsPage) Assessments() templ.Component {
-	return AssessmentsComponent(page.Lesson.Assessments, page)
-}
-
-type NewStaticLessonDetailsPageParams struct {
+type AssessmentsFragment struct {
 	StaticLessonDetailsPage
+	Assessments []domain.Assessment
+	Path        string
 }
 
-func NewStaticLessonDetailsPage(params NewStaticLessonDetailsPageParams) StaticLessonDetailsPage {
-	return params.StaticLessonDetailsPage
+func (data AssessmentsFragment) Filepath() string {
+	return data.Path
+}
+
+func (data AssessmentsFragment) Component() templ.Component {
+	return AssessmentsComponent(data)
+}
+
+type SlidesFragment struct {
+	Path            string
+	LessonSlidesURL string
+}
+
+func (data SlidesFragment) Component() templ.Component {
+	return SlidesComponent(data.LessonSlidesURL)
+}
+
+func (data SlidesFragment) Filepath() string {
+	return data.Path
 }

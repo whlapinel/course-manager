@@ -21,9 +21,9 @@ tasks:
   run-dev:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
+      - templ generate
       - go build -o ./cmd/web_app/web_app ./cmd/web_app
       - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
-      - templ generate -watch
 
   restart-echo:
     desc: Stops, rebuilds and restarts the echo container only

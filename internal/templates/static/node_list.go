@@ -18,7 +18,7 @@ type PageData struct {
 type StaticPage interface {
 	Component() templ.Component
 	Filepath() string
-	Layout() PageData
+	// Layout() PageData
 }
 
 type StaticNodeListPage struct {
@@ -135,7 +135,7 @@ func (page StaticNodeListPage) TableComponent() templ.Component {
 }
 
 func (page StaticNodeListPage) Component() templ.Component {
-	return components.Layout{
+	return Layout{
 		PageTitle: page.Parent.GetName(),
 		Page:      StaticNodeListComponent(page),
 		Head: Head{

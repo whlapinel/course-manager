@@ -1,7 +1,0 @@
-<p>Please Sign In With Your Google Account</p><div id=\"g_id_onload\" data-client_id=\"
-\" data-context=\"signin\" data-ux_mode=\"popup\" data-login_uri=\"
-\" data-auto_prompt=\"false\"></div><div class=\"g_id_signin\" data-type=\"standard\" data-shape=\"rectangular\" data-theme=\"outline\" data-text=\"signin_with\" data-size=\"large\" data-logo_alignment=\"left\"></div><script src=\"https://accounts.google.com/gsi/client\" onload=\"console.log(&#39;TODO: add onload function&#39;)\" async defer></script>
-<p>Please Sign Up With Your CMS Google Account</p><div id=\"g_id_onload\" data-client_id=\"
-\" data-context=\"signup\" data-ux_mode=\"popup\" data-login_uri=\"
-\" data-nonce=\"\" data-auto_prompt=\"false\"></div><div class=\"g_id_signin\" data-type=\"standard\" data-shape=\"rectangular\" data-theme=\"outline\" data-text=\"signup_with\" data-size=\"large\" data-logo_alignment=\"left\"></div><script src=\"https://accounts.google.com/gsi/client\" onload=\"console.log(&#39;TODO: add onload function&#39;)\" async defer></script>
-<h1>You have been signed out</h1>

@@ -32,7 +32,7 @@ type HomePage struct {
 
 // Component implements StaticPage.
 func (data HomePage) Component() templ.Component {
-	return components.Layout{
+	return Layout{
 		Head: Head{
 			User:      data.User,
 			AssetsURL: data.AssetsURL,
@@ -43,8 +43,8 @@ func (data HomePage) Component() templ.Component {
 
 func (h HomePage) ViewTermLink() templ.Component {
 	return components.Link{
-		Text:  "View " + h.Term.Name,
-		URL:   h.TermURL,
+		Text: "View " + h.Term.Name,
+		URL:  h.TermURL,
 	}.Component()
 }
 

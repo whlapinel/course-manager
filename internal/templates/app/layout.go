@@ -43,7 +43,7 @@ func (cml CourseManagerLayout) Component() templ.Component {
 					},
 				},
 			},
-		}.Component(),
+		},
 	}
 	return cmp.LayoutComponent(layout)
 }
@@ -70,16 +70,18 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 	if data.User.ID != "" {
 		item := cmp.BreadCrumbsItem{
 			NavItem: cmp.NavItem{
-				Text: data.User.GetName(),
-				URL:  data.UserDetailsURL,
+				Text:   data.User.GetName(),
+				URL:    data.UserDetailsURL,
+				Method: cmp.HxGet,
 			},
 		}
 		items = append(items, item)
 		if data.Term.ID != 0 {
 			item := cmp.BreadCrumbsItem{
 				NavItem: cmp.NavItem{
-					Text: data.Term.GetName(),
-					URL:  data.TermDetailsURL,
+					Text:   data.Term.GetName(),
+					URL:    data.TermDetailsURL,
+					Method: cmp.HxGet,
 				},
 			}
 			items = append(items, item)
@@ -87,8 +89,9 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 			if data.Course.ID != 0 {
 				item := cmp.BreadCrumbsItem{
 					NavItem: cmp.NavItem{
-						Text: data.Course.GetName(),
-						URL:  data.CourseDetailsURL,
+						Text:   data.Course.GetName(),
+						URL:    data.CourseDetailsURL,
+						Method: cmp.HxGet,
 					},
 				}
 				items = append(items, item)
@@ -96,8 +99,9 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 				if data.Unit.ID != 0 {
 					item := cmp.BreadCrumbsItem{
 						NavItem: cmp.NavItem{
-							Text: data.Unit.Designation(),
-							URL:  data.UnitDetailsURL,
+							Text:   data.Unit.Designation(),
+							URL:    data.UnitDetailsURL,
+							Method: cmp.HxGet,
 						},
 					}
 					items = append(items, item)
@@ -105,8 +109,9 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 					if data.Lesson.ID != 0 {
 						item := cmp.BreadCrumbsItem{
 							NavItem: cmp.NavItem{
-								Text: data.Lesson.Designation(),
-								URL:  data.LessonDetailsURL,
+								Text:   data.Lesson.Designation(),
+								URL:    data.LessonDetailsURL,
+								Method: cmp.HxGet,
 							},
 						}
 						items = append(items, item)

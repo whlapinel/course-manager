@@ -12,8 +12,21 @@ templ StaticNodeListComponent(page StaticNodeListPage) {
 	// }
 }
 
-templ StaticNodeDetailsComponent(page StaticNodeDetailsPage) {
+templ StaticNodeDetailsComponent(page DetailsPage) {
 	@page.BreadCrumbs()
-	<p>{ page.Node.GetName() }</p>
-	<p>{ page.Node.GetDescription() }</p>
+	<div class="p-4">
+		<div class="px-4 sm:px-0">
+			<h3 class="text-base/7 font-semibold text-white">{ page.GetNode().Designation() }</h3>
+			<p class="mt-1 max-w-2xl text-sm/6 text-gray-400">{ page.GetNode().GetName() }</p>
+		</div>
+		<div class="mt-6 border-t border-white/10">
+			<dl class="divide-y divide-white/10">
+				<div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+					<dt class="text-sm/6 font-medium text-white">Description</dt>
+					<dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">{ page.GetNode().GetDescription() }</dd>
+				</div>
+				@page.Tabs()
+			</dl>
+		</div>
+	</div>
 }

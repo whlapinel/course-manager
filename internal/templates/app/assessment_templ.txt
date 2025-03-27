@@ -1,4 +1,0 @@
-<script type=\"module\" src=\"/dist/assessments.js\">\n\t</script><div id=\"assessments\"><ul>
-<li>
-</li>
-</ul></div>

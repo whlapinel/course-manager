@@ -1,6 +1,9 @@
 package components
 
+import "github.com/a-h/templ"
+
 type Element struct {
-	ID    string
-	Class string
+	Attributes templ.Attributes
+	ID         string
+	Class      string
 }

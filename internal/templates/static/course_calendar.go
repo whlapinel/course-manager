@@ -3,7 +3,6 @@ package templates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	components "gh_static_portfolio/internal/templates/components/base"
 	"log"
 	"time"
 
@@ -19,7 +18,7 @@ type CourseCalendarPage struct {
 }
 
 func (page CourseCalendarPage) Component() templ.Component {
-	return components.Layout{
+	return Layout{
 		PageTitle: page.Nodes.Course.Name,
 		Page:      CourseCalendarComponent(page),
 		Head: Head{

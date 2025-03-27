@@ -92,7 +92,7 @@ func (list NodeListPage) PageLayout() cmp.PageLayout {
 
 func (list NodeListPage) upNavText() string {
 	if list.UpNavURL != "" && list.ParentNode != nil {
-		return fmt.Sprintf("⬆️ to %s", upNavText(list.ParentNode.TypeName()))
+		return fmt.Sprintf(" to %s", upNavText(list.ParentNode.TypeName()))
 	} else {
 		return ""
 	}

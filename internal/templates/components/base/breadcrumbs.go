@@ -15,6 +15,6 @@ type BreadCrumbsItem struct {
 }
 
 func (data BreadCrumbsItem) Component() templ.Component {
-	data.Class = "text-sm font-medium text-gray-400 hover:text-gray-200"
+	data.Class = "text-sm font-medium text-gray-400 hover:text-gray-200 cursor-pointer"
 	return data.NavItem.Component()
 }

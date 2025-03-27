@@ -1,15 +1,13 @@
 package components
 
 import (
-	"fmt"
-
 	"github.com/a-h/templ"
 )
 
 type Layout struct {
 	PageTitle        string
 	Head             templ.Component
-	UserMenu         templ.Component
+	UserMenu         UserMenu
 	NavItems         []NavItem
 	Page             templ.Component
 	UserImage        string
@@ -22,6 +20,7 @@ func (data Layout) Component() templ.Component {
 }
 
 type NavItem struct {
+	Element
 	Method    HXMethod
 	Text      string
 	URL       string
@@ -33,7 +32,7 @@ type NavItem struct {
 func (data NavItem) MethodAttributes() templ.Attributes {
 	var attr templ.Attributes = make(templ.Attributes)
 	if data.Method == "" {
-		attr["href"] = fmt.Sprintf(data.URL)
+		attr["href"] = data.URL
 	} else {
 		attr[string(data.Method)] = data.URL
 	}

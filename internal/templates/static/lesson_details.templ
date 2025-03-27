@@ -1,26 +1,28 @@
 package templates
 
-import (
-	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/util"
-)
+import "gh_static_portfolio/internal/util"
 
 templ StaticLessonDetailsComponent(page StaticLessonDetailsPage) {
-	@StaticNodeDetailsComponent(page.StaticNodeDetailsPage)
-	<div class="flex flex-col">
-		@page.Slides()
-		@page.Assessments()
-	</div>
+	@StaticNodeDetailsComponent(page)
 }
 
-templ SlidesComponent(page StaticLessonDetailsPage) {
-	<iframe src={ page.LessonSlidesURL } class="h-[40rem] w-full"></iframe>
+templ SlidesComponent(lessonSlidesURL string) {
+	<iframe src={ lessonSlidesURL } class="h-[40rem] w-full"></iframe>
 }
 
-templ AssessmentsComponent(assessments []domain.Assessment, data StaticLessonDetailsPage) {
+templ AssessmentsComponent(data AssessmentsFragment) {
 	<div>
 		<ul>
-			for _, assessment := range assessments {
+			if len(data.Assessments) == 0 {
+				<li class="flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4">
+					<span class="text-2xl">
+						There are no assessments listed for this lesson.
+					</span>
+				</li>
+			}
+		</ul>
+		<ul>
+			for _, assessment := range data.Assessments {
 				<li class="flex gap-1 flex-col border rounded bg-purple-900 min-w-fit p-4">
 					<span class="text-2xl">
 						{ assessment.Name }

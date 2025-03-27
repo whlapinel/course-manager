@@ -1,0 +1,37 @@
+package templates
+
+import "gh_static_portfolio/internal/templates/components/base"
+
+templ FilesPageSectionComponent(data FilesPageSection) {
+	<div id="files">
+		<a hx-get={ data.ParentDirURL } hx-target={ "#files" } hx-swap="outerHTML">Up to { data.CurrentDirectory.Name }</a>
+		<h2>Files in { data.CurrentDirectory.Name }</h2>
+		<ul role="list" class="divide-y divide-white/10 rounded-md border border-white/20">
+			for _, file := range data.Files {
+				if file.IsDir {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a class="font-medium text-indigo-400 hover:text-indigo-300" href={ templ.SafeURL(file.URL) }>
+								@components.FolderIcon()
+							</a>
+							<div class="ml-4 flex min-w-0 flex-1 gap-2">
+								<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+							</div>
+						</div>
+					</li>
+				} else {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a class="font-medium text-indigo-400 hover:text-indigo-300" href={ templ.SafeURL(file.URL) }>
+								@components.DownloadIcon()
+							</a>
+							<div class="ml-4 flex min-w-0 flex-1 gap-2">
+								<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+							</div>
+						</div>
+					</li>
+				}
+			}
+		</ul>
+	</div>
+}

@@ -2,8 +2,8 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates/shared"
 	"gh_static_portfolio/internal/templates/components/base"
+	"gh_static_portfolio/internal/templates/shared"
 	"gh_static_portfolio/internal/util"
 	"path/filepath"
 	"strconv"
@@ -25,9 +25,12 @@ templ CancelEditButton() {
 
 templ UpNavComponent(props components.UpNav) {
 	if props.URL != "" {
-		<button hx-get={ props.URL } hx-target={ string(pageElementID.Selector()) } hx-push-url="true" class="text-xl">
-			{ props.Text }
-		</button>
+		<div class="flex">
+			@components.UpArrowIcon()
+			<button hx-get={ props.URL } hx-target={ string(pageElementID.Selector()) } hx-push-url="true" class="text-xl">
+				{ props.Text }
+			</button>
+		</div>
 	}
 }
 
