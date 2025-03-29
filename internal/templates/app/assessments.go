@@ -1,11 +1,13 @@
 package managertemplates
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"gh_static_portfolio/internal/util"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/a-h/templ"
 )
@@ -97,4 +99,32 @@ func (page CourseAssessmentsPage) BreadCrumbs() BreadCrumbs {
 
 func (page CourseAssessmentsPage) Component() templ.Component {
 	return CourseAssessmentsPageComponent(page)
+}
+
+type AssessmentsFragment struct {
+	GetEditAssessmentURL func(id any) string
+	Assessments          []domain.Assessment
+}
+
+func (data AssessmentsFragment) Component() templ.Component {
+	var infos []cmp.EditableInfo
+	for _, assm := range data.Assessments {
+		info := cmp.EditableInfo{
+			Element: cmp.Element{
+				ID: fmt.Sprintf("%s-%d", "assessment", assm.ID),
+			},
+			Title:      assm.Name,
+			GetEditURL: data.GetEditAssessmentURL(assm.ID),
+			Components: []cmp.EditableInfoItem{
+				{Field: "Name", Value: assm.Name},
+				{Field: "Instructions", Value: assm.Instructions},
+				{Field: "Assigned", Value: assm.DateAssigned.Format(time.DateOnly)},
+				{Field: "Due", Value: assm.DateDue.Format(time.DateOnly)},
+				{Field: "Category", Value: assm.Category.String()},
+				{Field: "Dropped", Value: strconv.FormatBool(assm.Dropped)},
+			},
+		}
+		infos = append(infos, info)
+	}
+	return AssessmentsFragmentComponent(infos)
 }

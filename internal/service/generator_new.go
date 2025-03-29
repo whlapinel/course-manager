@@ -6,6 +6,8 @@ import (
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	templates "gh_static_portfolio/internal/templates/static"
+	"io"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -260,7 +262,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 		User: user,
 		Term: term,
 	}
-	err := data.CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
+	err := CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
 	if err != nil {
 		return err
 	}
@@ -338,6 +340,67 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 		}
 	}
 	return nil
+}
+
+// any file or directory with this prefix will not be copied to the static site files
+const IgnorePrefix = "secret"
+
+// for copying all files in the lesson, unit, or course directory
+// should not copy anything that begins with "secret"
+func CopyNodeDir(srcRoot, destRoot string) error {
+	log.Println("copying", srcRoot, "to", destRoot)
+	// if directory doesn't exist, early return
+	_, err := os.Stat(srcRoot)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			return err
+		}
+	}
+	files, err := os.ReadDir(srcRoot)
+	if err != nil {
+		return err
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	return filepath.WalkDir(srcRoot, func(srcPath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		relPath, err := filepath.Rel(srcRoot, srcPath)
+		if err != nil {
+			return err
+		}
+		name := filepath.Base(relPath)
+		if strings.HasPrefix(name, IgnorePrefix) || strings.HasSuffix(name, IgnorePrefix) {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		destPath := filepath.Join(destRoot, relPath)
+		if d.IsDir() {
+			return os.MkdirAll(destPath, os.ModePerm)
+		}
+		return copyFile(srcPath, destPath)
+	})
+}
+
+func copyFile(srcPath, destPath string) error {
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+	dst, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+	_, err = io.Copy(dst, src)
+	return err
 }
 
 // renders details page and list page for each node

@@ -30,6 +30,11 @@ type courseRouter struct {
 	router
 }
 
+// PostEditFile implements NodeRouter.
+func (r *courseRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
+}
+
 // SetRouter implements NodeRouter.
 func (r *courseRouter) SetRouter(router router) {
 	r.router = router
@@ -163,6 +168,10 @@ func (r *courseRouter) ShowFiles(c echo.Context) error {
 // ShowNewChild implements NodeRouter.
 func (c *courseRouter) ShowNewChild(echo.Context) error {
 	panic("unimplemented")
+}
+
+func (r *courseRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
 }
 
 // ViewFile implements NodeRouter.

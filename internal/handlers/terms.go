@@ -221,6 +221,14 @@ func (r *termRouter) ShowFiles(c echo.Context) error {
 	return ShowFiles(c, r)
 }
 
+func (r *termRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
+}
+
+func (r *termRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
+}
+
 // ViewFile implements NodeRouter.
 func (r *termRouter) ViewFile(c echo.Context) error {
 	return ViewFile(c, r, ShowDetailsURL(r))

@@ -3,8 +3,15 @@
 
 ## Pending (keep in priority order)
 
-- Markdown file editor (non slides)
+- Add view standards tab to lesson details
+- change title page of static site
+- favicons for static site and server
 - Add hx-indicator to everything so user gets confirmation that request is pending
+- CourseNode files capabilities:
+  - 1/22/25 User can delete node files
+  - 1/22/25 User can rename node files
+  - 1/22/25 User can move node files
+  - 1/22/25 User can duplicate node files
 - Automatic site regeneration for every change (??)
 - Publish/unpublish for all nodes and assessments
 - Password protection for assessment files
@@ -20,14 +27,10 @@
 - Share course with user (read-only)
 - Share course with user (with edit privileges)
 - Copy course from user
-- CourseNode files capabilities:
-  - 1/22/25 User can delete node files
-  - 1/22/25 User can rename node files
-  - 1/22/25 User can move node files
-  - 1/22/25 User can duplicate node files
 
 ## Complete
 
+- Markdown file editor (non slides)
 - 1/23/25 In calendar, user can add and remove lessons from a date
   - Add: new screen to select lesson from course
   - Remove: remove date from lesson dates

@@ -14,6 +14,29 @@ import (
 	"strings"
 )
 
+func (svc CourseService) WriteToMarkdown(relPath, content string, nodes domain.Nodes) error {
+	nodeDirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
+	dstPath := filepath.Join(nodeDirPath, relPath)
+	log.Println("content", content)
+	// Create a destination file
+	log.Println("dstPath:", dstPath)
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file: %s", err)
+	}
+	defer dst.Close()
+	bytes, err := dst.Write([]byte(content))
+	if err != nil {
+		return err
+	}
+	log.Printf("%d bytes written to file at %s", bytes, dstPath)
+	err = svc.MarkdownToHTML(dstPath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (svc CourseService) WriteFile(file *multipart.FileHeader, relPath string, nodes domain.Nodes) error {
 	nodeDirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
 	dstPathDir := filepath.Join(nodeDirPath, relPath)
@@ -42,7 +65,7 @@ func (svc CourseService) WriteFile(file *multipart.FileHeader, relPath string, n
 			return err
 		}
 	}
-	return err
+	return nil
 }
 
 func (svc CourseService) NodeFilePath(path string, nodes ...domain.CourseNode) string {
@@ -82,6 +105,7 @@ func (svc CourseService) NodeFiles(path string, nodes ...domain.CourseNode) ([]m
 	for _, entry := range entries {
 		var item mt.FilesPageItem
 		item.Path = entry.Name()
+		item.Name = entry.Name()
 		if entry.IsDir() {
 			item.IsDir = true
 		}
@@ -95,6 +119,8 @@ func (svc CourseService) NodeFiles(path string, nodes ...domain.CourseNode) ([]m
 		} else if strings.HasSuffix(item.Path, ".html") {
 			name := strings.TrimSuffix(item.Path, ".html")
 			htmlItems[name] = item
+		} else {
+			items = append(items, item)
 		}
 	}
 	// append html file names that don't match markdown file names

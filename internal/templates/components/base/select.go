@@ -42,8 +42,9 @@ func (el Select) Component() templ.Component {
 
 type Option struct {
 	Element
-	Content string
-	Value   string
+	Content  string
+	Value    string
+	Selected bool
 }
 
 func (el Option) Component() templ.Component {

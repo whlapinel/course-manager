@@ -180,6 +180,10 @@ func (r *unitRouter) ShowFiles(c echo.Context) error {
 	return ShowFiles(c, r)
 }
 
+func (r *unitRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
+}
+
 // ShowNewChild implements NodeRouter.
 func (r *unitRouter) ShowNewChild(c echo.Context) error {
 	params, err := ParseNodePath(c)
@@ -197,6 +201,9 @@ func (r *unitRouter) ShowNewChild(c echo.Context) error {
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 
+}
+func (r *unitRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
 }
 
 // ViewFile implements NodeRouter.

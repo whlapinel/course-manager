@@ -13,13 +13,13 @@ import (
 
 const (
 	CourseAssessments RoutePath = Course + "/assessments"
-	Assessments       RoutePath = Lesson + "/assessments"
-	Assessment        RoutePath = Assessments + RoutePath(AssessmentID)
+	LessonAssessments RoutePath = Lesson + "/assessments"
+	Assessment        RoutePath = LessonAssessments + RoutePath(AssessmentID)
 )
 
 const (
 	GetCourseAssessments = RouteHandlerName(GET + CourseAssessments)
-	PostAssessment       = RouteHandlerName(POST + Assessments)
+	PostAssessment       = RouteHandlerName(POST + LessonAssessments)
 	GetEditAssessment    = RouteHandlerName(GET + Assessment)
 	PostEditAssessment   = RouteHandlerName(POST + Assessment)
 	DeleteAssessment     = RouteHandlerName(DELETE + Assessment)
@@ -28,7 +28,7 @@ const (
 func (h CourseHandler) AssessmentHandlers() []RouteHandler {
 	return []RouteHandler{
 		{CourseAssessments, GetCourseAssessments, GET, h.GetCourseAssessments},
-		{Assessments, PostAssessment, POST, h.PostAssessment},
+		{LessonAssessments, PostAssessment, POST, h.PostAssessment},
 		{Assessment, GetEditAssessment, GET, h.GetEditAssessment},
 		{Assessment, PostEditAssessment, POST, h.PostEditAssessment},
 		{Assessment, DeleteAssessment, DELETE, h.DeleteAssessment},

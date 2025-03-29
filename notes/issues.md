@@ -2,6 +2,7 @@
 
 ## Pending
 
+- (minor) marp server being down (or still starting) shouldn't prevent the lesson details page from loading
 - (minor) need placeholder image for when no user is signed in
 - (major) signin page after redirect following token expiration does not seem to render properly under certain circumstances
   - in particular when I clicked Generate from the home page, the signin component was sent but not as a complete page including layout

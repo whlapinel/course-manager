@@ -14,15 +14,16 @@ import (
 
 type LessonDetailsPage struct {
 	NodeDetailsPage
-	Slides                                                       string
-	E                                                            *echo.Echo
-	Standards                                                    []domain.Standard
-	GetObjectivesURL                                             string
-	FileRHN                                                      string
-	ViewMarkdownRHN                                              string
-	PostLessonStandardURL, DeleteLessonStandardRHN               string
-	GetEditAssessmentRHN, PostAssessmentURL, DeleteAssessmentRHN string
-	GetSlidesURL, EditSlidesURL                                  string
+	Slides                                                                          string
+	E                                                                               *echo.Echo
+	Standards                                                                       []domain.Standard
+	AssetsURLFunc                                                                   func(path ...string) string
+	GetObjectivesURL                                                                string
+	FileRHN                                                                         string
+	ViewMarkdownRHN                                                                 string
+	PostLessonStandardURL, DeleteLessonStandardRHN                                  string
+	GetAssessmentsURL, GetEditAssessmentRHN, PostAssessmentURL, DeleteAssessmentRHN string
+	GetSlidesURL, EditSlidesURL                                                     string
 }
 
 func (page LessonDetailsPage) DeleteStandardURL(stdID int) string {
@@ -68,6 +69,21 @@ func (page LessonDetailsPage) Component() templ.Component {
 	return LessonDetailsComponent(page)
 }
 
+func (page LessonDetailsPage) Tabs() templ.Component {
+	tabs := []cmp.TabLink{
+		{Name: "Slides", URL: page.GetSlidesURL},
+		{Name: "Assessments", URL: page.GetAssessmentsURL},
+		{Name: "Standards", URL: page.GetAssessmentsURL},
+	}
+	set := cmp.TabSet{
+		Tabs: tabs,
+		AssetsURLFunc: func(s string) string {
+			return page.AssetsURLFunc(s)
+		},
+	}.Component()
+	return set
+}
+
 type ObjectiveSelect struct {
 	Objectives []domain.Standard
 }
@@ -84,8 +100,59 @@ type EditAssessmentForm struct {
 	LessonDetailsURL      string
 }
 
+// for editing existing assessment, to replace old assessment form component
+func (data EditAssessmentForm) NewEditAssessmentFormComponent() templ.Component {
+	form := cmp.NewForm(cmp.NewFormParams{
+		Title:     "Edit Assessment",
+		PostURL:   data.PostEditAssessmentURL,
+		CancelURL: data.LessonDetailsURL,
+		HxTarget:  "#page",
+	})
+	nameInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "Name",
+		Type:  cmp.Text,
+		Value: data.Assessment.Name,
+	})
+	assignedInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "Date Assigned",
+		Type:  cmp.Date,
+		Value: data.Assessment.DateAssigned.Format(time.DateOnly),
+	})
+	dueInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "Date Due",
+		Type:  cmp.Date,
+		Value: data.Assessment.DateDue.Format(time.DateOnly),
+	})
+	var options []cmp.Option
+	for _, category := range domain.Categories {
+		catOption := cmp.Option{
+			Value:    strconv.Itoa(int(category)),
+			Content:  category.String(),
+			Selected: category == data.Assessment.Category,
+		}
+		options = append(options, catOption)
+	}
+	categorySelect := cmp.NewSelectWithLabel("Category", options)
+	fileInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  "File",
+		Type:  cmp.Text,
+		Value: data.Assessment.File,
+	})
+	instructionsTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+		Name:  "Instructions",
+		Value: data.Assessment.Instructions,
+	})
+	hiddenIdInput := cmp.NewHiddenInput(cmp.HiddenInputParams{
+		Name:  "Lesson ID",
+		Value: strconv.Itoa(data.Params.LessonID),
+	})
+	form = form.AddElement(nameInput, assignedInput, dueInput, categorySelect, fileInput, instructionsTextArea, hiddenIdInput)
+	return form.Component()
+
+}
+
 func (data EditAssessmentForm) Component() templ.Component {
-	return EditAssessmentFormComponent(data)
+	return data.NewEditAssessmentFormComponent()
 }
 
 func (page LessonDetailsPage) NewAssessmentForm() templ.Component {

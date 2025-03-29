@@ -10,6 +10,7 @@ import (
 	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -260,6 +261,7 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 
 func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
+		HomeURL:    "/",
 		Page:       page,
 		User:       user,
 		E:          h.e,
@@ -273,6 +275,7 @@ func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.Use
 
 func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
+		HomeURL:    "/",
 		Page:       page,
 		User:       user,
 		E:          router,
@@ -312,4 +315,12 @@ func BreadCrumbs(router *echo.Echo, params domain.NodePath, nodes ...domain.Cour
 	}
 	return breadCrumbs
 
+}
+
+func AssetsURLFunc(path ...string) string {
+	URL, err := url.JoinPath("/dist", path...)
+	if err != nil {
+		return "error joining paths"
+	}
+	return URL
 }

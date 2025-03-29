@@ -54,6 +54,10 @@ task run-prod
 
 ## Progress Log
 
+### 3/29/25
+
+- Had to write this down somewhere for now... currently my echo server is getting slides as a string from the marp server. But maybe I should instead just proxy my marp server with Caddy and put an iframe with the reverse proxy link to the slides? One big issue here is that the js in marp slides assumes the client is local host and it's trying to establish a websocket connection for live reload or something. So maybe I do need to filter that out with my app.
+
 ### 3/27/25
 
 - Static site lesson details now uses tabs component to display slides, files, and assessments rather than trying to cram it all on one page. Looks great!
@@ -69,6 +73,7 @@ task run-prod
   - Postgres instead of sqlite3
   - Separate container for filesystem access to facilitate scaling up
   - ValKey (open source fork of Redis) for caching files
+  - Nix instead of docker for development, possibly production as well
 - But first I want to get this working completely for testing in beta so that I can share with a few select colleagues.
 - Lots of changes since last entry. Today is a day to celebrate, as I finally got the whole thing working on my remote server. 3 containers running caddy, echo app, and marp respectively. Caddy is reverse proxy for echo and at {username}.course-manager.app caddy serves static sites.  It all works! I can't believe it! 🥳😭
 - App is still registered as 'testing' not 'published' in google cloud console so I would need to add specific users until I publish it (authorized redirects cannot be http for published apps)

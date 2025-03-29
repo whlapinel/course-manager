@@ -13,7 +13,12 @@ templ SelectComponent(el Select) {
 }
 
 templ OptionComponent(el Option) {
-	<option value={ el.Value }>{ el.Content }</option>
+	<option
+		selected?={ el.Selected }
+		value={ el.Value }
+	>
+		{ el.Content }
+	</option>
 }
 
 templ SelectWithLabelComponent(el SelectWithLabel) {

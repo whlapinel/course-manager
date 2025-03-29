@@ -42,7 +42,7 @@ tasks:
   copy-data:
     desc: Copy data to remote server
     cmds:
-      - ./scripts/copy-data.sh
+      - ./scripts/copy_data.sh
       - echo 'after ssh started, run task unpack-data'
       - ssh root@159.223.174.80
 
@@ -64,3 +64,13 @@ tasks:
       - ./scripts/copy_config.sh
       - echo 'after ssh started, run task run-prod'
       - ssh root@159.223.174.80
+
+  backup:
+    desc: Manual backup to remote repo on github. This is already scheduled for automatic daily backup with cron on the remote server.
+    cmds:
+      - ./scripts/backup.sh
+
+  restore:
+    desc: Restore from backup.
+    cmds:
+      - ./scripts/restore_backup.sh

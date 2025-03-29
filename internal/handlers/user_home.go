@@ -11,6 +11,16 @@ type userRouter struct {
 	router
 }
 
+// PostEditFile implements NodeRouter.
+func (r *userRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
+}
+
+// ShowEditFile implements NodeRouter.
+func (r *userRouter) ShowEditFile(echo.Context) error {
+	panic("unimplemented")
+}
+
 // SetRouter implements NodeRouter.
 func (r *userRouter) SetRouter(router router) {
 	r.router = router
