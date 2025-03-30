@@ -14,6 +14,7 @@ func (svc CourseService) SaveAssessment(params SaveAssessmentParams) (domain.Ass
 	return svc.repo.SaveAssessment(params.Assessment)
 }
 
+
 func (svc CourseService) GetLessonAssessments(lessonID int) ([]domain.Assessment, error) {
 	return svc.repo.GetLessonAssessments(lessonID)
 }

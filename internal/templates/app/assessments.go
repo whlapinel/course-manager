@@ -102,11 +102,24 @@ func (page CourseAssessmentsPage) Component() templ.Component {
 }
 
 type AssessmentsFragment struct {
+	NewAssessmentURL     string
+	CancelEditURL        string
 	GetEditAssessmentURL func(id any) string
 	Assessments          []domain.Assessment
+	NodeID               int
+}
+
+type NewAssessmentForm struct {
+	CancelURL         string
+	PostAssessmentURL string
+	NodeID            int
 }
 
 func (data AssessmentsFragment) Component() templ.Component {
+	return AssessmentsFragmentComponent(data)
+}
+
+func (data AssessmentsFragment) Infos() []cmp.EditableInfo {
 	var infos []cmp.EditableInfo
 	for _, assm := range data.Assessments {
 		info := cmp.EditableInfo{
@@ -126,5 +139,54 @@ func (data AssessmentsFragment) Component() templ.Component {
 		}
 		infos = append(infos, info)
 	}
-	return AssessmentsFragmentComponent(infos)
+	return infos
+}
+
+func (page AssessmentsFragment) AddAssessmentButton() templ.Component {
+	return AddAssessmentButtonComponent(page)
+}
+
+func (data NewAssessmentForm) Component() templ.Component {
+	form := cmp.NewForm(cmp.NewFormParams{
+		Title:     "New Assessment",
+		Subtitle:  "Placeholder",
+		PostURL:   data.PostAssessmentURL,
+		CancelURL: data.CancelURL,
+		HxTarget:  "#page",
+	})
+	nameInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "Name",
+		Type: cmp.Text,
+	})
+	assignedInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "Date Assigned",
+		Type: cmp.Date,
+	})
+	dueInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "Date Due",
+		Type: cmp.Date,
+	})
+	var options []cmp.Option
+	for _, category := range domain.Categories {
+		catOption := cmp.Option{
+			Value:   strconv.Itoa(int(category)),
+			Content: category.String(),
+		}
+		options = append(options, catOption)
+	}
+	categorySelect := cmp.NewSelectWithLabel("Category", options)
+	fileInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "File",
+		Type: cmp.Text,
+	})
+	instructionsTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+		Name: "Instructions",
+	})
+	hiddenIdInput := cmp.NewHiddenInput(cmp.HiddenInputParams{
+		Name:  "Lesson ID",
+		Value: strconv.Itoa(data.NodeID),
+	})
+	form = form.AddElement(nameInput, assignedInput, dueInput, categorySelect, fileInput, instructionsTextArea, hiddenIdInput)
+	return form.Component()
+
 }

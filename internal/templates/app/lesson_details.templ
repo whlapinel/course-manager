@@ -9,18 +9,6 @@ import (
 
 templ LessonDetailsComponent(props LessonDetailsPage, components ...templ.Component) {
 	@NodeDetailsComponent(props.NodeDetailsPage) {
-		if  props.Lesson().Standards != nil {
-			<ul>
-				for _, objective := range props.Lesson().Standards {
-					<li id="objective">
-						{ strconv.Itoa(objective.ParentNum) }.{ strconv.Itoa(objective.Number) } { objective.Name }
-						<button hx-delete={ props.DeleteStandardURL(objective.ID) } hx-target="#page">Remove</button>
-					</li>
-				}
-			</ul>
-		} else {
-			<p>No standard selected</p>
-		}
 		@props.Tabs()
 		// 	<details>
 		// 		<summary>Choose Standard</summary>
@@ -171,8 +159,11 @@ templ ObjectiveSelectComponent(props ObjectiveSelect) {
 	</select>
 }
 
-templ Slides(htmlContent string) {
-	<iframe srcdoc={ htmlContent } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
+templ SlidesComponent(data Slides) {
+	<div id="slides">
+		@data.EditSlidesButton()
+		<iframe srcdoc={ data.HTML } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
+	</div>
 }
 
 // templ DescriptionInput(inputID ElementID, description string) {
@@ -238,38 +229,4 @@ templ EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPost
 			Submit
 		</button>
 	}
-}
-
-// delete once new assessment form is working
-templ OldAssessmentForm(props LessonDetailsPage) {
-	<form id="add-assignment-form">
-		<label for="name">Name</label>
-		<input id="name" name="name" type="text" class="bg-black"/>
-		<label for="date-assigned">Assigned</label>
-		<input
-			class="bg-black"
-			id="date-assigned"
-			name="date-assigned"
-			type="date"
-			if props.Lesson().Dates != nil {
-				value={ props.Lesson().Dates[0].Format(time.DateOnly) }
-			}
-		/>
-		<label for="date-due">Due</label>
-		<input class="bg-black" id="date-due" name="date-due" type="date"/>
-		<label for="category">Category</label>
-		<select name="category" class="bg-black">
-			<option value={ strconv.Itoa(int(domain.Prepare)) }>Prepare</option>
-			<option value={ strconv.Itoa(int(domain.Rehearse)) }>Rehearse</option>
-			<option value={ strconv.Itoa(int(domain.Perform)) }>Perform</option>
-			<option value={ strconv.Itoa(int(domain.Midterm)) }>Midterm</option>
-			<option value={ strconv.Itoa(int(domain.Final)) }>Final</option>
-		</select>
-		<label for="file">File</label>
-		<input id="file" name="file" type="text" class="bg-black"/>
-		<label for="instructions">Instructions</label>
-		<textarea class="bg-black font-mono p-1 w-full" id="instructions" name="instructions"></textarea>
-		<input type="hidden" name="lesson-id" value={ strconv.Itoa(props.Lesson().ID) }/>
-		<button hx-post={ props.PostAssessmentURL } hx-target="#page" hx-push-url="true">Submit</button>
-	</form>
 }

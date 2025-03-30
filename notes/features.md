@@ -20,7 +20,6 @@
 - Add password to assessment file
 - Allow user to modify unit sequence
 - Calendar should jump to current month
-- From lesson details: back to calendar
 - From lesson details page: next lesson or previous lesson (nice to have)
 - Static and manager calendars should show assessments
 - Copy course must alter or at least zero out the assessment dates (assigned and due)
@@ -30,6 +29,7 @@
 
 ## Complete
 
+- From lesson details: back to calendar
 - Markdown file editor (non slides)
 - 1/23/25 In calendar, user can add and remove lessons from a date
   - Add: new screen to select lesson from course

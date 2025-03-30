@@ -22,8 +22,10 @@ func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 		{EditSlides, ShowEditSlides, GET, lr.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, lr.PostEditSlides},
 		{LessonAssessments, GetAssessments, GET, lr.GetAssessments},
+		{NewLessonAssessment, ShowNewAsssessmentForm, GET, lr.ShowNewAsssessmentForm},
+
 		// TODO: implement
-		// {LessonStandards, GetLessonStandards, GET, lr.GetLessonStandards},
+		{LessonStandards, GetStandards, GET, lr.GetStandards},
 		{LessonStandards, PostLessonStandard, POST, lr.PostLessonStandard},
 		{LessonStandard, DeleteLessonStandard, DELETE, lr.DeleteLessonStandard},
 	}
@@ -47,6 +49,37 @@ type lessonRouter struct {
 	router
 }
 
+func (r *lessonRouter) GetStandards(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	nodeStandards, err := r.svc.GetLessonStandards(nodes.Lesson)
+	if err != nil {
+		return err
+	}
+	courseStandards, err := r.svc.GetCourseStandards(nodes.Course)
+	if err != nil {
+		return err
+	}
+	standardFrag := mt.StandardsFragment{
+		NodeStandards:   nodeStandards,
+		CourseStandards: courseStandards,
+		PostStandardURL: URL(r, PostLessonStandard),
+		DeleteStandardURL: func(id any) string {
+			return URL(r, DeleteLessonStandard, id)
+		},
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), standardFrag, nil)
+
+}
+
 func (r *lessonRouter) GetAssessments(c echo.Context) error {
 	params, err := ParseNodePath(c)
 	if err != nil {
@@ -63,6 +96,7 @@ func (r *lessonRouter) GetAssessments(c echo.Context) error {
 		return err
 	}
 	assFrag := mt.AssessmentsFragment{
+		NewAssessmentURL: URL(r, ShowNewAsssessmentForm),
 		GetEditAssessmentURL: func(id any) string {
 			altURL := URL(r, GetEditAssessment, id)
 			return altURL
@@ -70,6 +104,25 @@ func (r *lessonRouter) GetAssessments(c echo.Context) error {
 		Assessments: assessments,
 	}.Component()
 	return Respond(c, ShowDetailsURL(r), assFrag, nil)
+
+}
+func (r *lessonRouter) ShowNewAsssessmentForm(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	component := mt.NewAssessmentForm{
+		PostAssessmentURL: URL(r, PostAssessment),
+		CancelURL:         ShowDetailsURL(r),
+		NodeID:            params.LessonID,
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), component, nil)
 
 }
 
@@ -194,7 +247,10 @@ func (r *lessonRouter) ShowLessonSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	slideFrag := mt.Slides(slides)
+	slideFrag := mt.Slides{
+		HTML:          slides,
+		EditSlidesURL: URL(r, ShowEditSlides),
+	}.Component()
 	return Respond(c, ShowDetailsURL(r), slideFrag, nil)
 }
 
@@ -270,27 +326,9 @@ func (r *lessonRouter) ShowDetails(c echo.Context) error {
 		return err
 	}
 	r.nodes = nodes
-	nodeDetails := NodeDetailsPage(r, false)
-	slides, err := r.svc.GetSlides(r.params)
+	page, err := r.DetailsPage(false)
 	if err != nil {
 		return err
-	}
-	page := mt.LessonDetailsPage{
-		Slides:                  slides,
-		E:                       r.app,
-		Standards:               r.nodes.Course.StandardSet.Standards,
-		NodeDetailsPage:         nodeDetails,
-		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), params.ToSlice()...),
-		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
-		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
-		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
-		AssetsURLFunc:           AssetsURLFunc,
-		GetAssessmentsURL:       URL(r, GetAssessments),
-		GetEditAssessmentRHN:    GetEditAssessment.String(),
-		DeleteAssessmentRHN:     DeleteAssessment.String(),
-		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), params.ToSlice()...),
-		GetSlidesURL:            URL(r, ViewLessonSlides),
-		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), params.ToSlice()...),
 	}
 	component := page.Component()
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
@@ -359,6 +397,7 @@ const (
 
 const (
 	GetAssessments        = RouteHandlerName(GET + LessonAssessments)
+	GetStandards          = RouteHandlerName(GET + LessonStandards)
 	ViewLessonSlides      = RouteHandlerName(GET + Slides)
 	ShowLessonFiles       = RouteHandlerName(GET + LessonFiles)
 	GetLessonViewMarkdown = RouteHandlerName(GET + LessonViewMarkdown)
@@ -415,23 +454,17 @@ func (r *lessonRouter) DeleteLessonStandard(c echo.Context) error {
 }
 
 func (r *lessonRouter) DetailsPage(isEdit bool) (mt.LessonDetailsPage, error) {
-	slides, err := r.svc.GetSlides(r.params)
-	if err != nil {
-		return mt.LessonDetailsPage{}, err
-	}
 	page := mt.LessonDetailsPage{
-		Slides:                  slides,
-		E:                       r.app,
-		Standards:               r.nodes.Course.StandardSet.Standards,
-		NodeDetailsPage:         NodeDetailsPage(r, isEdit),
-		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), r.params.ToSlice()...),
-		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
-		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
-		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
-		GetEditAssessmentRHN:    GetEditAssessment.String(),
-		DeleteAssessmentRHN:     DeleteAssessment.String(),
-		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), r.params.ToSlice()...),
-		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), r.params.ToSlice()...),
+		E:                 r.app,
+		NodeDetailsPage:   NodeDetailsPage(r, isEdit),
+		ViewMarkdownRHN:   string(ViewNodeFilesRHN(r.emptyNodeSet...)),
+		FileRHN:           string(ShowNodeFilesRHN(r.emptyNodeSet...)),
+		AssetsURLFunc:     AssetsURLFunc,
+		GetAssessmentsURL: URL(r, GetAssessments),
+		GetStandardsURL:   URL(r, GetStandards),
+		GetSlidesURL:      URL(r, ViewLessonSlides),
+		EditSlidesURL:     r.app.Reverse(ShowEditSlides.String(), r.params.ToSlice()...),
 	}
+
 	return page, nil
 }

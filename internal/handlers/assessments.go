@@ -12,17 +12,19 @@ import (
 )
 
 const (
-	CourseAssessments RoutePath = Course + "/assessments"
-	LessonAssessments RoutePath = Lesson + "/assessments"
-	Assessment        RoutePath = LessonAssessments + RoutePath(AssessmentID)
+	CourseAssessments   RoutePath = Course + "/assessments"
+	LessonAssessments   RoutePath = Lesson + "/assessments"
+	NewLessonAssessment RoutePath = LessonAssessments + "/new"
+	Assessment          RoutePath = LessonAssessments + RoutePath(AssessmentID)
 )
 
 const (
-	GetCourseAssessments = RouteHandlerName(GET + CourseAssessments)
-	PostAssessment       = RouteHandlerName(POST + LessonAssessments)
-	GetEditAssessment    = RouteHandlerName(GET + Assessment)
-	PostEditAssessment   = RouteHandlerName(POST + Assessment)
-	DeleteAssessment     = RouteHandlerName(DELETE + Assessment)
+	GetCourseAssessments   = RouteHandlerName(GET + CourseAssessments)
+	ShowNewAsssessmentForm = RouteHandlerName(GET + NewLessonAssessment)
+	PostAssessment         = RouteHandlerName(POST + LessonAssessments)
+	GetEditAssessment      = RouteHandlerName(GET + Assessment)
+	PostEditAssessment     = RouteHandlerName(POST + Assessment)
+	DeleteAssessment       = RouteHandlerName(DELETE + Assessment)
 )
 
 func (h CourseHandler) AssessmentHandlers() []RouteHandler {
@@ -103,6 +105,7 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	}
 	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), nodes.User))
 }
+
 func (h CourseHandler) PostAssessment(c echo.Context) error {
 	params, err := ParseNodePath(c)
 	if err != nil {

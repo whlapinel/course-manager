@@ -1,7 +1,5 @@
 package managertemplates
 
-import "gh_static_portfolio/internal/templates/components/base"
-
 templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
 	@PageLayoutComponent(data)
 	@data.CategorySelectComponent()
@@ -19,10 +17,17 @@ templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
 	</div>
 }
 
-templ AssessmentsFragmentComponent(infos []components.EditableInfo) {
-	<div class="flex flex-col">
-		for _, info := range infos {
+templ AssessmentsFragmentComponent(data AssessmentsFragment) {
+	<div id="assessments" class="flex flex-col">
+		@data.AddAssessmentButton()
+		for _, info := range data.Infos() {
 			@info.Component()
 		}
 	</div>
+}
+
+templ AddAssessmentButtonComponent(data AssessmentsFragment) {
+	<button hx-get={ data.NewAssessmentURL } hx-target="#assessments">
+		Add Assessment
+	</button>
 }
