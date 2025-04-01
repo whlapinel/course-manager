@@ -3,7 +3,7 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates/shared"
+	templates "gh_static_portfolio/internal/templates/shared"
 	"log"
 	"net/url"
 	"path/filepath"

@@ -303,6 +303,7 @@ func (r *termRouter) ShowTermCalendar(c echo.Context) error {
 		TermDetailsURL:      ShowDetailsURL(r),
 		CreateOccasionURL:   r.app.Reverse(CreateOccasion.String(), r.params.ToSlice()...),
 		E:                   r.app,
+		BreadCrumbsData:     BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
 	}
 
 	component := data.Component()

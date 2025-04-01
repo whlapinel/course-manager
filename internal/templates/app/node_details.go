@@ -9,6 +9,7 @@ import (
 	"github.com/a-h/templ"
 )
 
+
 type NodeDetailsPage struct {
 	Params            domain.NodePath
 	ParentNode        domain.CourseNode

@@ -40,6 +40,7 @@ type TermCalendar struct {
 	CurrentOccasionIndex int
 	E                    *echo.Echo
 	CalendarDates        CalendarDates
+	BreadCrumbsData      BreadCrumbs
 }
 
 func DateData(date time.Time, page CalendarPage) CalendarDate {
@@ -129,6 +130,7 @@ func (data TermCalendar) PageLayout() cmp.PageLayout {
 			URL:  data.ListTermsURL,
 			Text: "Back to Terms",
 		},
+		Crumbs: data.BreadCrumbs().BreadCrumbs(),
 	}
 
 }
@@ -138,15 +140,13 @@ func (page TermCalendar) IsStatic() bool {
 }
 
 func (data TermCalendar) BreadCrumbs() BreadCrumbs {
-	return BreadCrumbs{
-		Term:           data.Term,
-		TermDetailsURL: data.TermDetailsURL,
-	}
+	return data.BreadCrumbsData
 }
 
 type CourseCalendar struct {
 	Admin                         bool
 	Static                        bool
+	Nodes                         domain.Nodes
 	Params                        domain.NodePath
 	Course                        domain.Course
 	TermDetailsURL                string
@@ -159,6 +159,7 @@ type CourseCalendar struct {
 	RemoveLessonDateRHN           string
 	E                             *echo.Echo
 	CalendarDates                 CalendarDates
+	BreadCrumbsData               BreadCrumbs
 }
 
 func (data CourseCalendar) GetCalendarDates() CalendarDates {
@@ -306,6 +307,7 @@ func (data CourseCalendar) PageLayout() cmp.PageLayout {
 			URL:  data.E.Reverse(data.ListTermCoursesRHN, data.Params.ToSlice()...),
 			Text: "Back to Courses",
 		},
+		Crumbs: data.BreadCrumbsData.BreadCrumbs(),
 	}
 }
 
@@ -378,12 +380,7 @@ func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
 }
 
 func (data CourseCalendar) BreadCrumbs() BreadCrumbs {
-	return BreadCrumbs{
-		Term:             data.Course.Term,
-		TermDetailsURL:   data.TermDetailsURL,
-		Course:           data.Course,
-		CourseDetailsURL: data.CourseDetailsURL,
-	}
+	return data.BreadCrumbsData
 }
 
 func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) templ.Component {
