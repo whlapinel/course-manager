@@ -5,6 +5,7 @@
 
 - Add view standards tab to lesson details
 - change title page of static site
+- change title page for files especially assessment files if possible
 - favicons for static site and server
 - Add hx-indicator to everything so user gets confirmation that request is pending
 - CourseNode files capabilities:

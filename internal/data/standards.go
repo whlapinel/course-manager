@@ -74,6 +74,21 @@ func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.
 	return objectives, nil
 }
 
+func (cr CourseRepo) GetCourseStandardsWithObjectives(set domain.StandardSet) ([]domain.Standard, error) {
+	standards, err := cr.GetCourseStandards(set)
+	if err != nil {
+		return nil, err
+	}
+	for i, std := range standards {
+		objs, err := cr.GetStandardObjectives(std, set)
+		if err != nil {
+			return nil, err
+		}
+		standards[i].Children = objs
+	}
+	return standards, nil
+}
+
 func (cr CourseRepo) GetCourseStandards(set domain.StandardSet) ([]domain.Standard, error) {
 	dbStandards, err := cr.queries.GetCourseStandards(context.Background(), int64(set.ID))
 	if err != nil {

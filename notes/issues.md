@@ -2,7 +2,10 @@
 
 ## Pending
 
-- (minor) marp server being down (or still starting) shouldn't prevent the lesson details page from loading
+- (minor) list the lesson objectives on static site
+- (major) show edite node sends the entire page instead of just the edit form, so either change the target or what is sent
+- (major) lesson details: add standards functionality lacking
+- (minor) lesson details: assignment file info / view link not displayed on app side
 - (minor) need placeholder image for when no user is signed in
 - (major) signin page after redirect following token expiration does not seem to render properly under certain circumstances
   - in particular when I clicked Generate from the home page, the signin component was sent but not as a complete page including layout
@@ -19,6 +22,7 @@
 
 ## Complete
 
+- (minor) marp server being down (or still starting) shouldn't prevent the lesson details page from loading
 - (major) Sync does not seem to work
 - (major) Static calendar not displaying data
 - No way to delete occasions from term calendar

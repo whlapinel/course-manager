@@ -96,6 +96,9 @@ func StaticNodePath(nodes ...domain.CourseNode) string {
 		panic("node is not user")
 	}
 	path := StaticSiteRootDir(user)
+	if len(nodes) < 2 {
+		return path
+	}
 	for i, node := range nodes[1:] {
 		if i != 0 {
 			path = strings.ToLower(filepath.Join(path, node.TypeName()+"s"))
@@ -262,7 +265,11 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 		User: user,
 		Term: term,
 	}
-	err := CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
+	err := os.RemoveAll(StaticNodePath(nodes.User))
+	if err != nil {
+		return err
+	}
+	err = CopyNodeDir(data.NodeDirPath(nodes.ToSlice()...), StaticNodePath(nodes.ToSlice()...))
 	if err != nil {
 		return err
 	}

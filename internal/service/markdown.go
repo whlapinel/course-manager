@@ -29,7 +29,7 @@ func (svc CourseService) MarkdownToHTML(srcPath string) error {
 	log.Println("Writing:", outputPath)
 	data := templates.MarkdownDocument{
 		AssetsURL: StaticAssetsURL,
-		Title:     "No title",
+		Title:     fileName,
 		Content:   string(content),
 		Static:    true,
 	}

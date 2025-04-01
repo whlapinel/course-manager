@@ -35,6 +35,10 @@ func (page StaticNodeDetailsPage) Component() templ.Component {
 	}.Component()
 }
 
+func (page StaticNodeDetailsPage) Info() templ.Component {
+	return nil
+}
+
 func (page StaticNodeDetailsPage) Tabs() templ.Component {
 	log.Println("FILESPAGE URL", page.FilesPageURL)
 
@@ -56,6 +60,7 @@ func (page StaticNodeDetailsPage) Filepath() string {
 
 type DetailsPage interface {
 	GetNode() domain.CourseNode
+	Info() templ.Component // for other info that might not apply to all nodes
 	Tabs() templ.Component
 	BreadCrumbs() templ.Component
 }

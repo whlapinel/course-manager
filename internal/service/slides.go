@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 func marpSlidesPath(params domain.NodePath) (string, error) {
@@ -86,5 +87,11 @@ func (svc CourseService) GetSlides(params domain.NodePath) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(body), nil
+	content := svc.RemoveWatcherScript(body)
+	return content, nil
+}
+
+func (svc CourseService) RemoveWatcherScript(html []byte) string {
+	re := regexp.MustCompile(`(?s)<script>\s*window\.__marpCliWatchWS\s*=\s*"ws://localhost:\d+/[a-f0-9]+";.*?</script>`)
+	return re.ReplaceAllString(string(html), "")
 }

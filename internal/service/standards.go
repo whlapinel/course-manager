@@ -19,6 +19,10 @@ func (svc CourseService) SetStandardSet(courseID, setID int) error {
 	return svc.repo.UpdateCourse(course)
 }
 
+func (svc CourseService) GetCourseStandardsWithObjectives(course domain.Course) ([]domain.Standard, error) {
+	return svc.repo.GetCourseStandardsWithObjectives(course.StandardSet)
+}
+
 func (svc CourseService) GetCourseStandards(course domain.Course) ([]domain.Standard, error) {
 	return svc.repo.GetCourseStandards(course.StandardSet)
 }

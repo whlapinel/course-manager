@@ -25,7 +25,12 @@ templ StaticNodeDetailsComponent(page DetailsPage) {
 					<dt class="text-sm/6 font-medium text-white">Description</dt>
 					<dd class="mt-1 text-sm/6 text-gray-400 sm:col-span-2 sm:mt-0">{ page.GetNode().GetDescription() }</dd>
 				</div>
-				@page.Tabs()
+				if page.Info() != nil {
+					@page.Info()
+				}
+				if page.Tabs() != nil {
+					@page.Tabs()
+				}
 			</dl>
 		</div>
 	</div>

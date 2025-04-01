@@ -32,6 +32,31 @@ func (page StaticLessonDetailsPage) Component() templ.Component {
 	}.Component()
 }
 
+func (page StaticLessonDetailsPage) Info() templ.Component {
+	return page.Objectives()
+}
+
+func (page StaticLessonDetailsPage) Objectives() templ.Component {
+	if len(page.Lesson.Standards) == 0 {
+		return nil
+	}
+	var table components.Table
+	table.Title = "Objectives"
+	var headers = []string{"Designation", "Name"}
+	var rows [][]templ.Component
+	for _, obj := range page.Lesson.Standards {
+		row := []templ.Component{
+			components.TableTextCell{Text: obj.Designation()}.Component(),
+			components.TableTextCell{Text: obj.Name}.Component(),
+		}
+		rows = append(rows, row)
+	}
+	table.Headers = headers
+	table.Rows = rows
+	return table.Component()
+
+}
+
 func (page StaticLessonDetailsPage) Tabs() templ.Component {
 	assetsURLFunc := func(relPath string) string {
 		path := page.AssetsURL("js")

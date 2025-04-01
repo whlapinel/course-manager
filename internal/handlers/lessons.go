@@ -64,7 +64,7 @@ func (r *lessonRouter) GetStandards(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	courseStandards, err := r.svc.GetCourseStandards(nodes.Course)
+	courseStandards, err := r.svc.GetCourseStandardsWithObjectives(nodes.Course)
 	if err != nil {
 		return err
 	}
