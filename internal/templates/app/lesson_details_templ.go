@@ -153,9 +153,9 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Prepare)))
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(domain.Prepare))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 31, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 31, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -176,9 +176,9 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Rehearse)))
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(string(domain.Rehearse))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 35, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 35, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -199,9 +199,9 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Perform)))
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(string(domain.Perform))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 39, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 39, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -222,9 +222,9 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Midterm)))
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(string(domain.Midterm))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 43, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 43, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -245,9 +245,9 @@ func EditAssessmentFormComponent(props EditAssessmentForm) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(domain.Final)))
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(string(domain.Final))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 47, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/app/lesson_details.templ`, Line: 47, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {

@@ -47,7 +47,7 @@ func (svc CourseService) FilterAssessmentsByCategoryAndDate(cat domain.Assessmen
 }
 
 func (svc CourseService) GetAssessmentsByCategory(category domain.AssessmentCategory, courseID int) ([]domain.Assessment, error) {
-	if category == 0 {
+	if category == "" {
 		return svc.GetAllCourseAssessments(courseID)
 	}
 	return svc.repo.GetAssessmentsByCategory(category, courseID)
@@ -71,7 +71,7 @@ func (svc CourseService) DeleteAssessment(assessmentID int) error {
 }
 
 func CategoryFilter(category domain.AssessmentCategory) func(domain.Assessment) bool {
-	if category == 0 {
+	if category == "" {
 		return func(a domain.Assessment) bool { return true }
 	}
 	return func(a domain.Assessment) bool {

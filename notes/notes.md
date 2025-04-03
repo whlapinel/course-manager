@@ -54,6 +54,10 @@ task run-prod
 
 ## Progress Log
 
+### 4/3/25
+
+- Today I made a big change, assessment category is now a string instead of an integer. this meant doing a database migration and converting all ints to equivalent strings. I did my first go migration with goose, as up til now I had only done sql migrations. The conversion logic required more than I could do with sql alone.
+
 ### 3/29/25
 
 - Had to write this down somewhere for now... currently my echo server is getting slides as a string from the marp server. But maybe I should instead just proxy my marp server with Caddy and put an iframe with the reverse proxy link to the slides? One big issue here is that the js in marp slides assumes the client is local host and it's trying to establish a websocket connection for live reload or something. So maybe I do need to filter that out with my app.

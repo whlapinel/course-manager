@@ -10,6 +10,7 @@ RUN go mod download
 
 # ✅ Step 2: Copy the rest of the source code separately
 COPY cmd/web_app /app/cmd/web_app
+COPY cmd/migrate /app/cmd/migrate
 COPY internal /app/internal
 
 # ✅ Step 3: Build the app binary

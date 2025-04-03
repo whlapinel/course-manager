@@ -46,6 +46,15 @@ services:
       - ./sites:/app/sites
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
 
+  migrate:
+    profiles:
+      - migrations
+    image: whlapinel/course-manager:0.2.0-dev
+    command: ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]
+    volumes:
+      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+
+
 networks:
   app-network:
     driver: bridge

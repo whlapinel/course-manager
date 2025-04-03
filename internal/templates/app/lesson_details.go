@@ -1,11 +1,9 @@
 package managertemplates
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/domain"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/a-h/templ"
@@ -88,11 +86,6 @@ type ObjectiveSelect struct {
 	Objectives []domain.Standard
 }
 
-// capitalizes first letter
-func DisplayCategory(cat domain.AssessmentCategory) string {
-	return fmt.Sprintf("%s%s", strings.ToUpper(cat.String()[:1]), cat.String()[1:])
-}
-
 type EditAssessmentForm struct {
 	Params                domain.NodePath
 	Assessment            domain.Assessment
@@ -126,8 +119,8 @@ func (data EditAssessmentForm) NewEditAssessmentFormComponent() templ.Component 
 	var options []cmp.Option
 	for _, category := range domain.Categories {
 		catOption := cmp.Option{
-			Value:    strconv.Itoa(int(category)),
-			Content:  category.String(),
+			Value:    string(category),
+			Content:  string(category),
 			Selected: category == data.Assessment.Category,
 		}
 		options = append(options, catOption)

@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/app"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -68,10 +66,6 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		}
 	}
 	var assessments = []domain.Assessment{}
-	err = isValid(categoryParam)
-	if err != nil {
-		return err
-	}
 	category = domain.AssessmentCategory(categoryParam)
 	assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
 	if err != nil {
@@ -121,10 +115,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	file := form.Get("file")
 	instructions := form.Get("instructions")
 	categoryParam := form.Get("category")
-	category, err := strconv.Atoi(categoryParam)
-	if err != nil {
-		return err
-	}
+	category := categoryParam
 	assignedParam := form.Get("date-assigned")
 	assigned, err := time.Parse(time.DateOnly, assignedParam)
 	if err != nil {
@@ -197,10 +188,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	instructions := form.Get("instructions")
 	file := form.Get("file")
 	categoryParam := form.Get("category")
-	category, err := strconv.Atoi(categoryParam)
-	if err != nil {
-		return err
-	}
+	category := categoryParam
 	assignedParam := form.Get("date-assigned")
 	assigned, err := time.Parse(time.DateOnly, assignedParam)
 	if err != nil {
@@ -251,14 +239,4 @@ func (h CourseHandler) DeleteAssessment(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...))
-}
-
-func isValid(catParam string) error {
-	for _, category := range domain.Categories {
-		if category == domain.AssessmentCategory(catParam) {
-			return nil
-		}
-	}
-	return fmt.Errorf("invalid category", catParam)
-
 }

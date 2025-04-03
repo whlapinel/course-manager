@@ -28,7 +28,7 @@ templ AssessmentsComponent(data AssessmentsFragment) {
 						{ assessment.Name }
 					</span>
 					<span>
-						Category: { util.Capitalize(assessment.Category.String()) }
+						Category: { util.Capitalize(string(assessment.Category)) }
 					</span>
 					if assessment.Instructions != "" {
 						<span class="border border-green-500 rounded bg-slate-900 text-green-500 p-2 w-min">

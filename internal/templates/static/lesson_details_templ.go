@@ -135,9 +135,9 @@ func AssessmentsComponent(data AssessmentsFragment) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(util.Capitalize(assessment.Category.String()))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(util.Capitalize(string(assessment.Category)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/static/lesson_details.templ`, Line: 31, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/static/lesson_details.templ`, Line: 31, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

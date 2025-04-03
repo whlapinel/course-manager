@@ -28,23 +28,23 @@ templ EditAssessmentFormComponent(props EditAssessmentForm) {
 			<label for="category">Category</label>
 			<select name="category" id="category" class="bg-black">
 				<option
-					value={ strconv.Itoa(int(domain.Prepare)) }
+					value={ string(domain.Prepare) }
 					selected?={ props.Assessment.Category == domain.Prepare }
 				>Prepare</option>
 				<option
-					value={ strconv.Itoa(int(domain.Rehearse)) }
+					value={ string(domain.Rehearse) }
 					selected?={ props.Assessment.Category == domain.Rehearse }
 				>Rehearse</option>
 				<option
-					value={ strconv.Itoa(int(domain.Perform)) }
+					value={ string(domain.Perform) }
 					selected?={ props.Assessment.Category == domain.Perform }
 				>Perform</option>
 				<option
-					value={ strconv.Itoa(int(domain.Midterm)) }
+					value={ string(domain.Midterm) }
 					selected?={ props.Assessment.Category == domain.Midterm }
 				>Midterm</option>
 				<option
-					value={ strconv.Itoa(int(domain.Final)) }
+					value={ string(domain.Final) }
 					selected?={ props.Assessment.Category == domain.Final }
 				>Final</option>
 			</select>

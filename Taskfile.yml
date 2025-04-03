@@ -36,7 +36,9 @@ tasks:
   run-prod:
     desc: To be run from production server
     cmds:
+      - docker compose down
       - docker compose pull
+      - docker compose run --rm migrate
       - docker compose -f compose.yaml -f compose.prod.yaml up --remove-orphans
 
   # copy-data:
@@ -45,10 +47,6 @@ tasks:
   #     - ./scripts/copy_data.sh
   #     - echo 'after ssh started, run task unpack-data'
   #     - ssh root@159.223.174.80
-
-  migrate:
-    cmds:
-      - migrate internal/data/database/course_manager.db up
 
   unpack-data:
     desc: To be run on remote server. Runs script to unpack data

@@ -20,10 +20,10 @@ type AssessmentCategory string
 
 const (
 	Prepare  AssessmentCategory = "prepare"
-	Rehearse                    = "rehearse"
-	Perform                     = "perform"
-	Midterm                     = "midterm"
-	Final                       = "final"
+	Rehearse AssessmentCategory = "rehearse"
+	Perform  AssessmentCategory = "perform"
+	Midterm  AssessmentCategory = "midterm"
+	Final    AssessmentCategory = "final"
 )
 
 var Categories = []AssessmentCategory{

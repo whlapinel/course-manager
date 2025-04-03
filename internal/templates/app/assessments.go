@@ -48,12 +48,12 @@ func (page CourseAssessmentsPage) CategorySelectComponent() templ.Component {
 	options = append(options, cmp.Option{
 		Content:  "Select a Category",
 		Value:    "",
-		Selected: page.Category == 0,
+		Selected: page.Category == "",
 	})
 	for _, category := range domain.Categories {
 		option := cmp.Option{
-			Content:  util.Capitalize(category.String()),
-			Value:    category.String(),
+			Content:  util.Capitalize(string(category)),
+			Value:    string(category),
 			Selected: page.Category == category,
 		}
 		options = append(options, option)
@@ -100,8 +100,7 @@ func (page CourseAssessmentsPage) GetAssessmentsWithCategoryFilter(category doma
 		panic("error parsing URL")
 	}
 	q := parsedURL.Query()
-	catString := strconv.Itoa(int(category))
-	q.Set("category", catString)
+	q.Set("category", string(category))
 
 	parsedURL.RawQuery = q.Encode()
 
@@ -161,7 +160,7 @@ func (data AssessmentsFragment) Info(assm domain.Assessment) cmp.EditableInfo {
 			{Field: "File", Value: assm.File},
 			{Field: "Assigned", Value: assm.DateAssigned.Format(time.DateOnly)},
 			{Field: "Due", Value: assm.DateDue.Format(time.DateOnly)},
-			{Field: "Category", Value: assm.Category.String()},
+			{Field: "Category", Value: string(assm.Category)},
 			{Field: "Dropped", Value: strconv.FormatBool(assm.Dropped)},
 		},
 	}
@@ -205,8 +204,8 @@ func (data NewAssessmentForm) Component() templ.Component {
 	var options []cmp.Option
 	for _, category := range domain.Categories {
 		catOption := cmp.Option{
-			Value:   strconv.Itoa(int(category)),
-			Content: category.String(),
+			Value:   string(category),
+			Content: string(category),
 		}
 		options = append(options, catOption)
 	}

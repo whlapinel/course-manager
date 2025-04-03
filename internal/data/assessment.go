@@ -23,7 +23,7 @@ func (cr CourseRepo) SaveAssessment(assessment domain.Assessment) (domain.Assess
 			Valid:  assessment.File != "",
 			String: assessment.File,
 		},
-		Category:     int64(assessment.Category),
+		Category:     string(assessment.Category),
 		DateAssigned: assessment.DateAssigned.Format(time.DateOnly),
 		DateDue:      assessment.DateDue.Format(time.DateOnly),
 		Dropped:      dropped,
@@ -94,7 +94,7 @@ func (cr CourseRepo) fromDBAssessment(dbAssmt database.Assessment) (domain.Asses
 func (cr CourseRepo) GetAssessmentsByCategory(category domain.AssessmentCategory, courseID int) ([]domain.Assessment, error) {
 	dbAssessments, err := cr.queries.GetAssessmentsByCategory(context.Background(), database.GetAssessmentsByCategoryParams{
 		ID:       int64(courseID),
-		Category: int64(category),
+		Category: string(category),
 	})
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func (cr CourseRepo) UpdateAssessment(assessment domain.Assessment) error {
 			Valid:  assessment.File != "",
 			String: assessment.File,
 		},
-		Category:     int64(assessment.Category),
+		Category:     string(assessment.Category),
 		DateAssigned: assessment.DateAssigned.Format(time.DateOnly),
 		DateDue:      assessment.DateDue.Format(time.DateOnly),
 		Dropped:      int64(dropped),
