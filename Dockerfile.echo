@@ -15,6 +15,8 @@ COPY internal /app/internal
 # ✅ Step 3: Build the app binary
 RUN go build -o cmd/web_app/web_app ./cmd/web_app
 
+RUN go build -tags sqlite3 -o migrate ./cmd/migrate
+
 # Stage 2: Final Image
 FROM ubuntu:latest
 
@@ -24,6 +26,9 @@ RUN apt-get update && apt-get install -y ca-certificates
 
 # ✅ Copy only the built app binary from the builder stage
 COPY --from=builder /app/cmd/web_app/web_app /app/cmd/web_app/web_app
+COPY --from=builder /app/migrate /app/migrate
+
+COPY internal/data/database/migrations/ /app/internal/data/database/migrations/
 
 # Expose HTTP port
 EXPOSE 1323

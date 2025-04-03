@@ -11,12 +11,12 @@ tasks:
     cmds:
       - go generate generate.go
 
-  sync-site:
-    desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
-    cmds:
-      - cd python && git add .
-      - cd python && git commit -m "auto-sync"
-      - cd python && git push
+  # sync-site:
+  #   desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
+  #   cmds:
+  #     - cd python && git add .
+  #     - cd python && git commit -m "auto-sync"
+  #     - cd python && git push
 
   run-dev:
     desc: Build and run without generate (for when we're not changing UI)
@@ -39,12 +39,16 @@ tasks:
       - docker compose pull
       - docker compose -f compose.yaml -f compose.prod.yaml up --remove-orphans
 
-  copy-data:
-    desc: Copy data to remote server
+  # copy-data:
+  #   desc: Copy data to remote server
+  #   cmds:
+  #     - ./scripts/copy_data.sh
+  #     - echo 'after ssh started, run task unpack-data'
+  #     - ssh root@159.223.174.80
+
+  migrate:
     cmds:
-      - ./scripts/copy_data.sh
-      - echo 'after ssh started, run task unpack-data'
-      - ssh root@159.223.174.80
+      - migrate internal/data/database/course_manager.db up
 
   unpack-data:
     desc: To be run on remote server. Runs script to unpack data
