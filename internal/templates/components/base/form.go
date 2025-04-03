@@ -33,6 +33,7 @@ type EditableInfoItem struct {
 	Element
 	Field string
 	Value string
+	
 }
 
 func (el EditableInfoItem) Component() templ.Component {

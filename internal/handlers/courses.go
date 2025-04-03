@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/app"
-	templates "gh_static_portfolio/internal/templates/shared"
 	"log"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -131,32 +129,20 @@ func (r *courseRouter) ShowDetails(c echo.Context) error {
 
 // ShowEdit implements NodeRouter.
 func (r *courseRouter) ShowEdit(c echo.Context) error {
-	queryParam := c.QueryParam("field")
 	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
+	r.params = params
 	nodes, err := r.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
 	r.nodes = nodes
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
-	}
 	details := NodeDetailsPage(r, true)
-	respond := func(component templ.Component) error {
-		return Respond(c, r.app.Reverse(string(CourseDetails), r.params.ToSlice()...), component, nil)
-	}
-	if queryParam == templates.KebabCase(string(Description)) {
-		return respond(mt.EditDescriptionComponent(details))
-	} else if queryParam == templates.KebabCase(string(Name)) {
-		return respond(mt.EditNameComponent(details))
-	}
-	errText := "field value is not expected"
-	log.Println(errText)
-	return fmt.Errorf("%s %s", errText, queryParam)
+	component := details.DetailsFormComponent(true)
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
+	return Respond(c, "", component, layout)
 
 }
 

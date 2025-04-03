@@ -18,6 +18,9 @@ type CourseAssessmentsPage struct {
 	Assessments       []domain.Assessment
 	CourseListURL     string
 	BreadCrumbsData   BreadCrumbs
+	StartDate         time.Time
+	EndDate           time.Time
+	Category          domain.AssessmentCategory
 }
 
 func (page CourseAssessmentsPage) ApplyFilterButton() templ.Component {
@@ -26,13 +29,15 @@ func (page CourseAssessmentsPage) ApplyFilterButton() templ.Component {
 		Button: cmp.Button{
 			Text: "Apply",
 			Element: cmp.Element{
-				ID: "apply-filter-button",
+				ID: "filter-button",
 			},
 			Method:   cmp.HxGet,
 			URL:      page.GetAssessmentsURL,
-			HxSelect: "#assessments",
 			HxTarget: "#assessments",
-			PushURL:  true,
+			Attributes: templ.Attributes{
+				"hx-select": "#assessments",
+			},
+			PushURL: true,
 		},
 	})
 	return applyButton.Component()
@@ -40,10 +45,16 @@ func (page CourseAssessmentsPage) ApplyFilterButton() templ.Component {
 
 func (page CourseAssessmentsPage) CategorySelectComponent() templ.Component {
 	var options []cmp.Option
+	options = append(options, cmp.Option{
+		Content:  "Select a Category",
+		Value:    "",
+		Selected: page.Category == 0,
+	})
 	for _, category := range domain.Categories {
 		option := cmp.Option{
-			Content: util.Capitalize(category.String()),
-			Value:   category.String(),
+			Content:  util.Capitalize(category.String()),
+			Value:    category.String(),
+			Selected: page.Category == category,
 		}
 		options = append(options, option)
 	}
@@ -51,12 +62,29 @@ func (page CourseAssessmentsPage) CategorySelectComponent() templ.Component {
 	return catSelect.Component()
 }
 
-func (page CourseAssessmentsPage) StartDateComponent() templ.Component {
+func (page CourseAssessmentsPage) StartDateComponent(date time.Time) templ.Component {
+	var dateString string
+	if !date.IsZero() {
+		dateString = date.Format(time.DateOnly)
+	}
 	start := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-		Name: "Start",
-		Type: cmp.Date,
+		Name:  "Start",
+		Type:  cmp.Date,
+		Value: dateString,
 	})
 	return start.Component()
+}
+
+func (page CourseAssessmentsPage) DateComponent(name string, date time.Time) templ.Component {
+	var dateString string
+	if !date.IsZero() {
+		dateString = date.Format(time.DateOnly)
+	}
+	return cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name:  name,
+		Type:  cmp.Date,
+		Value: dateString,
+	}).Component()
 }
 func (page CourseAssessmentsPage) EndDateComponent() templ.Component {
 	end := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
@@ -107,6 +135,7 @@ type AssessmentsFragment struct {
 	GetEditAssessmentURL func(id any) string
 	Assessments          []domain.Assessment
 	NodeID               int
+	ViewFileURL          func(relPath string) string
 }
 
 type NewAssessmentForm struct {
@@ -119,27 +148,34 @@ func (data AssessmentsFragment) Component() templ.Component {
 	return AssessmentsFragmentComponent(data)
 }
 
-func (data AssessmentsFragment) Infos() []cmp.EditableInfo {
-	var infos []cmp.EditableInfo
-	for _, assm := range data.Assessments {
-		info := cmp.EditableInfo{
-			Element: cmp.Element{
-				ID: fmt.Sprintf("%s-%d", "assessment", assm.ID),
-			},
-			Title:      assm.Name,
-			GetEditURL: data.GetEditAssessmentURL(assm.ID),
-			Components: []cmp.EditableInfoItem{
-				{Field: "Name", Value: assm.Name},
-				{Field: "Instructions", Value: assm.Instructions},
-				{Field: "Assigned", Value: assm.DateAssigned.Format(time.DateOnly)},
-				{Field: "Due", Value: assm.DateDue.Format(time.DateOnly)},
-				{Field: "Category", Value: assm.Category.String()},
-				{Field: "Dropped", Value: strconv.FormatBool(assm.Dropped)},
-			},
-		}
-		infos = append(infos, info)
+func (data AssessmentsFragment) Info(assm domain.Assessment) cmp.EditableInfo {
+	info := cmp.EditableInfo{
+		Element: cmp.Element{
+			ID: fmt.Sprintf("%s-%d", "assessment", assm.ID),
+		},
+		Title:      assm.Name,
+		GetEditURL: data.GetEditAssessmentURL(assm.ID),
+		Components: []cmp.EditableInfoItem{
+			{Field: "Name", Value: assm.Name},
+			{Field: "Instructions", Value: assm.Instructions},
+			{Field: "File", Value: assm.File},
+			{Field: "Assigned", Value: assm.DateAssigned.Format(time.DateOnly)},
+			{Field: "Due", Value: assm.DateDue.Format(time.DateOnly)},
+			{Field: "Category", Value: assm.Category.String()},
+			{Field: "Dropped", Value: strconv.FormatBool(assm.Dropped)},
+		},
 	}
-	return infos
+	return info
+}
+
+func (page AssessmentsFragment) ViewFileLink(filename string) templ.Component {
+	return cmp.Link{
+		Text: "View File",
+		Attributes: templ.Attributes{
+			string(cmp.HxGet): page.ViewFileURL(filename),
+			"hx-target":       "#file-content",
+		},
+	}.Component()
 }
 
 func (page AssessmentsFragment) AddAssessmentButton() templ.Component {

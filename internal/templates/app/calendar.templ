@@ -154,16 +154,16 @@ templ DynamicCourseCalendarComponent(page CourseCalendar) {
 	@CourseCalendarComponent(page)
 }
 
-templ StaticCourseCalendarComponent(page CourseCalendar) {
-	@StaticLayout(StaticPage{Title: page.Course.Name}) {
-		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(templates.StaticSiteCoursesDir+"courses.html"), "Course List") {
-			@CourseUnorderedList() {
-				@CourseCalendarComponent(page)
-			}
-			@TitleDiv("Course Calendar", page.Course.Name+", "+page.Course.Term.Name, templates.CoursePath(page.Course, true), false, false)
-		}
-	}
-}
+// templ StaticCourseCalendarComponent(page CourseCalendar) {
+// 	@StaticLayout(StaticPage{Title: page.Course.Name}) {
+// 		@CourseDivContainer(domain.Course{}, RemoveDocsFromPath(templates.StaticSiteCoursesDir+"courses.html"), "Course List") {
+// 			@CourseUnorderedList() {
+// 				@CourseCalendarComponent(page)
+// 			}
+// 			@TitleDiv("Course Calendar", page.Course.Name+", "+page.Course.Term.Name, templates.CoursePath(page.Course, true), false, false)
+// 		}
+// 	}
+// }
 
 templ TermCalendarComponent(page TermCalendar) {
 	@NewCalendarComponent(page)

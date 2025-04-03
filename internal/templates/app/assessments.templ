@@ -3,9 +3,9 @@ package managertemplates
 templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
 	@PageLayoutComponent(data)
 	@data.CategorySelectComponent()
+	@data.DateComponent("Start", data.StartDate)
+	@data.DateComponent("End", data.EndDate)
 	@data.ApplyFilterButton()
-	@data.StartDateComponent()
-	@data.EndDateComponent()
 	<script type="module" src="/dist/assessments.js">
 	</script>
 	<div id="assessments">
@@ -20,9 +20,13 @@ templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
 templ AssessmentsFragmentComponent(data AssessmentsFragment) {
 	<div id="assessments" class="flex flex-col">
 		@data.AddAssessmentButton()
-		for _, info := range data.Infos() {
-			@info.Component()
+		for _, assm := range data.Assessments {
+			@data.Info(assm).Component()
+			if assm.File != "" {
+				@data.ViewFileLink(assm.File)
+			}
 		}
+		<div id="file-content"></div>
 	</div>
 }
 

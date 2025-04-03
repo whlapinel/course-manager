@@ -10,11 +10,16 @@ import (
 )
 
 type CourseCalendarPage struct {
+	PageData
 	Nodes         domain.Nodes
 	CalendarDates CalendarDates
 	Path          string
 	AssetsURL     func(relPath string) string
 	LessonPageURL func(nodes ...domain.CourseNode) string
+}
+
+func (page CourseCalendarPage) BreadCrumbs() templ.Component {
+	return page.PageData.BreadCrumbs.Component()
 }
 
 func (page CourseCalendarPage) Component() templ.Component {

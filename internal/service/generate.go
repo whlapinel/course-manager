@@ -2,7 +2,6 @@ package service
 
 import (
 	"gh_static_portfolio/internal/domain"
-	sitegenerator "gh_static_portfolio/internal/gen_site"
 	"time"
 )
 
@@ -61,17 +60,4 @@ func (svc CourseService) getDataForGenerate(user domain.User) (domain.Term, erro
 	}
 	currTerm.Courses = courses
 	return currTerm, nil
-}
-
-// old site generator
-func (svc CourseService) GenerateSite(userID string) error {
-	user, err := svc.GetUser(userID)
-	if err != nil {
-		return err
-	}
-	err = sitegenerator.Generate(svc.repo, user)
-	if err != nil {
-		return err
-	}
-	return nil
 }

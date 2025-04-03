@@ -55,7 +55,6 @@ func AddParams(params domain.NodePath, additionalParams ...any) []any {
 }
 func (data FilesPage) FileURL(file FilesPageItem) string {
 	return data.E.Reverse(data.ViewMarkdownRHN, AddParams(data.Params, file.Path)...)
-
 }
 
 func (data FilesPage) PageLayout() cmp.PageLayout {

@@ -306,6 +306,7 @@ func (svc CourseService) generate(user domain.User, term domain.Term) error {
 				Path:          CourseCalendarPagePath(nodes.ToSlice()...),
 				AssetsURL:     StaticAssetsURL,
 				LessonPageURL: NodeDetailsPageURL,
+				PageData:      Layout(nodes),
 			},
 		})
 		wg.Add(1)

@@ -1,8 +1,10 @@
 package managertemplates
 
-import "time"
-import "strconv"
-import "gh_static_portfolio/internal/templates/components/base"
+import (
+	"gh_static_portfolio/internal/templates/components/base"
+	"strconv"
+	"time"
+)
 
 templ HomePageComponent(props HomePage) {
 	<div class="bg-gray-900">
@@ -82,25 +84,4 @@ templ HomePageComponent(props HomePage) {
 			</div>
 		</footer>
 	</div>
-}
-
-// Student-facing site
-templ StaticHomeComponent() {
-	@StaticLayout(StaticNewHomePage()) {
-		<div class="bg-gray-900 py-24 sm:py-32">
-			<div class="mx-auto max-w-7xl px-6 lg:px-8">
-				<div class="flex flex-col mx-auto max-w-2xl lg:mx-0 gap-4">
-					<h2 class="text-4xl font-bold tracking-tight text-white sm:text-6xl flex items-center">
-						Welcome!
-					</h2>
-					<div class="flex gap-2">
-						<img src={ "images/profile.jpg" } class=" rounded-full size-32"/>
-						<p class="text-lg bg-purple-800 rounded p-4">
-							Hi, I'm Will Lapinel. I am honored to teach Python to students at Phillip O. Berry Academy of Technology in Charlotte, North Carolina.  
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	}
 }

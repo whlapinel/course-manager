@@ -1,13 +1,10 @@
 package managertemplates
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/domain"
 	templates "gh_static_portfolio/internal/templates/shared"
 	"log"
 	"net/url"
-	"path/filepath"
-	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -133,127 +130,4 @@ func FieldContainerID(fieldName string) string {
 
 func FieldInputID(fieldName string) string {
 	return templates.KebabCase(fieldName)
-}
-
-func StaticRootPages() []StaticPage {
-	return []StaticPage{
-		StaticNewHomePage(),
-		StaticNewContactPage(),
-		StaticNewCoursesListPage(nil),
-	}
-}
-
-type StaticPage struct {
-	Title     string
-	Path      string
-	Component templ.Component
-}
-
-// for static site
-type LessonPage struct {
-	Lesson              domain.Lesson
-	Unit                domain.Unit
-	Course              domain.Course
-	HasSlides, HasFiles bool
-}
-
-// for static site
-type TitleDivData struct {
-	title, description, imgPath string
-	standards                   []domain.Standard
-	Assessments                 []domain.Assessment
-	StaticFilesURL              templ.SafeURL
-	GitHubFilesURL              templ.SafeURL
-	showImg                     bool
-	lightBg                     bool
-}
-
-func (page LessonPage) Component() templ.Component {
-	return StaticLessonComponent(page)
-}
-
-func (page LessonPage) TitleDivNew() templ.Component {
-	return TitleDivData{
-		title:          fmt.Sprintf("%s: %s", page.Lesson.Designation(), page.Lesson.Name),
-		description:    page.Lesson.Description,
-		StaticFilesURL: templ.SafeURL(templates.LessonFilesPath(page.Lesson, page.Unit, page.Course)),
-		GitHubFilesURL: templates.LessonFilesURL(page.Lesson, page.Unit, page.Course),
-		imgPath:        filepath.Join(templates.LessonPath(page.Lesson, page.Unit, page.Course, false), page.Lesson.Image.BasePath),
-		standards:      page.Lesson.Standards,
-		Assessments:    page.Lesson.Assessments,
-	}.Component()
-
-}
-
-// Github files URL
-func (data TitleDivData) FileURL(filepath string) templ.SafeURL {
-	url, _ := url.JoinPath(string(data.GitHubFilesURL), filepath)
-	return templ.SafeURL(url)
-}
-
-func (data TitleDivData) ViewMarkdownURL(filepath string) templ.SafeURL {
-	filepath = strings.ReplaceAll(filepath, ".md", ".html")
-	url, _ := url.JoinPath(string(data.StaticFilesURL), filepath)
-	url = RemoveDocsFromPath(url)
-	url = MakeAbsolute(url)
-	return templ.SafeURL(url)
-}
-
-func StaticNewHomePage() StaticPage {
-	return StaticPage{
-		Title:     "Home",
-		Path:      filepath.Join(templates.StaticSiteRootDir, "index.html"),
-		Component: StaticHomeComponent(),
-	}
-}
-
-func StaticNewContactPage() StaticPage {
-	return StaticPage{
-		Title:     "Contact",
-		Path:      filepath.Join(templates.StaticSiteRootDir, "contact.html"),
-		Component: StaticContactComponent(),
-	}
-}
-
-func StaticNewCoursesListPage(instances []domain.Course) StaticPage {
-	return StaticPage{
-		Title:     "Courses",
-		Path:      filepath.Join(templates.StaticSiteCoursesDir, "courses.html"),
-		Component: StaticCoursesListComponent(instances),
-	}
-
-}
-
-func StaticNewCoursePage(course domain.Course) StaticPage {
-	return StaticPage{
-		Title:     course.Name,
-		Path:      templates.CoursePath(course, true),
-		Component: CourseComponent(course),
-	}
-}
-
-func StaticNewCourseCalendarPage(course domain.Course) StaticPage {
-	pageTitle := course.Name + " Calendar"
-	return StaticPage{
-		Title: pageTitle,
-		Path:  filepath.Join(templates.CoursePath(course, false), templates.KebabCase(pageTitle+".html")),
-		// Component: CourseCalendarComponent(course),
-		Component: StaticCourseCalendarComponent(StaticSiteCourseCalendar(course)),
-	}
-}
-
-func StaticNewUnitPage(unit domain.Unit, course domain.Course) StaticPage {
-	return StaticPage{
-		Title:     unit.Name,
-		Path:      templates.UnitPath(unit, course, true),
-		Component: StaticUnitComponent(unit, course),
-	}
-}
-
-func StaticNewLessonPage(page LessonPage) StaticPage {
-	return StaticPage{
-		Title:     page.Lesson.Name,
-		Path:      templates.LessonPath(page.Lesson, page.Unit, page.Course, true),
-		Component: page.Component(),
-	}
 }

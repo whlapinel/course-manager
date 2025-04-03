@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/app"
@@ -56,8 +57,6 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		start = time.Now().AddDate(-10, 0, 0)
 	}
 	endDateParam := c.QueryParam("end")
 	log.Println(endDateParam)
@@ -67,29 +66,26 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		end = time.Now().AddDate(10, 0, 0)
 	}
 	var assessments = []domain.Assessment{}
-	if categoryParam != "" {
-		// category filter
-		category, err = domain.ParseCategories(categoryParam)
-		if err != nil {
-			return err
-		}
-		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID, start, end)
-		if err != nil {
-			return err
-		}
-	} else {
-		// no category filter
-		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
-		if err != nil {
-			return err
-		}
+	err = isValid(categoryParam)
+	if err != nil {
+		return err
 	}
+	category = domain.AssessmentCategory(categoryParam)
+	assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
+	if err != nil {
+		return err
+	}
+	filter := service.AssessmentFilter{
+		Category: category,
+		Start:    start,
+		End:      end,
+	}
+	assessments = h.svc.FilterAssessments(assessments, filter)
+	log.Println("length of assessments:", len(assessments))
 	var queryParams = make(map[string]string)
-	queryParams["category"] = category.String()
+	queryParams["category"] = string(category)
 	queryParams["start"] = startDateParam
 	queryParams["end"] = endDateParam
 	baseURL := h.e.Reverse(GetCourseAssessments.String(), params.ToSlice()...)
@@ -97,7 +93,12 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	log.Println("GetCourseAssessments: category:", string(category))
+	log.Println("GetCourseAssessments: assessments:", assessments)
 	page := mt.CourseAssessmentsPage{
+		StartDate:         start,
+		EndDate:           end,
+		Category:          category,
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,
 		CourseListURL:     h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
@@ -250,4 +251,14 @@ func (h CourseHandler) DeleteAssessment(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(303, h.e.Reverse(string(ShowNodeDetailsRHN(EmptyNodesLesson...)), params.ToSlice()...))
+}
+
+func isValid(catParam string) error {
+	for _, category := range domain.Categories {
+		if category == domain.AssessmentCategory(catParam) {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid category", catParam)
+
 }

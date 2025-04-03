@@ -101,6 +101,9 @@ func (r *lessonRouter) GetAssessments(c echo.Context) error {
 			altURL := URL(r, GetEditAssessment, id)
 			return altURL
 		},
+		ViewFileURL: func(relPath string) string {
+			return URL(r, GetLessonViewMarkdown, relPath)
+		},
 		Assessments: assessments,
 	}.Component()
 	return Respond(c, ShowDetailsURL(r), assFrag, nil)
@@ -351,7 +354,7 @@ func (r *lessonRouter) ShowEdit(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	component := page.Component()
+	component := page.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 

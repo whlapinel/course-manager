@@ -169,7 +169,7 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 	}
 	r.nodes = nodes
 	details := NodeDetailsPage(r, true)
-	component := details.Component()
+	component := details.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 

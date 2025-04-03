@@ -211,7 +211,7 @@ func (r *termRouter) ShowEdit(c echo.Context) error {
 	details := mt.TermDetailsPage{
 		NodeDetailsPage: NodeDetailsPage(r, true),
 	}
-	component := details.Component()
+	component := details.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 }

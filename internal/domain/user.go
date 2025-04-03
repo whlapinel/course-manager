@@ -9,6 +9,18 @@ type User struct {
 	ID                                  string
 	Email, FirstName, LastName, Picture string
 	Terms                               []Term
+	Config                              UserConfig
+}
+
+type UserConfig struct {
+	AssessmentCategories []AssessmentCategory
+	AssessmentsGoals     AssessmentGoalsConfig
+}
+
+type AssessmentGoalsConfig struct {
+	AssessmentCategory
+	Minimum int
+	Maximum int
 }
 
 func (u User) Username() string {

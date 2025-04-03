@@ -6,6 +6,9 @@ templ HxButtonComponent(props Button) {
 		if props.Method == HxGet {
 			hx-get={ props.URL }
 		}
+		if props.ID != "" {
+			id={ props.ID }
+		}
 		if props.Method == HxPost {
 			hx-post={ props.URL }
 		}

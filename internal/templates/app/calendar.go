@@ -361,22 +361,6 @@ func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
 		Class:     "bg-red-700 p-1 rounded",
 	}
 	return button.Component()
-	//	<div class="flex flex-col gap-1 items-center">
-	//	<div class="flex">
-	//		if !data.Static {
-	//			<button
-	//				class="bg-red-700 p-1 rounded"
-	//				hx-confirm={ "Are you sure you want to remove this lesson date? The lesson itself will not be deleted." }
-	//				hx-delete={ data.RemoveLessonDateURL }
-	//				hx-target="#page"
-	//			>
-	//				Remove Lesson
-	//			</button>
-	//		}
-	//		@data.LinkWithInfoDialog()
-	//	</div>
-	//
-	// </div>
 }
 
 func (data CourseCalendar) BreadCrumbs() BreadCrumbs {

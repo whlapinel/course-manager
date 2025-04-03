@@ -8,6 +8,7 @@ import (
 )
 
 templ CourseCalendarComponent(page CourseCalendarPage) {
+	@page.BreadCrumbs()
 	<div id="calendar" class="flex flex-col gap-4">
 		for _, day := range MonthDates(page.Nodes.Term) {
 			<h1
