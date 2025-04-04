@@ -13,14 +13,8 @@ node_modules
 build
 **.tar.gz
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 internal/data/users
-=======
->>>>>>> dev
-=======
-internal/data/users
->>>>>>> dev
+internal/data/database/course_manager.db
 sites
 caddy_data
 caddy_config
