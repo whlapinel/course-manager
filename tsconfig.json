@@ -1,4 +1,9 @@
 {
+    "exclude": [
+        "python/docs/ts/**/*.ts",
+        "sites/assets/**/*.ts",
+        "internal/templates/**/*" /* don't want to generate js for components; instead these scripts should be copy-pasted to assets as needed*/
+    ],
     "references": [
         {
             "path": "./tsconfig.server.json"
@@ -7,5 +12,4 @@
             "path": "./tsconfig.static.json"
         }
     ],
-    
 }

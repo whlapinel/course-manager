@@ -1,0 +1,19 @@
+package managertemplates
+
+templ NodeDetailsComponent(props NodeDetailsPage) {
+	@PageLayoutComponent(props) {
+		<div class="flex gap-2">
+			if props.Node.ChildTypeName() != "" {
+				@props.ListChildrenButton()
+			}
+			@props.ViewFilesButton()
+			if props.CourseCalendarURL != "" {
+				@props.CalendarButton()
+			}
+		</div>
+		<div class="flex flex-col gap-2">
+			@props.DetailsFormComponent(props.IsEdit)
+			{ children... }
+		</div>
+	}
+}

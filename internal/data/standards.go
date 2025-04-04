@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
-	"log"
 	"os"
 	"strconv"
 )
@@ -73,6 +72,21 @@ func (cr CourseRepo) GetStandardObjectives(standard domain.Standard, set domain.
 		objectives = append(objectives, objective)
 	}
 	return objectives, nil
+}
+
+func (cr CourseRepo) GetCourseStandardsWithObjectives(set domain.StandardSet) ([]domain.Standard, error) {
+	standards, err := cr.GetCourseStandards(set)
+	if err != nil {
+		return nil, err
+	}
+	for i, std := range standards {
+		objs, err := cr.GetStandardObjectives(std, set)
+		if err != nil {
+			return nil, err
+		}
+		standards[i].Children = objs
+	}
+	return standards, nil
 }
 
 func (cr CourseRepo) GetCourseStandards(set domain.StandardSet) ([]domain.Standard, error) {
@@ -211,7 +225,6 @@ func (cr CourseRepo) ImportObjectives(filename string, set domain.StandardSet, s
 		}
 		objectives = append(objectives, objective)
 	}
-	log.Println(objectives)
 	return objectives, nil
 
 }

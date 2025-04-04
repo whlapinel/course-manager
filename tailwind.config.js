@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./**/*.{html,js,templ}",
-        "!./node_modules/**/*",
+        "./internal/templates/**/*.{html,js,templ}"
     ],
     theme: {
         extend: {},
@@ -12,5 +11,9 @@ module.exports = {
         "max-h-0",
         "max-h-fit",
         "min-h-fit",
+        "bg-blue-500",
+        "text-white",
+        "font-bold"
     ],
+
 }

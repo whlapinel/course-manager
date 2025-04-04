@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"fmt"
-	"log"
+	"slices"
+	"strings"
 	"time"
 )
 
@@ -18,36 +18,175 @@ type Assessment struct {
 	Dropped      bool
 }
 
-type AssessmentCategory int
+type AssessmentCategory string
+
+type AssessmentSortParam int
 
 const (
-	Perform AssessmentCategory = iota
-	Rehearse
-	Prepare
-	Midterm
-	Final
+	Assigned AssessmentSortParam = iota
+	Due
+	Category
 )
 
+var AssessmentSortParams = []AssessmentSortParam{Assigned, Due, Category}
+
+func (param AssessmentSortParam) String() string {
+	return []string{
+		"assigned", "due", "category",
+	}[param]
+}
+
+const (
+	Prepare  AssessmentCategory = "prepare"
+	Rehearse AssessmentCategory = "rehearse"
+	Perform  AssessmentCategory = "perform"
+	Midterm  AssessmentCategory = "midterm"
+	Final    AssessmentCategory = "final"
+)
+
+type AssessmentCategories []AssessmentCategory
+
 var Categories = []AssessmentCategory{
-	Perform,
-	Rehearse,
 	Prepare,
+	Rehearse,
+	Perform,
 	Midterm,
 	Final,
 }
 
-var catStrings = []string{"perform", "rehearse", "prepare", "midterm", "final"}
+type Assessments []Assessment
 
-func (cat AssessmentCategory) String() string {
-	log.Println("category:", int(cat))
-	return catStrings[cat]
+type AssessmentAnalysis struct {
+	CategoryStats
+	Active  int
+	Dropped int
 }
+type CategoryStats map[AssessmentCategory]int
 
-func ParseCategories(cat string) (AssessmentCategory, error) {
-	for i, category := range Categories {
-		if cat == category.String() {
-			return Categories[i], nil
+func (assms Assessments) Analysis() AssessmentAnalysis {
+	var analysis AssessmentAnalysis
+	categoryStats := make(CategoryStats)
+	for _, assm := range assms {
+		if count, ok := categoryStats[assm.Category]; ok {
+			categoryStats[assm.Category] = count + 1
+		} else {
+			categoryStats[assm.Category] = 1
+		}
+		if assm.Dropped {
+			analysis.Dropped += 1
+		} else {
+			analysis.Active += 1
 		}
 	}
-	return -1, fmt.Errorf("invalid category")
+	analysis.CategoryStats = categoryStats
+	return analysis
+}
+
+func (assms Assessments) Sort(param AssessmentSortParam) {
+	switch param {
+	case Category:
+		assms.sortByCategory()
+	case Assigned:
+		assms.sortByAssigned()
+	case Due:
+		assms.sortByDue()
+	}
+}
+
+func (assms Assessments) sortByDue() {
+	slices.SortFunc(assms, func(a, b Assessment) int {
+		if a.DateDue.Before(b.DateDue) {
+			return 1
+		}
+		return -1
+	})
+}
+func (assms Assessments) sortByAssigned() {
+	slices.SortFunc(assms, func(a, b Assessment) int {
+		if a.DateAssigned.Before(b.DateAssigned) {
+			return 1
+		}
+		return -1
+	})
+}
+
+func (assms Assessments) sortByCategory() {
+	slices.SortFunc(assms, func(a, b Assessment) int {
+		if strings.ToLower(string(a.Category)) > strings.ToLower(string(b.Category)) {
+			return 1
+		}
+		return -1
+	})
+}
+
+func ActiveFilter(active bool) func(Assessment) bool {
+	if active {
+		return func(a Assessment) bool { return !a.Dropped }
+	}
+	return func(a Assessment) bool { return a.Dropped }
+}
+
+func CategoryFilter(category AssessmentCategory) func(Assessment) bool {
+	if category == "" {
+		return func(a Assessment) bool { return true }
+	}
+	return func(a Assessment) bool {
+		return a.Category == category
+	}
+}
+
+func StartFilter(startDate time.Time) func(Assessment) bool {
+	if startDate.IsZero() {
+		return func(a Assessment) bool {
+			return true
+		}
+	}
+	return func(a Assessment) bool {
+		return !a.DateAssigned.Before(startDate)
+	}
+}
+
+func EndFilter(endDate time.Time) func(Assessment) bool {
+	if endDate.IsZero() {
+		return func(a Assessment) bool {
+			return true
+		}
+	}
+	return func(a Assessment) bool {
+		return !a.DateAssigned.After(endDate)
+	}
+}
+
+type AssessmentFilter struct {
+	Category  AssessmentCategory
+	Start     time.Time
+	End       time.Time
+	Active    bool
+	SortParam AssessmentSortParam
+}
+
+func (assms Assessments) FilterAndSort(filter AssessmentFilter) Assessments {
+	assms = filterAssessments(
+		assms,
+		StartFilter(filter.Start),
+		EndFilter(filter.End),
+		CategoryFilter(filter.Category),
+		ActiveFilter(filter.Active),
+	)
+	assms.Sort(filter.SortParam)
+	return assms
+}
+
+func filterAssessments(assessments []Assessment, keepFuncs ...func(Assessment) bool) []Assessment {
+	var filtered []Assessment
+outer:
+	for _, assm := range assessments {
+		for _, fn := range keepFuncs {
+			if !fn(assm) {
+				continue outer
+			}
+		}
+		filtered = append(filtered, assm)
+	}
+	return filtered
 }

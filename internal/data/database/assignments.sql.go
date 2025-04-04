@@ -62,7 +62,7 @@ WHERE
 
 type GetAssessmentsByCategoryParams struct {
 	ID       int64
-	Category int64
+	Category string
 }
 
 func (q *Queries) GetAssessmentsByCategory(ctx context.Context, arg GetAssessmentsByCategoryParams) ([]Assessment, error) {
@@ -248,7 +248,7 @@ type SaveAssessmentParams struct {
 	Name         string
 	Instructions string
 	File         sql.NullString
-	Category     int64
+	Category     string
 	DateAssigned string
 	DateDue      string
 	Dropped      int64
@@ -300,7 +300,7 @@ type UpdateAssessmentParams struct {
 	Name         string
 	Instructions string
 	File         sql.NullString
-	Category     int64
+	Category     string
 	DateAssigned string
 	DateDue      string
 	Dropped      int64

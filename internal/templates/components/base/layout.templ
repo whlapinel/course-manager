@@ -1,0 +1,79 @@
+package components
+
+templ LayoutComponent(props Layout) {
+	<!DOCTYPE html>
+	<html class="h-full bg-gray-800">
+		@props.Head
+		<body
+			{ props.Attributes... }
+			class="h-full"
+		>
+			<div class="min-h-full">
+				<div class="bg-gray-800 pb-32">
+					<nav class="bg-gray-800">
+						<div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+							<div class="border-b border-gray-700">
+								<div class="flex h-16 items-center justify-between px-4 sm:px-0">
+									<div class="flex items-center">
+										<a hx-get={ props.HomeURL } hx-target="#page" class="cursor-pointer" hx-push-url="true">
+											@RocketIcon()
+										</a>
+										<div class="hidden md:block">
+											<div class="ml-10 flex items-baseline space-x-4">
+												<!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+												<div id="confirmation"></div>
+												for _, item := range props.NavItems {
+													@item.Component()
+												}
+											</div>
+										</div>
+									</div>
+									<div class="hidden md:block">
+										<div class="ml-4 flex items-center md:ml-6">
+											@NotificationsButton()
+											<!-- Profile dropdown -->
+											@UserMenuComponent(props.UserMenu)
+										</div>
+									</div>
+									<div class="-mr-2 flex md:hidden">
+										<!-- Mobile menu button -->
+										@MobileMenuButtonComponent(MobileMenuButton{props.UserMenu})
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Mobile menu, show/hide based on menu state. -->
+						@MobileMenuComponent(MobileMenu{props})
+					</nav>
+				</div>
+				<main class="-mt-32">
+					<div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+						<div class="rounded-lg bg-slate-900 px-5 py-6 shadow-sm sm:px-6 text-white" id="page">
+							@props.Page
+						</div>
+					</div>
+				</main>
+			</div>
+		</body>
+	</html>
+}
+
+templ NavItemComponent(props NavItem) {
+	<a
+		{ props.MethodAttributes()... }
+		hx-push-url="true"
+		hx-target="#page"
+		if props.Class == "" {
+			if props.Current {
+				class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+				aria-current="page"
+			} else {
+				class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer"
+			}
+		} else {
+			class={ props.Class }
+		}
+	>
+		{ props.Text }
+	</a>
+}

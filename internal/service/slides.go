@@ -10,10 +10,13 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 )
 
 func marpSlidesPath(params domain.NodePath) (string, error) {
-	baseURL := "http://localhost:8080"
+	marpHost := os.Getenv("MARP_HOST")
+	marpPort := os.Getenv("MARP_PORT")
+	baseURL := fmt.Sprintf("http://%s:%s", marpHost, marpPort)
 	userParam := fmt.Sprintf("user_%s", params.UserID)
 	termParam := fmt.Sprintf("term_%d", params.TermID)
 	courseParam := fmt.Sprintf("course_%d", params.CourseID)
@@ -84,5 +87,11 @@ func (svc CourseService) GetSlides(params domain.NodePath) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(body), nil
+	content := svc.RemoveWatcherScript(body)
+	return content, nil
+}
+
+func (svc CourseService) RemoveWatcherScript(html []byte) string {
+	re := regexp.MustCompile(`(?s)<script>\s*window\.__marpCliWatchWS\s*=\s*"ws://localhost:\d+/[a-f0-9]+";.*?</script>`)
+	return re.ReplaceAllString(string(html), "")
 }

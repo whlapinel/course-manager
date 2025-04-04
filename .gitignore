@@ -12,3 +12,9 @@ node_modules
 **/public/
 build
 **.tar.gz
+
+internal/data/users
+sites
+caddy_data
+caddy_config
+cmd/web_app/web_app

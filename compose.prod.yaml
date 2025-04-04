@@ -1,0 +1,9 @@
+
+services:
+
+  caddy:
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.prod", "--adapter", "caddyfile"]  
+
+networks:
+  app-network:
+    driver: bridge

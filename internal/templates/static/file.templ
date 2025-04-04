@@ -1,0 +1,50 @@
+package templates
+
+import "gh_static_portfolio/internal/templates/components/base"
+
+templ FilesPageSectionComponent(data FilesPageSection) {
+	<div
+		id="files"
+		class="p-4"
+	>
+		if !data.Root {
+			<a
+				hx-get={ data.ParentDirectory.URL }
+				hx-target={ "#files" }
+				hx-swap="outerHTML"
+				class="flex gap-1 cursor-pointer bg-blue-500 pl-1 pr-2 rounded max-w-fit"
+			>
+				@components.UpArrowIcon()
+				{ data.ParentDirectory.Name }
+			</a>
+		}
+		<h2>Files in { data.CurrentDirectory.Name }</h2>
+		<ul role="list" class="divide-y divide-white/10 rounded-md border border-white/20">
+			for _, file := range data.Files {
+				if file.IsDir {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1" hx-get={ string(templ.SafeURL(file.URL)) } hx-target="#files" hx-swap="outerHTML">
+								@components.FolderIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+						</div>
+					</li>
+				} else {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1" href={ templ.SafeURL(file.URL) }>
+								@components.DownloadIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+						</div>
+					</li>
+				}
+			}
+		</ul>
+	</div>
+}

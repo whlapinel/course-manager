@@ -1,0 +1,21 @@
+localhost {
+	# for previewing old static site
+	handle_path /python/* {
+		root * /home/whlapinel/personal_projects/course_manager/python/docs
+		file_server
+	}
+
+	reverse_proxy localhost:1323
+}
+
+localhost 
+
+*.localhost {
+	@assets path /assets/*
+	root @assets /app/sites
+	file_server @assets
+
+	# for containerized build
+	root * /app/sites/{labels.1}
+	file_server
+}

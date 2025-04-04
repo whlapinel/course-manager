@@ -1,0 +1,33 @@
+# python is its own repo
+python 
+# secret_files is its own repo
+secret_files
+
+node_modules
+.vscode
+**/__pycache__/
+/temp
+.env*
+**/public/
+**.tar.gz
+
+
+sites
+internal/data/users
+internal/data/database/course_manager.db
+
+package.json
+package-lock.json
+.markdownlint.json
+
+.git
+*.log
+node_modules
+*.tmp
+*.css
+sqlc.yml
+tailwind.config.js
+Taskfile.yml
+tsconfig.*
+LICENSE
+notes

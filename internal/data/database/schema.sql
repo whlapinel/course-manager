@@ -91,7 +91,7 @@ CREATE TABLE
         name TEXT NOT NULL,
         instructions TEXT NOT NULL,
         file TEXT,
-        category INTEGER NOT NULL,
+        category TEXT NOT NULL,
         date_assigned TEXT NOT NULL,
         date_due TEXT NOT NULL,
         dropped INTEGER NOT NULL,

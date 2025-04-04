@@ -1,0 +1,35 @@
+# Stage 1: Build the app
+FROM golang:1.24 AS builder
+
+# Set working directory for app build
+WORKDIR /app
+
+# ✅ Step 1: Copy dependency files first to cache go.mod and go.sum
+COPY go.mod go.sum ./
+RUN go mod download
+
+# ✅ Step 2: Copy the rest of the source code separately
+COPY cmd/web_app /app/cmd/web_app
+# ✅ Step 3: Build the app binary
+COPY internal /app/internal
+RUN go build -o cmd/web_app/web_app ./cmd/web_app
+
+
+COPY cmd/migrate /app/cmd/migrate
+RUN go build -tags sqlite3 -o migrate ./cmd/migrate
+
+# Stage 2: Final Image
+FROM ubuntu:latest
+
+# ✅ Set working directory
+WORKDIR /app
+RUN apt-get update && apt-get install -y ca-certificates
+
+# ✅ Copy only the built app binary from the builder stage
+COPY --from=builder /app/cmd/web_app/web_app /app/cmd/web_app/web_app
+COPY --from=builder /app/migrate /app/migrate
+
+COPY internal/data/database/migrations/ /app/internal/data/database/migrations/
+
+# Expose HTTP port
+EXPOSE 1323

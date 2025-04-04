@@ -61,7 +61,7 @@ type Nodes struct {
 	Lesson Lesson
 }
 
-func (nodes Nodes) ToSlice() []CourseNode {
+func (nodes Nodes) ToSlice(additional ...CourseNode) []CourseNode {
 	var nodeSlice []CourseNode
 	params := []CourseNode{nodes.User, nodes.Term, nodes.Course, nodes.Unit, nodes.Lesson}
 	for _, param := range params {
@@ -69,30 +69,25 @@ func (nodes Nodes) ToSlice() []CourseNode {
 		case string:
 			if v != "" {
 				nodeSlice = append(nodeSlice, param)
-			} else {
-				return nodeSlice
 			}
 		case int:
 			if v != 0 {
 				nodeSlice = append(nodeSlice, param)
-			} else {
-				return nodeSlice
 			}
 		}
 	}
+	nodeSlice = append(nodeSlice, additional...)
 	return nodeSlice
 }
 
 // last node in node slice represents current node
 func (path Nodes) CurrentNode() CourseNode {
-	length := len(path.ToSlice())
+	nodeSlice := path.ToSlice()
+	length := len(nodeSlice)
 	if length == 0 {
 		return path.User
 	}
-	if length == 1 {
-		return path.ToSlice()[0]
-	}
-	return path.ToSlice()[length-1]
+	return nodeSlice[length-1]
 }
 
 type NodeSorter interface {

@@ -1,0 +1,10 @@
+FROM ubuntu:latest
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies (if needed)
+RUN apt-get update && apt-get install -y ca-certificates
+
+# Mount the locally built binary at runtime
+CMD ["./cmd/web_app/web_app"]

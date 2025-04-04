@@ -7,9 +7,10 @@ import (
 	"gh_static_portfolio/internal/authorization"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -105,63 +106,6 @@ func ParseNodePath(c echo.Context) (domain.NodePath, error) {
 
 }
 
-// func ParseCourseIDParams(c echo.Context) mt.NodePath {
-// 	var params mt.NodePath
-// 	userID := ParseRouteStringParam(c, UserID)
-// 	params.UserID.Valid = userID != ""
-// 	params.UserID.Value = userID
-// 	termID, err := ParseRouteParam(c, TermID)
-// 	if err == nil && termID != 0 {
-// 		params.TermID.Valid = true
-// 		params.TermID.Value = termID
-// 	}
-// 	courseID, err := ParseRouteParam(c, CourseID)
-// 	if err == nil && courseID != 0 {
-// 		params.CourseID.Valid = true
-// 		params.CourseID.Value = courseID
-// 	}
-// 	unitID, err := ParseRouteParam(c, UnitID)
-// 	if err == nil && unitID != 0 {
-// 		params.UnitID.Valid = true
-// 		params.UnitID.Value = unitID
-// 	}
-// 	lessonID, err := ParseRouteParam(c, LessonID)
-// 	if err == nil && lessonID != 0 {
-// 		params.LessonID.Valid = true
-// 		params.LessonID.Value = lessonID
-// 	}
-// 	return params
-// }
-
-// func CourseIDParam(params mt.NodePath) (int, error) {
-// 	if params.CourseID.Valid {
-// 		return params.CourseID.Value.(int), nil
-// 	} else {
-// 		return -1, fmt.Errorf("invalid param")
-// 	}
-// }
-// func UnitIDParam(params mt.NodePath) (int, error) {
-// 	if params.UnitID.Valid {
-// 		return params.UnitID.Value.(int), nil
-// 	} else {
-// 		return -1, fmt.Errorf("invalid param")
-// 	}
-// }
-// func LessonIDParam(params mt.NodePath) (int, error) {
-// 	if params.LessonID.Valid {
-// 		return params.LessonID.Value.(int), nil
-// 	} else {
-// 		return -1, fmt.Errorf("invalid param")
-// 	}
-// }
-// func TermIDParam(params mt.NodePath) (int, error) {
-// 	if params.TermID.Valid {
-// 		return params.TermID.Value.(int), nil
-// 	} else {
-// 		return -1, fmt.Errorf("invalid param")
-// 	}
-// }
-
 func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
 	val := c.Param(param.Name())
 	if val == "" {
@@ -171,7 +115,6 @@ func ParseRouteParam(c echo.Context, param RouteParam) (int, error) {
 }
 
 func ParseRouteStringParam(c echo.Context, param RouteParam) string {
-	log.Println("ParseRouteStringParam: ", c.Param(param.Name()))
 	return c.Param(param.Name())
 }
 
@@ -188,7 +131,7 @@ type RouteHandler struct {
 	HandlerFunc echo.HandlerFunc
 }
 
-type Router struct {
+type router struct {
 	svc          service.CourseService
 	app          *echo.Echo
 	params       domain.NodePath
@@ -197,8 +140,8 @@ type Router struct {
 }
 
 func (h CourseHandler) Mount() {
-	h.MountHandlers(h.HomeHandlers())
-	h.MountHandlers(h.AuthenticationHandlers())
+	// h.MountHandlers(h.HomeHandlers())
+	// h.MountHandlers(h.AuthenticationHandlers())
 	ProtectedGroup := h.e.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(h.e, GetSignin.String()), auth.GetClaims, authorization.Authorization(h.svc.GetUser))
 	// h.ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
 	// h.ProtectRoutes(h.TermHandlers(), ProtectedGroup)
@@ -241,8 +184,8 @@ func (h CourseHandler) MountHandlers(newHandlers []RouteHandler) {
 }
 
 func Mount(svc service.CourseService, app *echo.Echo) {
-	// MountHandlers(h.AuthenticationHandlers())
-	// MountHandlers(h.HomeHandlers())
+	MountHandlers(AuthHandlers(svc, app), app)
+	MountHandlers(HomeHandlers(svc, app), app)
 	ProtectedGroup := app.Group("", auth.AddCookieToHeader, auth.JWTMiddlewareProtectedNew(app, GetSignin.String()), auth.GetClaims, authorization.Authorization(svc.GetUser))
 	// ProtectRoutes(h.UserHomeHandlers(), ProtectedGroup)
 	ProtectRoutes(UserHandlers(svc, app), ProtectedGroup)
@@ -250,6 +193,7 @@ func Mount(svc service.CourseService, app *echo.Echo) {
 	ProtectRoutes(CourseHandlers(svc, app), ProtectedGroup)
 	ProtectRoutes(UnitHandlers(svc, app), ProtectedGroup)
 	ProtectRoutes(LessonHandlers(svc, app), ProtectedGroup)
+
 	// ProtectRoutes(h.CourseHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.UnitHandlers(), ProtectedGroup)
 	// ProtectRoutes(h.LessonHandlers(), ProtectedGroup)
@@ -273,15 +217,15 @@ func ProtectRoutes(handlers []RouteHandler, group *echo.Group) {
 	}
 }
 
-func MountHandlers(newHandlers []RouteHandler, router *echo.Echo) {
+func MountHandlers(newHandlers []RouteHandler, echo *echo.Echo) {
 	for _, handler := range newHandlers {
 		switch handler.Method {
 		case GET:
-			router.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
+			echo.GET(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case POST:
-			router.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
+			echo.POST(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		case DELETE:
-			router.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
+			echo.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = handler.HandlerName.String()
 		default:
 			log.Fatal("http method in route handler not expected")
 		}
@@ -317,27 +261,29 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 
 func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		Page:       page,
-		User:       user,
-		E:          h.e,
-		SigninURL:  h.e.Reverse(GetSignin.String()),
-		SignupURL:  h.e.Reverse(GetSignup.String()),
-		SignoutURL: h.e.Reverse(PostSignout.String()),
+		HomeURL:       "/",
+		Page:          page,
+		User:          user,
+		E:             h.e,
+		SigninURL:     h.e.Reverse(GetSignin.String()),
+		SignupURL:     h.e.Reverse(GetSignup.String()),
+		SignoutURL:    h.e.Reverse(PostSignout.String()),
 	}
-	return mt.CourseManagerLayoutComponent(cml)
+	return cml.Component()
 
 }
 
 func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		Page:       page,
-		User:       user,
-		E:          router,
-		SigninURL:  router.Reverse(GetSignin.String()),
-		SignupURL:  router.Reverse(GetSignup.String()),
-		SignoutURL: router.Reverse(PostSignout.String()),
+		HomeURL:       "/",
+		Page:          page,
+		User:          user,
+		E:             router,
+		SigninURL:     router.Reverse(GetSignin.String()),
+		SignupURL:     router.Reverse(GetSignup.String()),
+		SignoutURL:    router.Reverse(PostSignout.String()),
 	}
-	return mt.CourseManagerLayoutComponent(cml)
+	return cml.Component()
 
 }
 
@@ -369,4 +315,12 @@ func BreadCrumbs(router *echo.Echo, params domain.NodePath, nodes ...domain.Cour
 	}
 	return breadCrumbs
 
+}
+
+func AssetsURLFunc(path ...string) string {
+	URL, err := url.JoinPath("/dist", path...)
+	if err != nil {
+		return "error joining paths"
+	}
+	return URL
 }

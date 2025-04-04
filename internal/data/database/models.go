@@ -14,7 +14,7 @@ type Assessment struct {
 	Name         string
 	Instructions string
 	File         sql.NullString
-	Category     int64
+	Category     string
 	DateAssigned string
 	DateDue      string
 	Dropped      int64

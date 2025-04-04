@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"net/http"
 	"time"
@@ -11,12 +11,12 @@ import (
 )
 
 type termRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *termRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *termRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
@@ -26,7 +26,7 @@ func (r *termRouter) PostFile(c echo.Context) error {
 
 func NewTermRouter(svc service.CourseService, e *echo.Echo) NodeRouter {
 	return &termRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          e,
 			emptyNodeSet: EmptyNodesTerm,
@@ -35,8 +35,8 @@ func NewTermRouter(svc service.CourseService, e *echo.Echo) NodeRouter {
 
 }
 
-func (r *termRouter) GetRouter() Router {
-	return r.Router
+func (r *termRouter) GetRouter() router {
+	return r.router
 }
 
 // PostNewChild implements NodeRouter. (implemented)
@@ -211,7 +211,7 @@ func (r *termRouter) ShowEdit(c echo.Context) error {
 	details := mt.TermDetailsPage{
 		NodeDetailsPage: NodeDetailsPage(r, true),
 	}
-	component := details.Component()
+	component := details.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 }
@@ -219,6 +219,14 @@ func (r *termRouter) ShowEdit(c echo.Context) error {
 // ShowFiles implements NodeRouter.
 func (r *termRouter) ShowFiles(c echo.Context) error {
 	return ShowFiles(c, r)
+}
+
+func (r *termRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
+}
+
+func (r *termRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
 }
 
 // ViewFile implements NodeRouter.
@@ -295,6 +303,7 @@ func (r *termRouter) ShowTermCalendar(c echo.Context) error {
 		TermDetailsURL:      ShowDetailsURL(r),
 		CreateOccasionURL:   r.app.Reverse(CreateOccasion.String(), r.params.ToSlice()...),
 		E:                   r.app,
+		BreadCrumbsData:     BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
 	}
 
 	component := data.Component()

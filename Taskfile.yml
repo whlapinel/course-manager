@@ -7,51 +7,72 @@ tasks:
       - go run ./cmd/export_secret
 
   generate:
-    desc: Generate stuff and things
+    desc: Generate sqlc (go), tailwind (css), typescript (js), and templ (go). Run if typescript or templ files have been modified
     cmds:
-      - go generate ./...
+      - go generate generate.go
 
-  sync-site:
-    desc: Push generated site code to GitHub to make publicly available
-    cmds:
-      - cd python && git add .
-      - cd python && git commit -m "auto-sync"
-      - cd python && git push
+  # sync-site:
+  #   desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
+  #   cmds:
+  #     - cd python && git add .
+  #     - cd python && git commit -m "auto-sync"
+  #     - cd python && git push
 
-  dev-run-full:
-    desc: Generate then run
-    deps:
-      - generate
-    cmds:
-      - echo 'Starting Course Manager'
-      - go run ./cmd/web_app
-
-  dev-run:
+  run-dev:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
-      - go run ./cmd/web_app
+      - templ generate
+      - go build -o ./cmd/web_app/web_app ./cmd/web_app
+      - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
 
-  tar-data:
-    desc: Prepare database and files for sending to remote server
+  restart-echo:
+    desc: Stops, rebuilds and restarts the echo container only
     cmds:
-      - mkdir build
-      - mkdir build/internal
-      - mkdir build/internal/data
-      - mkdir build/internal/data/database
-      - cp -r ./internal/data/users ./build/internal/data
-      - cp internal/data/database/course_manager.db ./build/internal/data/database/course_manager.db
-      - tar -czf data.tar.gz -C ./build .
+      - templ generate
+      - go build -o ./cmd/web_app/web_app ./cmd/web_app
+      - docker compose restart echo
+      # - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans echo -d
 
-  tar-build:
-    desc: Self-explanatory
+  run-prod:
+    desc: To be run from production server
     cmds:
-      - mkdir build
-      - mkdir build/cmd
-      - mkdir build/cmd/web_app
-      - mkdir build/internal
-      - mkdir build/internal/data
-      - mkdir build/internal/data/database
-      - mkdir build/internal/data/database/migrations
-      - go build -o ./build/cmd/web_app ./cmd/web_app
-      - cp -r internal/data/database/migrations ./build/internal/data/database/migrations
-      - tar -czf web_app.tar.gz -C ./build .
+      - docker compose down
+      - docker compose pull
+      - docker compose run --rm migrate
+      - docker compose -f compose.yaml -f compose.prod.yaml up --remove-orphans
+
+  # copy-data:
+  #   desc: Copy data to remote server
+  #   cmds:
+  #     - ./scripts/copy_data.sh
+  #     - echo 'after ssh started, run task unpack-data'
+  #     - ssh root@159.223.174.80
+
+  unpack-data:
+    desc: To be run on remote server. Runs script to unpack data
+    cmds:
+      - chmod +x ./scripts/unpack_data.sh
+      - ./scripts/unpack_data.sh
+  ssh:
+    desc: ssh into server
+    cmds:
+      - ssh root@159.223.174.80
+
+  deploy:
+    desc: Build image, push to docker hub, copy scripts to remote server, ssh to server
+    cmds:
+      - docker compose build
+      - docker compose push
+      - ./scripts/copy_config.sh
+      - echo 'after ssh started, run task run-prod'
+      - ssh root@159.223.174.80
+
+  backup:
+    desc: Manual backup to remote repo on github. This is already scheduled for automatic daily backup with cron on the remote server.
+    cmds:
+      - ./scripts/backup.sh
+
+  restore:
+    desc: Restore from backup.
+    cmds:
+      - ./scripts/restore_backup.sh

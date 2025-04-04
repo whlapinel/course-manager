@@ -1,9 +1,0 @@
-<h1>Welcome!</h1>
-<h2>Available Sections</h2>
-<ul>
-    {{ range .Site.Sections }}
-    <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a> ({{ .Page.Kind }})
-    </li>
-    {{ end }}
-</ul>

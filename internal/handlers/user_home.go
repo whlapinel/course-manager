@@ -2,19 +2,28 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
-	"log"
+	mt "gh_static_portfolio/internal/templates/app"
 
 	"github.com/labstack/echo/v4"
 )
 
 type userRouter struct {
-	Router
+	router
+}
+
+// PostEditFile implements NodeRouter.
+func (r *userRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
+}
+
+// ShowEditFile implements NodeRouter.
+func (r *userRouter) ShowEditFile(echo.Context) error {
+	panic("unimplemented")
 }
 
 // SetRouter implements NodeRouter.
-func (r *userRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *userRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
@@ -28,8 +37,8 @@ func (r *userRouter) DownloadFile(echo.Context) error {
 }
 
 // Router implements NodeRouter.
-func (r *userRouter) GetRouter() Router {
-	return r.Router
+func (r *userRouter) GetRouter() router {
+	return r.router
 }
 
 // Delete implements NodeHandler.
@@ -54,7 +63,6 @@ func (r *userRouter) ListChildren(c echo.Context) error {
 		ShowTermCalendarRHN: ShowTermCalendar.String(),
 		NodeListPage:        NodeListPage(r),
 	}
-	log.Println("TermsListPage initialized: ", page)
 	var component = page.Component()
 	layout := CourseManagerLayout(r.app, component, nodes.User)
 	return Respond(c, "", component, layout)
@@ -140,21 +148,13 @@ func (r *userRouter) UserAuth(c echo.Context) error {
 
 func (r *userRouter) GenerateSite(c echo.Context) error {
 	userID := c.Get("id").(string)
-	r.svc.GenerateSite(userID)
+	r.svc.NewGenerateSite(userID)
 	return Respond(c, "/", mt.Confirm("Site Generation Complete!"), nil)
-}
-
-func (r *userRouter) SyncSite(c echo.Context) error {
-	err := r.svc.SyncSite()
-	if err != nil {
-		return err
-	}
-	return Respond(c, "/", mt.Confirm("Sync Complete!"), nil)
 }
 
 func NewUserHandler(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &userRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesUser,
@@ -183,7 +183,6 @@ func UserHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 	userRouteHandlers := []RouteHandler{
 		{Users, UserAuth, GET, userRouter.UserAuth},
 		{Generate, GenerateSite, POST, userRouter.GenerateSite},
-		{Sync, SyncSite, POST, userRouter.SyncSite},
 	}
 	routeHandlers = append(routeHandlers, userRouteHandlers...)
 	routeHandlers = append(routeHandlers, NodeHandlers(nodeRouter)...)

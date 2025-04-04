@@ -1,10 +1,15 @@
 {
   "include": [
-    "internal/assets/ts**/*.ts"
+    "internal/assets/ts/*.ts"
+  ],
+  "exclude": [
+    "internal/assets/dist/**/*",
+    "caddy*/**/*",
+    "internal/templates/**/*" /* don't want to generate js for components; instead these scripts should be copy-pasted to assets as needed*/
   ],
   "compilerOptions": {
     "typeRoots": [
-      "internal/assets/ts/@types",
+      "./internal/assets/ts/types",
       "./node_modules/@types"
     ],
     "composite": true,

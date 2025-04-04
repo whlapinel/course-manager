@@ -1,0 +1,60 @@
+
+services:
+  marp:
+    # marp doesn't shut down gracefully with SIGINT or SIGTERM so just kill it immediately
+    stop_grace_period: 0s
+    image: whlapinel/course-manager-marp
+    build:
+      context: .
+      dockerfile: "Dockerfile.marp"
+    command: ["--server", "./internal/data"]
+    volumes:
+      - ./internal/data/users:/home/marp/app/internal/data/users
+    networks:
+      - app-network
+
+  caddy:
+    image: whlapinel/course-manager-caddy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    ports:
+      - 443:443
+      - 80:80
+    networks:
+      - app-network
+    env_file:
+      - .env
+    volumes:
+      - ./sites:/app/sites
+      - ./caddy_data:/root/.local/share/caddy
+      - ./caddy_config:/root/.config/caddy
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.dev", "--adapter", "caddyfile"]
+    
+  echo:
+    image: whlapinel/course-manager:0.2.0-dev
+    command: ["./cmd/web_app/web_app"]
+    networks:
+      - app-network
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.echo
+    volumes:
+      - ./internal/data/users:/app/internal/data/users
+      - ./sites:/app/sites
+      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+
+  migrate:
+    profiles:
+      - migrations
+    image: whlapinel/course-manager:0.2.0-dev
+    command: ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]
+    volumes:
+      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+
+
+networks:
+  app-network:
+    driver: bridge

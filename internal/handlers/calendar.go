@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"time"
 
@@ -50,7 +50,7 @@ func (h CourseHandler) ShowCourseCalendar(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	calendarData, err := h.calendarPage(params)
+	calendarData, err := h.calendarPage(params, nodes)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (h CourseHandler) ShiftLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	calendarData, err := h.calendarPage(params)
+	calendarData, err := h.calendarPage(params, nodes)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (h CourseHandler) ExtendLesson(c echo.Context) error {
 		log.Println(err)
 		return err
 	}
-	calendarData, err := h.calendarPage(params)
+	calendarData, err := h.calendarPage(params, nodes)
 	if err != nil {
 		return err
 	}
@@ -213,7 +213,7 @@ func (h CourseHandler) ListUnitLessons(c echo.Context) error {
 
 }
 
-func (h CourseHandler) calendarPage(params domain.NodePath) (mt.CourseCalendar, error) {
+func (h CourseHandler) calendarPage(params domain.NodePath, nodes domain.Nodes) (mt.CourseCalendar, error) {
 	course, err := h.svc.GetCourseForCalendar(params.CourseID)
 	if err != nil {
 		log.Println(err)
@@ -231,6 +231,7 @@ func (h CourseHandler) calendarPage(params domain.NodePath) (mt.CourseCalendar, 
 		ShowAddLessonDateRHN:          string(ShowAddLessonDatePage),
 		RemoveLessonDateRHN:           RemoveLessonDate.String(),
 		E:                             h.e,
+		BreadCrumbsData:               BreadCrumbs(h.e, params, nodes.ToSlice()...),
 	}, nil
 
 }

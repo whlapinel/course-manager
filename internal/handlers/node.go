@@ -6,16 +6,22 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"gh_static_portfolio/internal/util"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
+
+type Router interface {
+	GetRouter() router
+	SetRouter(router router)
+}
 
 type NodeRouter interface {
 	ListChildren(echo.Context) error
@@ -26,16 +32,22 @@ type NodeRouter interface {
 	ShowNewChild(echo.Context) error // e.g. if node is course, new child would be new unit
 	PostNewChild(echo.Context) error
 	ShowEdit(echo.Context) error
+	ShowEditFile(echo.Context) error
+	PostEditFile(echo.Context) error
 	PostEdit(echo.Context) error
 	Delete(echo.Context) error // i.e. delete node itself (not child)
-	GetRouter() Router
-	SetRouter(router Router)
+	Router
 }
 
 type EmptyNode domain.CourseNode
 
 type EmptyNodeSet []EmptyNode
 
+func URL(r NodeRouter, rhn RouteHandlerName, additionalParams ...any) string {
+	echo := r.GetRouter().app
+	nodes := r.GetRouter().params
+	return echo.Reverse(rhn.String(), AddParams(nodes, additionalParams...)...)
+}
 func (set EmptyNodeSet) ChildNodeSet() EmptyNodeSet {
 	return emptyNodes[:len(set)+1]
 }
@@ -108,7 +120,16 @@ func NodeFilesRoutePath(nodes ...EmptyNode) RoutePath {
 	return RoutePath(path)
 }
 
-func ViewNodeFilesRouteName(nodes ...EmptyNode) RoutePath {
+// e.g. /users/:user-id/terms/:term-id/courses/:course-id/units/:unit-id/files/edit/*
+func NodeEditFileRoutePath(nodes ...EmptyNode) RoutePath {
+	var name = NodeRouteName(nodes...)
+	path := string(name)
+	path = filepath.Join(path, "/files/edit/*")
+	return RoutePath(path)
+}
+
+// e.g. /users/:user-id/terms/:term-id/courses/:course-id/units/:unit-id/view-markdown/files/*
+func ViewNodeFilesRoutePath(nodes ...EmptyNode) RoutePath {
 	var name = NodeRouteName(nodes...)
 	path := string(name)
 	path = filepath.Join(path, "/view-markdown/files/*")
@@ -116,7 +137,7 @@ func ViewNodeFilesRouteName(nodes ...EmptyNode) RoutePath {
 }
 
 func ViewNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
-	routeName := ViewNodeFilesRouteName(nodes...)
+	routeName := ViewNodeFilesRoutePath(nodes...)
 	return RouteHandlerName(GET + routeName)
 }
 
@@ -154,6 +175,18 @@ func ShowParentDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
 
 func ShowChildDetailsRHN(nodes ...EmptyNode) RouteHandlerName {
 	return ShowNodeDetailsRHN(EmptyNodeSet(nodes).ChildNodeSet()...)
+}
+
+func ShowEditNodeFileRHN(nodes ...EmptyNode) RouteHandlerName {
+	name := NodeEditFileRoutePath(nodes...)
+	rhn := RouteHandlerName(GET + name)
+	return rhn
+}
+
+func PostEditNodeFileRHN(nodes ...EmptyNode) RouteHandlerName {
+	name := NodeEditFileRoutePath(nodes...)
+	rhn := RouteHandlerName(POST + name)
+	return rhn
 }
 
 func ShowNodeFilesRHN(nodes ...EmptyNode) RouteHandlerName {
@@ -216,8 +249,30 @@ func ShowFilesHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHan
 	}
 }
 
+func ShowEditFileHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
+	routeName := NodeEditFileRoutePath(nodes...)
+	rhn := ShowEditNodeFileRHN(nodes...)
+	return RouteHandler{
+		RoutePath:   routeName,
+		HandlerName: rhn,
+		Method:      GET,
+		HandlerFunc: handlerFunc,
+	}
+}
+
+func PostEditFileHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
+	path := NodeEditFileRoutePath(nodes...)
+	rhn := PostEditNodeFileRHN(nodes...)
+	return RouteHandler{
+		RoutePath:   path,
+		HandlerName: rhn,
+		Method:      POST,
+		HandlerFunc: handlerFunc,
+	}
+}
+
 func ViewFilesHandler(handlerFunc echo.HandlerFunc, nodes ...EmptyNode) RouteHandler {
-	routeName := ViewNodeFilesRouteName(nodes...)
+	routeName := ViewNodeFilesRoutePath(nodes...)
 	rhn := ViewNodeFilesRHN(nodes...)
 	return RouteHandler{
 		RoutePath:   routeName,
@@ -297,6 +352,8 @@ func NodeHandlers(router NodeRouter) []RouteHandler {
 		PostFileHandler(router.PostFile, r.emptyNodeSet...),
 		ShowNodeDetailsHandler(router.ShowDetails, r.emptyNodeSet...),
 		ShowEditHandler(router.ShowEdit, r.emptyNodeSet...),
+		ShowEditFileHandler(router.ShowEditFile, r.emptyNodeSet...),
+		PostEditFileHandler(router.PostEditFile, r.emptyNodeSet...),
 		PostEditHandler(router.PostEdit, r.emptyNodeSet...),
 		DeleteHandler(router.Delete, r.emptyNodeSet...),
 	}
@@ -332,6 +389,19 @@ func PostNewChildURL(handler NodeRouter) string {
 func ShowFilesURL(handler NodeRouter) string {
 	r := handler.GetRouter()
 	return r.app.Reverse(string(ShowNodeFilesRHN(r.emptyNodeSet...)), AddParams(r.params, "")...)
+}
+
+func ShowEditFileURL(handler NodeRouter) func(relPath string) string {
+	r := handler.GetRouter()
+	return func(relPath string) string {
+		return r.app.Reverse(string(ShowEditNodeFileRHN(r.emptyNodeSet...)), AddParams(r.params, relPath)...)
+	}
+}
+func PostEditFileURL(handler NodeRouter) func(relPath string) string {
+	r := handler.GetRouter()
+	return func(relPath string) string {
+		return r.app.Reverse(string(PostEditNodeFileRHN(r.emptyNodeSet...)), AddParams(r.params, relPath)...)
+	}
 }
 
 func ShowEditNodeURL(handler NodeRouter) string {
@@ -414,14 +484,21 @@ func NodeCreateChildPage(h NodeRouter) mt.NodeCreatePage {
 func NodeFilesPage(router NodeRouter, path string, files []mt.FilesPageItem) mt.FilesPage {
 	r := router.GetRouter()
 	return mt.FilesPage{
-		Node:            r.nodes.CurrentNode(),
-		Params:          r.params,
-		CurrentPath:     path,
-		OpenFileRHN:     ShowNodeFilesRHN(r.emptyNodeSet...).String(),
-		ViewMarkdownRHN: ViewNodeFilesRHN(r.emptyNodeSet...).String(),
-		Files:           files,
-		E:               r.app,
-		BreadCrumbsData: BreadCrumbs(r.app, r.params, r.nodes.ToSlice()...),
+		Root: path == "",
+		ParentDirectory: mt.FilesPageItem{
+			Name:  filepath.Base(filepath.Dir(path)),
+			URL:   string(ShowNodeFilesRHN(r.emptyNodeSet...).String()),
+			IsDir: true,
+		},
+		Node:                r.nodes.CurrentNode(),
+		Params:              r.params,
+		CurrentPath:         path,
+		OpenFileRHN:         ShowNodeFilesRHN(r.emptyNodeSet...).String(),
+		ViewMarkdownRHN:     ViewNodeFilesRHN(r.emptyNodeSet...).String(),
+		EditMarkdownFileURL: ShowEditFileURL(router),
+		Files:               files,
+		E:                   r.app,
+		BreadCrumbsData:     BreadCrumbs(r.app, r.params, r.nodes.ToSlice()...),
 	}
 }
 
@@ -477,7 +554,6 @@ func ShowFiles(c echo.Context, r NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	log.Println(files)
 	r.SetRouter(router)
 	page := NodeFilesPage(r, path, files)
 	component := page.Component()
@@ -485,11 +561,97 @@ func ShowFiles(c echo.Context, r NodeRouter) error {
 	return Respond(c, "", component, layout)
 }
 
+func ShowEditFile(c echo.Context, router NodeRouter, redirect string) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	path := c.Param("*")
+	log.Println("path: ", path)
+	path, err = url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+	log.Println("decoded: ", path)
+	r := router.GetRouter()
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	root := data.NodeFilesDirPath(nodes.ToSlice()...)
+	path = filepath.Join(root, path)
+	r.nodes = nodes
+	router.SetRouter(r)
+	markdownFile, err := os.Open(path)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer markdownFile.Close()
+	bytes, err := io.ReadAll(markdownFile)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println(len(bytes), "bytes read")
+	relPath, err := filepath.Rel(root, path)
+	if err != nil {
+		return err
+	}
+	log.Println(string(bytes))
+	component := mt.MarkdownEditor{
+		Path:            relPath,
+		Params:          r.params,
+		Contents:        string(bytes),
+		PostEditFileURL: PostEditFileURL(router),
+		E:               r.app,
+	}.Component()
+	return Respond(c, ShowDetailsURL(router), component, nil)
+
+}
+
+func PostEditFile(c echo.Context, router NodeRouter, redirect string) error {
+	log.Println("PostEditFile")
+	r := router.GetRouter()
+	log.Println(r.nodes.CurrentNode())
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	path := c.Param("*")
+	log.Println("path: ", path)
+	path, err = url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+	log.Println("decoded: ", path)
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	router.SetRouter(r)
+	content := c.FormValue(string(mt.EditSlidesTextAreaID))
+	log.Println("content", content)
+	err = r.svc.WriteToMarkdown(path, content, nodes)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, ShowDetailsURL(router))
+}
+
 // redirect is for non-htmx requests
 func ViewFile(c echo.Context, router NodeRouter, redirect string) error {
 	r := router.GetRouter()
 	path := c.Param("*")
 	log.Println("path: ", path)
+	path, err := url.PathUnescape(path)
+	if err != nil {
+		return err
+	}
+	log.Println("decoded: ", path)
 	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
@@ -504,7 +666,7 @@ func ViewFile(c echo.Context, router NodeRouter, redirect string) error {
 	}
 	pathRoot := data.NodeFilesDirPath(nodes.ToSlice()...)
 	path = filepath.Join(pathRoot, path)
-	content, err := RenderMarkdownFile(path)
+	content, err := r.svc.RenderMarkdownFile(path)
 	if err != nil {
 		return err
 	}
@@ -536,9 +698,6 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	r.nodes = nodes
-	nodeDirPath := data.NodeFilesDirPath(r.nodes.ToSlice()...)
-	path = filepath.Join(nodeDirPath, path)
 	// Parse the form to retrieve the file
 	err = c.Request().ParseMultipartForm(10 << 20)
 	if err != nil {
@@ -548,25 +707,10 @@ func PostFile(c echo.Context, router NodeRouter) error {
 	if err != nil {
 		return err
 	}
-	// Open the file
-	src, err := file.Open()
+	err = r.svc.WriteFile(file, path, nodes)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
+		return err
 	}
-	defer src.Close()
-
-	// Create a destination file
-	dst, err := os.Create(filepath.Join(path, file.Filename))
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
-	}
-	defer dst.Close()
-
-	// Copy the content of the uploaded file to the destination
-	if _, err := io.Copy(dst, src); err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to save file")
-	}
-
 	// Respond to the client
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
 

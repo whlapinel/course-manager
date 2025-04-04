@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 )
 
@@ -18,8 +18,14 @@ func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 	var routeHandlers []RouteHandler
 	lr := nr.(*lessonRouter)
 	lessonRouteHandlers := []RouteHandler{
+		{Slides, ViewLessonSlides, GET, lr.ShowLessonSlides},
 		{EditSlides, ShowEditSlides, GET, lr.ShowEditSlides},
 		{EditSlides, PostEditSlides, POST, lr.PostEditSlides},
+		{LessonAssessments, GetAssessments, GET, lr.GetAssessments},
+		{NewLessonAssessment, ShowNewAsssessmentForm, GET, lr.ShowNewAsssessmentForm},
+
+		// TODO: implement
+		{LessonStandards, GetStandards, GET, lr.GetStandards},
 		{LessonStandards, PostLessonStandard, POST, lr.PostLessonStandard},
 		{LessonStandard, DeleteLessonStandard, DELETE, lr.DeleteLessonStandard},
 	}
@@ -30,6 +36,8 @@ func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 		ViewFilesHandler(nr.ViewFile, nr.GetRouter().emptyNodeSet...),
 		ShowNodeDetailsHandler(nr.ShowDetails, nr.GetRouter().emptyNodeSet...),
 		ShowEditHandler(nr.ShowEdit, nr.GetRouter().emptyNodeSet...),
+		ShowEditFileHandler(nr.ShowEditFile, nr.GetRouter().emptyNodeSet...),
+		PostEditFileHandler(nr.PostEditFile, nr.GetRouter().emptyNodeSet...),
 		PostEditHandler(nr.PostEdit, nr.GetRouter().emptyNodeSet...),
 		DeleteHandler(nr.Delete, nr.GetRouter().emptyNodeSet...),
 	}
@@ -38,12 +46,101 @@ func LessonHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 }
 
 type lessonRouter struct {
-	Router
+	router
+}
+
+func (r *lessonRouter) GetStandards(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	nodeStandards, err := r.svc.GetLessonStandards(nodes.Lesson)
+	if err != nil {
+		return err
+	}
+	courseStandards, err := r.svc.GetCourseStandardsWithObjectives(nodes.Course)
+	if err != nil {
+		return err
+	}
+	standardFrag := mt.StandardsFragment{
+		NodeStandards:   nodeStandards,
+		CourseStandards: courseStandards,
+		PostStandardURL: URL(r, PostLessonStandard),
+		DeleteStandardURL: func(id any) string {
+			return URL(r, DeleteLessonStandard, id)
+		},
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), standardFrag, nil)
+
+}
+
+func (r *lessonRouter) GetAssessments(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	assessments, err := r.svc.GetLessonAssessments(nodes.Lesson.ID)
+	if err != nil {
+		return err
+	}
+	assFrag := mt.AssessmentsFragment{
+		NewAssessmentURL: URL(r, ShowNewAsssessmentForm),
+		GetEditAssessmentURL: func(id any) string {
+			altURL := URL(r, GetEditAssessment, id)
+			return altURL
+		},
+		ViewFileURL: func(relPath string) string {
+			return URL(r, GetLessonViewMarkdown, relPath)
+		},
+		Assessments: assessments,
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), assFrag, nil)
+
+}
+func (r *lessonRouter) ShowNewAsssessmentForm(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	component := mt.NewAssessmentForm{
+		PostAssessmentURL: URL(r, PostAssessment),
+		CancelURL:         ShowDetailsURL(r),
+		NodeID:            params.LessonID,
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), component, nil)
+
+}
+
+// ShowEditFile implements NodeRouter.
+func (r *lessonRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
+}
+
+func (r *lessonRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
 }
 
 // SetRouter implements NodeRouter.
-func (r *lessonRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *lessonRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // Delete implements NodeRouter.
@@ -138,6 +235,28 @@ func (r *lessonRouter) ShowEditSlides(c echo.Context) error {
 	return Respond(c, ShowDetailsURL(r), template, nil)
 }
 
+func (r *lessonRouter) ShowLessonSlides(c echo.Context) error {
+	params, err := ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	r.params = params
+	nodes, err := r.svc.Nodes(params)
+	if err != nil {
+		return err
+	}
+	r.nodes = nodes
+	slides, err := r.svc.GetSlides(r.params)
+	if err != nil {
+		return err
+	}
+	slideFrag := mt.Slides{
+		HTML:          slides,
+		EditSlidesURL: URL(r, ShowEditSlides),
+	}.Component()
+	return Respond(c, ShowDetailsURL(r), slideFrag, nil)
+}
+
 // PostEdit implements NodeRouter.
 func (r *lessonRouter) PostEdit(c echo.Context) error {
 	newParams, err := ParseNodePath(c)
@@ -194,8 +313,8 @@ func (r *lessonRouter) PostNewChild(c echo.Context) error {
 }
 
 // Router implements NodeRouter.
-func (r *lessonRouter) GetRouter() Router {
-	return r.Router
+func (r *lessonRouter) GetRouter() router {
+	return r.router
 }
 
 // ShowDetails implements NodeRouter.
@@ -210,24 +329,9 @@ func (r *lessonRouter) ShowDetails(c echo.Context) error {
 		return err
 	}
 	r.nodes = nodes
-	nodeDetails := NodeDetailsPage(r, false)
-	slides, err := r.svc.GetSlides(r.params)
+	page, err := r.DetailsPage(false)
 	if err != nil {
 		return err
-	}
-	page := mt.LessonDetailsPage{
-		Slides:                  slides,
-		E:                       r.app,
-		Standards:               r.nodes.Course.StandardSet.Standards,
-		NodeDetailsPage:         nodeDetails,
-		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), params.ToSlice()...),
-		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
-		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
-		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
-		GetEditAssessmentRHN:    GetEditAssessment.String(),
-		DeleteAssessmentRHN:     DeleteAssessment.String(),
-		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), params.ToSlice()...),
-		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), params.ToSlice()...),
 	}
 	component := page.Component()
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
@@ -250,7 +354,7 @@ func (r *lessonRouter) ShowEdit(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	component := page.Component()
+	component := page.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 
@@ -273,7 +377,7 @@ func (r *lessonRouter) ViewFile(c echo.Context) error {
 
 func NewLessonRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &lessonRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesLesson,
@@ -295,6 +399,8 @@ const (
 )
 
 const (
+	GetAssessments        = RouteHandlerName(GET + LessonAssessments)
+	GetStandards          = RouteHandlerName(GET + LessonStandards)
 	ViewLessonSlides      = RouteHandlerName(GET + Slides)
 	ShowLessonFiles       = RouteHandlerName(GET + LessonFiles)
 	GetLessonViewMarkdown = RouteHandlerName(GET + LessonViewMarkdown)
@@ -351,23 +457,17 @@ func (r *lessonRouter) DeleteLessonStandard(c echo.Context) error {
 }
 
 func (r *lessonRouter) DetailsPage(isEdit bool) (mt.LessonDetailsPage, error) {
-	slides, err := r.svc.GetSlides(r.params)
-	if err != nil {
-		return mt.LessonDetailsPage{}, err
-	}
 	page := mt.LessonDetailsPage{
-		Slides:                  slides,
-		E:                       r.app,
-		Standards:               r.nodes.Course.StandardSet.Standards,
-		NodeDetailsPage:         NodeDetailsPage(r, isEdit),
-		PostLessonStandardURL:   r.app.Reverse(PostLessonStandard.String(), r.params.ToSlice()...),
-		ViewMarkdownRHN:         string(ViewNodeFilesRHN(r.emptyNodeSet...)),
-		FileRHN:                 string(ShowNodeFilesRHN(r.emptyNodeSet...)),
-		DeleteLessonStandardRHN: DeleteLessonStandard.String(),
-		GetEditAssessmentRHN:    GetEditAssessment.String(),
-		DeleteAssessmentRHN:     DeleteAssessment.String(),
-		PostAssessmentURL:       r.app.Reverse(PostAssessment.String(), r.params.ToSlice()...),
-		EditSlidesURL:           r.app.Reverse(ShowEditSlides.String(), r.params.ToSlice()...),
+		E:                 r.app,
+		NodeDetailsPage:   NodeDetailsPage(r, isEdit),
+		ViewMarkdownRHN:   string(ViewNodeFilesRHN(r.emptyNodeSet...)),
+		FileRHN:           string(ShowNodeFilesRHN(r.emptyNodeSet...)),
+		AssetsURLFunc:     AssetsURLFunc,
+		GetAssessmentsURL: URL(r, GetAssessments),
+		GetStandardsURL:   URL(r, GetStandards),
+		GetSlidesURL:      URL(r, ViewLessonSlides),
+		EditSlidesURL:     r.app.Reverse(ShowEditSlides.String(), r.params.ToSlice()...),
 	}
+
 	return page, nil
 }

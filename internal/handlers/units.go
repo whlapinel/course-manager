@@ -1,14 +1,9 @@
 package handlers
 
 import (
-	"bytes"
-	"context"
-	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
 	"log"
-	"path/filepath"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -25,12 +20,12 @@ func UnitHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler {
 }
 
 type unitRouter struct {
-	Router
+	router
 }
 
 // SetRouter implements NodeRouter.
-func (r *unitRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *unitRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // Delete implements NodeRouter.
@@ -152,8 +147,8 @@ func (r *unitRouter) PostNewChild(c echo.Context) error {
 }
 
 // Router implements NodeRouter.
-func (u *unitRouter) GetRouter() Router {
-	return u.Router
+func (u *unitRouter) GetRouter() router {
+	return u.router
 }
 
 // ShowDetails implements NodeRouter.
@@ -174,7 +169,7 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 	}
 	r.nodes = nodes
 	details := NodeDetailsPage(r, true)
-	component := details.Component()
+	component := details.DetailsFormComponent(true)
 	layout := CourseManagerLayout(r.app, component, r.nodes.User)
 	return Respond(c, "", component, layout)
 
@@ -183,6 +178,10 @@ func (r *unitRouter) ShowEdit(c echo.Context) error {
 // ShowFiles implements NodeRouter. (implemented)
 func (r *unitRouter) ShowFiles(c echo.Context) error {
 	return ShowFiles(c, r)
+}
+
+func (r *unitRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
 }
 
 // ShowNewChild implements NodeRouter.
@@ -203,51 +202,18 @@ func (r *unitRouter) ShowNewChild(c echo.Context) error {
 	return Respond(c, "", component, layout)
 
 }
+func (r *unitRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
+}
 
 // ViewFile implements NodeRouter.
 func (r *unitRouter) ViewFile(c echo.Context) error {
-	path := c.Param("*")
-	log.Println("path: ", path)
-	params, err := ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	r.params = params
-	nodes, err := r.svc.Nodes(params)
-	if err != nil {
-		return err
-	}
-	r.nodes = nodes
-	err = r.svc.CreateNodeFilesDir(r.nodes.ToSlice()...)
-	if err != nil {
-		return err
-	}
-	pathRoot := data.NodeFilesDirPath(r.nodes.ToSlice()...)
-	path = filepath.Join(pathRoot, path)
-	content, err := RenderMarkdownFile(path)
-	if err != nil {
-		return err
-	}
-	var buf bytes.Buffer
-	data := mt.MarkdownDocument{
-		Title:   filepath.Base(path),
-		Content: string(content),
-		Static:  false,
-	}
-	err = mt.DocLayout(data).Render(context.Background(), &buf)
-	if err != nil {
-		return err
-	}
-	data.Content = buf.String()
-	component := mt.MarkdownIFrame(data)
-	layout := CourseManagerLayout(r.app, component, r.nodes.User)
-	return Respond(c, "", component, layout)
-
+	return ViewFile(c, r, ShowDetailsURL(r))
 }
 
 func NewUnitRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &unitRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesUnit,

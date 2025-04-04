@@ -3,7 +3,7 @@ package handlers
 import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
 	"strconv"
 	"time"
@@ -12,23 +12,25 @@ import (
 )
 
 const (
-	CourseAssessments RoutePath = Course + "/assessments"
-	Assessments       RoutePath = Lesson + "/assessments"
-	Assessment        RoutePath = Assessments + RoutePath(AssessmentID)
+	CourseAssessments   RoutePath = Course + "/assessments"
+	LessonAssessments   RoutePath = Lesson + "/assessments"
+	NewLessonAssessment RoutePath = LessonAssessments + "/new"
+	Assessment          RoutePath = LessonAssessments + RoutePath(AssessmentID)
 )
 
 const (
-	GetCourseAssessments = RouteHandlerName(GET + CourseAssessments)
-	PostAssessment       = RouteHandlerName(POST + Assessments)
-	GetEditAssessment    = RouteHandlerName(GET + Assessment)
-	PostEditAssessment   = RouteHandlerName(POST + Assessment)
-	DeleteAssessment     = RouteHandlerName(DELETE + Assessment)
+	GetCourseAssessments   = RouteHandlerName(GET + CourseAssessments)
+	ShowNewAsssessmentForm = RouteHandlerName(GET + NewLessonAssessment)
+	PostAssessment         = RouteHandlerName(POST + LessonAssessments)
+	GetEditAssessment      = RouteHandlerName(GET + Assessment)
+	PostEditAssessment     = RouteHandlerName(POST + Assessment)
+	DeleteAssessment       = RouteHandlerName(DELETE + Assessment)
 )
 
 func (h CourseHandler) AssessmentHandlers() []RouteHandler {
 	return []RouteHandler{
 		{CourseAssessments, GetCourseAssessments, GET, h.GetCourseAssessments},
-		{Assessments, PostAssessment, POST, h.PostAssessment},
+		{LessonAssessments, PostAssessment, POST, h.PostAssessment},
 		{Assessment, GetEditAssessment, GET, h.GetEditAssessment},
 		{Assessment, PostEditAssessment, POST, h.PostEditAssessment},
 		{Assessment, DeleteAssessment, DELETE, h.DeleteAssessment},
@@ -46,18 +48,30 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	var activeParam bool = true
+	activeParamString := c.QueryParam("active")
+	if activeParamString != "" {
+		activeParam, err = strconv.ParseBool(activeParamString)
+		if err != nil {
+			return err
+		}
+	}
+	sortParamString := c.QueryParam("sort-by")
+	var sortParam int
+	if sortParamString != "" {
+		sortParam, err = strconv.Atoi(sortParamString)
+	}
+	if err != nil {
+		return err
+	}
 	categoryParam := c.QueryParam("category")
-	log.Println(categoryParam)
 	startDateParam := c.QueryParam("start")
-	log.Println(startDateParam)
 	var start time.Time
 	if startDateParam != "" {
 		start, err = time.Parse(time.DateOnly, startDateParam)
 		if err != nil {
 			return err
 		}
-	} else {
-		start = time.Now().AddDate(-10, 0, 0)
 	}
 	endDateParam := c.QueryParam("end")
 	log.Println(endDateParam)
@@ -67,42 +81,50 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		end = time.Now().AddDate(10, 0, 0)
 	}
-	var assessments = []domain.Assessment{}
-	if categoryParam != "" {
-		// category filter
-		category, err = domain.ParseCategories(categoryParam)
-		if err != nil {
-			return err
-		}
-		assessments, err = h.svc.FilterAssessmentsByCategoryAndDate(category, params.CourseID, start, end)
-		if err != nil {
-			return err
-		}
-	} else {
-		// no category filter
-		assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
-		if err != nil {
-			return err
-		}
+	var assessments domain.Assessments
+	category = domain.AssessmentCategory(categoryParam)
+	assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
+	if err != nil {
+		return err
 	}
+	filter := domain.AssessmentFilter{
+		Active:    activeParam,
+		Category:  category,
+		Start:     start,
+		End:       end,
+		SortParam: domain.AssessmentSortParam(sortParam),
+	}
+	assessments = assessments.FilterAndSort(filter)
+	assessments.Sort(filter.SortParam)
+	log.Println("length of assessments:", len(assessments))
 	var queryParams = make(map[string]string)
-	queryParams["category"] = category.String()
+	if activeParam {
+		queryParams["active"] = "true"
+	}
+	queryParams["category"] = string(category)
 	queryParams["start"] = startDateParam
 	queryParams["end"] = endDateParam
+	queryParams["sort-by"] = strconv.Itoa(sortParam)
 	baseURL := h.e.Reverse(GetCourseAssessments.String(), params.ToSlice()...)
 	urlWithParams, err := AddQueryParams(baseURL, queryParams)
 	if err != nil {
 		return err
 	}
+	log.Println("GetCourseAssessments: category:", string(category))
+	log.Println("GetCourseAssessments: assessments:", assessments)
 	page := mt.CourseAssessmentsPage{
+		Analysis:          domain.Assessments(assessments).Analysis(),
+		Filter:            filter,
+		Category:          category,
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,
+		CourseListURL:     h.e.Reverse(ListTermCourses.String(), params.ToSlice()...),
+		BreadCrumbsData:   BreadCrumbs(h.e, params, nodes.ToSlice()...),
 	}
 	return Respond(c, "", page.Component(), h.CourseManagerLayout(page.Component(), nodes.User))
 }
+
 func (h CourseHandler) PostAssessment(c echo.Context) error {
 	params, err := ParseNodePath(c)
 	if err != nil {
@@ -117,10 +139,7 @@ func (h CourseHandler) PostAssessment(c echo.Context) error {
 	file := form.Get("file")
 	instructions := form.Get("instructions")
 	categoryParam := form.Get("category")
-	category, err := strconv.Atoi(categoryParam)
-	if err != nil {
-		return err
-	}
+	category := categoryParam
 	assignedParam := form.Get("date-assigned")
 	assigned, err := time.Parse(time.DateOnly, assignedParam)
 	if err != nil {
@@ -193,10 +212,7 @@ func (h CourseHandler) PostEditAssessment(c echo.Context) error {
 	instructions := form.Get("instructions")
 	file := form.Get("file")
 	categoryParam := form.Get("category")
-	category, err := strconv.Atoi(categoryParam)
-	if err != nil {
-		return err
-	}
+	category := categoryParam
 	assignedParam := form.Get("date-assigned")
 	assigned, err := time.Parse(time.DateOnly, assignedParam)
 	if err != nil {

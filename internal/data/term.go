@@ -84,7 +84,6 @@ func (cr CourseRepo) GetTerms(userID string) ([]domain.Term, error) {
 		}
 		// if we've hit a new term, append the current term and create a new one
 		if dbGetTermRow.ID != int64(term.ID) {
-			log.Println("new term encountered: appending current term and creating new.", dbGetTermRow.Name, term.Name)
 			terms = append(terms, term)
 			term = domain.Term{
 				ID:          int(dbGetTermRow.ID),
@@ -102,7 +101,9 @@ func (cr CourseRepo) GetTerms(userID string) ([]domain.Term, error) {
 			term.InstructionalDays = append(term.InstructionalDays, parsedInstructDate)
 		}
 	}
-	terms = append(terms, term)
+	if term.ID != 0 {
+		terms = append(terms, term)
+	}
 	return terms, nil
 
 }

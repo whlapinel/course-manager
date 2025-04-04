@@ -2,18 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/data"
 	"gh_static_portfolio/internal/service"
-	"gh_static_portfolio/internal/templates"
-	mt "gh_static_portfolio/internal/templates/manager_templates"
-	"io"
+	mt "gh_static_portfolio/internal/templates/app"
 	"log"
-	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,63 +25,27 @@ func CourseHandlers(svc service.CourseService, router *echo.Echo) []RouteHandler
 }
 
 type courseRouter struct {
-	Router
+	router
+}
+
+// PostEditFile implements NodeRouter.
+func (r *courseRouter) PostEditFile(c echo.Context) error {
+	return PostEditFile(c, r, ShowDetailsURL(r))
 }
 
 // SetRouter implements NodeRouter.
-func (r *courseRouter) SetRouter(router Router) {
-	r.Router = router
+func (r *courseRouter) SetRouter(router router) {
+	r.router = router
 }
 
 // PostFile implements NodeRouter.
 func (r *courseRouter) PostFile(c echo.Context) error {
-	path := c.Param("*")
-	log.Println("path: ", path)
-	params, err := ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	nodes, err := r.svc.Nodes(params)
-	if err != nil {
-		return err
-	}
-	dirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
-	path = filepath.Join(dirPath, path)
-	// Parse the form to retrieve the file
-	err = c.Request().ParseMultipartForm(10 << 20)
-	if err != nil {
-		return err
-	}
-	file, err := c.FormFile("file")
-	if err != nil {
-		return err
-	}
-	// Open the file
-	src, err := file.Open()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to open file: %s", err))
-	}
-	defer src.Close()
-
-	// Create a destination file
-	dst, err := os.Create(filepath.Join(path, file.Filename))
-	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed to create destination file: %s", err))
-	}
-	defer dst.Close()
-
-	// Copy the content of the uploaded file to the destination
-	if _, err := io.Copy(dst, src); err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to save file")
-	}
-
-	// Respond to the client
-	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
+	return PostFile(c, r)
 
 }
 
-func (r *courseRouter) GetRouter() Router {
-	return r.Router
+func (r *courseRouter) GetRouter() router {
+	return r.router
 }
 
 // Delete implements NodeRouter.
@@ -152,16 +109,16 @@ func (r *courseRouter) ShowDetails(c echo.Context) error {
 		StandardSets:             sets,
 		PostSelectStandardSetURL: r.app.Reverse(string(PostSelectStandardSet), r.params.ToSlice()...),
 		NodeDetailsPage: mt.NodeDetailsPage{
-			Params:          r.params,
-			Node:            nodes.Course,
+			Params:            r.params,
+			Node:              nodes.Course,
 			CourseCalendarURL: r.app.Reverse(ShowCourseCalendar.String(), r.params.ToSlice()...),
-			GetEditNodeURL:  r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
-			PostEditNodeURL: r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
-			ListChildrenURL: r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),
-			UpNavURL:        r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...),
-			IsEdit:          false,
-			BreadCrumbsData: BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
-			ServerFilesURL:  r.app.Reverse(ShowCourseFiles.String(), AddParams(params, "")...),
+			GetEditNodeURL:    r.app.Reverse(ShowEditCourse.String(), r.params.ToSlice()...),
+			PostEditNodeURL:   r.app.Reverse(PostEditCourse.String(), r.params.ToSlice()...),
+			ListChildrenURL:   r.app.Reverse(ListCourseUnits.String(), r.params.ToSlice()...),
+			UpNavURL:          r.app.Reverse(ListTermCourses.String(), r.params.ToSlice()...),
+			IsEdit:            false,
+			BreadCrumbsData:   BreadCrumbs(r.app, r.params, nodes.ToSlice()...),
+			ServerFilesURL:    r.app.Reverse(ShowCourseFiles.String(), AddParams(params, "")...),
 		},
 	}
 	component := page.Component()
@@ -172,32 +129,20 @@ func (r *courseRouter) ShowDetails(c echo.Context) error {
 
 // ShowEdit implements NodeRouter.
 func (r *courseRouter) ShowEdit(c echo.Context) error {
-	queryParam := c.QueryParam("field")
 	params, err := ParseNodePath(c)
 	if err != nil {
 		return err
 	}
+	r.params = params
 	nodes, err := r.svc.Nodes(params)
 	if err != nil {
 		return err
 	}
 	r.nodes = nodes
-	if queryParam == "" {
-		log.Println(err)
-		return fmt.Errorf("field query param is missing")
-	}
 	details := NodeDetailsPage(r, true)
-	respond := func(component templ.Component) error {
-		return Respond(c, r.app.Reverse(string(CourseDetails), r.params.ToSlice()...), component, nil)
-	}
-	if queryParam == templates.KebabCase(string(Description)) {
-		return respond(mt.EditDescriptionComponent(details))
-	} else if queryParam == templates.KebabCase(string(Name)) {
-		return respond(mt.EditNameComponent(details))
-	}
-	errText := "field value is not expected"
-	log.Println(errText)
-	return fmt.Errorf("%s %s", errText, queryParam)
+	component := details.DetailsFormComponent(true)
+	layout := CourseManagerLayout(r.app, component, r.nodes.User)
+	return Respond(c, "", component, layout)
 
 }
 
@@ -211,6 +156,10 @@ func (c *courseRouter) ShowNewChild(echo.Context) error {
 	panic("unimplemented")
 }
 
+func (r *courseRouter) ShowEditFile(c echo.Context) error {
+	return ShowEditFile(c, r, "/")
+}
+
 // ViewFile implements NodeRouter.
 func (r *courseRouter) ViewFile(c echo.Context) error {
 	return ViewFile(c, r, ShowDetailsURL(r))
@@ -218,7 +167,7 @@ func (r *courseRouter) ViewFile(c echo.Context) error {
 
 func NewCourseRouter(svc service.CourseService, app *echo.Echo) NodeRouter {
 	return &courseRouter{
-		Router: Router{
+		router: router{
 			svc:          svc,
 			app:          app,
 			emptyNodeSet: EmptyNodesCourse,
@@ -290,7 +239,6 @@ func (r *courseRouter) PostCopyCourseToTerm(c echo.Context) error {
 			return err
 		}
 		termIDParam := c.Request().Form.Get("term-id")
-		log.Println("selected termID: ", termIDParam)
 		termID, err := strconv.Atoi(termIDParam)
 		if err != nil {
 			return err

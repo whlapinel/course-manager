@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/data/database"
 	"gh_static_portfolio/internal/domain"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -49,7 +48,6 @@ func (c CourseRepo) SaveUnit(unit domain.Unit) (domain.Unit, error) {
 		return domain.Unit{}, fmt.Errorf("courseRepo.SaveUnit(): %s", err)
 	}
 	unit.ID = int(currUnit.ID)
-	log.Println("unit sequence:", unit.SequenceNum)
 	if unit.SequenceNum == 0 {
 		return domain.Unit{}, fmt.Errorf("unit sequence is 0")
 	}

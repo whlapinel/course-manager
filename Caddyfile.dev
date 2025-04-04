@@ -1,0 +1,12 @@
+localhost {
+	reverse_proxy echo:1323
+}
+
+*.localhost {
+	@assets path /assets/*
+	root @assets /app/sites
+	file_server
+
+	root * /app/sites/{labels.1}
+	file_server
+}

@@ -1,0 +1,7 @@
+package managertemplates
+
+templ UnauthorizedPageComponent(params UnauthorizedPage) {
+	<h1>Unauthorized</h1>
+	<p>{ params.Message }</p>
+	@params.Link.Component()
+}

@@ -1,11 +1,30 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type User struct {
 	ID                                  string
 	Email, FirstName, LastName, Picture string
 	Terms                               []Term
+	Config                              UserConfig
+}
+
+type UserConfig struct {
+	AssessmentCategories []AssessmentCategory
+	AssessmentsGoals     AssessmentGoalsConfig
+}
+
+type AssessmentGoalsConfig struct {
+	AssessmentCategory
+	Minimum int
+	Maximum int
+}
+
+func (u User) Username() string {
+	return strings.ToLower(u.FirstName[:1] + u.LastName)
 }
 
 // ChildTypeName implements CourseNode.
@@ -54,7 +73,7 @@ func (u User) GetParentID() int {
 
 // ParentTypeName implements CourseNode.
 func (u User) ParentTypeName() string {
-	return RootTypeName.String()
+	return UserTypeName.String()
 }
 
 // TypeName implements CourseNode.
