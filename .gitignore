@@ -13,6 +13,7 @@ node_modules
 build
 **.tar.gz
 
+internal/data/users
 sites
 caddy_data
 caddy_config
