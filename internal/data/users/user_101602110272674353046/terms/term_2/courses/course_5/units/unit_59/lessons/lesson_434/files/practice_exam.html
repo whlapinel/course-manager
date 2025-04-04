@@ -1,0 +1,112 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 9.1</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="pcap-exam-practice">PCAP Exam Practice</h1>
+<h2 id="1-data-types-and-variables"><strong>1. Data Types and Variables</strong></h2>
+<p><strong>Question</strong>: What is the output of the following code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>x <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3.5</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>y <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(x)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>z <span style="color:#ff79c6">=</span> x <span style="color:#ff79c6">+</span> y
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#8be9fd;font-style:italic">print</span>(z)
+</span></span></code></pre><ul>
+<li>A) 6.5</li>
+<li>B) 7</li>
+<li>C) 6</li>
+<li>D) 3.5</li>
+</ul>
+<h2 id="2-control-flow"><strong>2. Control Flow</strong></h2>
+<p><strong>Question</strong>: What will the following code output?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">3</span>, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#8be9fd;font-style:italic">print</span>(i, end<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34; &#34;</span>)
+</span></span></code></pre><ul>
+<li>A) 0 1 2 3</li>
+<li>B) 3 2 1 0</li>
+<li>C) 3 2 1</li>
+<li>D) SyntaxError</li>
+</ul>
+<h2 id="3-functions"><strong>3. Functions</strong></h2>
+<p><strong>Question</strong>: What is the output of this code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">func</span>(a, b<span style="color:#ff79c6">=</span><span style="color:#bd93f9">5</span>):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">return</span> a <span style="color:#ff79c6">*</span> b
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#8be9fd;font-style:italic">print</span>(func(<span style="color:#bd93f9">2</span>))
+</span></span></code></pre><ul>
+<li>A) 2</li>
+<li>B) 10</li>
+<li>C) TypeError</li>
+<li>D) None</li>
+</ul>
+<h2 id="4-lists"><strong>4. Lists</strong></h2>
+<p><strong>Question</strong>: What is the result of the following code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>list1 <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">4</span>]
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>list2 <span style="color:#ff79c6">=</span> list1
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>list1[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">99</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#8be9fd;font-style:italic">print</span>(list2)
+</span></span></code></pre><ul>
+<li>A) [1, 2, 3, 4]</li>
+<li>B) [99, 2, 3, 4]</li>
+<li>C) None</li>
+<li>D) [1, 2, 3]</li>
+</ul>
+<h2 id="5-dictionaries"><strong>5. Dictionaries</strong></h2>
+<p><strong>Question</strong>: What will the following code output?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>d <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#39;a&#39;</span>: <span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">&#39;b&#39;</span>: <span style="color:#bd93f9">2</span>}
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>d[<span style="color:#f1fa8c">&#39;c&#39;</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">len</span>(d))
+</span></span></code></pre><ul>
+<li>A) 2</li>
+<li>B) 3</li>
+<li>C) 4</li>
+<li>D) KeyError</li>
+</ul>
+<h2 id="6-exception-handling"><strong>6. Exception Handling</strong></h2>
+<p><strong>Question</strong>: What is the output of the code below?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">try</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    x <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">/</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#ff79c6">except</span> ZeroDivisionError:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Division error&#34;</span>)
+</span></span></code></pre><ul>
+<li>A) Division error</li>
+<li>B) ZeroDivisionError</li>
+<li>C) None</li>
+<li>D) Program crash</li>
+</ul>
+<h2 id="7-classes-and-objects"><strong>7. Classes and Objects</strong></h2>
+<p><strong>Question</strong>: What is true about the following code?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#ff79c6">class</span> <span style="color:#50fa7b">Example</span>:
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#ff79c6">def</span> __init__(self, value):
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>        self<span style="color:#ff79c6">.</span>value <span style="color:#ff79c6">=</span> value
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>obj <span style="color:#ff79c6">=</span> Example(<span style="color:#bd93f9">10</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#8be9fd;font-style:italic">print</span>(obj<span style="color:#ff79c6">.</span>value)
+</span></span></code></pre><ul>
+<li>A) Prints <code>None</code></li>
+<li>B) Prints <code>10</code></li>
+<li>C) AttributeError</li>
+<li>D) SyntaxError</li>
+</ul>
+<h2 id="8-file-handling"><strong>8. File Handling</strong></h2>
+<p><strong>Question</strong>: What mode opens a file for writing and overwrites the file if it already exists?</p>
+<ul>
+<li>A) <code>r</code></li>
+<li>B) <code>w</code></li>
+<li>C) <code>a</code></li>
+<li>D) <code>r+</code></li>
+</ul>
+<h2 id="9-modules"><strong>9. Modules</strong></h2>
+<p><strong>Question</strong>: Which of the following is the correct way to import the <code>math</code> module and use its <code>sqrt</code> function?</p>
+<ul>
+<li>A) <code>import math.sqrt</code></li>
+<li>B) <code>import math</code> and <code>math.sqrt(4)</code></li>
+<li>C) <code>from math import sqrt</code> and <code>sqrt(4)</code></li>
+<li>D) Both B and C</li>
+</ul>
+<h2 id="10-logical-operators"><strong>10. Logical Operators</strong></h2>
+<p><strong>Question</strong>: What will the following code print?</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>x <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>y <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+</span></span><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#8be9fd;font-style:italic">print</span>(x <span style="color:#ff79c6">and</span> <span style="color:#ff79c6">not</span> y)
+</span></span></code></pre><ul>
+<li>A) True</li>
+<li>B) False</li>
+<li>C) None</li>
+<li>D) SyntaxError</li>
+</ul>
+</body></html>

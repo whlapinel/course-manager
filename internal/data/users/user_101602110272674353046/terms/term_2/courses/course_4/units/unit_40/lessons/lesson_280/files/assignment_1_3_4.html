@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 3.4</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="practice-problems-for-loops-with-lists">Practice Problems: <code>for</code> Loops with Lists</h1>
+<hr />
+<h2 id="problem-1-print-all-elements">Problem 1: Print All Elements</h2>
+<h3 id="task"><strong>Task:</strong></h3>
+<p>Write a <code>for</code> loop that prints each element in the list:</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>names <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;Alice&#34;</span>, <span style="color:#f1fa8c">&#34;Bob&#34;</span>, <span style="color:#f1fa8c">&#34;Charlie&#34;</span>, <span style="color:#f1fa8c">&#34;David&#34;</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Loop directly over the list to access each element.</p>
+<hr />
+<h2 id="problem-2-double-the-numbers">Problem 2: Double the Numbers</h2>
+<h3 id="task-1"><strong>Task:</strong></h3>
+<p>Given a list of numbers, use a <code>for</code> loop to double each number and print the new values.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>numbers <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">10</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Modify each element by multiplying by <code>2</code> before printing.</p>
+<hr />
+<h2 id="problem-3-find-even-numbers">Problem 3: Find Even Numbers</h2>
+<h3 id="task-2"><strong>Task:</strong></h3>
+<p>Write a <code>for</code> loop that prints only the even numbers from the list:</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>values <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">17</span>, <span style="color:#bd93f9">24</span>, <span style="color:#bd93f9">39</span>, <span style="color:#bd93f9">40</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use the modulus operator <code>%</code> to check if a number is even.</p>
+<hr />
+<h2 id="problem-4-counting-characters">Problem 4: Counting Characters</h2>
+<h3 id="task-3"><strong>Task:</strong></h3>
+<p>Given a list of words, use a <code>for</code> loop to print each word along with its length.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>words <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;apple&#34;</span>, <span style="color:#f1fa8c">&#34;banana&#34;</span>, <span style="color:#f1fa8c">&#34;cherry&#34;</span>, <span style="color:#f1fa8c">&#34;date&#34;</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use the <code>len()</code> function to get the length of each word.</p>
+<hr />
+<h2 id="problem-5-reverse-list-printing">Problem 5: Reverse List Printing</h2>
+<h3 id="task-4"><strong>Task:</strong></h3>
+<p>Print all elements of the list <strong>in reverse order</strong>.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>items <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;a&#34;</span>, <span style="color:#f1fa8c">&#34;b&#34;</span>, <span style="color:#f1fa8c">&#34;c&#34;</span>, <span style="color:#f1fa8c">&#34;d&#34;</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use slicing (<code>[::-1]</code>) or loop backward using <code>range()</code>.</p>
+<hr />
+<h2 id="problem-6-replace-negative-numbers">Problem 6: Replace Negative Numbers</h2>
+<h3 id="task-5"><strong>Task:</strong></h3>
+<p>Replace all negative numbers in a list with <code>0</code>.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>numbers <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">3</span>, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">8</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Loop through the indices using <code>range(len(numbers))</code> to modify elements.</p>
+<hr />
+<h2 id="problem-7-create-a-new-list">Problem 7: Create a New List</h2>
+<h3 id="task-6"><strong>Task:</strong></h3>
+<p>Use a <code>for</code> loop to create a new list containing only the positive numbers from the given list.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>nums <span style="color:#ff79c6">=</span> [<span style="color:#ff79c6">-</span><span style="color:#bd93f9">10</span>, <span style="color:#bd93f9">15</span>, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">22</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use an empty list and <code>append()</code> the positive numbers.</p>
+<hr />
+<h2 id="problem-8-find-the-largest-number">Problem 8: Find the Largest Number</h2>
+<h3 id="task-7"><strong>Task:</strong></h3>
+<p>Find and print the largest number in a list.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>values <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">42</span>, <span style="color:#bd93f9">17</span>, <span style="color:#bd93f9">56</span>, <span style="color:#bd93f9">23</span>, <span style="color:#bd93f9">88</span>, <span style="color:#bd93f9">34</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use a variable to track the largest value and update it during iteration.</p>
+<hr />
+<h2 id="problem-9-count-occurrences">Problem 9: Count Occurrences</h2>
+<h3 id="task-8"><strong>Task:</strong></h3>
+<p>Count how many times the number <code>3</code> appears in the list.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>numbers <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">3</span>]
+</span></span></code></pre><p><strong>Hint:</strong> Use a counter variable and increment it inside the loop when <code>3</code> is found.</p>
+<hr />
+<h2 id="problem-10-concatenate-strings">Problem 10: Concatenate Strings</h2>
+<h3 id="task-9"><strong>Task:</strong></h3>
+<p>Join all strings in the list into a single string and print the result.</p>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;"><code><span style="display:flex;"><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span>words <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;Hello&#34;</span>, <span style="color:#f1fa8c">&#34;world&#34;</span>, <span style="color:#f1fa8c">&#34;Python&#34;</span>, <span style="color:#f1fa8c">&#34;rocks&#34;</span>]
+</span></span></code></pre></body></html>

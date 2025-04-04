@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 5.3</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="assignment-53-generators">Assignment 5.3: Generators</h1>
+<ol>
+<li>
+<p><strong>Create a simple generator</strong><br />
+Write a generator function <code>countdown(n)</code> that yields numbers from <code>n</code> down to <code>1</code>.</p>
+</li>
+<li>
+<p><strong>Create a generator for file processing</strong><br />
+Write a generator <code>read_lines(file)</code> that reads lines from a file one at a time and yields each line.</p>
+</li>
+<li>
+<p><strong>Create a generator for even numbers</strong><br />
+Write a generator <code>even_numbers(n)</code> that yields even numbers from <code>0</code> to <code>n</code>.</p>
+</li>
+<li>
+<p><strong>Filter using a generator</strong><br />
+Write a generator <code>filter_long_words(words, n)</code> that yields only the words longer than <code>n</code> characters from a list.</p>
+</li>
+<li>
+<p><strong>Combine generator values</strong><br />
+Create two generators:</p>
+<ul>
+<li><code>gen1</code> yields numbers from 1 to 5</li>
+<li><code>gen2</code> yields letters from <code>'a'</code> to <code>'e'</code><br />
+Write a generator <code>combine(gen1, gen2)</code> that yields values from both generators alternately.</li>
+</ul>
+</li>
+<li>
+<p><strong>Repeat values from a generator</strong><br />
+Write a generator <code>repeat_values(gen, times)</code> that repeats each value from another generator <code>times</code> times.</p>
+</li>
+<li>
+<p><strong>Use a generator expression</strong><br />
+Create a generator expression that yields the uppercase version of each string in a list.</p>
+</li>
+<li>
+<p><strong>Create an infinite generator</strong><br />
+Write an infinite generator <code>cycle_words(words)</code> that cycles through a list of words endlessly.</p>
+</li>
+<li>
+<p><strong>Create a generator with <code>send()</code></strong><br />
+Write a generator <code>counter(start)</code> that starts at <code>start</code> and increments by 1 each time you call <code>send()</code>.</p>
+</li>
+<li>
+<p><strong>Create a generator with cleanup</strong><br />
+Write a generator <code>open_file(file)</code> that yields each line from a file and closes the file automatically when done (use <code>finally</code>).</p>
+</li>
+</ol>
+</body></html>

@@ -14,8 +14,12 @@ build
 **.tar.gz
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 internal/data/users
 =======
+>>>>>>> dev
+=======
+internal/data/users
 >>>>>>> dev
 sites
 caddy_data

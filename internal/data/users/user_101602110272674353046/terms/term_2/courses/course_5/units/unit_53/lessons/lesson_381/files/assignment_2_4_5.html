@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Lesson 4.5</title><link rel="stylesheet" href="/assets/styles/markdown-styles.css"></head><body class="markdown-body"><h1 id="assignment-45-sqlite-in-python---practice-problems">Assignment 4.5: SQLite in Python - Practice Problems</h1>
+<h2 id="instructions">Instructions</h2>
+<ul>
+<li>Use Python's built-in <code>sqlite3</code> module.</li>
+<li>Create a new database file called <code>dc_heroes.db</code>.</li>
+<li>Write a Python script to complete each problem.</li>
+</ul>
+<h2 id="problem-1-creating-a-table">Problem 1: Creating a Table</h2>
+<p>Write a Python script that:</p>
+<ol>
+<li>Connects to <code>dc_heroes.db</code>.</li>
+<li>Creates a table <code>heroes</code> with columns:
+<ul>
+<li><code>id</code> (INTEGER, PRIMARY KEY)</li>
+<li><code>name</code> (TEXT)</li>
+<li><code>alias</code> (TEXT)</li>
+<li><code>power_level</code> (INTEGER)</li>
+</ul>
+</li>
+</ol>
+<h2 id="problem-2-inserting-data">Problem 2: Inserting Data</h2>
+<p>Insert the following DC heroes into the <code>heroes</code> table:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>name</th>
+<th>alias</th>
+<th>power_level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Clark Kent</td>
+<td>Superman</td>
+<td>100</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bruce Wayne</td>
+<td>Batman</td>
+<td>85</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Diana</td>
+<td>Wonder Woman</td>
+<td>95</td>
+</tr>
+</tbody>
+</table>
+<h2 id="problem-3-retrieving-data">Problem 3: Retrieving Data</h2>
+<p>Write a query to fetch all superheroes and display their real names, aliases, and power levels.</p>
+<h2 id="problem-4-filtering-data">Problem 4: Filtering Data</h2>
+<p>Retrieve superheroes with a power level above 90.</p>
+<h2 id="problem-5-updating-data">Problem 5: Updating Data</h2>
+<p>Batman just got an upgraded suit! Update his power level to 90.</p>
+<h2 id="problem-6-deleting-data">Problem 6: Deleting Data</h2>
+<p>The multiverse collapsed, and Wonder Woman was erased! Remove her from the table.</p>
+<h2 id="problem-7-creating-another-table">Problem 7: Creating Another Table</h2>
+<p>Create a table <code>teams</code> with columns:</p>
+<ul>
+<li><code>id</code> (INTEGER, PRIMARY KEY)</li>
+<li><code>team_name</code> (TEXT)</li>
+</ul>
+<h2 id="problem-8-inserting-into-teams">Problem 8: Inserting into <code>teams</code></h2>
+<p>Insert these teams:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>team_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Justice League</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Teen Titans</td>
+</tr>
+</tbody>
+</table>
+<h2 id="problem-9-joining-tables">Problem 9: Joining Tables</h2>
+<p>Assume:</p>
+<ul>
+<li>Superman and Batman are in the Justice League (id=1)</li>
+<li>Wonder Woman was also in the Justice League (id=1)</li>
+</ul>
+<p>Write a query to join <code>heroes</code> and <code>teams</code> to show each hero’s team.</p>
+<h2 id="problem-10-aggregate-functions">Problem 10: Aggregate Functions</h2>
+<p>Write a query to calculate the average power level of all superheroes.</p>
+<h2 id="submission">Submission</h2>
+<ul>
+<li>Ensure each problem is implemented as a separate function.</li>
+<li>Submit your <code>.py</code> file as per instructions.</li>
+</ul>
+</body></html>
