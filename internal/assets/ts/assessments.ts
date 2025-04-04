@@ -1,12 +1,14 @@
 /// <reference path="./@types/htmx.d.ts" />
 
-
 console.log("hello from assessments.js!");
-(() => {
+
+function addAssessmentListeners() {
     const filterButton: HTMLButtonElement = document.querySelector("#filter-button")!
+    const filterByActive: HTMLButtonElement = document.querySelector("#filter-by-active")!
+    const sortBy: HTMLButtonElement = document.querySelector("#sort-by")!
     const startInput: HTMLInputElement = document.querySelector("#start")!
     const endInput: HTMLInputElement = document.querySelector("#end")!
-    const categorySelect: HTMLSelectElement = document.querySelector("#category")!
+    const categorySelect: HTMLSelectElement = document.querySelector("#filter-by-category")!
     const { protocol, host } = window.location;
     const baseUrl = `${protocol}//${host}`;
     function updateQuery(key: string, val: string) {
@@ -17,17 +19,29 @@ console.log("hello from assessments.js!");
         window.htmx.process(filterButton)
 
     }
-    startInput.addEventListener("change", () => {
+    filterByActive?.addEventListener("change", () => {
+        const param: string = filterByActive.value
+        updateQuery("active", param)
+    })
+    sortBy?.addEventListener("change", () => {
+        const param: string = sortBy.value
+        updateQuery("sort-by", param)
+    })
+    startInput?.addEventListener("change", () => {
         const date: string = startInput.value
         updateQuery("start", date)
     })
-    endInput.addEventListener("change", () => {
+    endInput?.addEventListener("change", () => {
         const date: string = endInput.value
         updateQuery("end", date)
     })
-    categorySelect.addEventListener("change", () => {
+    categorySelect?.addEventListener("change", () => {
         const category: string = categorySelect.value
         updateQuery("category", category)
     })
 
+}
+(() => {
+    addAssessmentListeners()
+    document.addEventListener("htmx:afterSwap", addAssessmentListeners)
 })();

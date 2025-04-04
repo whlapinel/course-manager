@@ -9,14 +9,15 @@ import (
 )
 
 type CourseManagerLayout struct {
-	PageTitle  string
-	HomeURL    string
-	SigninURL  string
-	SignupURL  string
-	SignoutURL string
-	User       domain.User
-	Page       templ.Component
-	E          *echo.Echo
+	PageTitle     string
+	AssetsURLFunc func(...string) string
+	HomeURL       string
+	SigninURL     string
+	SignupURL     string
+	SignoutURL    string
+	User          domain.User
+	Page          templ.Component
+	E             *echo.Echo
 }
 
 func (cml CourseManagerLayout) Component() templ.Component {
@@ -27,11 +28,11 @@ func (cml CourseManagerLayout) Component() templ.Component {
 	}
 	head := HeadComponent()
 	layout := cmp.Layout{
-		HomeURL:   cml.HomeURL,
-		UserImage: cml.User.Picture,
-		NavItems:  navItems,
-		Head:      head,
-		Page:      cml.Page,
+		HomeURL:       cml.HomeURL,
+		UserImage:     cml.User.Picture,
+		NavItems:      navItems,
+		Head:          head,
+		Page:          cml.Page,
 		UserMenu: cmp.UserMenu{
 			Image: cml.User.Picture,
 			Links: []cmp.Link{

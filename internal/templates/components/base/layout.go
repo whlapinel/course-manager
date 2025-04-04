@@ -13,6 +13,7 @@ type Layout struct {
 	Page             templ.Component
 	UserImage        string
 	SignoutURL       string
+	AssetsURLFunc    func(...string) string
 	templ.Attributes // will be added to body element
 }
 

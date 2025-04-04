@@ -1,7 +1,5 @@
 package managertemplates
 
-import "os"
-
 templ SignInPageComponent(data SigninPage) {
 	@SigninWithGoogleComponent(data)
 }
@@ -10,7 +8,7 @@ templ SigninWithGoogleComponent(data SigninPage) {
 	<p>Please Sign In With Your Google Account</p>
 	<div
 		id="g_id_onload"
-		data-client_id={ os.Getenv("GOOGLE_CLIENT_ID") }
+		data-client_id={ data.GoogleClientID }
 		data-context="/signin"
 		data-ux_mode="popup"
 		data-login_uri={ data.GoogleSigninURL }

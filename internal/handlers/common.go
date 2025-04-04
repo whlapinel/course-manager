@@ -261,13 +261,13 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 
 func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		HomeURL:    "/",
-		Page:       page,
-		User:       user,
-		E:          h.e,
-		SigninURL:  h.e.Reverse(GetSignin.String()),
-		SignupURL:  h.e.Reverse(GetSignup.String()),
-		SignoutURL: h.e.Reverse(PostSignout.String()),
+		HomeURL:       "/",
+		Page:          page,
+		User:          user,
+		E:             h.e,
+		SigninURL:     h.e.Reverse(GetSignin.String()),
+		SignupURL:     h.e.Reverse(GetSignup.String()),
+		SignoutURL:    h.e.Reverse(PostSignout.String()),
 	}
 	return cml.Component()
 
@@ -275,13 +275,13 @@ func (h CourseHandler) CourseManagerLayout(page templ.Component, user domain.Use
 
 func CourseManagerLayout(router *echo.Echo, page templ.Component, user domain.User) templ.Component {
 	cml := mt.CourseManagerLayout{
-		HomeURL:    "/",
-		Page:       page,
-		User:       user,
-		E:          router,
-		SigninURL:  router.Reverse(GetSignin.String()),
-		SignupURL:  router.Reverse(GetSignup.String()),
-		SignoutURL: router.Reverse(PostSignout.String()),
+		HomeURL:       "/",
+		Page:          page,
+		User:          user,
+		E:             router,
+		SigninURL:     router.Reverse(GetSignin.String()),
+		SignupURL:     router.Reverse(GetSignup.String()),
+		SignoutURL:    router.Reverse(PostSignout.String()),
 	}
 	return cml.Component()
 

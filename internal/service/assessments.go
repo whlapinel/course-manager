@@ -70,62 +70,63 @@ func (svc CourseService) DeleteAssessment(assessmentID int) error {
 	return svc.repo.DeleteAssessment(assessmentID)
 }
 
-func CategoryFilter(category domain.AssessmentCategory) func(domain.Assessment) bool {
-	if category == "" {
-		return func(a domain.Assessment) bool { return true }
-	}
-	return func(a domain.Assessment) bool {
-		return a.Category == category
-	}
-}
+// func CategoryFilter(category domain.AssessmentCategory) func(domain.Assessment) bool {
+// 	if category == "" {
+// 		return func(a domain.Assessment) bool { return true }
+// 	}
+// 	return func(a domain.Assessment) bool {
+// 		return a.Category == category
+// 	}
+// }
 
-func StartFilter(startDate time.Time) func(domain.Assessment) bool {
-	if startDate.IsZero() {
-		return func(a domain.Assessment) bool {
-			return true
-		}
-	}
-	return func(a domain.Assessment) bool {
-		return !a.DateAssigned.Before(startDate)
-	}
-}
+// func StartFilter(startDate time.Time) func(domain.Assessment) bool {
+// 	if startDate.IsZero() {
+// 		return func(a domain.Assessment) bool {
+// 			return true
+// 		}
+// 	}
+// 	return func(a domain.Assessment) bool {
+// 		return !a.DateAssigned.Before(startDate)
+// 	}
+// }
 
-func EndFilter(endDate time.Time) func(domain.Assessment) bool {
-	if endDate.IsZero() {
-		return func(a domain.Assessment) bool {
-			return true
-		}
-	}
-	return func(a domain.Assessment) bool {
-		return !a.DateAssigned.After(endDate)
-	}
-}
+// func EndFilter(endDate time.Time) func(domain.Assessment) bool {
+// 	if endDate.IsZero() {
+// 		return func(a domain.Assessment) bool {
+// 			return true
+// 		}
+// 	}
+// 	return func(a domain.Assessment) bool {
+// 		return !a.DateAssigned.After(endDate)
+// 	}
+// }
 
-type AssessmentFilter struct {
-	Category domain.AssessmentCategory
-	Start    time.Time
-	End      time.Time
-}
+// type AssessmentFilter struct {
+// 	Category  domain.AssessmentCategory
+// 	Start     time.Time
+// 	End       time.Time
+// 	SortParam domain.AssessmentSortParam
+// }
 
-func (h CourseService) FilterAssessments(assessments []domain.Assessment, filter AssessmentFilter) []domain.Assessment {
-	return h.filterAssessments(
-		assessments,
-		StartFilter(filter.Start),
-		EndFilter(filter.End),
-		CategoryFilter(filter.Category),
-	)
-}
+// func (h CourseService) FilterAssessments(assessments []domain.Assessment, filter AssessmentFilter) []domain.Assessment {
+// 	return h.filterAssessments(
+// 		assessments,
+// 		StartFilter(filter.Start),
+// 		EndFilter(filter.End),
+// 		CategoryFilter(filter.Category),
+// 	)
+// }
 
-func (h CourseService) filterAssessments(assessments []domain.Assessment, keepFuncs ...func(domain.Assessment) bool) []domain.Assessment {
-	var filtered []domain.Assessment
-outer:
-	for _, assm := range assessments {
-		for _, fn := range keepFuncs {
-			if !fn(assm) {
-				continue outer
-			}
-		}
-		filtered = append(filtered, assm)
-	}
-	return filtered
-}
+// func (h CourseService) filterAssessments(assessments []domain.Assessment, keepFuncs ...func(domain.Assessment) bool) []domain.Assessment {
+// 	var filtered []domain.Assessment
+// outer:
+// 	for _, assm := range assessments {
+// 		for _, fn := range keepFuncs {
+// 			if !fn(assm) {
+// 				continue outer
+// 			}
+// 		}
+// 		filtered = append(filtered, assm)
+// 	}
+// 	return filtered
+// }

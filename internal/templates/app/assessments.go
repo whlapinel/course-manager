@@ -16,11 +16,36 @@ type CourseAssessmentsPage struct {
 	GetAssessmentsURL string
 	DateFilterURL     string
 	Assessments       []domain.Assessment
+	Analysis          domain.AssessmentAnalysis
 	CourseListURL     string
 	BreadCrumbsData   BreadCrumbs
-	StartDate         time.Time
-	EndDate           time.Time
+	Filter            domain.AssessmentFilter
 	Category          domain.AssessmentCategory
+}
+
+func (page CourseAssessmentsPage) Summary() templ.Component {
+	dl := cmp.DescriptionList{
+		Title:    "Summary",
+		Subtitle: fmt.Sprintf("%d Assessments", len(page.Assessments)),
+	}
+	var items []cmp.DescriptionListItem
+	items = append(items, cmp.DescriptionListItem{
+		Name:  "Active",
+		Value: strconv.Itoa(page.Analysis.Active),
+	})
+	items = append(items, cmp.DescriptionListItem{
+		Name:  "Dropped",
+		Value: strconv.Itoa(page.Analysis.Dropped),
+	})
+	for cat, count := range page.Analysis.CategoryStats {
+		item := cmp.DescriptionListItem{
+			Name:  util.Capitalize(string(cat)),
+			Value: strconv.Itoa(count),
+		}
+		items = append(items, item)
+	}
+	dl.Items = items
+	return dl.Component()
 }
 
 func (page CourseAssessmentsPage) ApplyFilterButton() templ.Component {
@@ -58,7 +83,25 @@ func (page CourseAssessmentsPage) CategorySelectComponent() templ.Component {
 		}
 		options = append(options, option)
 	}
-	catSelect := cmp.NewSelectWithLabel("Category", options)
+	catSelect := cmp.NewSelectWithLabel("Filter by Category", options)
+	return catSelect.Component()
+}
+
+func (page CourseAssessmentsPage) ActiveSelect() templ.Component {
+	var options []cmp.Option
+	option := cmp.Option{
+		Content:  "Active",
+		Value:    "true",
+		Selected: page.Filter.Active,
+	}
+	options = append(options, option)
+	option = cmp.Option{
+		Content:  "Dropped",
+		Value:    "false",
+		Selected: !page.Filter.Active,
+	}
+	options = append(options, option)
+	catSelect := cmp.NewSelectWithLabel("Filter by Active", options)
 	return catSelect.Component()
 }
 
@@ -68,11 +111,26 @@ func (page CourseAssessmentsPage) StartDateComponent(date time.Time) templ.Compo
 		dateString = date.Format(time.DateOnly)
 	}
 	start := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-		Name:  "Start",
+		Name:  "Filter by Start (uses date assigned)",
 		Type:  cmp.Date,
 		Value: dateString,
 	})
 	return start.Component()
+}
+
+func (page CourseAssessmentsPage) SortParamSelector() templ.Component {
+	var options []cmp.Option
+	for _, param := range domain.AssessmentSortParams {
+		option := cmp.Option{
+			Content:  util.Capitalize(param.String()),
+			Value:    strconv.Itoa(int(param)),
+			Selected: page.Filter.SortParam == param,
+		}
+		options = append(options, option)
+	}
+	sortSelect := cmp.NewSelectWithLabel("Sort By", options)
+	return sortSelect.Component()
+
 }
 
 func (page CourseAssessmentsPage) DateComponent(name string, date time.Time) templ.Component {
@@ -88,7 +146,7 @@ func (page CourseAssessmentsPage) DateComponent(name string, date time.Time) tem
 }
 func (page CourseAssessmentsPage) EndDateComponent() templ.Component {
 	end := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-		Name: "End",
+		Name: "Filter by End Date (uses date due)",
 		Type: cmp.Date,
 	})
 	return end.Component()
@@ -116,6 +174,34 @@ func (page CourseAssessmentsPage) PageLayout() cmp.PageLayout {
 		},
 		Crumbs: page.BreadCrumbs().BreadCrumbs(),
 	}
+}
+
+func (page CourseAssessmentsPage) AssessmentsTable() templ.Component {
+	table := cmp.Table{
+		Headers: []string{"Name", "Assigned", "Due", "Category", "Dropped"},
+		Rows:    [][]templ.Component{},
+	}
+	for _, assm := range page.Assessments {
+		row := []templ.Component{
+			cmp.TableTextCell{
+				Text: assm.Name,
+			}.Component(),
+			cmp.TableTextCell{
+				Text: assm.DateAssigned.Format(time.DateOnly),
+			}.Component(),
+			cmp.TableTextCell{
+				Text: assm.DateDue.Format(time.DateOnly),
+			}.Component(),
+			cmp.TableTextCell{
+				Text: util.Capitalize(string(assm.Category)),
+			}.Component(),
+			cmp.TableTextCell{
+				Text: strconv.FormatBool(assm.Dropped),
+			}.Component(),
+		}
+		table.Rows = append(table.Rows, row)
+	}
+	return table.Component()
 
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/a-h/templ"
 )
 
-
 type NodeDetailsPage struct {
 	Params            domain.NodePath
 	ParentNode        domain.CourseNode
@@ -154,31 +153,4 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 		return info.Component()
 	}
 
-}
-
-// newer version, not working, needs to be replaced
-func (page NodeDetailsPage) FieldsComponent(editField string) templ.Component {
-	list := cmp.NewDescriptionList(cmp.NewDescriptionListParams{
-		Title:       page.PageTitle(),
-		GetEditURL:  page.GetEditNodeURL,
-		PostEditURL: page.PostEditNodeURL,
-	})
-	var numItem, nameItem, descriptionItem cmp.DescriptionListItem
-	numItem = cmp.NewDescriptionListItem("Number", strconv.Itoa(page.Node.GetNumber()), true, false)
-	nameItem = cmp.NewDescriptionListItem("Name", page.Node.GetName(), true, false)
-	descriptionItem = cmp.NewDescriptionListItem("Description", page.Node.GetDescription(), true, false)
-	switch editField {
-	case "number":
-		numItem.IsEditing = true
-	case "name":
-		nameItem.IsEditing = true
-	case "description":
-		descriptionItem.IsEditing = true
-	}
-	list = list.AddItems(
-		numItem,
-		nameItem,
-		descriptionItem,
-	)
-	return list.Component()
 }

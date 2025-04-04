@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/service"
 	mt "gh_static_portfolio/internal/templates/app"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -47,6 +48,22 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	var activeParam bool = true
+	activeParamString := c.QueryParam("active")
+	if activeParamString != "" {
+		activeParam, err = strconv.ParseBool(activeParamString)
+		if err != nil {
+			return err
+		}
+	}
+	sortParamString := c.QueryParam("sort-by")
+	var sortParam int
+	if sortParamString != "" {
+		sortParam, err = strconv.Atoi(sortParamString)
+	}
+	if err != nil {
+		return err
+	}
 	categoryParam := c.QueryParam("category")
 	startDateParam := c.QueryParam("start")
 	var start time.Time
@@ -65,23 +82,30 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 			return err
 		}
 	}
-	var assessments = []domain.Assessment{}
+	var assessments domain.Assessments
 	category = domain.AssessmentCategory(categoryParam)
 	assessments, err = h.svc.GetAllCourseAssessments(params.CourseID)
 	if err != nil {
 		return err
 	}
-	filter := service.AssessmentFilter{
-		Category: category,
-		Start:    start,
-		End:      end,
+	filter := domain.AssessmentFilter{
+		Active:    activeParam,
+		Category:  category,
+		Start:     start,
+		End:       end,
+		SortParam: domain.AssessmentSortParam(sortParam),
 	}
-	assessments = h.svc.FilterAssessments(assessments, filter)
+	assessments = assessments.FilterAndSort(filter)
+	assessments.Sort(filter.SortParam)
 	log.Println("length of assessments:", len(assessments))
 	var queryParams = make(map[string]string)
+	if activeParam {
+		queryParams["active"] = "true"
+	}
 	queryParams["category"] = string(category)
 	queryParams["start"] = startDateParam
 	queryParams["end"] = endDateParam
+	queryParams["sort-by"] = strconv.Itoa(sortParam)
 	baseURL := h.e.Reverse(GetCourseAssessments.String(), params.ToSlice()...)
 	urlWithParams, err := AddQueryParams(baseURL, queryParams)
 	if err != nil {
@@ -90,8 +114,8 @@ func (h CourseHandler) GetCourseAssessments(c echo.Context) error {
 	log.Println("GetCourseAssessments: category:", string(category))
 	log.Println("GetCourseAssessments: assessments:", assessments)
 	page := mt.CourseAssessmentsPage{
-		StartDate:         start,
-		EndDate:           end,
+		Analysis:          domain.Assessments(assessments).Analysis(),
+		Filter:            filter,
 		Category:          category,
 		GetAssessmentsURL: urlWithParams,
 		Assessments:       assessments,

@@ -7,7 +7,6 @@ import (
 	auth "gh_static_portfolio/internal/authentication"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/service"
-	managertemplates "gh_static_portfolio/internal/templates/app"
 	mt "gh_static_portfolio/internal/templates/app"
 	components "gh_static_portfolio/internal/templates/components/base"
 	"log"
@@ -69,12 +68,13 @@ func (a *authRouter) SetRouter(router router) {
 
 func (h authRouter) GetSignin(c echo.Context) error {
 	page := mt.SigninPage{
+		GoogleClientID:  os.Getenv("GOOGLE_CLIENT_ID"),
 		GoogleSigninURL: h.app.Reverse(PostSignin.String()),
 	}
+	c.Request().Header.Add("HX-Retarget", "#page")
 	component := page.Component()
 	layout := CourseManagerLayout(h.app, page.Component(), domain.User{})
 	return Respond(c, "", component, layout)
-
 }
 
 func (h authRouter) PostSignin(c echo.Context) error {
@@ -229,7 +229,7 @@ func UnauthAction(reason UnauthReason) UnauthorizedAction {
 
 func (r authRouter) RespondUnauthorized(c echo.Context, reason UnauthReason) error {
 	action := UnauthAction(reason)
-	component := managertemplates.UnauthorizedPage{
+	component := mt.UnauthorizedPage{
 		Message: action.Message,
 		Link: components.Link{
 			Text:   action.LinkName,

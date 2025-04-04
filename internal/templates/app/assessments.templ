@@ -2,18 +2,17 @@ package managertemplates
 
 templ CourseAssessmentsPageComponent(data CourseAssessmentsPage) {
 	@PageLayoutComponent(data)
+	@data.ActiveSelect()
+	@data.SortParamSelector()
 	@data.CategorySelectComponent()
-	@data.DateComponent("Start", data.StartDate)
-	@data.DateComponent("End", data.EndDate)
+	@data.DateComponent("Start", data.Filter.Start)
+	@data.DateComponent("End", data.Filter.End)
 	@data.ApplyFilterButton()
 	<script type="module" src="/dist/assessments.js">
 	</script>
 	<div id="assessments">
-		<ul>
-			for _, assessment := range data.Assessments {
-				<li>{ assessment.Name }</li>
-			}
-		</ul>
+		@data.Summary()
+		@data.AssessmentsTable()
 	</div>
 }
 

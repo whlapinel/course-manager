@@ -11,35 +11,12 @@ templ DescriptionListComponent(el DescriptionList) {
 				<div class="px-4 py-6 sm:grid sm:grid-cols-2 sm:gap-4 sm:px-0">
 					for _, item := range el.Items {
 						<dt class="text-sm/6 font-medium text-white">{ item.Name }</dt>
-						if item.IsEditing {
-							<dd
-								class="mt-1 text-sm/6 text-gray-400 sm:col-span-1 sm:mt-0"
-								id={ item.ID }
-							>
-								<input value={ item.Value } id={ item.ID }/>
-								<button
-									hx-include={ "#" + item.ID }
-									hx-post={ el.PostEditURL }
-								>Submit</button>
-							</dd>
-						} else {
-							<dd
-								class="mt-1 text-sm/6 text-gray-400 sm:col-span-1 sm:mt-0"
-								id={ item.ID }
-							>
-								{ item.Value }
-								if item.Editable {
-									<button
-										hx-get={ el.GetEditURL + "?field=" + Kebab(item.Name) }
-										hx-select={ "#" + item.ID }
-										hx-target={ "#" + item.ID }
-										hx-swap="outerHTML"
-									>
-										Edit
-									</button>
-								}
-							</dd>
-						}
+						<dd
+							class="mt-1 text-sm/6 text-gray-400 sm:col-span-1 sm:mt-0"
+							id={ item.ID }
+						>
+							{ item.Value }
+						</dd>
 					}
 				</div>
 			</dl>
