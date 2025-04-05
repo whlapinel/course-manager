@@ -28,11 +28,11 @@ func (cml CourseManagerLayout) Component() templ.Component {
 	}
 	head := HeadComponent()
 	layout := cmp.Layout{
-		HomeURL:       cml.HomeURL,
-		UserImage:     cml.User.Picture,
-		NavItems:      navItems,
-		Head:          head,
-		Page:          cml.Page,
+		HomeURL:   cml.HomeURL,
+		UserImage: cml.User.Picture,
+		NavItems:  navItems,
+		Head:      head,
+		Page:      cml.Page,
 		UserMenu: cmp.UserMenu{
 			Image: cml.User.Picture,
 			Links: []cmp.Link{

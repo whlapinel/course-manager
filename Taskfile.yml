@@ -36,7 +36,6 @@ tasks:
       - templ generate
       - go build -o ./cmd/web_app/web_app ./cmd/web_app
       - docker compose restart echo
-      # - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans echo -d
 
   run-prod:
     desc: To be run from production server

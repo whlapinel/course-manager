@@ -73,7 +73,7 @@ func (h authRouter) GetSignin(c echo.Context) error {
 	}
 	c.Request().Header.Add("HX-Retarget", "#page")
 	component := page.Component()
-	layout := CourseManagerLayout(h.app, page.Component(), domain.User{})
+	layout := CourseManagerLayout(h.app, page.Component(), EmptyUser())
 	return Respond(c, "", component, layout)
 }
 
@@ -115,7 +115,7 @@ func (h authRouter) GetSignup(c echo.Context) error {
 		GoogleSignupURL: h.app.Reverse(GetSignup.String()),
 	}
 	component := page.Component()
-	layout := CourseManagerLayout(h.app, page.Component(), domain.User{})
+	layout := CourseManagerLayout(h.app, page.Component(), EmptyUser())
 	return Respond(c, "", component, layout)
 }
 
@@ -237,6 +237,6 @@ func (r authRouter) RespondUnauthorized(c echo.Context, reason UnauthReason) err
 			Target: "#page",
 		},
 	}.Component()
-	return Respond(c, "", component, CourseManagerLayout(r.app, component, domain.User{}))
+	return Respond(c, "", component, CourseManagerLayout(r.app, component, EmptyUser()))
 
 }

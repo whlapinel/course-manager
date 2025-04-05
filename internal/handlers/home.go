@@ -76,6 +76,7 @@ func (h homeRouter) ShowHome(c echo.Context) error {
 	}
 	template := mt.HomePageComponent(pageData)
 	layout := mt.CourseManagerLayout{
+		User:       EmptyUser(),
 		HomeURL:    "/",
 		PageTitle:  "Home",
 		SigninURL:  h.app.Reverse(GetSignin.String()),
