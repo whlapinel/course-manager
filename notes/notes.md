@@ -13,6 +13,12 @@
 - Tailwind
 - Typescript
 
+## Production Environment Dependencies
+
+- Docker
+- Bash
+- Task CLI
+
 ## VS Code extensions used
 - [Task](https://marketplace.visualstudio.com/items?itemName=task.vscode-task)
 - [Task](https://marketplace.visualstudio.com/items?itemName=paulvarache.vscode-taskfile)
@@ -25,19 +31,25 @@
 
 ### Run in development (local)
 
-Builds binary and mounts as volume, runs all services with docker compose:
-- caddy
-- marp
-- echo app
-
 ```bash
 task run-dev
 ```
+
+Builds app binary and mounts as volume, runs all services with docker compose:
+- caddy
+- marp
+- echo app
 
 To quickly regenerate templates and rebuild go code during development use:
 
 ```bash
 task restart-echo
+```
+
+To run migrations on development database (already included in production script):
+
+```bash
+task migrate
 ```
 
 ### Deploy
@@ -46,17 +58,38 @@ task restart-echo
 task deploy
 ```
 
+- builds images
+- pushes them to docker hub
+- copies all scripts and env to remote server
+- starts ssh session
+
 ### Run in production (remote, after deploy)
 
 ```bash
 task run-prod
 ```
 
+- pulls the latest images (caddy, marp, and app (includes migration))
+- runs the migration binary as a separate container
+- starts caddy, marp, and the app ('echo') servers.
+
 ## Progress Log
+
+### 4/5/25
+
+- Spent yesterday working on the course assessments page. Filter and sort functionality seems to be working and it seems actually useful and not merely impressive.
+- I've been wrestling with how to conceive of the assessment entity. Currently it has a mandatory lesson_id field and this is the only thing linking it to a course let alone a user. The good part about that is most assessments are tied to a particular topic, and should be given on the day that topic is covered. So currently if a lesson is assigned to a different date, the assessment goes with it. *NOTE: that said, the assigned and due dates are not currently updated accordingly!* But we could make that an optional attribute and still retain that functionality. Sometimes it's more appropriate to tie an assessment to a unit or course rather than a specific lesson. So the mandatory field should be the course_id, and then we could have optional fields for unit_id and lesson_id. if a lesson is moved and it has an assessment associated with it, the assessment will be moved too (again however, see previous note regarding assigned and due dates!).
+- I've been toying with some level of integration with Canvas via their API. Some thoughts on this topic:
+  - Charlotte-Mecklenburg Schools is transitioning to Infinite Campus as an administrative system. I don't know if this replaces Powerschool, Canvas, or both, but I should find out before investing substantial time and energy into an integration with either of these systems.
+  - I've played with the API and it's quite easy to get started with. As a tentative first step, I could allow for the creation of assignments so that they could be created once in Course Manager and then modified as needed in Canvas. Anecdotally, this would be quite a help actually in my own daily workflow as a teacher. Eventually could try to sync them so that changes to an assessment would be reflected in the corresponding Canvas assignment, but this could turn out to be a very tough, or at least a very labor-intensive problem, so I should look thoroughly and at least 10 times before I leap on that.
+- I've also been toying with the idea of integration with LLMs, mainly for example suggesting slide content. This would not be a very tall order, but two big questions come up: 1. $$ and 2. how much value am I providing with such a feature, considering the user could just get similar functionality with a chat interface and copy-paste. The main thing I think a typical user would not know how to do (although it's very easy to teach) is providing the proper context, for example the format for the slides. It might be better to just educate the user on for example how to use AI for generating markdown slides.
 
 ### 4/3/25
 
 - Today I made a big change, assessment category is now a string instead of an integer. this meant doing a database migration and converting all ints to equivalent strings. I did my first go migration with goose, as up til now I had only done sql migrations. The conversion logic required more than I could do with sql alone.
+- Important: migrations are now included in the deployment pipeline in the following way:
+  - Migration is included in app image build (Dockerfile.echo)
+  - In `task run-prod` migration is run as a separate container
 
 ### 3/29/25
 

@@ -6,6 +6,11 @@ tasks:
     cmds:
       - go run ./cmd/export_secret
 
+  migrate:
+    desc: Run migrations (intended only for running on development database, as this step is included via container in deployment script)
+    cmds:
+      - go run ./cmd/migrate internal/data/database/course_manager.db up
+
   generate:
     desc: Generate sqlc (go), tailwind (css), typescript (js), and templ (go). Run if typescript or templ files have been modified
     cmds:
