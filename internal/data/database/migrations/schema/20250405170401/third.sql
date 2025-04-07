@@ -1,0 +1,2 @@
+ALTER TABLE assessments
+RENAME to assessments_old

@@ -545,7 +545,12 @@ func ShowFiles(c echo.Context, r NodeRouter) error {
 		return err
 	}
 	if !isDir {
-		c.Attachment(router.svc.NodeFilePath(path, router.nodes.ToSlice()...), filepath.Base(path))
+		path, err := router.svc.NodeFilePath(path, router.nodes.ToSlice()...)
+		if err != nil {
+			return err
+		}
+		return c.Attachment(path, filepath.Base(path))
+
 	}
 	files, err := router.svc.NodeFiles(path, router.nodes.ToSlice()...)
 	for _, file := range files {
@@ -664,8 +669,10 @@ func ViewFile(c echo.Context, router NodeRouter, redirect string) error {
 	if err != nil {
 		return err
 	}
-	pathRoot := data.NodeFilesDirPath(nodes.ToSlice()...)
-	path = filepath.Join(pathRoot, path)
+	path, err = r.svc.NodeFilePath(path, nodes.ToSlice()...)
+	if err != nil {
+		return err
+	}
 	content, err := r.svc.RenderMarkdownFile(path)
 	if err != nil {
 		return err

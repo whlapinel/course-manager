@@ -38,9 +38,10 @@ func (svc CourseService) WriteToMarkdown(relPath, content string, nodes domain.N
 }
 
 func (svc CourseService) WriteFile(file *multipart.FileHeader, relPath string, nodes domain.Nodes) error {
-	nodeDirPath := data.NodeFilesDirPath(nodes.ToSlice()...)
-	dstPathDir := filepath.Join(nodeDirPath, relPath)
-	dstPath := filepath.Join(dstPathDir, file.Filename)
+	dstPath, err := svc.NodeFilePath(relPath, nodes.ToSlice()...)
+	if err != nil {
+		return err
+	}
 	// Open the file
 	src, err := file.Open()
 	if err != nil {
@@ -68,10 +69,40 @@ func (svc CourseService) WriteFile(file *multipart.FileHeader, relPath string, n
 	return nil
 }
 
-func (svc CourseService) NodeFilePath(path string, nodes ...domain.CourseNode) string {
+func IsSecurePath(root, path string) bool {
+	rootClean := filepath.Clean(root)
+	cleaned := filepath.Clean(filepath.Join(rootClean, path))
+
+	// Check if cleaned is inside root
+	rel, err := filepath.Rel(rootClean, cleaned)
+	if err != nil {
+		log.Printf("SECURITY WARNING: error resolving path: %v", err)
+		return false
+	}
+	if strings.HasPrefix(rel, "..") || strings.HasPrefix(filepath.ToSlash(rel), "../") {
+		log.Printf("SECURITY WARNING: path traversal attempt detected: %q resolves to %q (rel: %q)", path, cleaned, rel)
+		return false
+	}
+	return true
+}
+
+
+func (svc CourseService) NodeFilePath(path string, nodes ...domain.CourseNode) (string, error) {
 	root := data.NodeFilesDirPath(nodes...)
-	path = filepath.Join(root, path)
-	return path
+	cleaned := filepath.Join(root, filepath.Clean(path))
+
+	// Normalize root too
+	rootClean := filepath.Clean(root)
+
+	// Ensure the resolved path is still under root
+	if !strings.HasPrefix(cleaned, rootClean+string(os.PathSeparator)) {
+		log.Printf("SECURITY WARNING: path traversal attempt detected: %q", path)
+		return "", fmt.Errorf("SECURITY WARNING: path traversal attempt detected")
+	}
+	log.Println("root:   ", rootClean)
+	log.Println("joined: ", cleaned)
+
+	return cleaned, nil
 }
 
 func (svc CourseService) IsDir(path string, nodes ...domain.CourseNode) (bool, error) {

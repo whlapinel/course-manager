@@ -8,6 +8,8 @@ import (
 
 type Assessment struct {
 	ID           int
+	CourseID     int
+	UnitID       int
 	LessonID     int
 	Name         string
 	Instructions string

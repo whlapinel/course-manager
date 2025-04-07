@@ -1,0 +1,4 @@
+{
+  "error": "SECURITY WARNING: path traversal attempt detected",
+  "message": "Internal Server Error"
+}
