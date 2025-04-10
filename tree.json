@@ -1,0 +1,1725 @@
+[
+  {
+    "type": "directory",
+    "name": ".",
+    "contents": [
+      {
+        "type": "file",
+        "name": "Caddyfile"
+      },
+      {
+        "type": "file",
+        "name": "Caddyfile.dev"
+      },
+      {
+        "type": "file",
+        "name": "Caddyfile.prod"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.caddy"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.echo"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.echo.dev"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.marp"
+      },
+      {
+        "type": "file",
+        "name": "LICENSE"
+      },
+      {
+        "type": "file",
+        "name": "README.md"
+      },
+      {
+        "type": "file",
+        "name": "Taskfile.yml"
+      },
+      {
+        "type": "file",
+        "name": "caddy.json"
+      },
+      {
+        "type": "directory",
+        "name": "caddy_config",
+        "contents": [
+          {
+            "type": "file",
+            "name": "autosave.json"
+          }
+        ]
+      },
+      {
+        "type": "directory",
+        "name": "caddy_data",
+        "contents": [
+          {
+            "type": "directory",
+            "name": "certificates"
+          },
+          {
+            "error": "error opening dir"
+          },
+          {
+            "type": "file",
+            "name": "instance.uuid"
+          },
+          {
+            "type": "file",
+            "name": "last_clean.json"
+          },
+          {
+            "type": "directory",
+            "name": "locks"
+          },
+          {
+            "error": "error opening dir"
+          },
+          {
+            "type": "directory",
+            "name": "pki"
+          },
+          {
+            "error": "error opening dir"
+          }
+        ]
+      },
+      {
+        "type": "directory",
+        "name": "cmd",
+        "contents": [
+          {
+            "type": "directory",
+            "name": "export_secret",
+            "contents": [
+              {
+                "type": "file",
+                "name": "main.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "migrate",
+            "contents": [
+              {
+                "type": "file",
+                "name": "main.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "web_app",
+            "contents": [
+              {
+                "type": "file",
+                "name": "logger.go"
+              },
+              {
+                "type": "file",
+                "name": "main.go"
+              },
+              {
+                "type": "file",
+                "name": "slide_template.md"
+              },
+              {
+                "type": "file",
+                "name": "web_app"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "file",
+        "name": "compose.dev.yaml"
+      },
+      {
+        "type": "file",
+        "name": "compose.prod.yaml"
+      },
+      {
+        "type": "file",
+        "name": "compose.yaml"
+      },
+      {
+        "type": "file",
+        "name": "docs-input.css"
+      },
+      {
+        "type": "file",
+        "name": "generate.go"
+      },
+      {
+        "type": "file",
+        "name": "go.mod"
+      },
+      {
+        "type": "file",
+        "name": "go.sum"
+      },
+      {
+        "type": "directory",
+        "name": "internal",
+        "contents": [
+          {
+            "type": "directory",
+            "name": "assets",
+            "contents": [
+              {
+                "type": "directory",
+                "name": "dist",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "assessments.d.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "assessments.js"
+                  },
+                  {
+                    "type": "file",
+                    "name": "details-hover.d.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "details-hover.js"
+                  },
+                  {
+                    "type": "file",
+                    "name": "favicon.svg"
+                  },
+                  {
+                    "type": "file",
+                    "name": "htmx.js"
+                  },
+                  {
+                    "type": "file",
+                    "name": "index.d.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "index.js"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson-details.d.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson-details.js"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown-styles.css"
+                  },
+                  {
+                    "type": "file",
+                    "name": "screenshot.png"
+                  },
+                  {
+                    "type": "file",
+                    "name": "signin.png"
+                  },
+                  {
+                    "type": "file",
+                    "name": "spinner.svg"
+                  },
+                  {
+                    "type": "file",
+                    "name": "styles.css"
+                  },
+                  {
+                    "type": "file",
+                    "name": "tab.d.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "tab.js"
+                  },
+                  {
+                    "type": "directory",
+                    "name": "types",
+                    "contents": [
+                      {
+                        "type": "file",
+                        "name": "assessments.d.ts"
+                      },
+                      {
+                        "type": "file",
+                        "name": "details-hover.d.ts"
+                      },
+                      {
+                        "type": "file",
+                        "name": "index.d.ts"
+                      },
+                      {
+                        "type": "file",
+                        "name": "lesson-details.d.ts"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "embed.go"
+              },
+              {
+                "type": "directory",
+                "name": "ts",
+                "contents": [
+                  {
+                    "type": "directory",
+                    "name": "@types",
+                    "contents": [
+                      {
+                        "type": "file",
+                        "name": "htmx.d.ts"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "assessments.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "details-hover.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "index.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson-details.ts"
+                  },
+                  {
+                    "type": "file",
+                    "name": "tab.ts"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "authentication",
+            "contents": [
+              {
+                "type": "file",
+                "name": "authentication.go"
+              },
+              {
+                "type": "file",
+                "name": "doc.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "authorization",
+            "contents": [
+              {
+                "type": "file",
+                "name": "authorization.go"
+              }
+            ]
+          },
+          {
+            "type": "link",
+            "name": "components",
+            "target": "components"
+          },
+          {
+            "type": "directory",
+            "name": "data",
+            "contents": [
+              {
+                "type": "file",
+                "name": "assessment.go"
+              },
+              {
+                "type": "file",
+                "name": "common.go"
+              },
+              {
+                "type": "file",
+                "name": "common_test.go"
+              },
+              {
+                "type": "file",
+                "name": "course.go"
+              },
+              {
+                "type": "file",
+                "name": "course_test.go"
+              },
+              {
+                "type": "directory",
+                "name": "csv",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "csv.go"
+                  }
+                ]
+              },
+              {
+                "type": "directory",
+                "name": "csv_files",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "courses_export_Sun, 29 Dec 2024 11:09:38 EST"
+                  },
+                  {
+                    "type": "file",
+                    "name": "curricula.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "non_instruct_days.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "objectives.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "schedules.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "schedules_new.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms.csv"
+                  },
+                  {
+                    "type": "file",
+                    "name": "wow_test.csv"
+                  }
+                ]
+              },
+              {
+                "type": "directory",
+                "name": "database",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "assignments.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "assignments.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "course_manager copy.db"
+                  },
+                  {
+                    "type": "file",
+                    "name": "course_manager.db"
+                  },
+                  {
+                    "type": "file",
+                    "name": "courses.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "courses.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "dates.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "dates.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "db.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lessons.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lessons.sql.go"
+                  },
+                  {
+                    "type": "directory",
+                    "name": "migrations",
+                    "contents": [
+                      {
+                        "type": "directory",
+                        "name": "archive",
+                        "contents": [
+                          {
+                            "type": "directory",
+                            "name": "mixed_data_schema",
+                            "contents": [
+                              {
+                                "type": "file",
+                                "name": "20250117195114_add_on_delete_cascade.sql"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "directory",
+                            "name": "schema",
+                            "contents": [
+                              {
+                                "type": "file",
+                                "name": "20250118131846_add_term_descr.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250118165850_start.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250118195415_remove_day_num.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250119135405_drop_non_instruct_days_table.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250123232353_remove_files.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250124183507_drop_images.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125141659_drop_objectives.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125142239_add_parentid_to_stds.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125142632_add_descr_to_stds.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125143748_modify_standards_parentid.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125144607_modify_lesson_stds.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125151625_add_table_std_set.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125152446_make_stdset_cname_unique.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250125152921_make_std_courseid_fkey.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250126130115_rename_std_set.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250126152612_mod_lesson_standards.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250126182329_mod_course.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250131163931_add_assignments.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250131164729_rename_assessments.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250131165635_alter_assessments.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250131171138_alter_category.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250203162346_add_user.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "20250213155530_add_occasion.sql"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "directory",
+                        "name": "data",
+                        "contents": [
+                          {
+                            "type": "file",
+                            "name": "20250216122111_add_user_fk_terms.sql"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "directory",
+                        "name": "schema",
+                        "contents": [
+                          {
+                            "type": "file",
+                            "name": "20250216163022_alter_user_id.sql"
+                          },
+                          {
+                            "type": "file",
+                            "name": "20250227141804_add_assgn_filepath.sql"
+                          },
+                          {
+                            "type": "file",
+                            "name": "20250227151625_modify_terms_user_id.sql"
+                          },
+                          {
+                            "type": "file",
+                            "name": "20250403145551_mod_category.go"
+                          },
+                          {
+                            "type": "directory",
+                            "name": "20250405170401",
+                            "contents": [
+                              {
+                                "type": "file",
+                                "name": "fifth.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "first.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "fourth.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "second.sql"
+                              },
+                              {
+                                "type": "file",
+                                "name": "third.sql"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "file",
+                            "name": "20250405170401_assessment_parent.go"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "models.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "occasions.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "occasions.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "schema.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "schema.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standard_sets.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standard_sets.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "units.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "units.sql.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "users.sql"
+                  },
+                  {
+                    "type": "file",
+                    "name": "users.sql.go"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "lesson.go"
+              },
+              {
+                "type": "file",
+                "name": "lesson_test.go"
+              },
+              {
+                "type": "file",
+                "name": "node.go"
+              },
+              {
+                "type": "file",
+                "name": "node_test.go"
+              },
+              {
+                "type": "file",
+                "name": "standard_sets.go"
+              },
+              {
+                "type": "file",
+                "name": "standards.go"
+              },
+              {
+                "type": "file",
+                "name": "standards_test.go"
+              },
+              {
+                "type": "file",
+                "name": "term.go"
+              },
+              {
+                "type": "file",
+                "name": "term_test.go"
+              },
+              {
+                "type": "file",
+                "name": "unit.go"
+              },
+              {
+                "type": "file",
+                "name": "unit_test.go"
+              },
+              {
+                "type": "file",
+                "name": "user.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "domain",
+            "contents": [
+              {
+                "type": "file",
+                "name": "assessment.go"
+              },
+              {
+                "type": "file",
+                "name": "category.go"
+              },
+              {
+                "type": "file",
+                "name": "course.go"
+              },
+              {
+                "type": "file",
+                "name": "document.go"
+              },
+              {
+                "type": "file",
+                "name": "image.go"
+              },
+              {
+                "type": "file",
+                "name": "lesson.go"
+              },
+              {
+                "type": "file",
+                "name": "lesson_test.go"
+              },
+              {
+                "type": "file",
+                "name": "node.go"
+              },
+              {
+                "type": "file",
+                "name": "occasion.go"
+              },
+              {
+                "type": "file",
+                "name": "school.go"
+              },
+              {
+                "type": "file",
+                "name": "standard.go"
+              },
+              {
+                "type": "file",
+                "name": "term.go"
+              },
+              {
+                "type": "file",
+                "name": "term_test.go"
+              },
+              {
+                "type": "file",
+                "name": "unit.go"
+              },
+              {
+                "type": "file",
+                "name": "user.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "gen_site",
+            "contents": [
+              {
+                "type": "file",
+                "name": "generator.go"
+              },
+              {
+                "type": "file",
+                "name": "markdown.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "handlers",
+            "contents": [
+              {
+                "type": "file",
+                "name": "assessments.go"
+              },
+              {
+                "type": "file",
+                "name": "auth.go"
+              },
+              {
+                "type": "file",
+                "name": "calendar.go"
+              },
+              {
+                "type": "file",
+                "name": "common.go"
+              },
+              {
+                "type": "file",
+                "name": "common_test.go"
+              },
+              {
+                "type": "file",
+                "name": "courses.go"
+              },
+              {
+                "type": "file",
+                "name": "home.go"
+              },
+              {
+                "type": "file",
+                "name": "lessons.go"
+              },
+              {
+                "type": "file",
+                "name": "node.go"
+              },
+              {
+                "type": "file",
+                "name": "node_test.go"
+              },
+              {
+                "type": "file",
+                "name": "terms.go"
+              },
+              {
+                "type": "file",
+                "name": "units.go"
+              },
+              {
+                "type": "file",
+                "name": "user_home.go"
+              },
+              {
+                "type": "file",
+                "name": "util.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "service",
+            "contents": [
+              {
+                "type": "file",
+                "name": "assessments.go"
+              },
+              {
+                "type": "file",
+                "name": "common_test.go"
+              },
+              {
+                "type": "file",
+                "name": "course_manager.db"
+              },
+              {
+                "type": "file",
+                "name": "courses.go"
+              },
+              {
+                "type": "file",
+                "name": "courses_test.go"
+              },
+              {
+                "type": "file",
+                "name": "files.go"
+              },
+              {
+                "type": "file",
+                "name": "generate.go"
+              },
+              {
+                "type": "file",
+                "name": "generator_new.go"
+              },
+              {
+                "type": "file",
+                "name": "lesson.go"
+              },
+              {
+                "type": "file",
+                "name": "markdown.go"
+              },
+              {
+                "type": "file",
+                "name": "markdown_test.go"
+              },
+              {
+                "type": "file",
+                "name": "node.go"
+              },
+              {
+                "type": "file",
+                "name": "service.go"
+              },
+              {
+                "type": "file",
+                "name": "slides.go"
+              },
+              {
+                "type": "file",
+                "name": "slides_test.go"
+              },
+              {
+                "type": "file",
+                "name": "standards.go"
+              },
+              {
+                "type": "file",
+                "name": "terms.go"
+              },
+              {
+                "type": "file",
+                "name": "unit.go"
+              },
+              {
+                "type": "file",
+                "name": "user.go"
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "templates",
+            "contents": [
+              {
+                "type": "directory",
+                "name": "app",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "assessments.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "assessments.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "assessments_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "assessments_test.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "authentication.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "authentication.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "authentication_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "calendar.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "calendar.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "calendar_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "common.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "common.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "common_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "courses.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "courses.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "courses_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "files.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "files.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "files_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "head.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "head_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lessons.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lessons.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lessons_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "new_lesson.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "new_lesson.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "new_lesson_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_create.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_create.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_create_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_details.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_details.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_details_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_list.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_list.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_list_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "page.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "standards_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "terms_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unauthorized.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unauthorized.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unauthorized_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unit_details.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unit_details.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "unit_details_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "units.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "units.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "units_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "user_home.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "user_home.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "user_home_templ.go"
+                  }
+                ]
+              },
+              {
+                "type": "directory",
+                "name": "components",
+                "contents": [
+                  {
+                    "type": "directory",
+                    "name": "app"
+                  },
+                  {
+                    "type": "directory",
+                    "name": "base",
+                    "contents": [
+                      {
+                        "type": "file",
+                        "name": "breadcrumbs.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "breadcrumbs.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "breadcrumbs_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "button.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "button.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "button_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "description_list.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "description_list.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "description_list_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "doc.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "element.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "form.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "form.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "form_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "hx_element.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "icons.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "icons_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "input.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "input.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "input_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "label.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "label.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "label_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "layout.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "layout.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "layout_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "link.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "link.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "link_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "mobile.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "mobile.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "mobile_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "notifications.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "notifications_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "page_heading.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "page_heading.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "page_heading_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "select.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "select.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "select_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "tab.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "tab.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "tab.ts"
+                      },
+                      {
+                        "type": "file",
+                        "name": "tab_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "table.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "table.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "table_templ.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "textarea.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "user_menu.go"
+                      },
+                      {
+                        "type": "file",
+                        "name": "user_menu.templ"
+                      },
+                      {
+                        "type": "file",
+                        "name": "user_menu_templ.go"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "directory",
+                "name": "shared",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "common.go"
+                  }
+                ]
+              },
+              {
+                "type": "directory",
+                "name": "static",
+                "contents": [
+                  {
+                    "type": "file",
+                    "name": "breadcrumbs.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "course_calendar.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "course_calendar.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "course_calendar_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "file.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "file.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "file_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "head.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "head.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "head_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "home_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "layout_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "lesson_details_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "markdown_templ.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node.templ"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_details.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_list.go"
+                  },
+                  {
+                    "type": "file",
+                    "name": "node_templ.go"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "util",
+            "contents": [
+              {
+                "type": "file",
+                "name": "util.go"
+              },
+              {
+                "type": "file",
+                "name": "util_test.go"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "file",
+        "name": "manager-input.css"
+      },
+      {
+        "type": "file",
+        "name": "output.txt"
+      },
+      {
+        "type": "file",
+        "name": "package-lock.json"
+      },
+      {
+        "type": "file",
+        "name": "package.json"
+      },
+      {
+        "type": "directory",
+        "name": "scripts",
+        "contents": [
+          {
+            "type": "file",
+            "name": "backup.sh"
+          },
+          {
+            "type": "file",
+            "name": "copy_config.sh"
+          },
+          {
+            "type": "file",
+            "name": "copy_data.sh"
+          },
+          {
+            "type": "file",
+            "name": "restore_backup.sh"
+          },
+          {
+            "type": "file",
+            "name": "test.sh"
+          },
+          {
+            "type": "file",
+            "name": "unpack_data.sh"
+          }
+        ]
+      },
+      {
+        "type": "file",
+        "name": "sqlc.yml"
+      },
+      {
+        "type": "file",
+        "name": "tailwind.config.js"
+      },
+      {
+        "type": "file",
+        "name": "test.txt"
+      },
+      {
+        "type": "file",
+        "name": "tree.json"
+      },
+      {
+        "type": "file",
+        "name": "tree.md"
+      },
+      {
+        "type": "file",
+        "name": "tsconfig.json"
+      },
+      {
+        "type": "file",
+        "name": "tsconfig.server.json"
+      },
+      {
+        "type": "file",
+        "name": "tsconfig.server.tsbuildinfo"
+      },
+      {
+        "type": "file",
+        "name": "tsconfig.static.json"
+      },
+      {
+        "type": "file",
+        "name": "tsconfig.static.tsbuildinfo"
+      }
+    ]
+  },
+  {
+    "type": "report",
+    "directories": 41,
+    "files": 366
+  }
+]

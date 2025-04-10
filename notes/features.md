@@ -3,6 +3,8 @@
 
 ## Pending (keep in priority order)
 
+- Add course occasions so that occasions can be specific to a course instead of applying to an entire term
+  - [Course Occaions](./features/course-occasions.md)
 - Add view standards tab to lesson details
 - change title page of static site
 - change title page for files especially assessment files if possible
