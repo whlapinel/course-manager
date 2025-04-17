@@ -1,0 +1,20 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries:
+      - "internal/infrastructure/sqlite/sqlc/terms.sql"
+      - "internal/infrastructure/sqlite/sqlc/courses.sql"
+      - "internal/infrastructure/sqlite/sqlc/units.sql"
+      - "internal/infrastructure/sqlite/sqlc/lessons.sql"
+      - "internal/infrastructure/sqlite/sqlc/dates.sql"
+      - "internal/infrastructure/sqlite/sqlc/standards.sql"
+      - "internal/infrastructure/sqlite/sqlc/standard_sets.sql"
+      - "internal/infrastructure/sqlite/sqlc/assignments.sql"
+      - "internal/infrastructure/sqlite/sqlc/occasions.sql"
+      - "internal/infrastructure/sqlite/sqlc/users.sql"
+
+    schema: "internal/infrastructure/sqlite/sqlc/schema.sql"
+    gen:
+      go:
+        package: "database"
+        out: "internal/infrastructure/sqlite/sqlc/"

@@ -57,7 +57,7 @@ func (t Term) GetDescription() string {
 	return t.Description
 }
 
-func (t Term) GetID() interface{} {
+func (t Term) GetID() any {
 	return t.ID
 }
 

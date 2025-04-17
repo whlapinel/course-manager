@@ -159,6 +159,50 @@ func (svc CourseService) DeleteLesson(lessonID int) error {
 	return svc.repo.DeleteLesson(lesson)
 }
 
+// returns dates left or right of date
+func (svc CourseService) Dates(selectedDate time.Time, dates []time.Time, cd domain.CalendarDirection) []time.Time {
+	var filtered []time.Time
+	switch cd {
+	case domain.Right:
+		for _, date := range dates {
+			if date.After(selectedDate) {
+				filtered = append(filtered, date)
+			}
+		}
+	case domain.Left:
+		for _, date := range dates {
+			if date.Before(selectedDate) {
+				filtered = append(filtered, date)
+			}
+		}
+	}
+	return filtered
+
+}
+
+// // all lessons on or after the date provided will be shifted one day left or right
+// func (svc CourseService) ShiftAll(termID, courseID int, date time.Time, cd domain.CalendarDirection) error {
+// 	term, err := svc.repo.GetTermWithDates(termID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	// get slice of all dates left or right
+// 	dates := svc.Dates(date, term.InstructionalDays, cd)
+// 	for _, date := range dates {
+// 		// get lessons on date
+// 		lessons, err := svc.repo.GetLessonsOnDateForCourse(date, courseID)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		for _, lesson := range lessons {
+
+// 		}
+
+// 		// shift lessons in direction cd
+// 	}
+
+// }
+
 // This version is for the web app
 func (svc CourseService) WebShift(termID, courseID, lessonID int, cd domain.CalendarDirection) error {
 	lesson, err := svc.GetLesson(lessonID)

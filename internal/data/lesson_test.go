@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/data/database"
 	"log"
 	"testing"
+	"time"
 )
 
 func TestGetLesson(t *testing.T) {
@@ -31,6 +32,18 @@ func TestGetLessonsOnDate(t *testing.T) {
 		Date:   "2025-01-21",
 		TermID: 1,
 	})
+	if err != nil {
+		t.Error(err)
+	}
+	for _, lesson := range lessons {
+		log.Println(lesson)
+	}
+}
+
+func TestGetLessonsOnDateForCourse(t *testing.T) {
+	date := time.Date(2025, time.April, 29, 0, 0, 0, 0, time.Local)
+	courseID := 5
+	lessons, err := cr.GetLessonsOnDateForCourse(date, courseID)
 	if err != nil {
 		t.Error(err)
 	}

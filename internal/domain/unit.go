@@ -6,6 +6,20 @@ type NewUnitParams struct {
 	Unit
 }
 
+
+// Always associated with a particular course
+type Unit struct {
+	ID          int
+	CourseID    int
+	Number      int
+	SequenceNum int
+	Name        string
+	Description string
+	Lessons     []Lesson
+	Image       Image
+}
+
+
 func NewUnit(params NewUnitParams) Unit {
 	return Unit{
 		CourseID:    params.CourseID,
@@ -53,18 +67,6 @@ func (u Unit) ParentTypeName() string {
 
 func (u Unit) ChildTypeName() string {
 	return "Lesson"
-}
-
-// Always associated with a particular course
-type Unit struct {
-	ID          int
-	CourseID    int
-	Number      int
-	SequenceNum int
-	Name        string
-	Description string
-	Lessons     []Lesson
-	Image       Image
 }
 
 func (u Unit) Designation() string {

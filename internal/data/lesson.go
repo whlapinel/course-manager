@@ -326,3 +326,27 @@ func (cr CourseRepo) DeleteLessonStandard(lesson domain.Lesson, standard domain.
 	})
 
 }
+
+func (cr CourseRepo) GetLessonsOnDateForCourse(date time.Time, courseID int) ([]domain.Lesson, error) {
+	dbLessons, err := cr.queries.GetLessonsOnDateForCourse(context.Background(), database.GetLessonsOnDateForCourseParams{
+		Date: date.Format(time.DateOnly),
+		ID:   int64(courseID),
+	})
+	if err != nil {
+		return nil, err
+	}
+	var lessons []domain.Lesson
+	for _, dbLesson := range dbLessons {
+		lesson := domain.Lesson{
+			ID:          int(dbLesson.ID),
+			UnitID:      int(dbLesson.UnitID),
+			UnitNum:     int(dbLesson.UnitNum),
+			Number:      int(dbLesson.Number),
+			Name:        dbLesson.Name.String,
+			Description: dbLesson.Description.String,
+		}
+		lessons = append(lessons, lesson)
+
+	}
+	return lessons, nil
+}
