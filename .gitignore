@@ -19,3 +19,4 @@ sites
 caddy_data
 caddy_config
 cmd/web_app/web_app
+cmd/new_app/new_app

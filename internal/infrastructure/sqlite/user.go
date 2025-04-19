@@ -2,7 +2,8 @@ package sqlite
 
 import (
 	"context"
-	"gh_static_portfolio/internal/core/user"
+	"database/sql"
+	core "gh_static_portfolio/internal/core/user"
 	feature "gh_static_portfolio/internal/features/user"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 )
@@ -18,14 +19,14 @@ func NewUserRepo(queries database.Queries) feature.Repository {
 
 }
 
-func (repo *userRepo) All() ([]user.User, error) {
+func (repo *userRepo) All() ([]core.User, error) {
 	dbUsers, err := repo.queries.AllUsers(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	var users []user.User
+	var users []core.User
 	for _, dbUser := range dbUsers {
-		user := user.User{
+		user := core.User{
 			ID:        dbUser.ID,
 			FirstName: dbUser.FirstName,
 			LastName:  dbUser.LastName,
@@ -34,4 +35,42 @@ func (repo *userRepo) All() ([]user.User, error) {
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func (repo *userRepo) SaveUser(user core.User) (core.User, error) {
+	dbUser, err := repo.queries.SaveUser(context.Background(), database.SaveUserParams{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Picture: sql.NullString{
+			Valid:  user.Picture != "",
+			String: user.Picture,
+		},
+	})
+	if err != nil {
+		return core.User{}, err
+	}
+	return core.User{
+		ID:        dbUser.ID,
+		FirstName: dbUser.FirstName,
+		LastName:  dbUser.LastName,
+		Email:     dbUser.Email,
+		Picture:   dbUser.Picture.String,
+	}, nil
+}
+
+func (repo *userRepo) GetUser(id string) (core.User, error) {
+	dbUser, err := repo.queries.GetUser(context.Background(), id)
+	if err != nil {
+		return core.User{}, err
+	}
+	return core.User{
+		ID:        dbUser.ID,
+		FirstName: dbUser.FirstName,
+		LastName:  dbUser.LastName,
+		Email:     dbUser.Email,
+		Picture:   dbUser.Picture.String,
+	}, nil
+
 }

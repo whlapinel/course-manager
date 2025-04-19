@@ -19,7 +19,7 @@ func (u Unit) GetDescription() string {
 	return u.Description
 }
 
-func (u Unit) GetID() interface{} {
+func (u Unit) GetID() any {
 	return u.ID
 }
 

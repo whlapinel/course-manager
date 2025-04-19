@@ -1,8 +1,8 @@
 package user
 
 import (
-	"gh_static_portfolio/internal/core"
-	"net/http"
+	"gh_static_portfolio/internal/shared/routes"
+	"log"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,24 +20,17 @@ func NewHandler(service Service, e *echo.Echo) *Handler {
 
 func RegisterRoutes(group *echo.Group, h *Handler) {
 	for _, handler := range RouteHandlers(h) {
-		core.RegisterRoute(group, handler)
+		routes.RegisterRoute(group, handler)
 	}
 }
 
-const (
-	users core.RoutePath = "/users"
-)
-
-const (
-	listUsers core.HandlerName = core.HandlerName(("GET: " + users))
-)
-
-var RouteHandlers = func(h *Handler) []core.RouteHandler {
-	return []core.RouteHandler{
-		core.NewRouteHandler(http.MethodGet, users, listUsers, h.listUsers),
+func RouteHandlers(h *Handler) []routes.RouteHandler {
+	return []routes.RouteHandler{
+		routes.NewRouteHandler(routes.GET, routes.Users, routes.GetUsers, h.showDashboard),
 	}
 }
 
-func (h Handler) listUsers(c echo.Context) error {
+func (h *Handler) showDashboard(c echo.Context) error {
+	log.Println("showDashboard running")
 	return nil
 }

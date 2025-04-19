@@ -41,7 +41,7 @@ func (u User) GetDescription() string {
 }
 
 // GetID implements CourseNode.
-func (u User) GetID() interface{} {
+func (u User) GetID() any {
 	return u.ID
 }
 

@@ -3,12 +3,13 @@ services:
     
   echo:
     image: whlapinel/course-manager:local-dev
-    command: ["./cmd/web_app/web_app"]
+    command: ["./cmd/new_app/new_app"]
     build:
       context: .
       dockerfile: Dockerfile.echo.dev
     volumes:
       - ./cmd/web_app:/app/cmd/web_app
+      - ./cmd/new_app:/app/cmd/new_app
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db

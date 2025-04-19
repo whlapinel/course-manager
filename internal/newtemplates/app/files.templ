@@ -1,0 +1,150 @@
+package managertemplates
+
+import (
+	"gh_static_portfolio/internal/templates/components/base"
+	"gh_static_portfolio/internal/util"
+	"path/filepath"
+)
+
+templ FilesComponent(page FilesPage) {
+	@PageLayoutComponent(page)
+	<div class="grid grid-cols-2">
+		<form hx-post={ page.E.Reverse(page.UploadFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath))) } enctype="multipart/form-data">
+			<label for="file">Choose a file:</label>
+			<input type="file" name="file" id="file"/>
+			<button type="submit">Upload</button>
+		</form>
+		<ul class="flex">
+			for _, item := range page.Files {
+				<li>
+					if !item.IsDir {
+						<a href={ templ.SafeURL(page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...)) }>{ item.Path }</a>
+					} else {
+						<button
+							hx-get={ page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...) }
+							hx-target="#page"
+							hx-push-url="true"
+						>
+							{ item.Path }
+						</button>
+					}
+					if util.IsMarkdown(item.Path) {
+						@page.ViewMarkdownButton(item)
+					}
+				</li>
+			}
+		</ul>
+	</div>
+	<div id="markdown"></div>
+}
+
+templ NewFilesComponent(data FilesPage) {
+	@PageLayoutComponent(data)
+	<div
+		id="files"
+		class="p-4"
+	>
+		<form hx-post={ data.E.Reverse(data.UploadFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath))) } enctype="multipart/form-data">
+			<label for="file">Choose a file:</label>
+			<input type="file" name="file" id="file"/>
+			<button type="submit">Upload</button>
+		</form>
+		if !data.Root {
+			<a
+				hx-get={ data.ParentDirectory.URL }
+				hx-target={ "#files" }
+				hx-swap="outerHTML"
+				class="flex gap-1 cursor-pointer bg-blue-500 pl-1 pr-2 rounded max-w-fit"
+			>
+				@components.UpArrowIcon()
+				{ data.ParentDirectory.Name }
+			</a>
+		}
+		<h2>Files in { data.CurrentDirectory.Name }</h2>
+		<ul role="list" class="divide-y divide-white/10 rounded-md border border-white/20">
+			for _, file := range data.Files {
+				if file.IsDir {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a
+								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
+								hx-get={ string(templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...))) }
+								hx-target="#files"
+								hx-swap="outerHTML"
+							>
+								@components.FolderIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+						</div>
+					</li>
+				} else {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a
+								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
+								href={ templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...)) }
+							>
+								@components.DownloadIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+							if util.IsMarkdown(file.Name) {
+								@data.ViewMarkdownButton(file)
+								@data.EditMarkdownButton(file)
+							}
+						</div>
+					</li>
+				}
+			}
+		</ul>
+		<div id="markdown"></div>
+	</div>
+}
+
+templ MarkdownIFrame(data MarkdownDocument) {
+	<iframe srcdoc={ data.Content } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
+}
+
+templ MarkdownEditorComponent(props MarkdownEditor) {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"/>
+	<style>
+        .CodeMirror {
+            height: auto;
+            /* Adjusts the editor height dynamically */
+        }
+    </style>
+	<!-- CodeMirror Editor -->
+	<textarea
+		id={ "slides-editor-text-area" }
+		name={ "slides-editor-text-area" }
+		class="bg-slate-900 min-w-full min-h-96 font-mono p-2"
+		id="editor"
+	>
+		{ props.Contents }
+	</textarea>
+	<!-- CodeMirror Scripts -->
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js"></script>
+	<script>
+
+		document.addEventListener("DOMContentLoaded", function () {
+			console.log("This runs after the DOM is fully loaded.");
+			// Initialize CodeMirror
+			const editor = CodeMirror.fromTextArea(document.getElementById("slides-editor-text-area"), {
+				lineNumbers: true,   // Display line numbers
+				mode: "markdown",      // Set syntax highlighting mode
+				theme: "default",    // Set theme (default in this example)
+				tabSize: 4           // Number of spaces for a tab
+			});
+		});
+    </script>
+	@ButtonContainer() {
+		@CancelEditButton()
+		<button hx-post={ props.PostEditFileURL(props.Path) } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
+			Submit
+		</button>
+	}
+}
