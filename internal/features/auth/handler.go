@@ -3,6 +3,7 @@ package auth
 import (
 	"database/sql"
 	"errors"
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/user"
 	authentication "gh_static_portfolio/internal/newauthentication"
 	mt "gh_static_portfolio/internal/newtemplates/app"
@@ -51,7 +52,7 @@ func (h *Handler) showSignin(c echo.Context) error {
 	}
 	c.Request().Header.Add("HX-Retarget", "#page")
 	component := page.Component()
-	layout := mt.BaseLayout(h.reverse, page.Component(), user.User{})
+	layout := mt.BaseLayout(h.reverse, page.Component(), dto.User{})
 	return web.Respond(c, "", component, layout)
 }
 
@@ -142,5 +143,5 @@ func (h *Handler) RespondUnauthorized(c echo.Context, reason UnauthReason) error
 			Target: "#page",
 		},
 	}.Component()
-	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, user.User{}))
+	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, dto.User{}))
 }

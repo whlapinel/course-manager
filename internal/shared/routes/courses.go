@@ -4,6 +4,7 @@ import "gh_static_portfolio/internal/shared/web"
 
 const (
 	Courses           web.RoutePath = Term + "/courses"
+	NewCourse         web.RoutePath = Courses + "/new"
 	Course            web.RoutePath = Courses + web.RoutePath(CourseID)
 	CourseEdit        web.RoutePath = Course + "/edit"
 	CourseFiles       web.RoutePath = Course + "/files"
@@ -24,11 +25,14 @@ const (
 
 // Course handler names
 var (
-	GetCourses     = web.NewHandlerName(web.GET, Course)
-	PostCourse     = web.NewHandlerName(web.POST, Courses)
-	GetEditCourse  = web.NewHandlerName(web.GET, CourseEdit)
-	PostEditCourse = web.NewHandlerName(web.POST, CourseEdit)
-	DeleteCourse   = web.NewHandlerName(web.DELETE, Course)
+	GetCourses        = web.NewHandlerName(web.GET, Courses)
+	GetNewCourse      = web.NewHandlerName(web.GET, NewCourse)
+	GetCourseCalendar = web.NewHandlerName(web.GET, CourseCalendar)
+	GetCourse         = web.NewHandlerName(web.GET, Course)
+	PostCourse        = web.NewHandlerName(web.POST, Courses)
+	GetEditCourse     = web.NewHandlerName(web.GET, CourseEdit)
+	PostEditCourse    = web.NewHandlerName(web.POST, CourseEdit)
+	DeleteCourse      = web.NewHandlerName(web.DELETE, Course)
 )
 
 // Course file handler names

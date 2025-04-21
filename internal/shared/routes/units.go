@@ -3,7 +3,8 @@ package routes
 import "gh_static_portfolio/internal/shared/web"
 
 const (
-	Units           web.RoutePath = Course + "/Units"
+	Units           web.RoutePath = Course + "/units"
+	NewUnit         web.RoutePath = Units + "/new"
 	Unit            web.RoutePath = Units + web.RoutePath(UnitID)
 	UnitEdit        web.RoutePath = Unit + "/edit"
 	UnitFiles       web.RoutePath = Unit + "/files"
@@ -20,7 +21,9 @@ const (
 
 // Unit handler names
 var (
-	GetUnits     = web.NewHandlerName(web.GET, Unit)
+	GetUnit      = web.NewHandlerName(web.GET, Unit)
+	GetUnits     = web.NewHandlerName(web.GET, Units)
+	GetNewUnit   = web.NewHandlerName(web.GET, NewUnit)
 	PostUnit     = web.NewHandlerName(web.POST, Units)
 	GetEditUnit  = web.NewHandlerName(web.GET, UnitEdit)
 	PostEditUnit = web.NewHandlerName(web.POST, UnitEdit)

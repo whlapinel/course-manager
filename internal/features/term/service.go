@@ -12,6 +12,10 @@ func NewService(repo Repository) *Service {
 	}
 }
 
+func (svc *Service) ByID(termID int) (term.Term, error) {
+	return svc.repo.ByID(termID)
+}
+
 func (svc *Service) TermsByUser(userID string) ([]term.Term, error) {
 	return svc.repo.ByUserID(userID)
 }

@@ -7,20 +7,22 @@ import (
 )
 
 type Handler struct {
-	reverse Reverse
+	reverse web.Reverse
 	service *Service
 }
-
-type Reverse func(name string, params ...any) string
 
 func NewHandler(service *Service) *Handler {
 	return &Handler{service: service}
 }
 
-func RegisterRoutes(group *echo.Group, h *Handler) {
+func RegisterRoutes(group *echo.Group, h *Handler) error {
 	for _, handler := range routeHandlers(h) {
-		web.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func routeHandlers(h *Handler) []web.RouteHandler {

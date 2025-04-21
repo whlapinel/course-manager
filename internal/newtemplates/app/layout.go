@@ -2,7 +2,6 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/core/user"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
@@ -17,11 +16,11 @@ type CourseManagerLayout struct {
 	SigninURL     string
 	SignupURL     string
 	SignoutURL    string
-	User          user.User
+	User          dto.User
 	Page          templ.Component
 }
 
-func BaseLayout(reverse web.Reverse, page templ.Component, user user.User) templ.Component {
+func BaseLayout(reverse web.Reverse, page templ.Component, user dto.User) templ.Component {
 	cml := CourseManagerLayout{
 		HomeURL:    "/",
 		Page:       page,

@@ -37,7 +37,7 @@ func (repo *userRepo) All() ([]core.User, error) {
 	return users, nil
 }
 
-func (repo *userRepo) SaveUser(user core.User) (core.User, error) {
+func (repo *userRepo) Save(user core.User) (string, error) {
 	dbUser, err := repo.queries.SaveUser(context.Background(), database.SaveUserParams{
 		ID:        user.ID,
 		FirstName: user.FirstName,
@@ -49,15 +49,9 @@ func (repo *userRepo) SaveUser(user core.User) (core.User, error) {
 		},
 	})
 	if err != nil {
-		return core.User{}, err
+		return "", err
 	}
-	return core.User{
-		ID:        dbUser.ID,
-		FirstName: dbUser.FirstName,
-		LastName:  dbUser.LastName,
-		Email:     dbUser.Email,
-		Picture:   dbUser.Picture.String,
-	}, nil
+	return dbUser.ID, nil
 }
 
 func (repo *userRepo) ByID(id string) (core.User, error) {

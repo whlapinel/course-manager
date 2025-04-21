@@ -2,10 +2,8 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/features/term"
-	"gh_static_portfolio/internal/features/user"
+	"gh_static_portfolio/internal/app/services"
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -13,60 +11,43 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type UserHandler struct {
-	service     *user.Service
-	termService *term.Service
-	reverse     web.Reverse
+type userHandler struct {
+	service *services.UserService
+	reverse web.Reverse
 }
 
-func NewUserHandler(service *user.Service, termService *term.Service, e *echo.Echo) *UserHandler {
-	return &UserHandler{
-		service:     service,
-		termService: termService,
-		reverse:     e.Reverse,
+func NewUserHandler(service *services.UserService, e *echo.Echo) *userHandler {
+	return &userHandler{
+		service: service,
+		reverse: e.Reverse,
 	}
 }
 
-func RegisterUserRoutes(group *echo.Group, h *UserHandler) {
-	for _, handler := range RouteHandlers(h) {
+func RegisterUserRoutes(group *echo.Group, h *userHandler) {
+	for _, handler := range userRouteHandlers(h) {
 		web.RegisterRoute(group, handler)
 	}
 }
 
-func RouteHandlers(h *UserHandler) []web.RouteHandler {
+func userRouteHandlers(h *userHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		{Method: web.GET, RoutePath: routes.Terms, HandlerName: routes.GetTerms, HandlerFunc: h.listTerms},
 	}
 }
 
-func (h *UserHandler) listTerms(c echo.Context) error {
+func (h *userHandler) listTerms(c echo.Context) error {
 	log.Println("UserHandler.listTerms running...")
 	path, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-	user, err := h.service.ByID(path.UserID)
+	userDTO, err := h.service.ListTerms(path.UserID)
 	if err != nil {
 		return err
-	}
-	terms, err := h.termService.TermsByUser(path.UserID)
-	if err != nil {
-		return err
-	}
-	var termDTOs []templates.Node
-	for _, term := range terms {
-		termDTO := dto.Term{
-			Term: term,
-		}
-		termDTOs = append(termDTOs, termDTO)
-	}
-	userDTO := dto.User{
-		User:  user,
-		Terms: termDTOs,
 	}
 	nodePage := managertemplates.NodeListPage{
 		ParentNode:       userDTO,
-		Children:         termDTOs,
+		Children:         userDTO.Children(),
 		ChildDetailsURL:  web.URLFunc(routes.GetTerm, h.reverse, path.ToSlice()...),
 		ChildChildrenURL: web.URLFunc(routes.GetCourses, h.reverse, path.ToSlice()...),
 		DeleteChildURL:   web.URLFunc(routes.DeleteTerm, h.reverse, path.ToSlice()...),
@@ -81,6 +62,6 @@ func (h *UserHandler) listTerms(c echo.Context) error {
 		ShowTermCalendarURL: web.URLFunc(routes.GetTermCalendar, h.reverse, path.ToSlice()...),
 		NodeListPage:        nodePage,
 	}.Component()
-	layout := managertemplates.BaseLayout(h.reverse, component, user)
+	layout := managertemplates.BaseLayout(h.reverse, component, dto.User{})
 	return web.Respond(c, "", component, layout)
 }

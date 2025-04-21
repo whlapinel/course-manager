@@ -28,7 +28,7 @@ func (r RootCourseNode) GetDescription() string {
 func (r RootCourseNode) Children() []templates.Node {
 	var nodes []templates.Node
 	for _, user := range r.Users {
-		nodes = append(nodes, &user)
+		nodes = append(nodes, user)
 	}
 	return nodes
 }

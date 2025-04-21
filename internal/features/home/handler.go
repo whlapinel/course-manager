@@ -1,7 +1,7 @@
 package home
 
 import (
-	"gh_static_portfolio/internal/core/user"
+	"gh_static_portfolio/internal/app/dto"
 	mt "gh_static_portfolio/internal/newtemplates/app"
 	"gh_static_portfolio/internal/shared/routes"
 	web "gh_static_portfolio/internal/shared/web"
@@ -11,11 +11,9 @@ import (
 )
 
 type Handler struct {
-	reverse Reverse
+	reverse web.Reverse
 	service Service
 }
-
-type Reverse func(name string, params ...any) string
 
 func NewHandler(service Service, e *echo.Echo) *Handler {
 	return &Handler{service: service, reverse: e.Reverse}
@@ -46,7 +44,7 @@ func (h Handler) showHome(c echo.Context) error {
 	}
 	template := mt.HomePageComponent(pageData)
 	layout := mt.CourseManagerLayout{
-		User:       user.User{},
+		User:       dto.User{},
 		HomeURL:    "/",
 		PageTitle:  "Home",
 		SigninURL:  h.reverse(routes.GetSignin.String()),

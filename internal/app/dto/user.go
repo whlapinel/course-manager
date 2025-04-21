@@ -9,7 +9,7 @@ import (
 
 type User struct {
 	user.User
-	Terms []templates.Node
+	Terms []Term
 }
 
 func (u User) Username() string {

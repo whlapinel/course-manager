@@ -9,19 +9,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type CourseListPage struct {
-	ShowCalendarURL    web.AddParams
-	ShowAssessmentsURL web.AddParams
+type CoursesListPage struct {
+	ShowCourseCalendarURL web.AddParams
+	ShowAssessmentsURL    web.AddParams
 	NodeListPage
 }
 
-func (page CourseListPage) Component() templ.Component {
+func (page CoursesListPage) Component() templ.Component {
 	var calendarButtons []ComponentData
 	var assessmentButtons []ComponentData
 
 	for _, course := range page.Children {
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.ShowCalendarURL(course.GetID()),
+			ShowCalendarURL: page.ShowCourseCalendarURL(course.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
 		button2 := ShowAssessmentsButton{

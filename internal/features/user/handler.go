@@ -20,10 +20,14 @@ func NewHandler(service *Service, e *echo.Echo) *Handler {
 	return &Handler{service: service, reverse: e.Reverse}
 }
 
-func RegisterRoutes(group *echo.Group, h *Handler) {
+func RegisterRoutes(group *echo.Group, h *Handler) error {
 	for _, handler := range RouteHandlers(h) {
-		web.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func RouteHandlers(h *Handler) []web.RouteHandler {
@@ -63,6 +67,6 @@ func (h *Handler) showDashboard(c echo.Context) error {
 		User:            userDTO,
 	}
 	component := page.Component()
-	layout := managertemplates.BaseLayout(h.reverse, component, user)
+	layout := managertemplates.BaseLayout(h.reverse, component, userDTO)
 	return web.Respond(c, "", component, layout)
 }
