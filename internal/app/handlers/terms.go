@@ -16,17 +16,21 @@ type termHandler struct {
 	reverse web.Reverse
 }
 
-func NewTermHandler(service *services.TermService, reverse web.Reverse, e *echo.Echo) *termHandler {
+func NewTermHandler(service *services.TermService, reverse web.Reverse) *termHandler {
 	return &termHandler{
 		service: service,
-		reverse: e.Reverse,
+		reverse: reverse,
 	}
 }
 
-func RegisterTermRoutes(group *echo.Group, h *termHandler) {
+func RegisterTermRoutes(group *echo.Group, h *termHandler) error {
 	for _, handler := range termRouteHandlers(h) {
-		web.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func termRouteHandlers(h *termHandler) []web.RouteHandler {

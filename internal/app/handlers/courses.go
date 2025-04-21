@@ -16,17 +16,21 @@ type courseHandler struct {
 	reverse web.Reverse
 }
 
-func NewCourseHandler(service *services.CourseService, reverse web.Reverse, e *echo.Echo) *courseHandler {
+func NewCourseHandler(service *services.CourseService, reverse web.Reverse) *courseHandler {
 	return &courseHandler{
 		service: service,
-		reverse: e.Reverse,
+		reverse: reverse,
 	}
 }
 
-func RegisterCourseRoutes(group *echo.Group, h *courseHandler) {
+func RegisterCourseRoutes(group *echo.Group, h *courseHandler) error {
 	for _, handler := range courseRouteHandlers(h) {
-		web.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func courseRouteHandlers(h *courseHandler) []web.RouteHandler {

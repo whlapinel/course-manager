@@ -4,6 +4,7 @@ import "gh_static_portfolio/internal/shared/web"
 
 const (
 	Lessons           web.RoutePath = Unit + "/lessons"
+	NewLesson         web.RoutePath = Units + "/new"
 	Lesson            web.RoutePath = Lessons + web.RoutePath(LessonID)
 	LessonEdit        web.RoutePath = Lesson + "/edit"
 	LessonFiles       web.RoutePath = Lesson + "/files"
@@ -21,6 +22,8 @@ const (
 // Lesson routes
 var (
 	GetLessons     = web.NewHandlerName(web.GET, Lesson)
+	GetNewLesson   = web.NewHandlerName(web.GET, NewLesson)
+	GetLesson      = web.NewHandlerName(web.GET, Lesson)
 	PostLesson     = web.NewHandlerName(web.POST, Lessons)
 	GetEditLesson  = web.NewHandlerName(web.GET, LessonEdit)
 	PostEditLesson = web.NewHandlerName(web.POST, LessonEdit)

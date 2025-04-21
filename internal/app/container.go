@@ -35,7 +35,13 @@ func New() (*App, error) {
 		return nil, err
 	}
 	root := e.Group("")
-	protected := root.Group("", authentication.AddCookieToHeader, authentication.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())), authentication.GetClaims)
+	protected := root.Group(
+		"",
+		authentication.AddCookieToHeader,
+		authentication.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())),
+		authentication.GetClaims,
+	)
+
 	homeService := home.NewService(struct{}{})
 	homeHandler := home.NewHandler(*homeService, e)
 	err = home.RegisterRoutes(root, homeHandler)
@@ -93,12 +99,39 @@ func New() (*App, error) {
 
 	// application-level services
 	userAppService := services.NewUserService(userService, termService)
+	termAppService := services.NewTermService(termService, courseService)
+	courseAppService := services.NewCourseService(courseService, unitService)
+	unitAppService := services.NewUnitService(unitService, lessonService)
+	lessonAppService := services.NewLessonService(lessonService)
 
 	// application-level handlers
-	userAppHandler := handlers.NewUserHandler(userAppService, e)
+	userAppHandler := handlers.NewUserHandler(userAppService, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(courseAppService, e.Reverse)
+	unitAppHandler := handlers.NewUnitHandler(unitAppService, e.Reverse)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, e.Reverse)
 
 	// register application-level routes
-	handlers.RegisterUserRoutes(protected, userAppHandler)
+	err = handlers.RegisterUserRoutes(protected, userAppHandler)
+	if err != nil {
+		return nil, err
+	}
+	err = handlers.RegisterTermRoutes(protected, termAppHandler)
+	if err != nil {
+		return nil, err
+	}
+	err = handlers.RegisterCourseRoutes(protected, courseAppHandler)
+	if err != nil {
+		return nil, err
+	}
+	err = handlers.RegisterUnitRoutes(protected, unitAppHandler)
+	if err != nil {
+		return nil, err
+	}
+	err = handlers.RegisterLessonRoutes(protected, lessonAppHandler)
+	if err != nil {
+		return nil, err
+	}
 
 	return &App{
 		Echo: e,

@@ -16,23 +16,32 @@ type userHandler struct {
 	reverse web.Reverse
 }
 
-func NewUserHandler(service *services.UserService, e *echo.Echo) *userHandler {
+func NewUserHandler(service *services.UserService, reverse web.Reverse) *userHandler {
 	return &userHandler{
 		service: service,
-		reverse: e.Reverse,
+		reverse: reverse,
 	}
 }
 
-func RegisterUserRoutes(group *echo.Group, h *userHandler) {
+func RegisterUserRoutes(group *echo.Group, h *userHandler) error {
 	for _, handler := range userRouteHandlers(h) {
-		web.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func userRouteHandlers(h *userHandler) []web.RouteHandler {
 	return []web.RouteHandler{
-		{Method: web.GET, RoutePath: routes.Terms, HandlerName: routes.GetTerms, HandlerFunc: h.listTerms},
+		web.NewRouteHandler(web.GET, routes.Terms, routes.GetTerms, h.listTerms),
+		web.NewRouteHandler(web.POST, routes.GenerateSite, routes.PostGenerateSite, h.generateSite),
 	}
+}
+
+func (h *userHandler) generateSite(c echo.Context) error {
+	panic("not implemented")
 }
 
 func (h *userHandler) listTerms(c echo.Context) error {

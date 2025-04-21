@@ -12,7 +12,6 @@ import (
 
 type LessonDetailsPage struct {
 	NodeDetailsPage
-	Slides                      string
 	E                           *echo.Echo
 	AssetsURLFunc               func(path ...string) string
 	GetObjectivesURL            string
