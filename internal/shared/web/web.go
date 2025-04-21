@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"slices"
+
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
@@ -25,8 +27,10 @@ type Reverse func(name string, params ...any) string
 
 func URLFunc(rhn HandlerName, reverse Reverse, params ...any) AddParams {
 	return func(additional ...any) string {
-		params = append(params, additional...)
-		return reverse(string(rhn), params...)
+		// Create a new slice with the original params
+		full := slices.Clone(params)
+		full = append(full, additional...)
+		return reverse(string(rhn), full...)
 	}
 }
 

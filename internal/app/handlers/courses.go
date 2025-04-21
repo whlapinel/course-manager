@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -35,7 +36,7 @@ func RegisterCourseRoutes(group *echo.Group, h *courseHandler) error {
 
 func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 	return []web.RouteHandler{
-		{Method: web.GET, RoutePath: routes.Courses, HandlerName: routes.GetCourses, HandlerFunc: h.listUnits},
+		{Method: web.GET, RoutePath: routes.Units, HandlerName: routes.GetUnits, HandlerFunc: h.listUnits},
 	}
 }
 
@@ -45,11 +46,12 @@ func (h *courseHandler) listUnits(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	log.Println(path.ToSlice()...)
 	courseDTO, err := h.service.ListUnits(path.CourseID)
 	if err != nil {
 		return err
 	}
-	nodePage := managertemplates.NodeListPage{
+	component := managertemplates.NodeListPage{
 		ParentNode:       courseDTO,
 		Children:         courseDTO.Children(),
 		ChildDetailsURL:  web.URLFunc(routes.GetUnit, h.reverse, path.ToSlice()...),
@@ -58,13 +60,11 @@ func (h *courseHandler) listUnits(c echo.Context) error {
 		ShowNewChildURL:  h.reverse(routes.GetNewUnit.String(), path.ToSlice()...),
 		UpNavURL:         h.reverse(routes.GetCourse.String(), path.ToSlice()...),
 		BreadCrumbsData: managertemplates.BreadCrumbs{
-			Course:           courseDTO,
+			Nodes: templates.Nodes{
+				Course: courseDTO,
+			},
 			CourseDetailsURL: h.reverse(routes.GetCourse.String(), path.ToSlice()...),
 		},
-	}
-	component := managertemplates.CoursesListPage{
-		ShowCourseCalendarURL: web.URLFunc(routes.GetCourseCalendar, h.reverse, path.ToSlice()...),
-		NodeListPage:          nodePage,
 	}.Component()
 	layout := managertemplates.BaseLayout(h.reverse, component, dto.User{})
 	return web.Respond(c, "", component, layout)

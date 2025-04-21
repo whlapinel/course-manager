@@ -7,7 +7,6 @@ import (
 	core "gh_static_portfolio/internal/core/term"
 	termfeature "gh_static_portfolio/internal/features/term"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
-	"log"
 	"time"
 )
 
@@ -42,9 +41,6 @@ func (repo *termRepo) ByID(termID int) (core.Term, error) {
 	dbDates, err := repo.queries.GetTermDates(context.Background(), int64(termID))
 	if err != nil {
 		return core.Term{}, err
-	}
-	if len(dbDates) == 0 {
-		log.Println("dates returned: 0. CourseRepo.GetTermDates")
 	}
 	currDate := term.Start
 	currInstructIndex := 0

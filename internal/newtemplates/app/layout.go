@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/app/dto"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
@@ -65,11 +66,7 @@ func (cml CourseManagerLayout) Component() templ.Component {
 }
 
 type BreadCrumbs struct {
-	User             dto.User
-	Term             dto.Term
-	Course           dto.Course
-	Unit             dto.Unit
-	Lesson           dto.Lesson
+	templates.Nodes
 	UserDetailsURL   string
 	TermDetailsURL   string
 	CourseDetailsURL string
@@ -83,7 +80,7 @@ func (data BreadCrumbs) Component() templ.Component {
 
 func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 	var items []cmp.BreadCrumbsItem
-	if data.User.ID != "" {
+	if data.User.GetID() != "" {
 		item := cmp.BreadCrumbsItem{
 			NavItem: cmp.NavItem{
 				Text:   data.User.GetName(),
@@ -92,7 +89,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 			},
 		}
 		items = append(items, item)
-		if data.Term.ID != 0 {
+		if data.Term.GetID() != 0 {
 			item := cmp.BreadCrumbsItem{
 				NavItem: cmp.NavItem{
 					Text:   data.Term.GetName(),
@@ -102,7 +99,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 			}
 			items = append(items, item)
 
-			if data.Course.ID != 0 {
+			if data.Course.GetID() != 0 {
 				item := cmp.BreadCrumbsItem{
 					NavItem: cmp.NavItem{
 						Text:   data.Course.GetName(),
@@ -112,7 +109,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 				}
 				items = append(items, item)
 
-				if data.Unit.ID != 0 {
+				if data.Unit.GetID() != 0 {
 					item := cmp.BreadCrumbsItem{
 						NavItem: cmp.NavItem{
 							Text:   data.Unit.Designation(),
@@ -122,7 +119,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 					}
 					items = append(items, item)
 
-					if data.Lesson.ID != 0 {
+					if data.Lesson.GetID() != 0 {
 						item := cmp.BreadCrumbsItem{
 							NavItem: cmp.NavItem{
 								Text:   data.Lesson.Designation(),

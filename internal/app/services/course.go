@@ -18,6 +18,16 @@ func NewCourseService(courseSvc *course.Service, unitSvc *unit.Service) *CourseS
 	}
 }
 
+func (svc *CourseService) ByID(courseID int) (dto.Course, error) {
+	course, err := svc.courseService.ByID(courseID)
+	if err != nil {
+		return dto.Course{}, err
+	}
+	return dto.Course{
+		Course: course,
+	}, nil
+}
+
 func (svc *CourseService) ListUnits(courseID int) (dto.Course, error) {
 	course, err := svc.courseService.ByID(courseID)
 	if err != nil {

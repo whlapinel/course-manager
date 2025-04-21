@@ -17,6 +17,15 @@ func NewTermService(termSvc *term.Service, courseSvc *course.Service) *TermServi
 		courseService: courseSvc,
 	}
 }
+func (svc *TermService) ByID(termID int) (dto.Term, error) {
+	term, err := svc.termService.ByID(termID)
+	if err != nil {
+		return dto.Term{}, err
+	}
+	return dto.Term{
+		Term: term,
+	}, nil
+}
 
 func (svc *TermService) ListCourses(termID int) (dto.Term, error) {
 	term, err := svc.termService.ByID(termID)

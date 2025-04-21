@@ -18,6 +18,16 @@ func NewUserService(user *user.Service, term *term.Service) *UserService {
 	}
 }
 
+func (svc *UserService) ByID(userID string) (dto.User, error) {
+	user, err := svc.userService.ByID(userID)
+	if err != nil {
+		return dto.User{}, err
+	}
+	return dto.User{
+		User: user,
+	}, nil
+}
+
 func (svc *UserService) ListTerms(userID string) (dto.User, error) {
 	user, err := svc.userService.ByID(userID)
 	if err != nil {

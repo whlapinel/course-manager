@@ -46,7 +46,6 @@ templ EditNameComponent(props NodeDetailsPage) {
 		InputComponent:   InputComponent(FieldInputID("Name"), props.Node.GetName()),
 		GetEditFieldURL:  props.GetEditNodeURL,
 		PostEditFieldURL: props.PostEditNodeURL,
-		Params:           props.Params,
 	})
 }
 
@@ -57,7 +56,6 @@ templ EditNumberComponent(props NodeDetailsPage) {
 			IsEdit:           props.IsEdit,
 			Content:          strconv.Itoa(props.Node.GetNumber()),
 			GetEditFieldURL:  props.GetEditNodeURL,
-			Params:           props.Params,
 			PostEditFieldURL: props.PostEditNodeURL,
 			InputComponent:   NumInputComponent("number", props.Node.GetNumber()),
 		})
@@ -72,7 +70,6 @@ templ EditDescriptionComponent(props NodeDetailsPage) {
 		InputComponent:   TextAreaComponent(FieldInputID("Description"), props.Node.GetDescription()),
 		PostEditFieldURL: props.PostEditNodeURL,
 		GetEditFieldURL:  props.GetEditNodeURL,
-		Params:           props.Params,
 	})
 }
 

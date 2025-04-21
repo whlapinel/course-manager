@@ -195,7 +195,6 @@ func EditNameComponent(props NodeDetailsPage) templ.Component {
 			InputComponent:   InputComponent(FieldInputID("Name"), props.Node.GetName()),
 			GetEditFieldURL:  props.GetEditNodeURL,
 			PostEditFieldURL: props.PostEditNodeURL,
-			Params:           props.Params,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -231,7 +230,6 @@ func EditNumberComponent(props NodeDetailsPage) templ.Component {
 				IsEdit:           props.IsEdit,
 				Content:          strconv.Itoa(props.Node.GetNumber()),
 				GetEditFieldURL:  props.GetEditNodeURL,
-				Params:           props.Params,
 				PostEditFieldURL: props.PostEditNodeURL,
 				InputComponent:   NumInputComponent("number", props.Node.GetNumber()),
 			}).Render(ctx, templ_7745c5c3_Buffer)
@@ -271,7 +269,6 @@ func EditDescriptionComponent(props NodeDetailsPage) templ.Component {
 			InputComponent:   TextAreaComponent(FieldInputID("Description"), props.Node.GetDescription()),
 			PostEditFieldURL: props.PostEditNodeURL,
 			GetEditFieldURL:  props.GetEditNodeURL,
-			Params:           props.Params,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -310,7 +307,7 @@ func EditFieldComponent(
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(FieldContainerID(props.FieldName))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 82, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 79, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -323,7 +320,7 @@ func EditFieldComponent(
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(props.FieldName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 83, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 80, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -353,7 +350,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditFieldURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 88, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 85, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -366,7 +363,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("#page")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 89, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 86, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -379,7 +376,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldInputID(props.FieldName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 90, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 87, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -397,7 +394,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(props.Content)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 93, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 90, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -410,7 +407,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(AddQueryParam(props.GetEditFieldURL, "field", FieldInputID(props.FieldName)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 95, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 92, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -423,7 +420,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs("outerHTML")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 97, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 94, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -436,7 +433,7 @@ func EditFieldComponent(
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs("#" + FieldContainerID(props.FieldName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 98, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 95, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -483,7 +480,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 110, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 107, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -496,7 +493,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 111, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 108, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -509,7 +506,7 @@ func InputComponent(inputID string, value string) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 112, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 109, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -551,7 +548,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 120, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 117, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -564,7 +561,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(inputID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 121, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 118, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -577,7 +574,7 @@ func NumInputComponent(inputID string, value int) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(value))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 122, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 119, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -619,7 +616,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 129, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 126, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -632,7 +629,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 130, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 127, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -645,7 +642,7 @@ func TextAreaComponent(id string, value string) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 132, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 129, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -687,7 +684,7 @@ func PageHeadingComponent(pageTitle string) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(pageTitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 137, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 134, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -739,7 +736,7 @@ func ListedLinkItem(path string, newTab bool) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 142, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 139, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -799,7 +796,7 @@ func UnstyledListedLinkItem(path string, newTab bool) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(targetAttrVal(newTab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 151, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/common.templ`, Line: 148, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {

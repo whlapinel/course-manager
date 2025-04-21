@@ -1,6 +1,7 @@
 package managertemplates
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
@@ -54,8 +55,8 @@ type CourseDetailsPage struct {
 	StandardSets             []domain.StandardSet
 }
 
-func (page CourseDetailsPage) Course() domain.Course {
-	return page.Node.(domain.Course)
+func (page CourseDetailsPage) Course() dto.Course {
+	return page.Node.(dto.Course)
 }
 
 func (page CourseDetailsPage) Component() templ.Component {

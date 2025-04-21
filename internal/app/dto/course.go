@@ -2,6 +2,7 @@ package dto
 
 import (
 	"gh_static_portfolio/internal/core/course"
+	"gh_static_portfolio/internal/core/standard"
 	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"time"
 )
@@ -9,6 +10,7 @@ import (
 type Course struct {
 	course.Course
 	Units []Unit
+	standard.StandardSet
 }
 
 type CourseType int
@@ -43,7 +45,7 @@ func (c Course) GetDescription() string {
 }
 
 func (c Course) GetID() any {
-	return c.ID
+	return c.Course.ID
 }
 
 func (c Course) GetParentID() int {

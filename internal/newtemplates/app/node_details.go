@@ -3,6 +3,7 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"strconv"
 
@@ -10,9 +11,8 @@ import (
 )
 
 type NodeDetailsPage struct {
-	Params            domain.NodePath
-	ParentNode        domain.CourseNode
-	Node              domain.CourseNode
+	Node              templates.Node
+	ParentNode        templates.Node
 	GetEditNodeURL    string
 	PostEditNodeURL   string
 	ListChildrenURL   string

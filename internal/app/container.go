@@ -103,13 +103,14 @@ func New() (*App, error) {
 	courseAppService := services.NewCourseService(courseService, unitService)
 	unitAppService := services.NewUnitService(unitService, lessonService)
 	lessonAppService := services.NewLessonService(lessonService)
+	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.ByID, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
 
 	// application-level handlers
 	userAppHandler := handlers.NewUserHandler(userAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, e.Reverse)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, e.Reverse)
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, e.Reverse)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterUserRoutes(protected, userAppHandler)

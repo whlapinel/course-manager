@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"gh_static_portfolio/internal/app/services"
+	managertemplates "gh_static_portfolio/internal/newtemplates/app"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -9,14 +10,16 @@ import (
 )
 
 type lessonHandler struct {
-	service *services.LessonService
-	reverse web.Reverse
+	nodeService   *services.NodeService
+	lessonService *services.LessonService
+	reverse       web.Reverse
 }
 
-func NewLessonHandler(service *services.LessonService, reverse web.Reverse) *lessonHandler {
+func NewLessonHandler(service *services.LessonService, nodes *services.NodeService, reverse web.Reverse) *lessonHandler {
 	return &lessonHandler{
-		service: service,
-		reverse: reverse,
+		lessonService: service,
+		nodeService:   nodes,
+		reverse:       reverse,
 	}
 }
 
@@ -37,5 +40,30 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 }
 
 func (h *lessonHandler) showDetails(c echo.Context) error {
+	path, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
+	lesson, err := h.lessonService.ByID(path.LessonID)
+	if err != nil {
+		return err
+	}
+	nodeData := managertemplates.NodeDetailsPage{
+		Node:            lesson,
+		ParentNode:      nodes.Unit,
+		GetEditNodeURL:  h.reverse(routes.GetEditLesson.String(), path.ToSlice()...),
+		PostEditNodeURL: h.reverse(routes.PostEditLesson.String(), path.ToSlice()...),
+		UpNavURL:        h.reverse(routes.GetUnit.String(), path.ToSlice()...),
+		CancelEditURL:   h.reverse(routes.GetLesson.String(), path.ToSlice()...),
+		IsEdit:          false,
+		BreadCrumbsData: managertemplates.BreadCrumbs{
+			Nodes: nodes,
+		},
+	}
+	component := managertemplates.LessonDetailsPage{}
 	panic("not implemented")
 }

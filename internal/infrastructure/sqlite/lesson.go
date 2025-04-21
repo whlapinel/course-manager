@@ -1,9 +1,11 @@
 package sqlite
 
 import (
+	"context"
 	"gh_static_portfolio/internal/core/lesson"
 	lessonFeature "gh_static_portfolio/internal/features/lesson"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"time"
 )
 
 type lessonRepo struct {
@@ -24,7 +26,37 @@ func (l *lessonRepo) ByID(lessonID int) (lesson.Lesson, error) {
 
 // ByUnitID implements lesson.Repository.
 func (l *lessonRepo) ByUnitID(unitID int) ([]lesson.Lesson, error) {
-	panic("unimplemented")
+	dbLessons, err := l.queries.GetLessons(context.Background(), int64(unitID))
+	if err != nil {
+		return nil, err
+	}
+	var lessons []lesson.Lesson
+	for _, dbLesson := range dbLessons {
+		lesson := lesson.Lesson{
+			ID:          int(dbLesson.ID),
+			UnitID:      unitID,
+			Number:      int(dbLesson.Number),
+			Name:        dbLesson.Name.String,
+			Description: dbLesson.Description.String,
+			UnitNum:     int(dbLesson.UnitNum),
+			UnitName:    dbLesson.UnitName,
+		}
+		dbLessonDates, err := l.queries.GetLessonDates(context.Background(), int64(lesson.ID))
+		if err != nil {
+			return nil, err
+		}
+		var lessonDates []time.Time
+		for _, dbLessonDate := range dbLessonDates {
+			lessonDate, err := time.Parse(time.DateOnly, dbLessonDate)
+			if err != nil {
+				return nil, err
+			}
+			lessonDates = append(lessonDates, lessonDate)
+		}
+		lesson.Dates = lessonDates
+		lessons = append(lessons, lesson)
+	}
+	return lessons, nil
 }
 
 // Delete implements lesson.Repository.

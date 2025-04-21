@@ -72,9 +72,14 @@ type NodePath struct {
 	LessonID int
 }
 
-func (path NodePath) ToSlice() []any {
+type Param interface {
+	int | string
+}
+
+func (path NodePath) ToSlice(additionalParams ...any) []any {
 	var pathSlice []any
 	params := []any{path.UserID, path.TermID, path.CourseID, path.UnitID, path.LessonID}
+	params = append(params, additionalParams...)
 	for _, param := range params {
 		switch v := param.(type) {
 		case int:

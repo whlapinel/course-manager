@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -35,7 +36,7 @@ func RegisterUnitRoutes(group *echo.Group, h *unitHandler) error {
 
 func unitRouteHandlers(h *unitHandler) []web.RouteHandler {
 	return []web.RouteHandler{
-		{Method: web.GET, RoutePath: routes.Units, HandlerName: routes.GetUnits, HandlerFunc: h.listLessons},
+		{Method: web.GET, RoutePath: routes.Lessons, HandlerName: routes.GetLessons, HandlerFunc: h.listLessons},
 	}
 }
 
@@ -58,7 +59,9 @@ func (h *unitHandler) listLessons(c echo.Context) error {
 		ShowNewChildURL:  h.reverse(routes.GetNewLesson.String(), path.ToSlice()...),
 		UpNavURL:         h.reverse(routes.GetUnit.String(), path.ToSlice()...),
 		BreadCrumbsData: managertemplates.BreadCrumbs{
-			Unit:           unitDTO,
+			Nodes: templates.Nodes{
+				Unit: unitDTO,
+			},
 			UnitDetailsURL: h.reverse(routes.GetUnit.String(), path.ToSlice()...),
 		},
 	}.Component()

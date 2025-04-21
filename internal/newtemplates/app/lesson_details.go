@@ -1,29 +1,29 @@
 package managertemplates
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"strconv"
 	"time"
 
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
 type LessonDetailsPage struct {
 	NodeDetailsPage
-	E                           *echo.Echo
 	AssetsURLFunc               func(path ...string) string
 	GetObjectivesURL            string
-	FileRHN                     string
+	FileURL                     web.AddParams
 	ViewMarkdownRHN             string
 	GetStandardsURL             string
 	GetAssessmentsURL           string
 	GetSlidesURL, EditSlidesURL string
 }
 
-func (page LessonDetailsPage) Lesson() domain.Lesson {
-	return page.Node.(domain.Lesson)
+func (page LessonDetailsPage) Lesson() dto.Lesson {
+	return page.Node.(dto.Lesson)
 }
 
 type Slides struct {
@@ -54,11 +54,6 @@ func (data LessonDetailsPage) ViewMarkdownButton(filepath string) templ.Componen
 		URL:      data.FileURL(filepath),
 		PushURL:  true,
 	}.Component()
-
-}
-
-func (data LessonDetailsPage) FileURL(filepath string) string {
-	return data.E.Reverse(data.ViewMarkdownRHN, AddParams(data.Params, filepath)...)
 
 }
 

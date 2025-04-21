@@ -12,3 +12,15 @@ type Node interface {
 	ChildTypeName() string
 	Designation() string
 }
+
+type Nodes struct {
+	User   Node
+	Term   Node
+	Course Node
+	Unit   Node
+	Lesson Node
+}
+
+func (nodes Nodes) ToSlice() []Node {
+	return []Node{nodes.User, nodes.Term, nodes.Course, nodes.Unit, nodes.Lesson}
+}

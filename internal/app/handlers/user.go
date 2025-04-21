@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -50,6 +51,7 @@ func (h *userHandler) listTerms(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	log.Println("user ID:", path.UserID)
 	userDTO, err := h.service.ListTerms(path.UserID)
 	if err != nil {
 		return err
@@ -63,7 +65,9 @@ func (h *userHandler) listTerms(c echo.Context) error {
 		ShowNewChildURL:  h.reverse(routes.GetNewTerm.String(), path.ToSlice()...),
 		UpNavURL:         h.reverse(routes.GetUser.String(), path.ToSlice()...),
 		BreadCrumbsData: managertemplates.BreadCrumbs{
-			User:           userDTO,
+			Nodes: templates.Nodes{
+				User: userDTO,
+			},
 			UserDetailsURL: h.reverse(routes.GetUser.String(), path.ToSlice()...),
 		},
 	}

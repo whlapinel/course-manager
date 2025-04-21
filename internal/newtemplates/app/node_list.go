@@ -6,6 +6,7 @@ import (
 	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
+	"log"
 
 	"github.com/a-h/templ"
 
@@ -43,6 +44,9 @@ func (page NodeListPage) DeleteNodeButton(node templates.Node) templ.Component {
 }
 
 func (page NodeListPage) NodeChildrenButton(node templates.Node) templ.Component {
+	log.Println("In NodeChildrenButton: node:", node.GetID(), node.GetName())
+	log.Println("Child children URL without params:", page.ChildChildrenURL())
+	log.Println("Child children URL without params:", page.ChildChildrenURL(node.GetID()))
 	return cmp.Button{
 		Text:     node.ChildTypeName() + "s",
 		Method:   cmp.HxGet,
