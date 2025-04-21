@@ -1,8 +1,10 @@
 package managertemplates
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/user"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/routes"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
@@ -17,6 +19,19 @@ type CourseManagerLayout struct {
 	SignoutURL    string
 	User          user.User
 	Page          templ.Component
+}
+
+func BaseLayout(reverse web.Reverse, page templ.Component, user user.User) templ.Component {
+	cml := CourseManagerLayout{
+		HomeURL:    "/",
+		Page:       page,
+		User:       user,
+		SigninURL:  reverse(routes.GetSignin.String()),
+		SignupURL:  reverse(routes.GetSignup.String()),
+		SignoutURL: reverse(routes.PostSignout.String()),
+	}
+	return cml.Component()
+
 }
 
 func (cml CourseManagerLayout) Component() templ.Component {
@@ -51,11 +66,11 @@ func (cml CourseManagerLayout) Component() templ.Component {
 }
 
 type BreadCrumbs struct {
-	User             domain.User
-	Term             domain.Term
-	Course           domain.Course
-	Unit             domain.Unit
-	Lesson           domain.Lesson
+	User             dto.User
+	Term             dto.Term
+	Course           dto.Course
+	Unit             dto.Unit
+	Lesson           dto.Lesson
 	UserDetailsURL   string
 	TermDetailsURL   string
 	CourseDetailsURL string

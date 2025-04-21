@@ -1,13 +1,12 @@
-package traversal
+package templates
 
-// Tree node implemented by Term, Course, Unit, Lesson
-type CourseNode interface {
+type Node interface {
 	GetID() any // could be string or int
 	GetName() string
 	GetNumber() int
 	GetParentID() int
 	GetDescription() string
-	Children() []CourseNode
+	Children() []Node
 	TypeName() string
 	ParentTypeName() string
 	ChildTypeName() string

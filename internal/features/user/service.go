@@ -1,18 +1,17 @@
 package user
 
-import "gh_static_portfolio/internal/core/term"
+import "gh_static_portfolio/internal/core/user"
 
-type TermReader interface {
-	ByUserID(userID string) ([]term.Term, error)
-}
 type Service struct {
-	repo      Repository
-	termQuery TermReader
+	repo Repository
 }
 
-func NewService(repo Repository, termQuery TermReader) *Service {
+func NewService(repo Repository) *Service {
 	return &Service{
-		repo:      repo,
-		termQuery: termQuery,
+		repo: repo,
 	}
+}
+
+func (svc *Service) ByID(id string) (user.User, error) {
+	return svc.repo.ByID(id)
 }

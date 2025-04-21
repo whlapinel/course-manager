@@ -2,14 +2,14 @@ package dto
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/app/traversal"
 	"gh_static_portfolio/internal/core/user"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"strings"
 )
 
 type User struct {
 	user.User
-	Terms []Term
+	Terms []templates.Node
 }
 
 func (u User) Username() string {
@@ -22,10 +22,10 @@ func (u User) ChildTypeName() string {
 }
 
 // Children implements CourseNode.
-func (u User) Children() []traversal.CourseNode {
-	var nodes []traversal.CourseNode
+func (u User) Children() []templates.Node {
+	var nodes []templates.Node
 	for _, term := range u.Terms {
-		nodes = append(nodes, &term)
+		nodes = append(nodes, term)
 	}
 	return nodes
 }

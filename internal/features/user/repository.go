@@ -5,5 +5,6 @@ import (
 )
 
 type Repository interface {
+	ByID(id string) (user.User, error)
 	All() ([]user.User, error)
 }

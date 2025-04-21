@@ -1,17 +1,19 @@
 package routes
 
+import "gh_static_portfolio/internal/shared/web"
+
 const (
-	Home    RoutePath = "/"
-	Signin  RoutePath = "/signin"
-	Signup  RoutePath = "/signup"
-	Signout RoutePath = "/signout"
+	Home    web.RoutePath = "/"
+	Signin  web.RoutePath = "/signin"
+	Signup  web.RoutePath = "/signup"
+	Signout web.RoutePath = "/signout"
 )
 
 var (
-	GetHome     = NewHandlerName(GET, Home)
-	GetSignin   = NewHandlerName(GET, Signin)
-	PostSignin  = NewHandlerName(POST, Signin)
-	GetSignup   = NewHandlerName(GET, Signup)
-	PostSignup  = NewHandlerName(POST, Signup)
-	PostSignout = NewHandlerName(POST, Signout)
+	GetHome     = web.NewHandlerName(web.GET, Home)
+	GetSignin   = web.NewHandlerName(web.GET, Signin)
+	PostSignin  = web.NewHandlerName(web.POST, Signin)
+	GetSignup   = web.NewHandlerName(web.GET, Signup)
+	PostSignup  = web.NewHandlerName(web.POST, Signup)
+	PostSignout = web.NewHandlerName(web.POST, Signout)
 )

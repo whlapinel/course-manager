@@ -13,3 +13,4 @@ services:
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+      - ./course_manager.db:/app/course_manager.db

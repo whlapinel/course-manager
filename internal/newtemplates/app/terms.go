@@ -1,7 +1,8 @@
 package managertemplates
 
 import (
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"log"
 
@@ -28,7 +29,7 @@ func (page TermDetailsPage) Component() templ.Component {
 }
 
 type TermsListPage struct {
-	ShowTermCalendarRHN string
+	ShowTermCalendarURL web.AddParams
 	NodeListPage
 }
 
@@ -37,7 +38,7 @@ func (page TermsListPage) Component() templ.Component {
 	for _, term := range page.Children {
 		log.Println("term ID: ", term.GetID())
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.E.Reverse(page.ShowTermCalendarRHN, page.NodeListPage.ParentNode.GetID().(string), term.GetID()),
+			ShowCalendarURL: page.ShowTermCalendarURL(page.NodeListPage.ParentNode.GetID(), term.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
 
@@ -48,7 +49,7 @@ func (page TermsListPage) Component() templ.Component {
 }
 
 type AddNonInstructDayPage struct {
-	Term           domain.Term
+	Term           dto.Term
 	GetAddDayURL   string
 	PostAddDayURL  string
 	TermDetailsURL string

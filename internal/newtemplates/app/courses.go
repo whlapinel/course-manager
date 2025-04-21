@@ -2,6 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
@@ -9,8 +10,8 @@ import (
 )
 
 type CourseListPage struct {
-	ShowCalendarRHN    string
-	ShowAssessmentsRHN string
+	ShowCalendarURL    web.AddParams
+	ShowAssessmentsURL web.AddParams
 	NodeListPage
 }
 
@@ -20,11 +21,11 @@ func (page CourseListPage) Component() templ.Component {
 
 	for _, course := range page.Children {
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.E.Reverse(page.ShowCalendarRHN, AddParams(page.Params, course.GetID())...),
+			ShowCalendarURL: page.ShowCalendarURL(course.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
 		button2 := ShowAssessmentsButton{
-			ShowAssessmentsURL: page.E.Reverse(page.ShowAssessmentsRHN, AddParams(page.Params, course.GetID())...),
+			ShowAssessmentsURL: page.ShowAssessmentsURL(course.GetID()),
 		}
 		assessmentButtons = append(assessmentButtons, button2)
 

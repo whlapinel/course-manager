@@ -2,62 +2,91 @@ package routes
 
 import (
 	"fmt"
-	"net/http"
+	"gh_static_portfolio/internal/shared/web"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-type RouteHandler struct {
-	Method
-	RoutePath
-	HandlerName
-	echo.HandlerFunc
-}
+const (
+	UserID         web.RouteParam = "/:user-id"
+	TermID         web.RouteParam = "/:term-id"
+	OccasionID     web.RouteParam = "/:occasion-id"
+	CourseID       web.RouteParam = "/:course-id"
+	UnitID         web.RouteParam = "/:unit-id"
+	LessonID       web.RouteParam = "/:lesson-id"
+	StandardID     web.RouteParam = "/:standard-id"
+	AssessmentID   web.RouteParam = "/:assessment-id"
+	ShiftDirection web.RouteParam = "/:shift-direction" // string param
+	Date           web.RouteParam = "/:date"
+)
 
-// Constructor for convenience
-func NewRouteHandler(method Method, path RoutePath, name HandlerName, handlerFunc echo.HandlerFunc) RouteHandler {
-	return RouteHandler{method, path, name, handlerFunc}
-}
-
-type RoutePath string
-
-type HandlerName string
-
-func (name HandlerName) String() string {
-	return string(name)
-}
-
-type RouteParam string
-
-func RegisterRoute(group *echo.Group, handler RouteHandler) error {
-	switch handler.Method {
-	case GET:
-		group.GET(string(handler.RoutePath), handler.HandlerFunc).Name = string(handler.HandlerName)
-	case POST:
-		group.POST(string(handler.RoutePath), handler.HandlerFunc).Name = string(handler.HandlerName)
-	case DELETE:
-		group.DELETE(string(handler.RoutePath), handler.HandlerFunc).Name = string(handler.HandlerName)
-	default:
-		return fmt.Errorf("unsupported HTTP method: %s", handler.Method)
+func ParseNodePath(c echo.Context) (NodePath, error) {
+	parsingError := func(param web.RouteParam, err error) (NodePath, error) {
+		return NodePath{}, fmt.Errorf("error parsing %s: %v", param, err)
 	}
-	return nil
+	userID := ParseRouteStringParam(c, UserID)
+	termID, err := ParseRouteParam(c, TermID)
+	if err != nil {
+		return parsingError(TermID, err)
+	}
+	courseID, err := ParseRouteParam(c, CourseID)
+	if err != nil {
+		return parsingError(CourseID, err)
+	}
+	unitID, err := ParseRouteParam(c, UnitID)
+	if err != nil {
+		return parsingError(UnitID, err)
+	}
+	lessonID, err := ParseRouteParam(c, LessonID)
+	if err != nil {
+		return parsingError(LessonID, err)
+	}
+	return NodePath{
+		UserID:   userID,
+		TermID:   termID,
+		CourseID: courseID,
+		UnitID:   unitID,
+		LessonID: lessonID,
+	}, nil
+
 }
 
-type Method string
+func ParseRouteParam(c echo.Context, param web.RouteParam) (int, error) {
+	val := c.Param(param.Name())
+	if val == "" {
+		return 0, nil
+	}
+	return strconv.Atoi(val)
+}
 
-const (
-	GET    = http.MethodGet
-	POST   = http.MethodPost
-	DELETE = http.MethodDelete
-	PUT    = http.MethodPut
-	PATCH  = http.MethodPatch
-)
+func ParseRouteStringParam(c echo.Context, param web.RouteParam) string {
+	return c.Param(param.Name())
+}
 
-// Route Parameter
-const (
-	ID = "/:id"
-)
+type NodePath struct {
+	UserID   string
+	TermID   int
+	CourseID int
+	UnitID   int
+	LessonID int
+}
 
-func NewHandlerName(method Method, path RoutePath) HandlerName {
-	return HandlerName(string(method) + ": " + string(path))
+func (path NodePath) ToSlice() []any {
+	var pathSlice []any
+	params := []any{path.UserID, path.TermID, path.CourseID, path.UnitID, path.LessonID}
+	for _, param := range params {
+		switch v := param.(type) {
+		case int:
+			if v != 0 {
+				pathSlice = append(pathSlice, param)
+			}
+		case string:
+			if v != "" {
+				pathSlice = append(pathSlice, param)
+
+			}
+		}
+	}
+	return pathSlice
 }

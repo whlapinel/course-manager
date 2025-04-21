@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"gh_static_portfolio/internal/app/traversal"
 	"gh_static_portfolio/internal/core/course"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"time"
 )
 
@@ -42,7 +42,7 @@ func (c Course) GetDescription() string {
 	return c.Description
 }
 
-func (c Course) GetID() interface{} {
+func (c Course) GetID() any {
 	return c.ID
 }
 
@@ -50,8 +50,8 @@ func (c Course) GetParentID() int {
 	return c.ParentID
 }
 
-func (c Course) Children() []traversal.CourseNode {
-	var nodes []traversal.CourseNode
+func (c Course) Children() []templates.Node {
+	var nodes []templates.Node
 	for _, u := range c.Units {
 		nodes = append(nodes, u)
 	}

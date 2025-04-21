@@ -3,25 +3,24 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 
 	tpl "gh_static_portfolio/internal/templates/shared"
 )
 
 type NodeListPage struct {
-	Params           domain.NodePath
-	ParentNode       domain.CourseNode
-	Children         []domain.CourseNode
+	ParentNode       templates.Node
+	Children         []templates.Node
 	ChildUI          [][]ComponentData
-	ChildDetailsRHN  string // details for child e.g. if listing units, this would be the route handler name to show unit details
-	ChildChildrenRHN string // children of child e.g. if listing units, this would be the route handler name to list unit lessons
+	ChildDetailsURL  web.AddParams // details for child e.g. if listing units, this would be the route handler name to show unit details
+	ChildChildrenURL web.AddParams // children of child e.g. if listing units, this would be the route handler name to list unit lessons
+	DeleteChildURL   web.AddParams
 	ShowNewChildURL  string // e.g. if listing units, this would be the route handler name to show new unit form
-	DeleteChildRHN   string
 	UpNavURL         string
-	E                *echo.Echo // for generating URLs from route handler name
 	BreadCrumbsData  BreadCrumbs
 }
 
@@ -33,30 +32,30 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 	return page.BreadCrumbsData
 }
 
-func (page NodeListPage) DeleteNodeButton(node domain.CourseNode) templ.Component {
+func (page NodeListPage) DeleteNodeButton(node templates.Node) templ.Component {
 	return cmp.Button{
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    cmp.HxDelete,
-		URL:       page.E.Reverse(page.DeleteChildRHN, AddParams(page.Params, node.GetID())...),
+		URL:       page.DeleteChildURL(node.GetID()),
 		HxTarget:  page.ListItemElementID(node).Selector(),
 		Image:     cmp.DeleteImage(),
 	}.Component()
 }
 
-func (page NodeListPage) NodeChildrenButton(node domain.CourseNode) templ.Component {
+func (page NodeListPage) NodeChildrenButton(node templates.Node) templ.Component {
 	return cmp.Button{
 		Text:     node.ChildTypeName() + "s",
 		Method:   cmp.HxGet,
-		URL:      page.E.Reverse(page.ChildChildrenRHN, AddParams(page.Params, node.GetID())...),
+		URL:      page.ChildChildrenURL(node.GetID()),
 		HxTarget: "#page",
 		PushURL:  true,
 	}.Component()
 }
 
-func (page NodeListPage) NodeDetailsButton(node domain.CourseNode) templ.Component {
+func (page NodeListPage) NodeDetailsButton(node templates.Node) templ.Component {
 	return cmp.Button{
 		Method:   cmp.HxGet,
-		URL:      page.E.Reverse(page.ChildDetailsRHN, AddParams(page.Params, node.GetID())...),
+		URL:      page.ChildDetailsURL(node.GetID()),
 		HxTarget: "#page",
 		PushURL:  true,
 		Image:    cmp.InfoIcon(),
@@ -106,6 +105,6 @@ func (list NodeListPage) PageTitle() string {
 	}
 }
 
-func (list NodeListPage) ListItemElementID(node domain.CourseNode) ElementID {
+func (list NodeListPage) ListItemElementID(node templates.Node) ElementID {
 	return ElementID(fmt.Sprintf("%s-%d", tpl.KebabCase(node.TypeName()), node.GetID()))
 }

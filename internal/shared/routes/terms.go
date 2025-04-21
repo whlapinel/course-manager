@@ -1,42 +1,48 @@
 package routes
 
+import "gh_static_portfolio/internal/shared/web"
+
 const (
-	Terms           RoutePath = User + "/terms"
-	Term            RoutePath = Terms + RoutePath(ID)
-	TermEdit        RoutePath = Term + "/edit"
-	TermFiles       RoutePath = Term + "/files"
-	TermFile        RoutePath = TermFiles + "/*"
-	TermViewFile    RoutePath = Term + "/view-markdown/files/*"
-	TermDates       RoutePath = Term + "/dates"
-	TermDate        RoutePath = TermDates + "/:date"
-	TermCalendar    RoutePath = Term + "/calendar"
-	TermEditFile    RoutePath = TermFiles + "/edit/*"
-	TermAssessments RoutePath = Term + "/assessments"
-	TermAssessment  RoutePath = TermAssessments + RoutePath(ID)
+	Terms           web.RoutePath = User + "/terms"
+	NewTerm         web.RoutePath = Terms + "/new"
+	Term            web.RoutePath = Terms + web.RoutePath(TermID)
+	TermEdit        web.RoutePath = Term + "/edit"
+	TermFiles       web.RoutePath = Term + "/files"
+	TermFile        web.RoutePath = TermFiles + "/*"
+	TermViewFile    web.RoutePath = Term + "/view-markdown/files/*"
+	TermDates       web.RoutePath = Term + "/dates"
+	TermDate        web.RoutePath = TermDates + web.RoutePath(Date)
+	TermCalendar    web.RoutePath = Term + "/calendar"
+	TermEditFile    web.RoutePath = TermFiles + "/edit/*"
+	TermAssessments web.RoutePath = Term + "/assessments"
+	TermAssessment  web.RoutePath = TermAssessments + web.RoutePath(AssessmentID)
 )
 
 // Term handler names
 var (
-	GetTerms     = NewHandlerName(GET, Terms)
-	PostTerm     = NewHandlerName(POST, Terms)
-	GetEditTerm  = NewHandlerName(GET, TermEdit)
-	PostEditTerm = NewHandlerName(POST, TermEdit)
-	DeleteTerm   = NewHandlerName(DELETE, Term)
+	GetTerms        = web.NewHandlerName(web.GET, Terms)
+	GetTerm         = web.NewHandlerName(web.GET, Term)
+	GetNewTerm      = web.NewHandlerName(web.GET, NewTerm)
+	GetTermCalendar = web.NewHandlerName(web.GET, TermCalendar)
+	PostTerm        = web.NewHandlerName(web.POST, Terms)
+	GetEditTerm     = web.NewHandlerName(web.GET, TermEdit)
+	PostEditTerm    = web.NewHandlerName(web.POST, TermEdit)
+	DeleteTerm      = web.NewHandlerName(web.DELETE, Term)
 )
 
 // Term dates handler names (non-instructional dates)
 var (
-	GetTermDates   = NewHandlerName(GET, TermDates)
-	PostTermDate   = NewHandlerName(POST, TermDates)
-	DeleteTermDate = NewHandlerName(DELETE, TermDate)
+	GetTermDates   = web.NewHandlerName(web.GET, TermDates)
+	PostTermDate   = web.NewHandlerName(web.POST, TermDates)
+	DeleteTermDate = web.NewHandlerName(web.DELETE, TermDate)
 )
 
 // Term file handler names
 var (
-	GetTermFile      = NewHandlerName(GET, TermFile)
-	PostTermFile     = NewHandlerName(POST, TermFile)
-	GetTermFiles     = NewHandlerName(GET, TermFiles)
-	GetTermEditFile  = NewHandlerName(GET, TermFile)
-	PostTermEditFile = NewHandlerName(POST, TermEditFile)
-	ViewTermFile     = NewHandlerName(GET, TermViewFile)
+	GetTermFile      = web.NewHandlerName(web.GET, TermFile)
+	PostTermFile     = web.NewHandlerName(web.POST, TermFile)
+	GetTermFiles     = web.NewHandlerName(web.GET, TermFiles)
+	GetTermEditFile  = web.NewHandlerName(web.GET, TermFile)
+	PostTermEditFile = web.NewHandlerName(web.POST, TermEditFile)
+	ViewTermFile     = web.NewHandlerName(web.GET, TermViewFile)
 )

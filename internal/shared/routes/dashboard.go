@@ -1,21 +1,25 @@
 package routes
 
+import "gh_static_portfolio/internal/shared/web"
+
 const (
-	Users        RoutePath = "/users"
-	User         RoutePath = Users + RoutePath(ID)
-	UserFiles    RoutePath = User + "/files"
-	UserFile     RoutePath = UserFiles + "/*"
-	UserViewFile RoutePath = User + "/view-markdown/files/*"
-	UserEditFile RoutePath = UserFiles + "/edit/*"
+	GenerateSite web.RoutePath = "/generate"
+	Users        web.RoutePath = "/users"
+	User         web.RoutePath = Users + web.RoutePath(UserID)
+	UserFiles    web.RoutePath = User + "/files"
+	UserFile     web.RoutePath = UserFiles + "/*"
+	UserViewFile web.RoutePath = User + "/view-markdown/files/*"
+	UserEditFile web.RoutePath = UserFiles + "/edit/*"
 )
 
 var (
-	GetUsers         = NewHandlerName(GET, Users)
-	GetUser          = NewHandlerName(GET, User)
-	GetUserFiles     = NewHandlerName(GET, UserFiles)
-	PostUserFile     = NewHandlerName(POST, UserFiles)
-	GetUserFile      = NewHandlerName(GET, UserFile)
-	GetViewUserFile  = NewHandlerName(GET, UserViewFile)
-	GetUserEditFile  = NewHandlerName(GET, UserEditFile)
-	PostUserEditFile = NewHandlerName(POST, UserEditFile)
+	PostGenerateSite = web.NewHandlerName(web.GET, GenerateSite)
+	GetUsers         = web.NewHandlerName(web.GET, Users)
+	GetUser          = web.NewHandlerName(web.GET, User)
+	GetUserFiles     = web.NewHandlerName(web.GET, UserFiles)
+	PostUserFile     = web.NewHandlerName(web.POST, UserFiles)
+	GetUserFile      = web.NewHandlerName(web.GET, UserFile)
+	GetViewUserFile  = web.NewHandlerName(web.GET, UserViewFile)
+	GetUserEditFile  = web.NewHandlerName(web.GET, UserEditFile)
+	PostUserEditFile = web.NewHandlerName(web.POST, UserEditFile)
 )

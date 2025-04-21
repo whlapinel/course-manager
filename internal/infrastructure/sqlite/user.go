@@ -9,10 +9,10 @@ import (
 )
 
 type userRepo struct {
-	queries database.Queries
+	queries *database.Queries
 }
 
-func NewUserRepo(queries database.Queries) feature.Repository {
+func NewUserRepo(queries *database.Queries) feature.Repository {
 	return &userRepo{
 		queries: queries,
 	}
@@ -60,7 +60,7 @@ func (repo *userRepo) SaveUser(user core.User) (core.User, error) {
 	}, nil
 }
 
-func (repo *userRepo) GetUser(id string) (core.User, error) {
+func (repo *userRepo) ByID(id string) (core.User, error) {
 	dbUser, err := repo.queries.GetUser(context.Background(), id)
 	if err != nil {
 		return core.User{}, err

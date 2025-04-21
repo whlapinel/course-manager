@@ -2,8 +2,8 @@ package dto
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/app/traversal"
 	"gh_static_portfolio/internal/core/term"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"slices"
 	"time"
 )
@@ -34,8 +34,8 @@ func (t Term) GetParentID() int {
 	return t.UserID
 }
 
-func (t Term) Children() []traversal.CourseNode {
-	var courses []traversal.CourseNode
+func (t Term) Children() []templates.Node {
+	var courses []templates.Node
 	for _, c := range t.Courses {
 		courses = append(courses, c)
 	}

@@ -12,10 +12,10 @@ import (
 )
 
 type termRepo struct {
-	queries database.Queries
+	queries *database.Queries
 }
 
-func NewTermRepo(queries database.Queries) termfeature.Repository {
+func NewTermRepo(queries *database.Queries) termfeature.Repository {
 	return &termRepo{
 		queries: queries,
 	}

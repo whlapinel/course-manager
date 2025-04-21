@@ -23,7 +23,7 @@ func NewHandler(service Service, e *echo.Echo) *Handler {
 
 func RegisterRoutes(group *echo.Group, h *Handler) error {
 	for _, handler := range routeHandlers(h) {
-		err := routes.RegisterRoute(group, handler)
+		err := web.RegisterRoute(group, handler)
 		if err != nil {
 			return err
 		}
@@ -31,9 +31,9 @@ func RegisterRoutes(group *echo.Group, h *Handler) error {
 	return nil
 }
 
-func routeHandlers(h *Handler) []routes.RouteHandler {
-	return []routes.RouteHandler{
-		routes.NewRouteHandler(routes.GET, routes.Home, routes.GetHome, h.showHome),
+func routeHandlers(h *Handler) []web.RouteHandler {
+	return []web.RouteHandler{
+		web.NewRouteHandler(web.GET, routes.Home, routes.GetHome, h.showHome),
 	}
 }
 

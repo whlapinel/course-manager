@@ -2,8 +2,8 @@ package dto
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/app/traversal"
 	"gh_static_portfolio/internal/core/unit"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 )
 
 type Unit struct {
@@ -27,8 +27,8 @@ func (u Unit) GetParentID() int {
 	return u.CourseID
 }
 
-func (u Unit) Children() []traversal.CourseNode {
-	var nodes []traversal.CourseNode
+func (u Unit) Children() []templates.Node {
+	var nodes []templates.Node
 	for _, l := range u.Lessons {
 		nodes = append(nodes, l)
 	}

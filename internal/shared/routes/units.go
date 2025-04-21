@@ -1,51 +1,53 @@
 package routes
 
+import "gh_static_portfolio/internal/shared/web"
+
 const (
-	Units           RoutePath = Course + "/Units"
-	Unit            RoutePath = Units + RoutePath(ID)
-	UnitEdit        RoutePath = Unit + "/edit"
-	UnitFiles       RoutePath = Unit + "/files"
-	UnitFile        RoutePath = UnitFiles + "/*"
-	UnitViewFile    RoutePath = Unit + "/view-markdown/files/*"
-	UnitEditFile    RoutePath = UnitFiles + "/edit/*"
-	UnitAssessments RoutePath = Unit + "/assessments"
-	UnitAssessment  RoutePath = UnitAssessments + RoutePath(ID)
-	UnitSlides      RoutePath = Unit + "/slides"
-	UnitEditSlides  RoutePath = UnitSlides + "/edit"
-	UnitStandards   RoutePath = Unit + "/standards"
-	UnitStandard    RoutePath = UnitStandards + ID
+	Units           web.RoutePath = Course + "/Units"
+	Unit            web.RoutePath = Units + web.RoutePath(UnitID)
+	UnitEdit        web.RoutePath = Unit + "/edit"
+	UnitFiles       web.RoutePath = Unit + "/files"
+	UnitFile        web.RoutePath = UnitFiles + "/*"
+	UnitViewFile    web.RoutePath = Unit + "/view-markdown/files/*"
+	UnitEditFile    web.RoutePath = UnitFiles + "/edit/*"
+	UnitAssessments web.RoutePath = Unit + "/assessments"
+	UnitAssessment  web.RoutePath = UnitAssessments + web.RoutePath(AssessmentID)
+	UnitSlides      web.RoutePath = Unit + "/slides"
+	UnitEditSlides  web.RoutePath = UnitSlides + "/edit"
+	UnitStandards   web.RoutePath = Unit + "/standards"
+	UnitStandard    web.RoutePath = UnitStandards + web.RoutePath(StandardID)
 )
 
 // Unit handler names
 var (
-	GetUnits     = NewHandlerName(GET, Unit)
-	PostUnit     = NewHandlerName(POST, Units)
-	GetEditUnit  = NewHandlerName(GET, UnitEdit)
-	PostEditUnit = NewHandlerName(POST, UnitEdit)
-	DeleteUnit   = NewHandlerName(DELETE, Unit)
+	GetUnits     = web.NewHandlerName(web.GET, Unit)
+	PostUnit     = web.NewHandlerName(web.POST, Units)
+	GetEditUnit  = web.NewHandlerName(web.GET, UnitEdit)
+	PostEditUnit = web.NewHandlerName(web.POST, UnitEdit)
+	DeleteUnit   = web.NewHandlerName(web.DELETE, Unit)
 )
 
 // Unit file handler names
 var (
-	GetUnitFiles     = NewHandlerName(GET, UnitFiles)
-	GetUnitFile      = NewHandlerName(GET, UnitFile)
-	GetUnitEditFile  = NewHandlerName(GET, UnitFile)
-	PostUnitEditFile = NewHandlerName(POST, UnitEditFile)
-	ViewUnitFile     = NewHandlerName(GET, UnitViewFile)
+	GetUnitFiles     = web.NewHandlerName(web.GET, UnitFiles)
+	GetUnitFile      = web.NewHandlerName(web.GET, UnitFile)
+	GetUnitEditFile  = web.NewHandlerName(web.GET, UnitFile)
+	PostUnitEditFile = web.NewHandlerName(web.POST, UnitEditFile)
+	ViewUnitFile     = web.NewHandlerName(web.GET, UnitViewFile)
 )
 
 // Unit assessment handler names
 var (
-	GetUnitAssessments     = NewHandlerName(GET, UnitAssessments)
-	PostUnitAssessment     = NewHandlerName(POST, UnitAssessments)
-	GetUnitEditAssessment  = NewHandlerName(GET, UnitAssessment)
-	PostUnitEditAssessment = NewHandlerName(POST, UnitAssessment)
-	DeleteUnitAssessment   = NewHandlerName(DELETE, UnitAssessment)
+	GetUnitAssessments     = web.NewHandlerName(web.GET, UnitAssessments)
+	PostUnitAssessment     = web.NewHandlerName(web.POST, UnitAssessments)
+	GetUnitEditAssessment  = web.NewHandlerName(web.GET, UnitAssessment)
+	PostUnitEditAssessment = web.NewHandlerName(web.POST, UnitAssessment)
+	DeleteUnitAssessment   = web.NewHandlerName(web.DELETE, UnitAssessment)
 )
 
 // Unit standard handler names
 var (
-	GetUnitStandards   = NewHandlerName(GET, UnitStandards)
-	PostUnitStandard   = NewHandlerName(POST, UnitStandards)
-	DeleteUnitStandard = NewHandlerName(DELETE, UnitStandard)
+	GetUnitStandards   = web.NewHandlerName(web.GET, UnitStandards)
+	PostUnitStandard   = web.NewHandlerName(web.POST, UnitStandards)
+	DeleteUnitStandard = web.NewHandlerName(web.DELETE, UnitStandard)
 )

@@ -1,14 +1,14 @@
 package managertemplates
 
 import (
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
 )
 
 type UserHomePage struct {
-	User            domain.User
+	User            dto.User
 	ListTermsURL    string
 	GenerateSiteURL string
 	SyncSiteURL     string

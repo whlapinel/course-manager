@@ -1,6 +1,8 @@
 package dto
 
-import "gh_static_portfolio/internal/app/traversal"
+import (
+	templates "gh_static_portfolio/internal/newtemplates/shared"
+)
 
 type RootCourseNode struct {
 	Users []User
@@ -23,8 +25,8 @@ func (r RootCourseNode) GetParentID() int {
 func (r RootCourseNode) GetDescription() string {
 	return ""
 }
-func (r RootCourseNode) Children() []traversal.CourseNode {
-	var nodes []traversal.CourseNode
+func (r RootCourseNode) Children() []templates.Node {
+	var nodes []templates.Node
 	for _, user := range r.Users {
 		nodes = append(nodes, &user)
 	}

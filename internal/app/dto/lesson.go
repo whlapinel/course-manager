@@ -2,10 +2,10 @@ package dto
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/app/traversal"
 	"gh_static_portfolio/internal/core/assessment"
 	"gh_static_portfolio/internal/core/lesson"
 	"gh_static_portfolio/internal/core/standard"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"slices"
 	"time"
 )
@@ -32,8 +32,8 @@ func (l Lesson) GetParentID() int {
 	return l.UnitID
 }
 
-func (l Lesson) Children() []traversal.CourseNode {
-	return []traversal.CourseNode{}
+func (l Lesson) Children() []templates.Node {
+	return []templates.Node{}
 }
 
 func (l Lesson) TypeName() string {
