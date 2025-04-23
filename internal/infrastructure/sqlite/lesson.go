@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/core/lesson"
 	lessonFeature "gh_static_portfolio/internal/features/lesson"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"gh_static_portfolio/internal/shared/dates"
 	"time"
 )
 
@@ -21,7 +22,33 @@ func NewLessonRepo(queries *database.Queries) lessonFeature.Repository {
 
 // ByID implements lesson.Repository.
 func (l *lessonRepo) ByID(lessonID int) (lesson.Lesson, error) {
-	panic("unimplemented")
+	dbLesson, err := l.queries.GetLesson(context.Background(), int64(lessonID))
+	if err != nil {
+		return lesson.Lesson{}, err
+	}
+	dbDates, err := l.queries.GetLessonDates(context.Background(), int64(lessonID))
+	if err != nil {
+		return lesson.Lesson{}, err
+	}
+	var lessonDates []time.Time
+	for _, dbDate := range dbDates {
+		date, err := time.Parse(time.DateOnly, dbDate)
+		if err != nil {
+			return lesson.Lesson{}, err
+		}
+		lessonDates = append(lessonDates, date)
+	}
+	dates.Sort(lessonDates)
+	return lesson.Lesson{
+		ID:          int(dbLesson.ID),
+		UnitID:      int(dbLesson.UnitID),
+		UnitNum:     int(dbLesson.UnitNum),
+		UnitName:    dbLesson.UnitName,
+		Number:      int(dbLesson.Number),
+		Name:        dbLesson.Name.String,
+		Description: dbLesson.Description.String,
+		Dates:       lessonDates,
+	}, nil
 }
 
 // ByUnitID implements lesson.Repository.
@@ -53,6 +80,7 @@ func (l *lessonRepo) ByUnitID(unitID int) ([]lesson.Lesson, error) {
 			}
 			lessonDates = append(lessonDates, lessonDate)
 		}
+		dates.Sort(lessonDates)
 		lesson.Dates = lessonDates
 		lessons = append(lessons, lesson)
 	}

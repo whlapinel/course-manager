@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	mt "gh_static_portfolio/internal/newtemplates/app"
+	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -15,10 +17,10 @@ type lessonHandler struct {
 	reverse       web.Reverse
 }
 
-func NewLessonHandler(service *services.LessonService, nodes *services.NodeService, reverse web.Reverse) *lessonHandler {
+func NewLessonHandler(service *services.LessonService, nodeService *services.NodeService, reverse web.Reverse) *lessonHandler {
 	return &lessonHandler{
 		lessonService: service,
-		nodeService:   nodes,
+		nodeService:   nodeService,
 		reverse:       reverse,
 	}
 }
@@ -36,6 +38,7 @@ func RegisterLessonRoutes(group *echo.Group, h *lessonHandler) error {
 func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		{Method: web.GET, RoutePath: routes.Lesson, HandlerName: routes.GetLesson, HandlerFunc: h.showDetails},
+		{Method: web.GET, RoutePath: routes.LessonEdit, HandlerName: routes.GetEditLesson, HandlerFunc: h.showEdit},
 	}
 }
 
@@ -48,22 +51,47 @@ func (h *lessonHandler) showDetails(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	lesson, err := h.lessonService.ByID(path.LessonID)
+	nodeData := h.nodeDetails(path, nodes)
+	component := mt.LessonDetailsPage{
+		NodeDetailsPage: nodeData,
+		AssetsURLFunc:   web.AssetsURLFunc,
+		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
+	}.Component()
+	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
+
+}
+
+func (h *lessonHandler) showEdit(c echo.Context) error {
+	path, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
 	}
-	nodeData := managertemplates.NodeDetailsPage{
-		Node:            lesson,
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
+	nodeData := h.nodeDetails(path, nodes)
+	nodeData.IsEdit = true
+	lessonPage := mt.LessonDetailsPage{
+		NodeDetailsPage: nodeData,
+		AssetsURLFunc:   web.AssetsURLFunc,
+		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
+	}
+	component := nodeData.DetailsFormComponent(true)
+	altComponent := lessonPage.Component()
+	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, altComponent, nodes.User.(dto.User)))
+
+}
+
+func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes templates.Nodes) mt.NodeDetailsPage {
+	nodePage := mt.NodeDetailsPage{
+		Node:            nodes.Lesson,
 		ParentNode:      nodes.Unit,
 		GetEditNodeURL:  h.reverse(routes.GetEditLesson.String(), path.ToSlice()...),
 		PostEditNodeURL: h.reverse(routes.PostEditLesson.String(), path.ToSlice()...),
 		UpNavURL:        h.reverse(routes.GetUnit.String(), path.ToSlice()...),
 		CancelEditURL:   h.reverse(routes.GetLesson.String(), path.ToSlice()...),
-		IsEdit:          false,
-		BreadCrumbsData: managertemplates.BreadCrumbs{
-			Nodes: nodes,
-		},
+		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),
 	}
-	component := managertemplates.LessonDetailsPage{}
-	panic("not implemented")
+	return nodePage
 }

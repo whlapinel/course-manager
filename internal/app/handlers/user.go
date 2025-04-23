@@ -4,7 +4,6 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -13,14 +12,16 @@ import (
 )
 
 type userHandler struct {
-	service *services.UserService
-	reverse web.Reverse
+	service     *services.UserService
+	nodeService *services.NodeService
+	reverse     web.Reverse
 }
 
-func NewUserHandler(service *services.UserService, reverse web.Reverse) *userHandler {
+func NewUserHandler(service *services.UserService, nodeService *services.NodeService, reverse web.Reverse) *userHandler {
 	return &userHandler{
-		service: service,
-		reverse: reverse,
+		service:     service,
+		nodeService: nodeService,
+		reverse:     reverse,
 	}
 }
 
@@ -51,6 +52,10 @@ func (h *userHandler) listTerms(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
 	log.Println("user ID:", path.UserID)
 	userDTO, err := h.service.ListTerms(path.UserID)
 	if err != nil {
@@ -64,12 +69,7 @@ func (h *userHandler) listTerms(c echo.Context) error {
 		DeleteChildURL:   web.URLFunc(routes.DeleteTerm, h.reverse, path.ToSlice()...),
 		ShowNewChildURL:  h.reverse(routes.GetNewTerm.String(), path.ToSlice()...),
 		UpNavURL:         h.reverse(routes.GetUser.String(), path.ToSlice()...),
-		BreadCrumbsData: managertemplates.BreadCrumbs{
-			Nodes: templates.Nodes{
-				User: userDTO,
-			},
-			UserDetailsURL: h.reverse(routes.GetUser.String(), path.ToSlice()...),
-		},
+		BreadCrumbsData:  BreadCrumbs(nodes, path, h.reverse),
 	}
 	component := managertemplates.TermsListPage{
 		ShowTermCalendarURL: web.URLFunc(routes.GetTermCalendar, h.reverse, path.ToSlice()...),

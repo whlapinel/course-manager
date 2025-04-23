@@ -11,22 +11,18 @@ import (
 )
 
 type NodeDetailsPage struct {
-	Node              templates.Node
-	ParentNode        templates.Node
-	GetEditNodeURL    string
-	PostEditNodeURL   string
-	ListChildrenURL   string
-	UpNavURL          string
-	CancelEditURL     string
-	IsEdit            bool
-	NodeImageURL      func() string
-	BreadCrumbsData   BreadCrumbs
+	Node            templates.Node
+	ParentNode      templates.Node
+	GetEditNodeURL  string
+	PostEditNodeURL string
+	ListChildrenURL string
+	UpNavURL        string
+	CancelEditURL   string
+	IsEdit          bool
+	NodeImageURL    func() string
+	BreadCrumbs
 	CourseCalendarURL string
 	ServerFilesURL    string
-}
-
-func (page NodeDetailsPage) BreadCrumbs() BreadCrumbs {
-	return page.BreadCrumbsData
 }
 
 func (page NodeDetailsPage) Component() templ.Component {
@@ -40,7 +36,7 @@ func (page NodeDetailsPage) PageLayout() cmp.PageLayout {
 			URL:  page.UpNavURL,
 			Text: page.upNavText(),
 		},
-		Crumbs: page.BreadCrumbs().BreadCrumbs(),
+		Crumbs: page.BreadCrumbs.BreadCrumbs(),
 	}
 }
 
@@ -95,12 +91,14 @@ func (page NodeDetailsPage) ViewFilesButton() templ.Component {
 func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 	if editing {
 		var comps []cmp.Component
-		numItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-			Name:  "Number",
-			Type:  cmp.Number,
-			Value: strconv.Itoa(page.Node.GetNumber()),
-		})
-		comps = append(comps, numItem)
+		if page.Node.GetNumber() >= 0 {
+			numItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+				Name:  "Number",
+				Type:  cmp.Number,
+				Value: strconv.Itoa(page.Node.GetNumber()),
+			})
+			comps = append(comps, numItem)
+		}
 		nameItem := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 			Name:  "Name",
 			Type:  cmp.Text,

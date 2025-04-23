@@ -21,7 +21,7 @@ const (
 
 // Lesson routes
 var (
-	GetLessons     = web.NewHandlerName(web.GET, Lesson)
+	GetLessons     = web.NewHandlerName(web.GET, Lessons)
 	GetNewLesson   = web.NewHandlerName(web.GET, NewLesson)
 	GetLesson      = web.NewHandlerName(web.GET, Lesson)
 	PostLesson     = web.NewHandlerName(web.POST, Lessons)

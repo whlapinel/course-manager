@@ -46,7 +46,6 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 		}
 		if altComponent != nil {
 			return altComponent.Render(context.Background(), c.Response())
-
 		}
 	}
 	log.Println("request IS an HTMX request:", c.Request().Header.Get("Hx-Request"))

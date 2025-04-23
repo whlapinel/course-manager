@@ -28,6 +28,10 @@ func (page TermDetailsPage) Component() templ.Component {
 	return TermDetailsComponent(page)
 }
 
+func (page TermDetailsPage) FullComponent(reverse web.Reverse, comp templ.Component, user dto.User) templ.Component {
+	return BaseLayout(reverse, comp, user)
+}
+
 type TermsListPage struct {
 	ShowTermCalendarURL web.AddParams
 	NodeListPage
@@ -53,6 +57,7 @@ type AddNonInstructDayPage struct {
 	GetAddDayURL   string
 	PostAddDayURL  string
 	TermDetailsURL string
+	BreadCrumbs
 }
 
 func (page AddNonInstructDayPage) PageLayout() cmp.PageLayout {
@@ -62,14 +67,7 @@ func (page AddNonInstructDayPage) PageLayout() cmp.PageLayout {
 			URL:  page.TermDetailsURL,
 			Text: "Term Details",
 		},
-		Crumbs: page.BreadCrumbs().BreadCrumbs(),
-	}
-}
-
-func (page AddNonInstructDayPage) BreadCrumbs() BreadCrumbs {
-	return BreadCrumbs{
-		Term:           page.Term,
-		TermDetailsURL: page.TermDetailsURL,
+		Crumbs: page.BreadCrumbs.BreadCrumbs(),
 	}
 }
 

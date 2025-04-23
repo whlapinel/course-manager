@@ -12,6 +12,7 @@ type UserHomePage struct {
 	ListTermsURL    string
 	GenerateSiteURL string
 	SyncSiteURL     string
+	BreadCrumbs
 }
 
 func (page UserHomePage) GenerateSiteButton() templ.Component {
@@ -36,17 +37,11 @@ func (page UserHomePage) ViewTermsButton() templ.Component {
 func (page UserHomePage) PageLayout() cmp.PageLayout {
 	return cmp.PageLayout{
 		PageTitle: "Home",
-		Crumbs:    page.BreadCrumbs().BreadCrumbs(),
+		Crumbs:    page.BreadCrumbs.BreadCrumbs(),
 	}
 
 }
 
 func (page UserHomePage) Component() templ.Component {
 	return UserHomePageComponent(page)
-}
-
-func (page UserHomePage) BreadCrumbs() BreadCrumbs {
-	return BreadCrumbs{
-		User: page.User,
-	}
 }

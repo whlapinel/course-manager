@@ -16,7 +16,7 @@ type LessonDetailsPage struct {
 	AssetsURLFunc               func(path ...string) string
 	GetObjectivesURL            string
 	FileURL                     web.AddParams
-	ViewMarkdownRHN             string
+	ViewMarkdownURL             web.AddParams
 	GetStandardsURL             string
 	GetAssessmentsURL           string
 	GetSlidesURL, EditSlidesURL string

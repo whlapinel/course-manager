@@ -2,7 +2,8 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/core/standard"
+	"gh_static_portfolio/internal/core/term"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
@@ -39,7 +40,7 @@ func (page CoursesListPage) Component() templ.Component {
 type CopyCourseData struct {
 	TermID                  int
 	CourseID                int
-	Terms                   []domain.Term
+	Terms                   []term.Term
 	E                       *echo.Echo
 	PostCopyCourseToTermRHN string
 }
@@ -52,7 +53,7 @@ type CourseDetailsPage struct {
 	NodeDetailsPage
 	GetCopyCourseURL         string
 	PostSelectStandardSetURL string
-	StandardSets             []domain.StandardSet
+	StandardSets             []standard.StandardSet
 }
 
 func (page CourseDetailsPage) Course() dto.Course {

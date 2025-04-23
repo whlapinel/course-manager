@@ -80,6 +80,9 @@ func (data BreadCrumbs) Component() templ.Component {
 
 func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 	var items []cmp.BreadCrumbsItem
+	if data.User == nil {
+		return cmp.BreadCrumbs{}
+	}
 	if data.User.GetID() != "" {
 		item := cmp.BreadCrumbsItem{
 			NavItem: cmp.NavItem{
@@ -89,7 +92,8 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 			},
 		}
 		items = append(items, item)
-		if data.Term.GetID() != 0 {
+
+		if data.Term != nil && data.Term.GetID() != 0 {
 			item := cmp.BreadCrumbsItem{
 				NavItem: cmp.NavItem{
 					Text:   data.Term.GetName(),
@@ -99,7 +103,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 			}
 			items = append(items, item)
 
-			if data.Course.GetID() != 0 {
+			if data.Course != nil && data.Course.GetID() != 0 {
 				item := cmp.BreadCrumbsItem{
 					NavItem: cmp.NavItem{
 						Text:   data.Course.GetName(),
@@ -109,7 +113,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 				}
 				items = append(items, item)
 
-				if data.Unit.GetID() != 0 {
+				if data.Unit != nil && data.Unit.GetID() != 0 {
 					item := cmp.BreadCrumbsItem{
 						NavItem: cmp.NavItem{
 							Text:   data.Unit.Designation(),
@@ -119,7 +123,7 @@ func (data BreadCrumbs) BreadCrumbs() cmp.BreadCrumbs {
 					}
 					items = append(items, item)
 
-					if data.Lesson.GetID() != 0 {
+					if data.Lesson != nil && data.Lesson.GetID() != 0 {
 						item := cmp.BreadCrumbsItem{
 							NavItem: cmp.NavItem{
 								Text:   data.Lesson.Designation(),

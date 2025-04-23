@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/shared/routes"
@@ -41,6 +42,12 @@ func NewNodeService(
 func (svc *NodeService) Nodes(path routes.NodePath) (templates.Nodes, error) {
 	var nodes templates.Nodes
 	if path.UserID != "" {
+		if svc == nil {
+			return templates.Nodes{}, fmt.Errorf("svc is nil")
+		}
+		if svc.user == nil {
+			return templates.Nodes{}, fmt.Errorf("svc.user function is nil")
+		}
 		user, err := svc.user(path.UserID)
 		if err != nil {
 			return templates.Nodes{}, err

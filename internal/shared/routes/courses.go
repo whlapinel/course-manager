@@ -59,3 +59,4 @@ var (
 	PostCourseStandard   = web.NewHandlerName(web.POST, CourseStandards)
 	DeleteCourseStandard = web.NewHandlerName(web.DELETE, CourseStandard)
 )
+
