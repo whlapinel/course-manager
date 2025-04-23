@@ -10,6 +10,7 @@ import (
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/features/term"
+	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/features/user"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
@@ -54,6 +55,7 @@ func New() (*App, error) {
 	courseRepo := sqlite.NewCourseRepo(queries)
 	unitRepo := sqlite.NewUnitRepo(queries)
 	lessonRepo := sqlite.NewLessonRepo(queries)
+	termOccasionRepo := sqlite.NewTermOccasionRepo(queries)
 
 	// feature-level services
 	authService := auth.NewService(struct{}{}, userRepo)
@@ -62,6 +64,7 @@ func New() (*App, error) {
 	courseService := course.NewService(courseRepo)
 	unitService := unit.NewService(unitRepo)
 	lessonService := lesson.NewService(lessonRepo)
+	termOccasionService := termoccasion.New(termOccasionRepo)
 
 	// feature-level handlers
 	authHandler := auth.NewHandler(authService, e)
@@ -99,7 +102,8 @@ func New() (*App, error) {
 
 	// application-level services
 	userAppService := services.NewUserService(userService, termService)
-	termAppService := services.NewTermService(termService, courseService)
+	termAppService := services.NewTermService(termService, termOccasionService, courseService)
+	termCalService := services.NewTermCalendarService(termAppService.ByID)
 	courseAppService := services.NewCourseService(courseService, unitService)
 	unitAppService := services.NewUnitService(unitService, lessonService)
 	lessonAppService := services.NewLessonService(lessonService)
@@ -108,6 +112,7 @@ func New() (*App, error) {
 	// application-level handlers
 	userAppHandler := handlers.NewUserHandler(userAppService, nodeAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, e.Reverse)
+	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, e.Reverse)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
@@ -118,6 +123,10 @@ func New() (*App, error) {
 		return nil, err
 	}
 	err = handlers.RegisterTermRoutes(protected, termAppHandler)
+	if err != nil {
+		return nil, err
+	}
+	err = handlers.RegisterTermCalRoutes(protected, termCalHandler)
 	if err != nil {
 		return nil, err
 	}

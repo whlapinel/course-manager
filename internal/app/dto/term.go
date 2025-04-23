@@ -2,6 +2,7 @@ package dto
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/core/term"
 	templates "gh_static_portfolio/internal/newtemplates/shared"
 	"slices"
@@ -11,7 +12,7 @@ import (
 type Term struct {
 	term.Term
 	Courses   []Course
-	Occasions []TermOccasion
+	Occasions []occasion.Occasion
 }
 
 func (t Term) GetName() string {
