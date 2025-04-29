@@ -1,4 +1,4 @@
-package templates
+package node
 
 type Node interface {
 	GetID() any // could be string or int

@@ -3,7 +3,7 @@ package managertemplates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	"log"
@@ -14,8 +14,8 @@ import (
 )
 
 type NodeListPage struct {
-	ParentNode       templates.Node
-	Children         []templates.Node
+	ParentNode       node.Node
+	Children         []node.Node
 	ChildUI          [][]ComponentData
 	ChildDetailsURL  web.AddParams // details for child e.g. if listing units, this would be the route handler name to show unit details
 	ChildChildrenURL web.AddParams // children of child e.g. if listing units, this would be the route handler name to list unit lessons
@@ -33,7 +33,7 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 	return page.BreadCrumbsData
 }
 
-func (page NodeListPage) DeleteNodeButton(node templates.Node) templ.Component {
+func (page NodeListPage) DeleteNodeButton(node node.Node) templ.Component {
 	return cmp.Button{
 		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
 		Method:    cmp.HxDelete,
@@ -43,7 +43,7 @@ func (page NodeListPage) DeleteNodeButton(node templates.Node) templ.Component {
 	}.Component()
 }
 
-func (page NodeListPage) NodeChildrenButton(node templates.Node) templ.Component {
+func (page NodeListPage) NodeChildrenButton(node node.Node) templ.Component {
 	log.Println("In NodeChildrenButton: node:", node.GetID(), node.GetName())
 	log.Println("Child children URL without params:", page.ChildChildrenURL())
 	log.Println("Child children URL without params:", page.ChildChildrenURL(node.GetID()))
@@ -56,7 +56,7 @@ func (page NodeListPage) NodeChildrenButton(node templates.Node) templ.Component
 	}.Component()
 }
 
-func (page NodeListPage) NodeDetailsButton(node templates.Node) templ.Component {
+func (page NodeListPage) NodeDetailsButton(node node.Node) templ.Component {
 	return cmp.Button{
 		Method:   cmp.HxGet,
 		URL:      page.ChildDetailsURL(node.GetID()),
@@ -109,6 +109,6 @@ func (list NodeListPage) PageTitle() string {
 	}
 }
 
-func (list NodeListPage) ListItemElementID(node templates.Node) ElementID {
+func (list NodeListPage) ListItemElementID(node node.Node) ElementID {
 	return ElementID(fmt.Sprintf("%s-%d", tpl.KebabCase(node.TypeName()), node.GetID()))
 }

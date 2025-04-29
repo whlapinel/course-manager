@@ -4,7 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	mt "gh_static_portfolio/internal/newtemplates/app"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -83,7 +83,7 @@ func (h *lessonHandler) showEdit(c echo.Context) error {
 
 }
 
-func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes templates.Nodes) mt.NodeDetailsPage {
+func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
 	nodePage := mt.NodeDetailsPage{
 		Node:            nodes.Lesson,
 		ParentNode:      nodes.Unit,

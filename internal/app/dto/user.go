@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/user"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"strings"
 )
 
@@ -22,8 +22,8 @@ func (u User) ChildTypeName() string {
 }
 
 // Children implements CourseNode.
-func (u User) Children() []templates.Node {
-	var nodes []templates.Node
+func (u User) Children() []node.Node {
+	var nodes []node.Node
 	for _, term := range u.Terms {
 		nodes = append(nodes, term)
 	}

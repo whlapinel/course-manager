@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/unit"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 )
 
 type Unit struct {
@@ -27,8 +27,8 @@ func (u Unit) GetParentID() int {
 	return u.CourseID
 }
 
-func (u Unit) Children() []templates.Node {
-	var nodes []templates.Node
+func (u Unit) Children() []node.Node {
+	var nodes []node.Node
 	for _, l := range u.Lessons {
 		nodes = append(nodes, l)
 	}

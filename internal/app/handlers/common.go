@@ -2,12 +2,12 @@ package handlers
 
 import (
 	managertemplates "gh_static_portfolio/internal/newtemplates/app"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 )
 
-func BreadCrumbs(nodes templates.Nodes, path routes.NodePath, reverse web.Reverse) managertemplates.BreadCrumbs {
+func BreadCrumbs(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) managertemplates.BreadCrumbs {
 	return managertemplates.BreadCrumbs{
 		Nodes:            nodes,
 		UserDetailsURL:   userDetailsURL(path, reverse),

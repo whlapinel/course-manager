@@ -2,7 +2,7 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
@@ -66,7 +66,7 @@ func (cml CourseManagerLayout) Component() templ.Component {
 }
 
 type BreadCrumbs struct {
-	templates.Nodes
+	node.Nodes
 	UserDetailsURL   string
 	TermDetailsURL   string
 	CourseDetailsURL string

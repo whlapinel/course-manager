@@ -2,20 +2,26 @@ package services
 
 import (
 	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/features/termoccasion"
 )
 
 type TermCalendarService struct {
-	term func(termID int) (dto.Term, error)
+	getTerm         func(termID int) (dto.Term, error)
+	occasionService *termoccasion.Service
 }
 
-func NewTermCalendarService(term func(termID int) (dto.Term, error)) *TermCalendarService {
+func NewTermCalendarService(
+	getTerm func(termID int) (dto.Term, error),
+	occasionService *termoccasion.Service,
+) *TermCalendarService {
 	return &TermCalendarService{
-		term: term,
+		getTerm:         getTerm,
+		occasionService: occasionService,
 	}
 }
 
 func (svc *TermCalendarService) Term(termID int) (dto.Term, error) {
-	termDTO, err := svc.term(termID)
+	termDTO, err := svc.getTerm(termID)
 	if err != nil {
 		return dto.Term{}, err
 	}

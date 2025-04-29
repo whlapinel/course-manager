@@ -1,7 +1,7 @@
 package dto
 
 import (
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 )
 
 type RootCourseNode struct {
@@ -25,8 +25,8 @@ func (r RootCourseNode) GetParentID() int {
 func (r RootCourseNode) GetDescription() string {
 	return ""
 }
-func (r RootCourseNode) Children() []templates.Node {
-	var nodes []templates.Node
+func (r RootCourseNode) Children() []node.Node {
+	var nodes []node.Node
 	for _, user := range r.Users {
 		nodes = append(nodes, user)
 	}

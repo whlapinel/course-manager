@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/core/term"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"slices"
 	"time"
 )
@@ -35,8 +35,8 @@ func (t Term) GetParentID() int {
 	return t.UserID
 }
 
-func (t Term) Children() []templates.Node {
-	var courses []templates.Node
+func (t Term) Children() []node.Node {
+	var courses []node.Node
 	for _, c := range t.Courses {
 		courses = append(courses, c)
 	}

@@ -3,7 +3,7 @@ package dto
 import (
 	"gh_static_portfolio/internal/core/course"
 	"gh_static_portfolio/internal/core/standard"
-	templates "gh_static_portfolio/internal/newtemplates/shared"
+	"gh_static_portfolio/internal/shared/node"
 	"time"
 )
 
@@ -52,8 +52,8 @@ func (c Course) GetParentID() int {
 	return c.ParentID
 }
 
-func (c Course) Children() []templates.Node {
-	var nodes []templates.Node
+func (c Course) Children() []node.Node {
+	var nodes []node.Node
 	for _, u := range c.Units {
 		nodes = append(nodes, u)
 	}
