@@ -235,14 +235,15 @@ func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.
 	params.UnitID = lesson.UnitID
 	params.LessonID = lesson.ID
 	container := CalendarLessonContainerNew{
-		Date:                date,
-		Params:              params,
-		lesson:              lesson,
-		LessonDetailsURL:    data.LessonDetailsFunc(lesson.UnitID, lesson.ID),
-		Course:              data.Course,
-		ShiftLessonRHN:      data.ShiftLessonFunc(lesson.UnitID, lesson.ID),
+		Date:             date,
+		Params:           params,
+		lesson:           lesson,
+		LessonDetailsURL: data.LessonDetailsFunc(lesson.UnitID, lesson.ID),
+		Course:           data.Course,
+		ShiftLessonURL: func(cd string) string {
+			return data.ShiftLessonFunc(lesson.UnitID, lesson.ID, cd)
+		},
 		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.UnitID, lesson.ID, date.Format(time.DateOnly)),
-		E:                   data.E,
 	}
 	if data.Static {
 		container.Static = true
@@ -282,8 +283,7 @@ type CalendarLessonContainerNew struct {
 	lesson              dto.Lesson
 	LessonDetailsURL    string
 	RemoveLessonDateURL string
-	ShiftLessonRHN      string
-	E                   *echo.Echo
+	ShiftLessonURL      func(cd string) string
 }
 type LinkWithInfoDialog struct {
 	Static  bool
@@ -334,8 +334,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection) tem
 	button := ShiftButton{
 		Direction:      cd,
 		Params:         data.Params,
-		ShiftLessonURL: data.E.Reverse(data.ShiftLessonRHN, AddParams(data.Params, cd.String())...),
-		e:              data.E,
+		ShiftLessonURL: data.ShiftLessonURL(cd.String()),
 	}
 	return button.Component()
 }

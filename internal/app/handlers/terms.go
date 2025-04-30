@@ -86,7 +86,7 @@ func (h *termHandler) listCourses(c echo.Context) error {
 		BreadCrumbsData:  BreadCrumbs(nodes, path, h.reverse),
 	}
 	component := mt.CoursesListPage{
-		ShowCourseCalendarURL: web.URLFunc(routes.GetTermCalendar, h.reverse, path.ToSlice()...),
+		ShowCourseCalendarURL: web.URLFunc(routes.GetCourseCalendar, h.reverse, path.ToSlice()...),
 		ShowAssessmentsURL:    web.URLFunc(routes.GetCourseAssessments, h.reverse, path.ToSlice()...),
 		NodeListPage:          nodePage,
 	}.Component()

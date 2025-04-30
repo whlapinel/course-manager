@@ -12,13 +12,15 @@ type CourseCalendarService struct {
 }
 
 func NewCourseCalendarService(
-	course func(courseID int) (dto.Course, error),
+	getCourse func(courseID int) (dto.Course, error),
+	getLessons func(unitID int) ([]dto.Lesson, error),
 	getTerm func(termID int) (dto.Term, error),
 
 ) *CourseCalendarService {
 	return &CourseCalendarService{
-		getCourse: course,
-		getTerm:   getTerm,
+		getCourse:  getCourse,
+		getLessons: getLessons,
+		getTerm:    getTerm,
 	}
 }
 

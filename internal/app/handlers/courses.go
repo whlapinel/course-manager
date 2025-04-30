@@ -53,6 +53,7 @@ func (h *courseHandler) showDetails(c echo.Context) error {
 		return err
 	}
 	nodePage := h.nodeDetails(path, nodes)
+	nodePage.IsEdit = false
 	component := mt.CourseDetailsPage{
 		NodeDetailsPage:          nodePage,
 		GetCopyCourseURL:         "please-create-me",

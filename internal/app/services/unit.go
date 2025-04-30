@@ -18,6 +18,22 @@ func NewUnitService(unitSvc *unit.Service, lessonSvc *lesson.Service) *UnitServi
 	}
 }
 
+func (svc *UnitService) ByCourseID(courseID int) ([]dto.Unit, error) {
+	units, err := svc.unitService.ByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+	var unitDTOs []dto.Unit
+	for _, unit := range units {
+		unitDTO := dto.Unit{
+			Unit: unit,
+		}
+		unitDTOs = append(unitDTOs, unitDTO)
+	}
+	return unitDTOs, nil
+
+}
+
 func (svc *UnitService) ByID(unitID int) (dto.Unit, error) {
 	unit, err := svc.unitService.ByID(unitID)
 	if err != nil {

@@ -101,21 +101,23 @@ func New() (*App, error) {
 	}
 
 	// application-level services
-	userAppService := services.NewUserService(userService, termService)
-	termAppService := services.NewTermService(termService, termOccasionService, courseService)
-	termCalService := services.NewTermCalendarService(termAppService.ByID)
-	courseAppService := services.NewCourseService(courseService, unitService)
-	unitAppService := services.NewUnitService(unitService, lessonService)
 	lessonAppService := services.NewLessonService(lessonService)
+	unitAppService := services.NewUnitService(unitService, lessonService)
+	courseAppService := services.NewCourseService(courseService, unitAppService.ByCourseID)
+	termAppService := services.NewTermService(termService, termOccasionService, courseService)
+	userAppService := services.NewUserService(userService, termService)
 	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.ByID, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
+	termCalService := services.NewTermCalendarService(termAppService.ByID, termOccasionService)
+	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, lessonAppService.ByUnitID, termAppService.ByID)
 
 	// application-level handlers
-	userAppHandler := handlers.NewUserHandler(userAppService, nodeAppService, e.Reverse)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
+	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, e.Reverse)
+	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
-	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, e.Reverse)
-	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
+	userAppHandler := handlers.NewUserHandler(userAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterUserRoutes(protected, userAppHandler)
@@ -134,6 +136,10 @@ func New() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = handlers.RegisterCourseCalRoutes(protected, courseCalAppHandler)
+	if err != nil {
+		return nil, err
+	}
 	err = handlers.RegisterUnitRoutes(protected, unitAppHandler)
 	if err != nil {
 		return nil, err
@@ -142,7 +148,6 @@ func New() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &App{
 		Echo: e,
 		db:   db,

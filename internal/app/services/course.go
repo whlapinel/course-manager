@@ -3,18 +3,21 @@ package services
 import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/features/course"
-	"gh_static_portfolio/internal/features/unit"
 )
 
 type CourseService struct {
 	courseService *course.Service
-	unitService   *unit.Service
+	getUnits      func(courseID int) ([]dto.Unit, error)
 }
 
-func NewCourseService(courseSvc *course.Service, unitSvc *unit.Service) *CourseService {
+func NewCourseService(
+	courseSvc *course.Service,
+	getUnits func(courseID int) ([]dto.Unit, error),
+
+) *CourseService {
 	return &CourseService{
 		courseService: courseSvc,
-		unitService:   unitSvc,
+		getUnits:      getUnits,
 	}
 }
 
@@ -23,8 +26,13 @@ func (svc *CourseService) ByID(courseID int) (dto.Course, error) {
 	if err != nil {
 		return dto.Course{}, err
 	}
+	units, err := svc.getUnits(courseID)
+	if err != nil {
+		return dto.Course{}, err
+	}
 	return dto.Course{
 		Course: course,
+		Units:  units,
 	}, nil
 }
 
@@ -33,20 +41,13 @@ func (svc *CourseService) ListUnits(courseID int) (dto.Course, error) {
 	if err != nil {
 		return dto.Course{}, err
 	}
-	units, err := svc.unitService.ByCourseID(courseID)
+	units, err := svc.getUnits(courseID)
 	if err != nil {
 		return dto.Course{}, err
 	}
-	var unitDTOs []dto.Unit
-	for _, unit := range units {
-		unitDTO := dto.Unit{
-			Unit: unit,
-		}
-		unitDTOs = append(unitDTOs, unitDTO)
-	}
 	courseDTO := dto.Course{
 		Course: course,
-		Units:  unitDTOs,
+		Units:  units,
 	}
 	return courseDTO, nil
 
