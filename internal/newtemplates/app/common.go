@@ -1,7 +1,9 @@
 package managertemplates
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/routes"
 	templates "gh_static_portfolio/internal/templates/shared"
 	"log"
 	"net/url"
@@ -35,8 +37,8 @@ const (
 )
 
 type ShiftButton struct {
-	Params         domain.NodePath
-	Direction      domain.CalendarDirection
+	Params         routes.NodePath
+	Direction      dto.CalendarDirection
 	TermID         int
 	CourseID       int
 	ShiftLessonURL string

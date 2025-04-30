@@ -13,6 +13,8 @@ const (
 	TermDates       web.RoutePath = Term + "/dates"
 	TermDate        web.RoutePath = TermDates + web.RoutePath(Date)
 	TermCalendar    web.RoutePath = Term + "/calendar"
+	TermOccasions   web.RoutePath = Term + "/occasions"
+	TermOccasion    web.RoutePath = TermOccasions + web.RoutePath(OccasionID)
 	TermEditFile    web.RoutePath = TermFiles + "/edit/*"
 	TermAssessments web.RoutePath = Term + "/assessments"
 	TermAssessment  web.RoutePath = TermAssessments + web.RoutePath(AssessmentID)
@@ -20,14 +22,20 @@ const (
 
 // Term handler names
 var (
-	GetTerms        = web.NewHandlerName(web.GET, Terms)
-	GetTerm         = web.NewHandlerName(web.GET, Term)
-	GetNewTerm      = web.NewHandlerName(web.GET, NewTerm)
-	GetTermCalendar = web.NewHandlerName(web.GET, TermCalendar)
-	PostTerm        = web.NewHandlerName(web.POST, Terms)
-	GetEditTerm     = web.NewHandlerName(web.GET, TermEdit)
-	PostEditTerm    = web.NewHandlerName(web.POST, TermEdit)
-	DeleteTerm      = web.NewHandlerName(web.DELETE, Term)
+	CreateOccasion    = web.HandlerName(web.POST + TermOccasions)
+	DeleteOccasion    = web.HandlerName(web.DELETE + TermOccasion)
+	ShowEditOccasion  = web.HandlerName(web.GET + TermOccasion)
+	PostEditOccasion  = web.HandlerName(web.POST + TermOccasion)
+	ShowEditTermDates = web.HandlerName(web.GET + TermDates)
+	PostEditTermDates = web.HandlerName(web.POST + TermDates)
+	GetTerms          = web.NewHandlerName(web.GET, Terms)
+	GetTerm           = web.NewHandlerName(web.GET, Term)
+	GetNewTerm        = web.NewHandlerName(web.GET, NewTerm)
+	GetTermCalendar   = web.NewHandlerName(web.GET, TermCalendar)
+	PostTerm          = web.NewHandlerName(web.POST, Terms)
+	GetEditTerm       = web.NewHandlerName(web.GET, TermEdit)
+	PostEditTerm      = web.NewHandlerName(web.POST, TermEdit)
+	DeleteTerm        = web.NewHandlerName(web.DELETE, Term)
 )
 
 // Term dates handler names (non-instructional dates)

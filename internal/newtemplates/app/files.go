@@ -2,6 +2,8 @@ package managertemplates
 
 import (
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/shared/routes"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
@@ -12,11 +14,11 @@ type FilesPage struct {
 	Root                bool
 	ParentDirectory     FilesPageItem
 	CurrentDirectory    FilesPageItem
-	Params              domain.NodePath
+	Params              routes.NodePath
 	CurrentPath         string
 	OpenFileRHN         string
 	UploadFileRHN       string
-	Node                domain.CourseNode
+	Node                node.Node
 	Files               []FilesPageItem
 	E                   *echo.Echo
 	PopRouteSegmentRHN  string
@@ -48,7 +50,7 @@ func (data FilesPage) BreadCrumbs() BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
-func AddParams(params domain.NodePath, additionalParams ...any) []any {
+func AddParams(params routes.NodePath, additionalParams ...any) []any {
 	pathSlice := params.ToSlice()
 	pathSlice = append(pathSlice, additionalParams...)
 	return pathSlice

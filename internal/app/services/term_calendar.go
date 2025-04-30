@@ -2,6 +2,7 @@ package services
 
 import (
 	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/features/termoccasion"
 )
 
@@ -26,4 +27,8 @@ func (svc *TermCalendarService) Term(termID int) (dto.Term, error) {
 		return dto.Term{}, err
 	}
 	return termDTO, nil
+}
+
+func (svc *TermCalendarService) Occasion(occasionID int) (occasion.Occasion, error) {
+	return svc.occasionService.ByID(occasionID)
 }

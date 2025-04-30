@@ -15,3 +15,11 @@ func New(repo Repository) *Service {
 func (svc *Service) ByTermID(termID int) ([]occasion.Occasion, error) {
 	return svc.repo.ByTermID(termID)
 }
+
+func (svc *Service) ByID(occasionID int) (occasion.Occasion, error) {
+	return svc.repo.ByID(occasionID)
+}
+
+func (svc *Service) Create(occ occasion.Occasion) (int, error) {
+	return svc.repo.Save(occ)
+}

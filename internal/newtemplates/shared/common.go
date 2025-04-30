@@ -2,7 +2,8 @@ package templates
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/shared/node"
 	"log"
 	"net/url"
 	"path/filepath"
@@ -22,7 +23,7 @@ func KebabCase(str string) string {
 	return strings.ToLower(strings.ReplaceAll(str, " ", "-"))
 }
 
-func NodePath(nodes ...domain.CourseNode) string {
+func NodePath(nodes ...node.Node) string {
 	path := StaticSiteRootDir
 	for _, node := range nodes {
 		path = strings.ToLower(filepath.Join(path, node.TypeName()+"s"))
@@ -35,7 +36,7 @@ func NodePath(nodes ...domain.CourseNode) string {
 	return path
 }
 
-func NodePage(nodes ...domain.CourseNode) string {
+func NodePage(nodes ...node.Node) string {
 	leafNode := nodes[len(nodes)-1]
 	path := NodePath(nodes...)
 	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", strings.ToLower(leafNode.TypeName()), leafNode.GetID()))
@@ -43,7 +44,7 @@ func NodePage(nodes ...domain.CourseNode) string {
 }
 
 // Student-facing site
-func CoursePath(course domain.Course, page bool) string {
+func CoursePath(course dto.Course, page bool) string {
 	if page {
 		return NodePage(course)
 	}
@@ -51,13 +52,13 @@ func CoursePath(course domain.Course, page bool) string {
 }
 
 // Student-facing site
-func CourseImagePath(course domain.Course) string {
+func CourseImagePath(course dto.Course) string {
 	dir := CoursePath(course, false)
 	return filepath.Join(dir, "image.png")
 }
 
 // Student-facing site
-func UnitPath(unit domain.Unit, course domain.Course, page bool) string {
+func UnitPath(unit dto.Unit, course dto.Course, page bool) string {
 	if page {
 		return NodePage(course, unit)
 	}
@@ -65,13 +66,13 @@ func UnitPath(unit domain.Unit, course domain.Course, page bool) string {
 }
 
 // Student-facing site
-func UnitImagePath(unit domain.Unit, course domain.Course) string {
+func UnitImagePath(unit dto.Unit, course dto.Course) string {
 	dir := UnitPath(unit, course, false)
 	return filepath.Join(dir, "image.png")
 }
 
 // Student-facing site
-func LessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, page bool) string {
+func LessonPath(lesson dto.Lesson, unit dto.Unit, course dto.Course, page bool) string {
 	if page {
 		return NodePage(course, unit, lesson)
 	}
@@ -79,27 +80,27 @@ func LessonPath(lesson domain.Lesson, unit domain.Unit, course domain.Course, pa
 }
 
 // Student-facing site
-func LessonImagePath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func LessonImagePath(lesson dto.Lesson, unit dto.Unit, course dto.Course) string {
 	dir := LessonPath(lesson, unit, course, false)
 	return filepath.Join(dir, "image.png")
 }
 
 // Github files link for student-facing site
-func LessonFilesURL(lesson domain.Lesson, unit domain.Unit, course domain.Course) templ.SafeURL {
+func LessonFilesURL(lesson dto.Lesson, unit dto.Unit, course dto.Course) templ.SafeURL {
 	filePath, err := url.JoinPath(GithubRoot, LessonFilesPath(lesson, unit, course))
 	if err != nil {
 		log.Println("error generating LessonFilesURL:", err)
 	}
 	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
-func UnitFilesURL(unit domain.Unit, course domain.Course) templ.SafeURL {
+func UnitFilesURL(unit dto.Unit, course dto.Course) templ.SafeURL {
 	filePath, err := url.JoinPath(GithubRoot, UnitFilesPath(unit, course))
 	if err != nil {
 		log.Println("error generating UnitFilesURL:", err)
 	}
 	return templ.SafeURL(strings.ReplaceAll(filePath, "/python/docs/courses", ""))
 }
-func CourseFilesURL(course domain.Course) templ.SafeURL {
+func CourseFilesURL(course dto.Course) templ.SafeURL {
 	filePath, err := url.JoinPath(GithubRoot, CourseFilesPath(course))
 	if err != nil {
 		log.Println("error generating UnitFilesURL:", err)
@@ -108,27 +109,27 @@ func CourseFilesURL(course domain.Course) templ.SafeURL {
 }
 
 // Student-facing site
-func LessonFilesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func LessonFilesPath(lesson dto.Lesson, unit dto.Unit, course dto.Course) string {
 	return filepath.Join(LessonPath(lesson, unit, course, false), "files")
 }
 
 // Student-facing site
-func UnitFilesPath(unit domain.Unit, course domain.Course) string {
+func UnitFilesPath(unit dto.Unit, course dto.Course) string {
 	return filepath.Join(UnitPath(unit, course, false), "files")
 }
 
 // Student-facing site
-func CourseFilesPath(course domain.Course) string {
+func CourseFilesPath(course dto.Course) string {
 	return filepath.Join(CoursePath(course, false), "files")
 }
 
 // Student-facing site
-func SlidesPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func SlidesPath(lesson dto.Lesson, unit dto.Unit, course dto.Course) string {
 	return filepath.Join(LessonPath(lesson, unit, course, false), "slides.html")
 }
 
 // This should not be used except for a one-time transfer
-func SlidesMarkdownPath(lesson domain.Lesson, unit domain.Unit, course domain.Course) string {
+func SlidesMarkdownPath(lesson dto.Lesson, unit dto.Unit, course dto.Course) string {
 	return filepath.Join(LessonPath(lesson, unit, course, false), "slides.md")
 }
 

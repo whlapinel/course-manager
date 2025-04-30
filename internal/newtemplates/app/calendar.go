@@ -1,8 +1,11 @@
 package managertemplates
 
 import (
-	"fmt"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/core/occasion"
+	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/shared/routes"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 	components "gh_static_portfolio/internal/templates/components/base"
 	templates "gh_static_portfolio/internal/templates/shared"
@@ -18,19 +21,19 @@ import (
 
 type CalendarPage interface {
 	GetCalendarDates() CalendarDates
-	GetTerm() domain.Term
+	GetTerm() dto.Term
 	IsStatic() bool
 	Page
 }
 
-func MonthDates(term domain.Term) []time.Time {
+func MonthDates(term dto.Term) []time.Time {
 	dates, _ := term.TermMonths()
 	return dates
 }
 
 type TermCalendar struct {
-	Params               domain.NodePath
-	Term                 domain.Term
+	Params               routes.NodePath
+	Term                 dto.Term
 	ListTermsURL         string
 	TermDetailsURL       string
 	CreateOccasionURL    string
@@ -74,12 +77,12 @@ func (data TermCalendar) ProcessCalendarDates() CalendarDates {
 	return calendarDates
 }
 
-func (term TermCalendar) GetTerm() domain.Term {
+func (term TermCalendar) GetTerm() dto.Term {
 	return term.Term
 }
 
-func (page TermCalendar) Occasions(date time.Time) []domain.Occasion {
-	var occasions []domain.Occasion
+func (page TermCalendar) Occasions(date time.Time) []occasion.Occasion {
+	var occasions []occasion.Occasion
 	for _, occ := range page.Term.Occasions {
 		if util.IsSameDate(occ.Date, date) {
 			occasions = append(occasions, occ)
@@ -88,7 +91,7 @@ func (page TermCalendar) Occasions(date time.Time) []domain.Occasion {
 	return occasions
 }
 
-func (page TermCalendar) TermOccasionEditor(occasion domain.Occasion) templ.Component {
+func (page TermCalendar) TermOccasionEditor(occasion occasion.Occasion) templ.Component {
 	return TermOccasionEditor{
 		Params:              page.Params,
 		Occasion:            occasion,
@@ -144,70 +147,37 @@ func (data TermCalendar) BreadCrumbs() BreadCrumbs {
 }
 
 type CourseCalendar struct {
-	Admin                         bool
-	Static                        bool
-	Nodes                         domain.Nodes
-	Params                        domain.NodePath
-	Course                        domain.Course
-	TermDetailsURL                string
-	CourseDetailsURL              string
-	LessonDetailsRouteHandlerName string
-	ShiftLessonRouteHandlerName   string
-	ListTermCoursesRHN            string
-	CreateOccasionRHN             string
-	ShowAddLessonDateRHN          string
-	RemoveLessonDateRHN           string
-	E                             *echo.Echo
-	CalendarDates                 CalendarDates
-	BreadCrumbsData               BreadCrumbs
+	Admin                 bool
+	Static                bool
+	Nodes                 node.Nodes
+	Params                routes.NodePath
+	Course                dto.Course
+	Term                  dto.Term
+	TermDetailsURL        string
+	CourseDetailsURL      string
+	LessonDetailsFunc     web.AddParams
+	ShiftLessonFunc       web.AddParams
+	ListTermCoursesURL    string
+	CreateOccasionFunc    web.AddParams
+	ShowAddLessonDateFunc web.AddParams
+	RemoveLessonDateFunc  web.AddParams
+	E                     *echo.Echo
+	CalendarDates         CalendarDates
+	BreadCrumbsData       BreadCrumbs
 }
 
 func (data CourseCalendar) GetCalendarDates() CalendarDates {
 	return data.CalendarDates
 }
 
-func (data CourseCalendar) ProcessCalendarDates() CalendarDates {
-	var datesMap = make(map[time.Time]CalendarDate)
-	for _, occasion := range data.Course.Term.Occasions {
-		data := datesMap[occasion.Date]
-		data.Date = occasion.Date
-		data.Occasions = append(data.Occasions, occasion)
-		datesMap[occasion.Date] = data
-	}
-	for _, unit := range data.Course.Units {
-		for _, lesson := range unit.Lessons {
-			for _, date := range lesson.Dates {
-				data := datesMap[date]
-				data.Date = date
-				data.Lessons = append(data.Lessons, lesson)
-				datesMap[date] = data
-			}
-		}
-	}
-	for date, data := range datesMap {
-		line := fmt.Sprintf(
-			`
-datesMap: Key Date: %v
-data.Date: %v
-data.Occasions: %v
-data.Lessons: %v
-`,
-			date, data.Date, data.Occasions, data.Lessons,
-		)
-		log.Println(line)
-	}
-	log.Println("CourseCalendar.ProcessCalendarDates: length of datesMap:", len(datesMap))
-	return datesMap
-}
-
 func (page CourseCalendar) IsStatic() bool {
 	return page.Static
 }
-func (page CourseCalendar) GetTerm() domain.Term {
-	return page.Course.Term
+func (page CourseCalendar) GetTerm() dto.Term {
+	return page.Term
 }
 
-func WithinTerm(week []time.Time, term domain.Term) bool {
+func WithinTerm(week []time.Time, term dto.Term) bool {
 	for _, day := range week[time.Monday:time.Saturday] {
 		if !day.Before(term.Start) && !day.After(term.End) {
 			return true
@@ -225,8 +195,8 @@ func HasNonZeroWeekDay(week []time.Time) bool {
 	return false
 }
 
-func Occasions(date time.Time, page CalendarPage) []domain.Occasion {
-	var occasions []domain.Occasion
+func Occasions(date time.Time, page CalendarPage) []occasion.Occasion {
+	var occasions []occasion.Occasion
 	for _, occ := range page.GetTerm().Occasions {
 		if util.IsSameDate(occ.Date, date) {
 			occasions = append(occasions, occ)
@@ -236,8 +206,8 @@ func Occasions(date time.Time, page CalendarPage) []domain.Occasion {
 }
 
 type TermOccasionEditor struct {
-	Params              domain.NodePath
-	Occasion            domain.Occasion
+	Params              routes.NodePath
+	Occasion            occasion.Occasion
 	IsEditing           bool
 	GetEditOccasionURL  string
 	PostEditOccasionURL string
@@ -257,11 +227,10 @@ func (data TermOccasionEditor) Component() templ.Component {
 }
 
 func (data CourseCalendar) Component() templ.Component {
-	data.CalendarDates = data.ProcessCalendarDates()
 	return DynamicCourseCalendarComponent(data)
 }
 
-func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date time.Time) templ.Component {
+func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.Time) templ.Component {
 	params := data.Params
 	params.UnitID = lesson.UnitID
 	params.LessonID = lesson.ID
@@ -269,10 +238,10 @@ func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date ti
 		Date:                date,
 		Params:              params,
 		lesson:              lesson,
-		LessonDetailsURL:    data.E.Reverse(data.LessonDetailsRouteHandlerName, params.ToSlice()...),
+		LessonDetailsURL:    data.LessonDetailsFunc(lesson.UnitID, lesson.ID),
 		Course:              data.Course,
-		ShiftLessonRHN:      data.ShiftLessonRouteHandlerName,
-		RemoveLessonDateURL: data.E.Reverse(data.RemoveLessonDateRHN, AddParams(params, date.Format(time.DateOnly))...),
+		ShiftLessonRHN:      data.ShiftLessonFunc(lesson.UnitID, lesson.ID),
+		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.UnitID, lesson.ID, date.Format(time.DateOnly)),
 		E:                   data.E,
 	}
 	if data.Static {
@@ -282,13 +251,7 @@ func (data CourseCalendar) CalendarLessonContainer(lesson domain.Lesson, date ti
 }
 
 func (data CourseCalendar) ShowAddLessonDatePageURL(date time.Time) string {
-	return data.E.Reverse(
-		data.ShowAddLessonDateRHN,
-		data.Params.UserID,
-		data.Params.TermID,
-		data.Params.CourseID,
-		date.Format(time.DateOnly),
-	)
+	return data.ShowAddLessonDateFunc(date.Format(time.DateOnly))
 }
 
 func (data CourseCalendar) PageLayout() cmp.PageLayout {
@@ -304,7 +267,7 @@ func (data CourseCalendar) PageLayout() cmp.PageLayout {
 	return cmp.PageLayout{
 		PageTitle: data.Course.Name + " Course Calendar",
 		UpNav: cmp.UpNav{
-			URL:  data.E.Reverse(data.ListTermCoursesRHN, data.Params.ToSlice()...),
+			URL:  data.ListTermCoursesURL,
 			Text: "Back to Courses",
 		},
 		Crumbs: data.BreadCrumbsData.BreadCrumbs(),
@@ -312,11 +275,11 @@ func (data CourseCalendar) PageLayout() cmp.PageLayout {
 }
 
 type CalendarLessonContainerNew struct {
-	Params              domain.NodePath
+	Params              routes.NodePath
 	Static              bool
 	Date                time.Time
-	Course              domain.Course
-	lesson              domain.Lesson
+	Course              dto.Course
+	lesson              dto.Lesson
 	LessonDetailsURL    string
 	RemoveLessonDateURL string
 	ShiftLessonRHN      string
@@ -367,7 +330,7 @@ func (data CourseCalendar) BreadCrumbs() BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
-func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) templ.Component {
+func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection) templ.Component {
 	button := ShiftButton{
 		Direction:      cd,
 		Params:         data.Params,
@@ -379,9 +342,9 @@ func (data CalendarLessonContainerNew) ShiftButton(cd domain.CalendarDirection) 
 
 type AddLessonToDatePage struct {
 	Date              time.Time
-	Nodes             domain.Nodes
-	Params            domain.NodePath
-	Course            domain.Course
+	Nodes             node.Nodes
+	Params            routes.NodePath
+	Course            dto.Course
 	ListLessonsRHN    string
 	AddLessonDateRHN  string
 	E                 *echo.Echo
@@ -402,13 +365,12 @@ func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
 	return data.E.Reverse(data.AddLessonDateRHN, AddParams(data.Params, data.Date.Format(time.DateOnly))...)
 }
 
-func StaticSiteCourseCalendar(course domain.Course) CourseCalendar {
+func StaticSiteCourseCalendar(course dto.Course) CourseCalendar {
 	cc := CourseCalendar{
 		Admin:  false,
 		Static: true,
 		Course: course,
 	}
-	cc.CalendarDates = cc.ProcessCalendarDates()
 	return cc
 }
 
@@ -439,13 +401,13 @@ func (data AddLessonToDatePage) UnitPicker() templ.Component {
 
 type UnitPicker struct {
 	Date           time.Time
-	Params         domain.NodePath
-	Units          []domain.Unit
+	Params         routes.NodePath
+	Units          []dto.Unit
 	ListLessonsRHN string
 	Echo           *echo.Echo
 }
 
-func (data UnitPicker) ListLessonsButton(unit domain.Unit) templ.Component {
+func (data UnitPicker) ListLessonsButton(unit dto.Unit) templ.Component {
 	return cmp.Button{
 		Text:     unit.Designation(),
 		Method:   cmp.HxGet,
@@ -464,9 +426,9 @@ func (data UnitPicker) Component() templ.Component {
 
 type LessonPicker struct {
 	Date            time.Time
-	Params          domain.NodePath
+	Params          routes.NodePath
 	ListUnitsURL    string
-	Lessons         []domain.Lesson
+	Lessons         []dto.Lesson
 	SelectLessonRHN string
 	Echo            *echo.Echo
 }
@@ -484,7 +446,7 @@ func (data LessonPicker) Component() templ.Component {
 	return LessonPickerComponent(data)
 }
 
-func (data LessonPicker) SelectLessonButton(lesson domain.Lesson) templ.Component {
+func (data LessonPicker) SelectLessonButton(lesson dto.Lesson) templ.Component {
 	return cmp.Button{
 		Text:     lesson.Designation(),
 		Method:   cmp.HxPost,
@@ -499,8 +461,8 @@ func (data LessonPicker) SelectLessonURL(lessonID int) string {
 
 type CalendarDate struct {
 	Date      time.Time
-	Lessons   []domain.Lesson
-	Occasions []domain.Occasion
+	Lessons   []dto.Lesson
+	Occasions []occasion.Occasion
 }
 
 type CalendarDates map[time.Time]CalendarDate

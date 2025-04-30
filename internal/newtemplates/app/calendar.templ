@@ -1,18 +1,21 @@
 package managertemplates
 
 import (
-	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/templates/shared"
+	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/newtemplates/shared"
 	"gh_static_portfolio/internal/util"
 	"strconv"
 	"time"
+
+	"gh_static_portfolio/internal/core/occasion"
+	"gh_static_portfolio/internal/core/unit"
 )
 
 templ ShiftButtonComponent(data ShiftButton) {
 	<button hx-post={ data.ShiftLessonURL } hx-target="#page">
-		if data.Direction == domain.Right {
+		if data.Direction == dto.Right {
 			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"></path></svg>
-		} else if data.Direction == domain.Left {
+		} else if data.Direction == dto.Left {
 			<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"></path></svg>
 		}
 	</button>
@@ -22,7 +25,7 @@ templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 	<li>
 		<div class="flex">
 			if !data.Static {
-				@data.ShiftButton(domain.Left)
+				@data.ShiftButton(dto.Left)
 			}
 			<div>
 				<div class="flex flex-col gap-1 items-center">
@@ -35,7 +38,7 @@ templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 				</div>
 			</div>
 			if !data.Static {
-				@data.ShiftButton(domain.Right)
+				@data.ShiftButton(dto.Right)
 			}
 		</div>
 	</li>
@@ -80,7 +83,7 @@ templ CourseCalendarComponent(page CourseCalendar) {
 
 templ NewCalendarLessonListComponent(page CourseCalendar, data CalendarDate) {
 	<ul class="justify-items-center">
-		if page.Course.Term.IsInstructionDay(data.Date) {
+		if page.Term.IsInstructionDay(data.Date) {
 			if !page.Static && page.Admin {
 				<button
 					hx-get={ page.ShowAddLessonDatePageURL(data.Date) }
@@ -92,7 +95,7 @@ templ NewCalendarLessonListComponent(page CourseCalendar, data CalendarDate) {
 				if !page.Static {
 					@page.CalendarLessonContainer(lesson, data.Date)
 				} else {
-					@UnstyledListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, domain.Unit{ID: lesson.UnitID}, page.Course, true)), false) {
+					@UnstyledListedLinkItem(RemoveDocsFromPath(templates.LessonPath(lesson, dto.Unit{Unit: unit.Unit{ID: lesson.UnitID}}, page.Course, true)), false) {
 						<div
 							class="group bg-purple-600 rounded p-2 m-1 text-lg hover:bg-purple-500 list-none cursor-pointer relative inline-block group"
 						>
@@ -113,7 +116,7 @@ templ NewCalendarLessonListComponent(page CourseCalendar, data CalendarDate) {
 templ CalendarLessonListComponent(date time.Time, page CalendarPage) {
 	if page, ok := page.(CourseCalendar); ok {
 		<ul class="justify-items-center">
-			if page.Course.Term.IsInstructionDay(date) {
+			if page.Term.IsInstructionDay(date) {
 				if !page.Static && page.Admin {
 					<button
 						hx-get={ page.ShowAddLessonDatePageURL(date) }
@@ -164,7 +167,6 @@ templ DynamicCourseCalendarComponent(page CourseCalendar) {
 // 		}
 // 	}
 // }
-
 templ TermCalendarComponent(page TermCalendar) {
 	@NewCalendarComponent(page)
 }
@@ -314,7 +316,7 @@ templ CalendarDateComponent(date time.Time, page CalendarPage) {
 	</div>
 }
 
-templ OccasionComponent(occasion domain.Occasion) {
+templ OccasionComponent(occasion occasion.Occasion) {
 	<p class="text-lg text-blue-300 font-extrabold">{ occasion.Name }</p>
 }
 

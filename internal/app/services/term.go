@@ -29,9 +29,14 @@ func (svc *TermService) ByID(termID int) (dto.Term, error) {
 	if err != nil {
 		return dto.Term{}, err
 	}
+	courses, err := svc.courseService.ByTermID(termID)
+	if err != nil {
+		return dto.Term{}, err
+	}
 	return dto.Term{
 		Term:      term,
 		Occasions: occasions,
+		Courses:   courses,
 	}, nil
 }
 
@@ -40,16 +45,9 @@ func (svc *TermService) ListCourses(termID int) (dto.Term, error) {
 	if err != nil {
 		return dto.Term{}, err
 	}
-	courses, err := svc.courseService.ByTermID(termID)
+	courseDTOs, err := svc.courseService.ByTermID(termID)
 	if err != nil {
 		return dto.Term{}, err
-	}
-	var courseDTOs []dto.Course
-	for _, course := range courses {
-		courseDTO := dto.Course{
-			Course: course,
-		}
-		courseDTOs = append(courseDTOs, courseDTO)
 	}
 	termDTO := dto.Term{
 		Term:    term,

@@ -8,31 +8,48 @@ const (
 	Course            web.RoutePath = Courses + web.RoutePath(CourseID)
 	CourseEdit        web.RoutePath = Course + "/edit"
 	CourseFiles       web.RoutePath = Course + "/files"
-	CourseCalendar    web.RoutePath = Course + "/calendar"
 	CourseAssessments web.RoutePath = Course + "/assessments"
+	CourseFile        web.RoutePath = CourseFiles + "/*"
+	CourseViewFile    web.RoutePath = Course + "/view-markdown/files/*"
+	CourseEditFile    web.RoutePath = CourseFiles + "/edit/*"
+	CourseAssessment  web.RoutePath = CourseAssessments + web.RoutePath(AssessmentID)
+	CourseSlides      web.RoutePath = Course + "/slides"
+	CourseEditSlides  web.RoutePath = CourseSlides + "/edit"
+	CourseStandards   web.RoutePath = Course + "/standards"
+	CourseStandard    web.RoutePath = CourseStandards + web.RoutePath(StandardID)
 )
 
+// Course calendar paths
 const (
-	CourseFile       web.RoutePath = CourseFiles + "/*"
-	CourseViewFile   web.RoutePath = Course + "/view-markdown/files/*"
-	CourseEditFile   web.RoutePath = CourseFiles + "/edit/*"
-	CourseAssessment web.RoutePath = CourseAssessments + web.RoutePath(AssessmentID)
-	CourseSlides     web.RoutePath = Course + "/slides"
-	CourseEditSlides web.RoutePath = CourseSlides + "/edit"
-	CourseStandards  web.RoutePath = Course + "/standards"
-	CourseStandard   web.RoutePath = CourseStandards + web.RoutePath(StandardID)
+	CourseCalendar web.RoutePath = Course + "/calendar"
+	ShiftLesson    web.RoutePath = Lesson + web.RoutePath(ShiftDirection)
+	ExtendLesson   web.RoutePath = ShiftLesson + "/extend"
+	DateUnits      web.RoutePath = CourseCalendar + web.RoutePath(Date)
+	DateLessons    web.RoutePath = DateUnits + web.RoutePath(UnitID)
+	LessonDates    web.RoutePath = Lesson + "/dates"
+	LessonDate     web.RoutePath = LessonDates + web.RoutePath(Date)
 )
 
 // Course handler names
 var (
-	GetCourses        = web.NewHandlerName(web.GET, Courses)
-	GetNewCourse      = web.NewHandlerName(web.GET, NewCourse)
+	GetCourses     = web.NewHandlerName(web.GET, Courses)
+	GetNewCourse   = web.NewHandlerName(web.GET, NewCourse)
+	GetCourse      = web.NewHandlerName(web.GET, Course)
+	PostCourse     = web.NewHandlerName(web.POST, Courses)
+	GetEditCourse  = web.NewHandlerName(web.GET, CourseEdit)
+	PostEditCourse = web.NewHandlerName(web.POST, CourseEdit)
+	DeleteCourse   = web.NewHandlerName(web.DELETE, Course)
+)
+
+// Course calendar handler names
+var (
 	GetCourseCalendar = web.NewHandlerName(web.GET, CourseCalendar)
-	GetCourse         = web.NewHandlerName(web.GET, Course)
-	PostCourse        = web.NewHandlerName(web.POST, Courses)
-	GetEditCourse     = web.NewHandlerName(web.GET, CourseEdit)
-	PostEditCourse    = web.NewHandlerName(web.POST, CourseEdit)
-	DeleteCourse      = web.NewHandlerName(web.DELETE, Course)
+	PostShiftLesson   = web.NewHandlerName(web.POST, ShiftLesson)
+	PostExtendLesson  = web.NewHandlerName(web.POST, ExtendLesson)
+	GetAddLessonDate  = web.NewHandlerName(web.GET, DateUnits)
+	GetListLessons    = web.NewHandlerName(web.GET, DateLessons)
+	DeleteLessonDate  = web.NewHandlerName(web.DELETE, LessonDate)
+	PostAddLessonDate = web.NewHandlerName(web.POST, LessonDate)
 )
 
 // Course file handler names
@@ -59,4 +76,3 @@ var (
 	PostCourseStandard   = web.NewHandlerName(web.POST, CourseStandards)
 	DeleteCourseStandard = web.NewHandlerName(web.DELETE, CourseStandard)
 )
-
