@@ -100,6 +100,10 @@ func New() (*App, error) {
 		return nil, err
 	}
 
+	// misc services
+	markdownService := services.NewMarkdownService()
+	fileService := services.NewFileService(markdownService.MarkdownToHTML)
+
 	// application-level services
 	lessonAppService := services.NewLessonService(lessonService)
 	unitAppService := services.NewUnitService(unitService, lessonService)
@@ -115,7 +119,7 @@ func New() (*App, error) {
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
-	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
 	userAppHandler := handlers.NewUserHandler(userAppService, nodeAppService, e.Reverse)
 

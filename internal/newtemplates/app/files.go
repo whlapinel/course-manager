@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
+	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
@@ -16,8 +17,8 @@ type FilesPage struct {
 	CurrentDirectory    FilesPageItem
 	Params              routes.NodePath
 	CurrentPath         string
-	OpenFileRHN         string
-	UploadFileRHN       string
+	OpenFileURL         web.AddParams
+	UploadFileURL       web.AddParams
 	Node                node.Node
 	Files               []FilesPageItem
 	E                   *echo.Echo
@@ -63,7 +64,6 @@ func (data FilesPage) PageLayout() cmp.PageLayout {
 	return cmp.PageLayout{
 		PageTitle: "Files for " + data.Node.GetName(),
 		UpNav: cmp.UpNav{
-			URL:  data.E.Reverse(data.PopRouteSegmentRHN, data.Params.ToSlice()...),
 			Text: "Up one level",
 		},
 		Crumbs: data.BreadCrumbs().BreadCrumbs(),

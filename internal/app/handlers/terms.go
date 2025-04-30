@@ -7,21 +7,30 @@ import (
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"log"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
 
 type termHandler struct {
-	nodeService services.NodeService
+	nodeService *services.NodeService
 	service     *services.TermService
+	fileService *services.FileService
 	reverse     web.Reverse
 }
 
-func NewTermHandler(service *services.TermService, nodeService *services.NodeService, reverse web.Reverse) *termHandler {
+func NewTermHandler(
+	service *services.TermService,
+	nodeService *services.NodeService,
+	fileService *services.FileService,
+	reverse web.Reverse,
+) *termHandler {
 	return &termHandler{
 		service:     service,
-		nodeService: *nodeService,
+		nodeService: nodeService,
 		reverse:     reverse,
+		fileService: fileService,
 	}
 }
 
@@ -40,6 +49,7 @@ func termRouteHandlers(h *termHandler) []web.RouteHandler {
 		{Method: web.GET, RoutePath: routes.Courses, HandlerName: routes.GetCourses, HandlerFunc: h.listCourses},
 		{Method: web.GET, RoutePath: routes.Term, HandlerName: routes.GetTerm, HandlerFunc: h.showDetails},
 		{Method: web.GET, RoutePath: routes.TermEdit, HandlerName: routes.GetEditTerm, HandlerFunc: h.showEdit},
+		web.NewRouteHandler(web.GET, routes.TermFiles, routes.GetTermFiles, h.showFiles),
 	}
 }
 
@@ -114,18 +124,60 @@ func (h *termHandler) showEdit(c echo.Context) error {
 
 }
 
+func (h *termHandler) showFiles(c echo.Context) error {
+	path, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	filePath := c.Param("*")
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
+	log.Println("len nodes:", len(nodes.ToSlice()))
+	log.Println("filePath:", filePath)
+	parentPath := filepath.Dir(filePath)
+	err = h.fileService.CreateNodeFilesDir(nodes.ToSlice()...)
+	if err != nil {
+		return err
+	}
+	files, err := h.fileService.NodeFiles(filePath, nodes.ToSlice()...)
+	if err != nil {
+		return err
+	}
+	page := mt.FilesPage{
+		Root: filePath == "",
+		ParentDirectory: mt.FilesPageItem{
+			Name:  parentPath,
+			URL:   h.reverse(routes.GetTermFile.String(), parentPath),
+			Path:  parentPath,
+			IsDir: true,
+		},
+		CurrentDirectory: mt.FilesPageItem{
+			Name:  filePath,
+			URL:   h.reverse(routes.GetTermFile.String(), filePath),
+			Path:  filePath,
+			IsDir: filepath.Ext(filePath) == "",
+		},
+		OpenFileURL:   web.URLFunc(routes.GetTermFile, h.reverse, path.ToSlice()...),
+		UploadFileURL: web.URLFunc(routes.PostTermFile, h.reverse, path.ToSlice()...),
+		Node:          nodes.Term,
+		Files:         files,
+	}
+	return web.Respond(c, "", page.Component(), mt.BaseLayout(h.reverse, page.Component(), nodes.User.(dto.User)))
+}
+
 func (h *termHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
 	nodePage := mt.NodeDetailsPage{
-		Node:              nodes.Term,
-		ParentNode:        nodes.User,
-		GetEditNodeURL:    h.reverse(routes.GetEditTerm.String(), path.ToSlice()...),
-		PostEditNodeURL:   h.reverse(routes.PostEditTerm.String(), path.ToSlice()...),
-		ListChildrenURL:   h.reverse(routes.GetCourses.String(), path.ToSlice()...),
-		UpNavURL:          h.reverse(routes.GetUser.String(), path.ToSlice()...),
-		CancelEditURL:     h.reverse(routes.GetTerm.String(), path.ToSlice()...),
-		CourseCalendarURL: h.reverse(routes.GetCourseCalendar.String(), path.ToSlice()...),
-		ServerFilesURL:    h.reverse(routes.GetTermFiles.String(), path.ToSlice()...),
-		BreadCrumbs:       BreadCrumbs(nodes, path, h.reverse),
+		Node:            nodes.Term,
+		ParentNode:      nodes.User,
+		GetEditNodeURL:  h.reverse(routes.GetEditTerm.String(), path.ToSlice()...),
+		PostEditNodeURL: h.reverse(routes.PostEditTerm.String(), path.ToSlice()...),
+		ListChildrenURL: h.reverse(routes.GetCourses.String(), path.ToSlice()...),
+		UpNavURL:        h.reverse(routes.GetUser.String(), path.ToSlice()...),
+		CancelEditURL:   h.reverse(routes.GetTerm.String(), path.ToSlice()...),
+		ServerFilesURL:  h.reverse(routes.GetTermFiles.String(), path.ToSlice()...),
+		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),
 	}
 	return nodePage
 }

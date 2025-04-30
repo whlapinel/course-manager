@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"gh_static_portfolio/internal/templates/components/base"
 	"gh_static_portfolio/internal/util"
-	"path/filepath"
 )
 
 func FilesComponent(page FilesPage) templ.Component {
@@ -44,9 +43,9 @@ func FilesComponent(page FilesPage) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(page.E.Reverse(page.UploadFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath))))
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(page.UploadFileURL(page.CurrentPath))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 12, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 11, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -66,7 +65,7 @@ func FilesComponent(page FilesPage) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...))
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(page.OpenFileURL(page.CurrentPath))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -78,7 +77,7 @@ func FilesComponent(page FilesPage) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(item.Path)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 21, Col: 155}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 20, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -94,9 +93,9 @@ func FilesComponent(page FilesPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...))
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(page.OpenFileURL(page.CurrentPath))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 24, Col: 126}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 23, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -109,7 +108,7 @@ func FilesComponent(page FilesPage) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Path)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 28, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 27, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -169,9 +168,9 @@ func NewFilesComponent(data FilesPage) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.E.Reverse(data.UploadFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath))))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.UploadFileURL(data.CurrentPath))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 47, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 46, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -189,7 +188,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.ParentDirectory.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 54, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 53, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -202,7 +201,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("#files")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 55, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 54, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -219,7 +218,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.ParentDirectory.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 60, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 59, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -237,7 +236,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.CurrentDirectory.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 63, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 62, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -254,9 +253,9 @@ func NewFilesComponent(data FilesPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...))))
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.OpenFileURL(data.CurrentPath))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 71, Col: 150}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 70, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -277,7 +276,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(file.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 77, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 76, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -292,7 +291,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var15 templ.SafeURL = templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...))
+				var templ_7745c5c3_Var15 templ.SafeURL = templ.SafeURL(data.OpenFileURL(data.CurrentPath))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var15)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -312,7 +311,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(file.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 91, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 90, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -378,7 +377,7 @@ func MarkdownIFrame(data MarkdownDocument) templ.Component {
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(data.Content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 108, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 107, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -420,7 +419,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 121, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 120, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -433,7 +432,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 122, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 121, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -446,7 +445,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(props.Contents)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 126, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 125, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -479,7 +478,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditFileURL(props.Path))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 146, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -492,7 +491,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(string(EditSlidesTextAreaID.Selector()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 146, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 126}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {

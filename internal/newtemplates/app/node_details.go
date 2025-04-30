@@ -21,7 +21,7 @@ type NodeDetailsPage struct {
 	IsEdit          bool
 	NodeImageURL    func() string
 	BreadCrumbs
-	CourseCalendarURL string
+	CourseCalendarURL string // leave blank if doesn't apply
 	ServerFilesURL    string
 }
 

@@ -3,13 +3,12 @@ package managertemplates
 import (
 	"gh_static_portfolio/internal/templates/components/base"
 	"gh_static_portfolio/internal/util"
-	"path/filepath"
 )
 
 templ FilesComponent(page FilesPage) {
 	@PageLayoutComponent(page)
 	<div class="grid grid-cols-2">
-		<form hx-post={ page.E.Reverse(page.UploadFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath))) } enctype="multipart/form-data">
+		<form hx-post={ page.UploadFileURL(page.CurrentPath) } enctype="multipart/form-data">
 			<label for="file">Choose a file:</label>
 			<input type="file" name="file" id="file"/>
 			<button type="submit">Upload</button>
@@ -18,10 +17,10 @@ templ FilesComponent(page FilesPage) {
 			for _, item := range page.Files {
 				<li>
 					if !item.IsDir {
-						<a href={ templ.SafeURL(page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...)) }>{ item.Path }</a>
+						<a href={ templ.SafeURL(page.OpenFileURL(page.CurrentPath)) }>{ item.Path }</a>
 					} else {
 						<button
-							hx-get={ page.E.Reverse(page.OpenFileRHN, append(page.Params.ToSlice(), filepath.Join(page.CurrentPath, item.Path))...) }
+							hx-get={ page.OpenFileURL(page.CurrentPath) }
 							hx-target="#page"
 							hx-push-url="true"
 						>
@@ -44,7 +43,7 @@ templ NewFilesComponent(data FilesPage) {
 		id="files"
 		class="p-4"
 	>
-		<form hx-post={ data.E.Reverse(data.UploadFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath))) } enctype="multipart/form-data">
+		<form hx-post={ data.UploadFileURL(data.CurrentPath) } enctype="multipart/form-data">
 			<label for="file">Choose a file:</label>
 			<input type="file" name="file" id="file"/>
 			<button type="submit">Upload</button>
@@ -68,7 +67,7 @@ templ NewFilesComponent(data FilesPage) {
 						<div class="flex w-0 flex-1 items-center">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
-								hx-get={ string(templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...))) }
+								hx-get={ data.OpenFileURL(data.CurrentPath) }
 								hx-target="#files"
 								hx-swap="outerHTML"
 							>
@@ -84,7 +83,7 @@ templ NewFilesComponent(data FilesPage) {
 						<div class="flex w-0 flex-1 items-center">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
-								href={ templ.SafeURL(data.E.Reverse(data.OpenFileRHN, append(data.Params.ToSlice(), filepath.Join(data.CurrentPath, file.Path))...)) }
+								href={ templ.SafeURL(data.OpenFileURL(data.CurrentPath)) }
 							>
 								@components.DownloadIcon()
 								<div class="ml-4 flex min-w-0 flex-1 gap-2">
