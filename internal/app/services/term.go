@@ -11,15 +11,21 @@ type TermService struct {
 	termService   *term.Service
 	occasionSvc   *termoccasion.Service
 	courseService *course.Service
+	fileService   *FileService
 }
 
-func NewTermService(termSvc *term.Service, occasionSvc *termoccasion.Service, courseSvc *course.Service) *TermService {
+func NewTermService(
+	termSvc *term.Service,
+	occasionSvc *termoccasion.Service,
+	courseSvc *course.Service,
+) *TermService {
 	return &TermService{
 		termService:   termSvc,
 		occasionSvc:   occasionSvc,
 		courseService: courseSvc,
 	}
 }
+
 func (svc *TermService) ByID(termID int) (dto.Term, error) {
 	term, err := svc.termService.ByID(termID)
 	if err != nil {

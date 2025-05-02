@@ -136,11 +136,10 @@ func (h *termHandler) showFiles(c echo.Context) error {
 	}
 	log.Println("len nodes:", len(nodes.ToSlice()))
 	log.Println("filePath:", filePath)
-	parentPath := filepath.Dir(filePath)
-	err = h.fileService.CreateNodeFilesDir(nodes.ToSlice()...)
-	if err != nil {
-		return err
+	if filePath == "" {
+		filePath = "."
 	}
+	parentPath := filepath.Dir(filePath)
 	files, err := h.fileService.NodeFiles(filePath, nodes.ToSlice()...)
 	if err != nil {
 		return err
@@ -159,10 +158,12 @@ func (h *termHandler) showFiles(c echo.Context) error {
 			Path:  filePath,
 			IsDir: filepath.Ext(filePath) == "",
 		},
-		OpenFileURL:   web.URLFunc(routes.GetTermFile, h.reverse, path.ToSlice()...),
-		UploadFileURL: web.URLFunc(routes.PostTermFile, h.reverse, path.ToSlice()...),
-		Node:          nodes.Term,
-		Files:         files,
+		ViewMarkdownURL:     web.URLFunc(routes.ViewTermFile, h.reverse, path.ToSlice()...),
+		EditMarkdownFileURL: web.URLFunc(routes.GetTermEditFile, h.reverse, path.ToSlice()...),
+		OpenFileURL:         web.URLFunc(routes.GetTermFile, h.reverse, path.ToSlice()...),
+		UploadFileURL:       web.URLFunc(routes.PostTermFile, h.reverse, path.ToSlice()...),
+		Node:                nodes.Term,
+		Files:               files,
 	}
 	return web.Respond(c, "", page.Component(), mt.BaseLayout(h.reverse, page.Component(), nodes.User.(dto.User)))
 }

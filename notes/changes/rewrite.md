@@ -16,7 +16,11 @@ This will be a lot of work.
 
 ## Required actions
 
-- Decide on design. This is from a suggestion by ChatGPT:
+- Decide on design.
+
+## Additional info:
+
+ This is just a sketch of the new layout:
 
 ```text
 /cmd/

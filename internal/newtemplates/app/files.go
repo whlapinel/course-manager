@@ -21,18 +21,18 @@ type FilesPage struct {
 	UploadFileURL       web.AddParams
 	Node                node.Node
 	Files               []FilesPageItem
-	E                   *echo.Echo
 	PopRouteSegmentRHN  string
 	BreadCrumbsData     BreadCrumbs
-	ViewMarkdownRHN     string
-	EditMarkdownFileURL func(relPath string) string
+	ViewMarkdownURL     web.AddParams
+	EditMarkdownFileURL web.AddParams
 }
 
 type FilesPageItem struct {
-	Name  string
-	URL   string
-	Path  string
-	IsDir bool
+	Name       string
+	URL        string
+	Path       string
+	IsMarkdown bool
+	IsDir      bool
 }
 
 type MarkdownEditor struct {
@@ -55,9 +55,6 @@ func AddParams(params routes.NodePath, additionalParams ...any) []any {
 	pathSlice := params.ToSlice()
 	pathSlice = append(pathSlice, additionalParams...)
 	return pathSlice
-}
-func (data FilesPage) FileURL(file FilesPageItem) string {
-	return data.E.Reverse(data.ViewMarkdownRHN, AddParams(data.Params, file.Path)...)
 }
 
 func (data FilesPage) PageLayout() cmp.PageLayout {
@@ -87,7 +84,7 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 		Text:     "View As HTML",
 		Method:   cmp.HxGet,
 		HxTarget: "#markdown",
-		URL:      data.FileURL(file),
+		URL:      data.ViewMarkdownURL(file),
 		PushURL:  true,
 	}.Component()
 

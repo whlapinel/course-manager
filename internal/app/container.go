@@ -13,6 +13,8 @@ import (
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/features/user"
+	markdownrenderer "gh_static_portfolio/internal/infrastructure/goldmarkrenderer"
+	"gh_static_portfolio/internal/infrastructure/localfilesystem"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
 	authentication "gh_static_portfolio/internal/newauthentication"
 	"gh_static_portfolio/internal/shared/routes"
@@ -100,9 +102,12 @@ func New() (*App, error) {
 		return nil, err
 	}
 
-	// misc services
-	markdownService := services.NewMarkdownService()
-	fileService := services.NewFileService(markdownService.MarkdownToHTML)
+	// file system and markdown renderer
+	filesRepo := localfilesystem.New()
+	markdownRenderer := markdownrenderer.New()
+
+	// this is used by other application services, though it is also in the application layer (not ideal)
+	fileService := services.NewFileService(filesRepo, markdownRenderer)
 
 	// application-level services
 	lessonAppService := services.NewLessonService(lessonService)
