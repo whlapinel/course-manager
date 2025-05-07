@@ -19,7 +19,7 @@ func (root RootCourseNode) GetID() interface{} {
 func (r RootCourseNode) GetName() string {
 	return ""
 }
-func (r RootCourseNode) GetParentID() int {
+func (r RootCourseNode) GetParentID() any {
 	return 0
 }
 func (r RootCourseNode) GetDescription() string {

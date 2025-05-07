@@ -253,9 +253,9 @@ func NewFilesComponent(data FilesPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.OpenFileURL(data.CurrentPath))
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.OpenDirURL(file.Name))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 70, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 70, Col: 43}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -291,7 +291,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var15 templ.SafeURL = templ.SafeURL(data.OpenFileURL(data.CurrentPath))
+				var templ_7745c5c3_Var15 templ.SafeURL = templ.SafeURL(data.OpenFileURL(file.Path))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var15)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -476,9 +476,9 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var24 string
-			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditFileURL(props.Path))
+			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(props.PostEditFileURL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -491,7 +491,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(string(EditSlidesTextAreaID.Selector()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/app/files.templ`, Line: 145, Col: 114}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {

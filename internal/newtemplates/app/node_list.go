@@ -23,6 +23,14 @@ type NodeListPage struct {
 	ShowNewChildURL  string // e.g. if listing units, this would be the route handler name to show new unit form
 	UpNavURL         string
 	BreadCrumbsData  BreadCrumbs
+	CourseManagerLayout
+}
+
+func (p NodeListPage) HTMXResponse() templ.Component {
+	return p.Component()
+}
+func (p NodeListPage) NonHTMXResponse() templ.Component {
+	return p.CourseManagerLayout.Component2(p.Component())
 }
 
 type NodeDeleteButton struct {

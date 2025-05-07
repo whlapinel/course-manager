@@ -7,6 +7,7 @@ import (
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"log"
 
 	"github.com/labstack/echo/v4"
 )
@@ -54,6 +55,7 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	log.Println("len(datesMap):", len(datesMap))
 	page := managertemplates.CourseCalendar{
 		Course:                nodes.Course.(dto.Course),
 		Term:                  nodes.Term.(dto.Term),
@@ -62,14 +64,14 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		ListTermCoursesURL:    h.reverse(routes.GetCourses.String(), path.ToSlice()...),
 		LessonDetailsFunc:     h.URLFunc(routes.GetLesson, path.ToSlice()...),
 		ShiftLessonFunc:       h.URLFunc(routes.PostShiftLesson, path.ToSlice()...),
-		CreateOccasionFunc:    h.URLFunc(routes.CreateOccasion, path.ToSlice()...),
+		CreateOccasionFunc:    h.URLFunc(routes.CreateTermOccasion, path.ToSlice()...),
 		ShowAddLessonDateFunc: h.URLFunc(routes.GetAddLessonDate, path.ToSlice()...),
 		RemoveLessonDateFunc:  h.URLFunc(routes.DeleteLessonDate, path.ToSlice()...),
 		CalendarDates:         datesMap,
 		BreadCrumbsData:       h.BreadCrumbs(nodes, path),
+		CourseManagerLayout:   BaseLayout2(h.reverse, nodes.User.(dto.User)),
 	}
-	component := page.Component()
-	return web.Respond(c, "", component, managertemplates.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
+	return Respond(c, page)
 }
 
 func (h *courseCalendarHandler) BreadCrumbs(nodes node.Nodes, path routes.NodePath) managertemplates.BreadCrumbs {

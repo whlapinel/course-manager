@@ -46,7 +46,6 @@ func (h Handler) showHome(c echo.Context) error {
 	layout := mt.CourseManagerLayout{
 		User:       dto.User{},
 		HomeURL:    "/",
-		PageTitle:  "Home",
 		SigninURL:  h.reverse(routes.GetSignin.String()),
 		SignupURL:  h.reverse(routes.GetSignup.String()),
 		SignoutURL: h.reverse(routes.PostSignout.String()),

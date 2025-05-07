@@ -52,6 +52,9 @@ func Respond(c echo.Context, redirect string, component, altComponent templ.Comp
 	return component.Render(context.Background(), c.Response())
 }
 
+// returns the page or fragment content with base layout
+type LayoutFunc func(templ.Component) templ.Component
+
 func IsHTMX(c echo.Context) bool {
 	// Check for "HX-Request" header
 	return c.Request().Header.Get("Hx-Request") != ""

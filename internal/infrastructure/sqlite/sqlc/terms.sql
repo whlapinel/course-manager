@@ -1,8 +1,8 @@
 -- name: SaveTerm :one
 INSERT INTO
-  terms (name, description, start, end)
+  terms (user_id, name, description, start, end)
 VALUES
-  (?, ?, ?, ?) RETURNING *;
+  (?, ?, ?, ?, ?) RETURNING *;
 
 -- name: UpdateTerm :exec
 UPDATE terms

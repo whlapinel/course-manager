@@ -7,8 +7,6 @@ import (
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
-	components "gh_static_portfolio/internal/templates/components/base"
-	templates "gh_static_portfolio/internal/templates/shared"
 	"gh_static_portfolio/internal/util"
 	"log"
 	"strconv"
@@ -22,7 +20,6 @@ import (
 type CalendarPage interface {
 	GetCalendarDates() CalendarDates
 	GetTerm() dto.Term
-	IsStatic() bool
 	Page
 }
 
@@ -32,18 +29,25 @@ func MonthDates(term dto.Term) []time.Time {
 }
 
 type TermCalendar struct {
-	Params               routes.NodePath
-	Term                 dto.Term
-	ListTermsURL         string
-	TermDetailsURL       string
-	CreateOccasionURL    string
-	GetEditOccasionRHN   string
-	PostEditOccasionRHN  string
-	DeleteOccasionRHN    string
-	CurrentOccasionIndex int
-	E                    *echo.Echo
-	CalendarDates        CalendarDates
-	BreadCrumbsData      BreadCrumbs
+	Params              routes.NodePath
+	Term                dto.Term
+	ListTermsURL        string
+	TermDetailsURL      string
+	CreateOccasionURL   string
+	GetEditOccasionURL  web.AddParams
+	PostEditOccasionURL web.AddParams
+	DeleteOccasionURL   web.AddParams
+	CalendarDates       CalendarDates
+	BreadCrumbsData     BreadCrumbs
+	CourseManagerLayout
+}
+
+func (p TermCalendar) HTMXResponse() templ.Component {
+	return p.Component()
+}
+
+func (p TermCalendar) NonHTMXResponse() templ.Component {
+	return p.CourseManagerLayout.Component2(p.Component())
 }
 
 func DateData(date time.Time, page CalendarPage) CalendarDate {
@@ -66,17 +70,6 @@ func (data TermCalendar) GetCalendarDates() CalendarDates {
 	return data.CalendarDates
 }
 
-func (data TermCalendar) ProcessCalendarDates() CalendarDates {
-	var calendarDates CalendarDates = make(map[time.Time]CalendarDate)
-	for _, occasion := range data.Term.Occasions {
-		data := calendarDates[occasion.Date]
-		data.Date = occasion.Date
-		data.Occasions = append(data.Occasions, occasion)
-		calendarDates[occasion.Date] = data
-	}
-	return calendarDates
-}
-
 func (term TermCalendar) GetTerm() dto.Term {
 	return term.Term
 }
@@ -96,9 +89,9 @@ func (page TermCalendar) TermOccasionEditor(occasion occasion.Occasion) templ.Co
 		Params:              page.Params,
 		Occasion:            occasion,
 		IsEditing:           false,
-		GetEditOccasionURL:  page.E.Reverse(page.GetEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
-		PostEditOccasionURL: page.E.Reverse(page.PostEditOccasionRHN, AddParams(page.Params, occasion.ID)...),
-		DeleteOccasionURL:   page.E.Reverse(page.DeleteOccasionRHN, AddParams(page.Params, occasion.ID)...),
+		GetEditOccasionURL:  page.GetEditOccasionURL(occasion.ID),
+		PostEditOccasionURL: page.PostEditOccasionURL(occasion.ID),
+		DeleteOccasionURL:   page.DeleteOccasionURL(occasion.ID),
 	}.Component()
 
 }
@@ -122,7 +115,6 @@ func (button AddOccasionButton) Component() templ.Component {
 }
 
 func (data TermCalendar) Component() templ.Component {
-	data.CalendarDates = data.ProcessCalendarDates()
 	return TermCalendarComponent(data)
 }
 
@@ -138,17 +130,17 @@ func (data TermCalendar) PageLayout() cmp.PageLayout {
 
 }
 
-func (page TermCalendar) IsStatic() bool {
-	return false
-}
+// func (page TermCalendar) IsStatic() bool {
+// 	return false
+// }
 
 func (data TermCalendar) BreadCrumbs() BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
 type CourseCalendar struct {
-	Admin                 bool
-	Static                bool
+	Admin bool
+	// Static                bool
 	Nodes                 node.Nodes
 	Params                routes.NodePath
 	Course                dto.Course
@@ -164,15 +156,24 @@ type CourseCalendar struct {
 	E                     *echo.Echo
 	CalendarDates         CalendarDates
 	BreadCrumbsData       BreadCrumbs
+	CourseManagerLayout
+}
+
+func (data CourseCalendar) HTMXResponse() templ.Component {
+	return data.Component()
+}
+
+func (data CourseCalendar) NonHTMXResponse() templ.Component {
+	return data.CourseManagerLayout.Component2(data.Component())
 }
 
 func (data CourseCalendar) GetCalendarDates() CalendarDates {
 	return data.CalendarDates
 }
 
-func (page CourseCalendar) IsStatic() bool {
-	return page.Static
-}
+//	func (page CourseCalendar) IsStatic() bool {
+//		return page.Static
+//	}
 func (page CourseCalendar) GetTerm() dto.Term {
 	return page.Term
 }
@@ -227,7 +228,7 @@ func (data TermOccasionEditor) Component() templ.Component {
 }
 
 func (data CourseCalendar) Component() templ.Component {
-	return DynamicCourseCalendarComponent(data)
+	return NewCalendarComponent(data)
 }
 
 func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.Time) templ.Component {
@@ -245,9 +246,9 @@ func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.
 		},
 		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.UnitID, lesson.ID, date.Format(time.DateOnly)),
 	}
-	if data.Static {
-		container.Static = true
-	}
+	// if data.Static {
+	// 	container.Static = true
+	// }
 	return container.Component()
 }
 
@@ -256,15 +257,15 @@ func (data CourseCalendar) ShowAddLessonDatePageURL(date time.Time) string {
 }
 
 func (data CourseCalendar) PageLayout() cmp.PageLayout {
-	if data.Static {
-		return cmp.PageLayout{
-			PageTitle: data.Course.Name + " Course Calendar",
-			UpNav: cmp.UpNav{
-				URL:  RemoveDocsFromPath(templates.StaticSiteCoursesDir + "courses.html"),
-				Text: "Back to Courses",
-			},
-		}
-	}
+	// if data.Static {
+	// 	return cmp.PageLayout{
+	// 		PageTitle: data.Course.Name + " Course Calendar",
+	// 		UpNav: cmp.UpNav{
+	// 			URL:  RemoveDocsFromPath(templates.StaticSiteCoursesDir + "courses.html"),
+	// 			Text: "Back to Courses",
+	// 		},
+	// 	}
+	// }
 	return cmp.PageLayout{
 		PageTitle: data.Course.Name + " Course Calendar",
 		UpNav: cmp.UpNav{
@@ -315,7 +316,7 @@ func (data CalendarLessonContainerNew) Component() templ.Component {
 }
 
 func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
-	button := components.Button{
+	button := cmp.Button{
 		HxConfirm: "Are you sure you want to remove this lesson date? The lesson itself will not be deleted.",
 		Method:    cmp.HxDelete,
 		URL:       data.RemoveLessonDateURL,
@@ -366,8 +367,8 @@ func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
 
 func StaticSiteCourseCalendar(course dto.Course) CourseCalendar {
 	cc := CourseCalendar{
-		Admin:  false,
-		Static: true,
+		Admin: false,
+		// Static: true,
 		Course: course,
 	}
 	return cc

@@ -131,7 +131,9 @@ func (repo *termRepo) ByUserID(userID string) ([]core.Term, error) {
 
 func (repo *termRepo) Save(term core.Term) (int, error) {
 	termParams := database.SaveTermParams{
-		Name: term.Name,
+		UserID: term.UserID,
+		Name:   term.Name,
+
 		Description: sql.NullString{
 			Valid:  term.Description != "",
 			String: term.Description,

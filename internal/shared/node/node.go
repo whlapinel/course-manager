@@ -4,7 +4,7 @@ type Node interface {
 	GetID() any // could be string or int
 	GetName() string
 	GetNumber() int
-	GetParentID() int
+	GetParentID() any
 	GetDescription() string
 	Children() []Node
 	TypeName() string
@@ -21,6 +21,6 @@ type Nodes struct {
 	Lesson Node
 }
 
-func (nodes Nodes) ToSlice() []Node {
+func (nodes Nodes) ToSlice(addParams ...any) []Node {
 	return []Node{nodes.User, nodes.Term, nodes.Course, nodes.Unit, nodes.Lesson}
 }

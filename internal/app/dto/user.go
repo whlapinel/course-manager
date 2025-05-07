@@ -56,7 +56,7 @@ func (u User) GetNumber() int {
 }
 
 // GetParentID implements CourseNode.
-func (u User) GetParentID() int {
+func (u User) GetParentID() any {
 	return -1
 }
 

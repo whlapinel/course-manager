@@ -7,18 +7,21 @@ import (
 
 type CourseCalendarService struct {
 	getCourse  func(courseID int) (dto.Course, error)
+	getUnits   func(courseID int) ([]dto.Unit, error)
 	getLessons func(unitID int) ([]dto.Lesson, error)
 	getTerm    func(termID int) (dto.Term, error)
 }
 
 func NewCourseCalendarService(
 	getCourse func(courseID int) (dto.Course, error),
+	getUnits func(courseID int) ([]dto.Unit, error),
 	getLessons func(unitID int) ([]dto.Lesson, error),
 	getTerm func(termID int) (dto.Term, error),
 
 ) *CourseCalendarService {
 	return &CourseCalendarService{
 		getCourse:  getCourse,
+		getUnits:   getUnits,
 		getLessons: getLessons,
 		getTerm:    getTerm,
 	}

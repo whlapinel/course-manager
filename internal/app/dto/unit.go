@@ -23,7 +23,7 @@ func (u Unit) GetID() any {
 	return u.ID
 }
 
-func (u Unit) GetParentID() int {
+func (u Unit) GetParentID() any {
 	return u.CourseID
 }
 

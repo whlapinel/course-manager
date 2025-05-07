@@ -22,6 +22,32 @@ type LessonDetailsPage struct {
 	GetSlidesURL, EditSlidesURL string
 }
 
+type LessonDetailsEdit struct {
+	LessonDetailsPage
+}
+
+func (page LessonDetailsPage) EditDetails() LessonDetailsEdit {
+	editPage := LessonDetailsEdit{LessonDetailsPage: page}
+	editPage.IsEdit = true
+	return editPage
+}
+
+func (page LessonDetailsEdit) HTMXResponse() templ.Component {
+	return page.NodeDetailsPage.DetailsEdit().HTMXResponse()
+}
+
+func (page LessonDetailsEdit) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component2(page.Component())
+}
+
+func (page LessonDetailsPage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+
+func (page LessonDetailsPage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component2(page.Component())
+}
+
 func (page LessonDetailsPage) Lesson() dto.Lesson {
 	return page.Node.(dto.Lesson)
 }

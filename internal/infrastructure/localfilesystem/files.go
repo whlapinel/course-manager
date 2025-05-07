@@ -16,6 +16,35 @@ func New() filesystem.FileRepository {
 	return &localFileSystem{}
 }
 
+// returns FileInfo. Create rootDir if it doesn't exist
+func (l *localFileSystem) FileInfo(relPath string, rootDir string) (filesystem.FileInfo, error) {
+	fileInfo := filesystem.FileInfo{}
+	err := os.MkdirAll(rootDir, os.ModePerm)
+	if err != nil {
+		return filesystem.FileInfo{}, err
+	}
+	root, err := os.OpenRoot(rootDir)
+	if err != nil {
+		return filesystem.FileInfo{}, err
+	}
+	relPath = filepath.Clean(relPath)
+	defer root.Close()
+	info, err := root.Stat(relPath)
+	if err != nil {
+		return fileInfo, err
+	}
+	if info.IsDir() {
+		fileInfo.IsDir = true
+	}
+	absRoot, err := filepath.Abs(rootDir)
+	if err != nil {
+		return fileInfo, err
+	}
+	absPath := filepath.Join(absRoot, relPath)
+	fileInfo.AbsPath = absPath
+	return fileInfo, nil
+}
+
 // same as Save but without check to make sure the file doesn't already exist
 func (l *localFileSystem) Update(contents []byte, rootDir, relPath string) error {
 	// Open the root directory as an os.Root
@@ -103,6 +132,10 @@ func (l *localFileSystem) Read(rootDir, relPath string) ([]byte, error) {
 
 func (l *localFileSystem) Save(contents []byte, rootDir, relPath string) error {
 	// Open the root directory as an os.Root
+	err := os.MkdirAll(rootDir, os.ModePerm)
+	if err != nil {
+		return err
+	}
 	root, err := os.OpenRoot(rootDir)
 	if err != nil {
 		return fmt.Errorf("failed to open root directory: %w", err)
@@ -122,7 +155,7 @@ func (l *localFileSystem) Save(contents []byte, rootDir, relPath string) error {
 	// Create the newFile within the root
 	newFile, err := root.Create(relPath)
 	if err != nil {
-		return fmt.Errorf("failed to create file: %w", err)
+		return fmt.Errorf("failed to create file in %s: %w", relPath, err)
 	}
 	defer newFile.Close()
 	// Write the contents to the file

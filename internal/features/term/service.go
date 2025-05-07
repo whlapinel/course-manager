@@ -11,6 +11,17 @@ func NewService(repo Repository) *Service {
 		repo: repo,
 	}
 }
+func (svc *Service) Save(term term.Term) error {
+	_, err := svc.repo.Save(term)
+	return err
+}
+func (svc *Service) Update(term term.Term) error {
+	return svc.repo.Update(term)
+}
+
+func (svc *Service) Delete(termID int) error {
+	return svc.repo.Delete(termID)
+}
 
 func (svc *Service) ByID(termID int) (term.Term, error) {
 	return svc.repo.ByID(termID)

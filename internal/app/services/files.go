@@ -26,6 +26,34 @@ func NewFileService(
 	}
 }
 
+func (svc *FileService) WriteMarkdown(relPath string, content []byte, nodes node.Nodes) error {
+	root := NodeFilesDirPath(nodes.ToSlice()...)
+	err := svc.fileRepo.Update(content, root, relPath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (svc *FileService) FileContent(relPath string, nodes node.Nodes) (string, error) {
+	root := NodeFilesDirPath(nodes.ToSlice()...)
+	content, err := svc.fileRepo.Read(root, relPath)
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+
+}
+
+func (svc *FileService) FileInfo(relPath string, nodes node.Nodes) (filesystem.FileInfo, error) {
+	root := NodeFilesDirPath(nodes.ToSlice()...)
+	fileInfo, err := svc.fileRepo.FileInfo(relPath, root)
+	if err != nil {
+		return fileInfo, err
+	}
+	return fileInfo, nil
+}
+
 func (svc FileService) ViewMarkdown(relPath string, nodes node.Nodes) ([]byte, error) {
 	root := NodeFilesDirPath(nodes.ToSlice()...)
 	content, err := svc.fileRepo.Read(root, relPath)

@@ -11,7 +11,6 @@ import (
 )
 
 type CourseManagerLayout struct {
-	PageTitle     string
 	AssetsURLFunc func(...string) string
 	HomeURL       string
 	SigninURL     string
@@ -31,9 +30,40 @@ func BaseLayout(reverse web.Reverse, page templ.Component, user dto.User) templ.
 		SignoutURL: reverse(routes.PostSignout.String()),
 	}
 	return cml.Component()
-
 }
 
+
+
+func (cml CourseManagerLayout) Component2(page templ.Component) templ.Component {
+	navItems := []cmp.NavItem{
+		cml.NewSignupButton(),
+		cml.NewSigninButton(),
+		cml.NewSignoutButton(),
+	}
+	head := HeadComponent()
+	layout := cmp.Layout{
+		HomeURL:   cml.HomeURL,
+		UserImage: cml.User.Picture,
+		NavItems:  navItems,
+		Head:      head,
+		Page:      page,
+		UserMenu: cmp.UserMenu{
+			Image: cml.User.Picture,
+			Links: []cmp.Link{
+				{
+					Text:   "Sign Out",
+					URL:    cml.SignoutURL,
+					Target: "#page",
+					HTMX:   true,
+					Attributes: templ.Attributes{
+						string(cmp.HxPost): cml.SignoutURL,
+					},
+				},
+			},
+		},
+	}
+	return cmp.LayoutComponent(layout)
+}
 func (cml CourseManagerLayout) Component() templ.Component {
 	navItems := []cmp.NavItem{
 		cml.NewSignupButton(),

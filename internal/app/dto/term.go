@@ -31,7 +31,7 @@ func (t Term) GetID() any {
 	return t.ID
 }
 
-func (t Term) GetParentID() int {
+func (t Term) GetParentID() any {
 	return t.UserID
 }
 

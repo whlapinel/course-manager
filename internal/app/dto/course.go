@@ -48,7 +48,7 @@ func (c Course) GetID() any {
 	return c.Course.ID
 }
 
-func (c Course) GetParentID() int {
+func (c Course) GetParentID() any {
 	return c.ParentID
 }
 

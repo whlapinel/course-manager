@@ -1,14 +1,12 @@
 package managertemplates
 
 import (
-	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	cmp "gh_static_portfolio/internal/templates/components/base"
 
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
 type FilesPage struct {
@@ -17,6 +15,7 @@ type FilesPage struct {
 	CurrentDirectory    FilesPageItem
 	Params              routes.NodePath
 	CurrentPath         string
+	OpenDirURL          web.AddParams
 	OpenFileURL         web.AddParams
 	UploadFileURL       web.AddParams
 	Node                node.Node
@@ -25,6 +24,16 @@ type FilesPage struct {
 	BreadCrumbsData     BreadCrumbs
 	ViewMarkdownURL     web.AddParams
 	EditMarkdownFileURL web.AddParams
+	CourseManagerLayout
+}
+
+func (p FilesPage) HTMXResponse() templ.Component {
+	return p.Component()
+}
+
+func (p FilesPage) NonHTMXResponse() templ.Component {
+	return p.CourseManagerLayout.Component2(p.Component())
+
 }
 
 type FilesPageItem struct {
@@ -36,11 +45,9 @@ type FilesPageItem struct {
 }
 
 type MarkdownEditor struct {
-	Params          domain.NodePath
-	Path            string
+	Name            string
 	Contents        string
-	PostEditFileURL func(relPath string) string
-	E               *echo.Echo
+	PostEditFileURL string
 }
 
 func (data MarkdownEditor) Component() templ.Component {
@@ -84,7 +91,7 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 		Text:     "View As HTML",
 		Method:   cmp.HxGet,
 		HxTarget: "#markdown",
-		URL:      data.ViewMarkdownURL(file),
+		URL:      data.ViewMarkdownURL(file.Name),
 		PushURL:  true,
 	}.Component()
 

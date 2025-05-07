@@ -24,11 +24,11 @@ func (l Lesson) GetDescription() string {
 	return l.Description
 }
 
-func (l Lesson) GetID() interface{} {
+func (l Lesson) GetID() any {
 	return l.ID
 }
 
-func (l Lesson) GetParentID() int {
+func (l Lesson) GetParentID() any {
 	return l.UnitID
 }
 

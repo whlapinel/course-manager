@@ -17,6 +17,8 @@ const (
 	CourseEditSlides  web.RoutePath = CourseSlides + "/edit"
 	CourseStandards   web.RoutePath = Course + "/standards"
 	CourseStandard    web.RoutePath = CourseStandards + web.RoutePath(StandardID)
+	CourseOccasions   web.RoutePath = Course + "/occasions"
+	CourseOccasion    web.RoutePath = CourseOccasions + web.RoutePath(OccasionID)
 )
 
 // Course calendar paths
@@ -32,13 +34,17 @@ const (
 
 // Course handler names
 var (
-	GetCourses     = web.NewHandlerName(web.GET, Courses)
-	GetNewCourse   = web.NewHandlerName(web.GET, NewCourse)
-	GetCourse      = web.NewHandlerName(web.GET, Course)
-	PostCourse     = web.NewHandlerName(web.POST, Courses)
-	GetEditCourse  = web.NewHandlerName(web.GET, CourseEdit)
-	PostEditCourse = web.NewHandlerName(web.POST, CourseEdit)
-	DeleteCourse   = web.NewHandlerName(web.DELETE, Course)
+	CreateCourseOccasion   = web.HandlerName(web.POST + CourseOccasions)
+	DeleteCourseOccasion   = web.HandlerName(web.DELETE + CourseOccasion)
+	ShowEditCourseOccasion = web.HandlerName(web.GET + CourseOccasion)
+	PostEditCourseOccasion = web.HandlerName(web.POST + CourseOccasion)
+	GetCourses             = web.NewHandlerName(web.GET, Courses)
+	GetNewCourse           = web.NewHandlerName(web.GET, NewCourse)
+	GetCourse              = web.NewHandlerName(web.GET, Course)
+	PostCourse             = web.NewHandlerName(web.POST, Courses)
+	GetEditCourse          = web.NewHandlerName(web.GET, CourseEdit)
+	PostEditCourse         = web.NewHandlerName(web.POST, CourseEdit)
+	DeleteCourse           = web.NewHandlerName(web.DELETE, Course)
 )
 
 // Course calendar handler names
@@ -55,6 +61,7 @@ var (
 // Course file handler names
 var (
 	GetCourseFiles     = web.NewHandlerName(web.GET, CourseFiles)
+	PostCourseFile     = web.NewHandlerName(web.POST, CourseFiles)
 	GetCourseFile      = web.NewHandlerName(web.GET, CourseFile)
 	GetCourseEditFile  = web.NewHandlerName(web.GET, CourseFile)
 	PostCourseEditFile = web.NewHandlerName(web.POST, CourseEditFile)

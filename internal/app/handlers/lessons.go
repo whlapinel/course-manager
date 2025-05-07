@@ -7,21 +7,23 @@ import (
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"log"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type lessonHandler struct {
-	nodeService   *services.NodeService
-	lessonService *services.LessonService
-	reverse       web.Reverse
+	nodeService *services.NodeService
+	service     *services.LessonService
+	reverse     web.Reverse
 }
 
 func NewLessonHandler(service *services.LessonService, nodeService *services.NodeService, reverse web.Reverse) *lessonHandler {
 	return &lessonHandler{
-		lessonService: service,
-		nodeService:   nodeService,
-		reverse:       reverse,
+		service:     service,
+		nodeService: nodeService,
+		reverse:     reverse,
 	}
 }
 
@@ -37,9 +39,41 @@ func RegisterLessonRoutes(group *echo.Group, h *lessonHandler) error {
 
 func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 	return []web.RouteHandler{
+		{Method: web.GET, RoutePath: routes.Lessons, HandlerName: routes.GetLessons, HandlerFunc: h.listByUnit},
 		{Method: web.GET, RoutePath: routes.Lesson, HandlerName: routes.GetLesson, HandlerFunc: h.showDetails},
 		{Method: web.GET, RoutePath: routes.LessonEdit, HandlerName: routes.GetEditLesson, HandlerFunc: h.showEdit},
+		web.NewRouteHandler(web.GET, routes.LessonEdit, routes.PostEditLesson, h.postEdit),
 	}
+}
+
+func (h *lessonHandler) listByUnit(c echo.Context) error {
+	log.Println("UnitHandler.listLessons running...")
+	path, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
+	unit := nodes.Unit.(dto.Unit)
+	lessons, err := h.service.ByUnitID(path.UnitID)
+	if err != nil {
+		return err
+	}
+	unit.Lessons = lessons
+	page := mt.NodeListPage{
+		ParentNode:          unit,
+		Children:            unit.Children(),
+		ChildDetailsURL:     web.URLFunc(routes.GetLesson, h.reverse, path.ToSlice()...),
+		DeleteChildURL:      web.URLFunc(routes.DeleteLesson, h.reverse, path.ToSlice()...),
+		ShowNewChildURL:     h.reverse(routes.GetNewLesson.String(), path.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetUnit.String(), path.ToSlice()...),
+		BreadCrumbsData:     BreadCrumbs(nodes, path, h.reverse),
+		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
+	}
+	return Respond(c, page)
+
 }
 
 func (h *lessonHandler) showDetails(c echo.Context) error {
@@ -52,13 +86,12 @@ func (h *lessonHandler) showDetails(c echo.Context) error {
 		return err
 	}
 	nodeData := h.nodeDetails(path, nodes)
-	component := mt.LessonDetailsPage{
+	page := mt.LessonDetailsPage{
 		NodeDetailsPage: nodeData,
 		AssetsURLFunc:   web.AssetsURLFunc,
 		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
-	}.Component()
-	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
-
+	}
+	return Respond(c, page)
 }
 
 func (h *lessonHandler) showEdit(c echo.Context) error {
@@ -71,27 +104,65 @@ func (h *lessonHandler) showEdit(c echo.Context) error {
 		return err
 	}
 	nodeData := h.nodeDetails(path, nodes)
-	nodeData.IsEdit = true
-	lessonPage := mt.LessonDetailsPage{
+	lessonData := mt.LessonDetailsPage{
 		NodeDetailsPage: nodeData,
 		AssetsURLFunc:   web.AssetsURLFunc,
 		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
 	}
-	component := nodeData.DetailsFormComponent(true)
-	altComponent := lessonPage.Component()
-	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, altComponent, nodes.User.(dto.User)))
+	page := lessonData.EditDetails()
+	return Respond(c, page)
+}
 
+func (h *lessonHandler) postEdit(c echo.Context) error {
+	nodePath, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.nodeService.Nodes(nodePath)
+	if err != nil {
+		return err
+	}
+	err = c.Request().ParseForm()
+	if err != nil {
+		return err
+	}
+	lesson := nodes.Lesson.(dto.Lesson)
+	form := c.Request().Form
+	for key, val := range form {
+		log.Println(key, val)
+		switch key {
+		case "number":
+			num, err := strconv.Atoi(val[0])
+			if err != nil {
+				return err
+			}
+			lesson.Number = num
+		case "name":
+			lesson.Name = val[0]
+		case "description":
+			lesson.Description = val[0]
+		default:
+			log.Println("form key:", key)
+			panic("form key not expected!")
+		}
+	}
+	err = h.service.Update(lesson)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetUnit.String(), nodePath.ToSlice()...))
 }
 
 func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
 	nodePage := mt.NodeDetailsPage{
-		Node:            nodes.Lesson,
-		ParentNode:      nodes.Unit,
-		GetEditNodeURL:  h.reverse(routes.GetEditLesson.String(), path.ToSlice()...),
-		PostEditNodeURL: h.reverse(routes.PostEditLesson.String(), path.ToSlice()...),
-		UpNavURL:        h.reverse(routes.GetUnit.String(), path.ToSlice()...),
-		CancelEditURL:   h.reverse(routes.GetLesson.String(), path.ToSlice()...),
-		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),
+		Node:                nodes.Lesson,
+		ParentNode:          nodes.Unit,
+		GetEditNodeURL:      h.reverse(routes.GetEditLesson.String(), path.ToSlice()...),
+		PostEditNodeURL:     h.reverse(routes.PostEditLesson.String(), path.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetUnit.String(), path.ToSlice()...),
+		CancelEditURL:       h.reverse(routes.GetLesson.String(), path.ToSlice()...),
+		BreadCrumbs:         BreadCrumbs(nodes, path, h.reverse),
+		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
 	}
 	return nodePage
 }

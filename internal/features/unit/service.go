@@ -12,6 +12,10 @@ func NewService(repo Repository) *Service {
 	}
 }
 
+func (svc *Service) Update(unit unit.Unit) error {
+	return svc.repo.Update(unit)
+}
+
 func (svc *Service) ByID(unitID int) (unit.Unit, error) {
 	return svc.repo.ByID(unitID)
 }

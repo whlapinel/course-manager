@@ -14,6 +14,10 @@ func NewService(repo Repository) *Service {
 	}
 }
 
+func (svc *Service) Update(lesson lesson.Lesson) error{
+	return svc.repo.Update(lesson)
+}
+
 func (svc *Service) ByID(lessonID int) (lesson.Lesson, error) {
 	return svc.repo.ByID(lessonID)
 }

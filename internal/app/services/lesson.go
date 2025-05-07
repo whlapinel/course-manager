@@ -15,6 +15,10 @@ func NewLessonService(lessonSvc *lesson.Service) *LessonService {
 	}
 }
 
+func (svc *LessonService) Update(lesson dto.Lesson) error {
+	return svc.lessonService.Update(lesson.Lesson)
+}
+
 func (svc *LessonService) ByID(lessonID int) (dto.Lesson, error) {
 	lesson, err := svc.lessonService.ByID(lessonID)
 	if err != nil {

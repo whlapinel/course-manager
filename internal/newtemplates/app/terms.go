@@ -12,6 +12,15 @@ import (
 type TermDetailsPage struct {
 	NodeDetailsPage
 	ShowEditTermDatesURL string
+	CourseManagerLayout
+}
+
+func (page TermDetailsPage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+
+func (page TermDetailsPage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component2(page.Component())
 }
 
 func (page TermDetailsPage) PageLayout() cmp.PageLayout {
@@ -35,6 +44,7 @@ func (page TermDetailsPage) FullComponent(reverse web.Reverse, comp templ.Compon
 type TermsListPage struct {
 	ShowTermCalendarURL web.AddParams
 	NodeListPage
+	CourseManagerLayout
 }
 
 func (page TermsListPage) Component() templ.Component {
@@ -42,7 +52,7 @@ func (page TermsListPage) Component() templ.Component {
 	for _, term := range page.Children {
 		log.Println("term ID: ", term.GetID())
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.ShowTermCalendarURL(page.NodeListPage.ParentNode.GetID(), term.GetID()),
+			ShowCalendarURL: page.ShowTermCalendarURL(term.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
 
@@ -52,12 +62,21 @@ func (page TermsListPage) Component() templ.Component {
 
 }
 
+func (page TermsListPage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+
+func (page TermsListPage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component()
+}
+
 type AddNonInstructDayPage struct {
 	Term           dto.Term
 	GetAddDayURL   string
 	PostAddDayURL  string
 	TermDetailsURL string
 	BreadCrumbs
+	CourseManagerLayout
 }
 
 func (page AddNonInstructDayPage) PageLayout() cmp.PageLayout {
@@ -73,4 +92,12 @@ func (page AddNonInstructDayPage) PageLayout() cmp.PageLayout {
 
 func (page AddNonInstructDayPage) Component() templ.Component {
 	return AddNonInstructDayComponent(page)
+}
+
+func (page AddNonInstructDayPage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+
+func (page AddNonInstructDayPage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component()
 }

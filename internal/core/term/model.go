@@ -3,7 +3,7 @@ package term
 import "time"
 
 type Term struct {
-	UserID               int
+	UserID               string
 	Start                time.Time
 	End                  time.Time
 	NonInstructionalDays []time.Time

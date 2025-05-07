@@ -67,7 +67,7 @@ templ NewFilesComponent(data FilesPage) {
 						<div class="flex w-0 flex-1 items-center">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
-								hx-get={ data.OpenFileURL(data.CurrentPath) }
+								hx-get={ data.OpenDirURL(file.Name) }
 								hx-target="#files"
 								hx-swap="outerHTML"
 							>
@@ -83,7 +83,7 @@ templ NewFilesComponent(data FilesPage) {
 						<div class="flex w-0 flex-1 items-center">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
-								href={ templ.SafeURL(data.OpenFileURL(data.CurrentPath)) }
+								href={ templ.SafeURL(data.OpenFileURL(file.Path)) }
 							>
 								@components.DownloadIcon()
 								<div class="ml-4 flex min-w-0 flex-1 gap-2">
@@ -142,7 +142,7 @@ templ MarkdownEditorComponent(props MarkdownEditor) {
     </script>
 	@ButtonContainer() {
 		@CancelEditButton()
-		<button hx-post={ props.PostEditFileURL(props.Path) } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
+		<button hx-post={ props.PostEditFileURL } hx-target="#page" hx-include={ string(EditSlidesTextAreaID.Selector()) }>
 			Submit
 		</button>
 	}

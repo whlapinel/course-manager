@@ -15,6 +15,15 @@ type CoursesListPage struct {
 	ShowCourseCalendarURL web.AddParams
 	ShowAssessmentsURL    web.AddParams
 	NodeListPage
+	CourseManagerLayout
+}
+
+func (page CoursesListPage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+
+func (page CoursesListPage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component2(page.Component())
 }
 
 func (page CoursesListPage) Component() templ.Component {
@@ -54,6 +63,15 @@ type CourseDetailsPage struct {
 	GetCopyCourseURL         string
 	PostSelectStandardSetURL string
 	StandardSets             []standard.StandardSet
+	CourseManagerLayout
+}
+
+func (p CourseDetailsPage) HTMXResponse() templ.Component {
+	return p.Component()
+}
+
+func (p CourseDetailsPage) NonHTMXResponse() templ.Component {
+	return p.CourseManagerLayout.Component2(p.Component())
 }
 
 func (page CourseDetailsPage) Course() dto.Course {

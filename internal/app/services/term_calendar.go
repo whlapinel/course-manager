@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/features/termoccasion"
+	mt "gh_static_portfolio/internal/newtemplates/app"
 )
 
 type TermCalendarService struct {
@@ -31,4 +32,18 @@ func (svc *TermCalendarService) Term(termID int) (dto.Term, error) {
 
 func (svc *TermCalendarService) Occasion(occasionID int) (occasion.Occasion, error) {
 	return svc.occasionService.ByID(occasionID)
+}
+
+func (svc *TermCalendarService) CalendarDates(termID int) (mt.CalendarDates, error) {
+	dates := make(mt.CalendarDates)
+	occasions, err := svc.occasionService.ByTermID(termID)
+	if err != nil {
+		return nil, err
+	}
+	for _, occ := range occasions {
+		dates[occ.Date] = mt.CalendarDate{
+			Occasions: append(dates[occ.Date].Occasions, occ),
+		}
+	}
+	return dates, err
 }

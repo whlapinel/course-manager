@@ -1,1 +1,0 @@
-My name is Sally and I work in a power plant

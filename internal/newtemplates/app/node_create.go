@@ -2,7 +2,10 @@ package managertemplates
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/shared/routes"
 	tpl "gh_static_portfolio/internal/templates/shared"
 
 	cmp "gh_static_portfolio/internal/templates/components/base"
@@ -11,12 +14,20 @@ import (
 )
 
 type NodeCreatePage struct {
-	ParentNode        domain.CourseNode
-	NodeType          domain.NodeTypeName
-	Params            domain.NodePath
+	ParentNode        node.Node
+	NodeType          dto.NodeTypeName
+	Params            routes.NodePath
 	PostCreateNodeURL string
 	CancelURL         string
 	BreadCrumbsData   BreadCrumbs
+	CourseManagerLayout
+}
+
+func (page NodeCreatePage) HTMXResponse() templ.Component {
+	return page.Component()
+}
+func (page NodeCreatePage) NonHTMXResponse() templ.Component {
+	return page.CourseManagerLayout.Component2(page.Component())
 }
 
 func (page NodeCreatePage) Component() templ.Component {
@@ -57,9 +68,9 @@ func CreateNodeFormComponent(page NodeCreatePage) templ.Component {
 		CancelURL: page.CancelURL,
 		HxTarget:  "#page",
 	})
-	_, userOk := page.ParentNode.(domain.User)
-	_, courseOk := page.ParentNode.(domain.Course)
-	_, unitOk := page.ParentNode.(domain.Unit)
+	_, userOk := page.ParentNode.(dto.User)
+	_, courseOk := page.ParentNode.(dto.Course)
+	_, unitOk := page.ParentNode.(dto.Unit)
 	if courseOk || unitOk {
 		numInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 			Name: "Number",

@@ -111,18 +111,18 @@ func New() (*App, error) {
 
 	// application-level services
 	lessonAppService := services.NewLessonService(lessonService)
-	unitAppService := services.NewUnitService(unitService, lessonService)
-	courseAppService := services.NewCourseService(courseService, unitAppService.ByCourseID)
-	termAppService := services.NewTermService(termService, termOccasionService, courseService)
-	userAppService := services.NewUserService(userService, termService)
-	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.ByID, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
-	termCalService := services.NewTermCalendarService(termAppService.ByID, termOccasionService)
-	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, lessonAppService.ByUnitID, termAppService.ByID)
+	unitAppService := services.NewUnitService(unitService)
+	courseAppService := services.NewCourseService(courseService)
+	termAppService := services.NewTermService(termService, termOccasionService)
+	userAppService := services.NewUserService(userService)
+	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.WithOccasions, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
+	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
+	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByCourseID, lessonAppService.ByUnitID, termAppService.WithOccasions)
 
 	// application-level handlers
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
-	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
