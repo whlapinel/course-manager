@@ -1,0 +1,30 @@
+package calendarviews
+
+import (
+	"gh_static_portfolio/internal/app/components"
+	"time"
+)
+
+templ NewCalendarLessonListComponent(page CourseCalendar, data CalendarDate) {
+	<ul class="justify-items-center">
+		if page.Term.IsInstructionDay(data.Date) {
+			// if !page.Static && page.Admin {
+			<button
+				hx-get={ page.ShowAddLessonDatePageURL(data.Date) }
+				hx-push-url="true"
+				hx-target="#page"
+			>Add Lesson</button>
+			// }
+			for _, lesson := range data.Lessons {
+				@page.CalendarLessonContainer(lesson, data.Date)
+			}
+		}
+	</ul>
+}
+
+templ AddLessonToDatePageComponent(page AddLessonToDatePage) {
+	@appcomponents.PageLayoutComponent(page)
+	<h1>{ page.Course.Name }</h1>
+	<h2>{ page.Date.Format(time.DateOnly) }</h2>
+	@page.UnitPicker()
+}

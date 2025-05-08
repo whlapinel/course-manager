@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	managertemplates "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -56,7 +57,7 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		return err
 	}
 	log.Println("len(datesMap):", len(datesMap))
-	page := managertemplates.CourseCalendar{
+	page := calendarviews.CourseCalendar{
 		Course:                nodes.Course.(dto.Course),
 		Term:                  nodes.Term.(dto.Term),
 		TermDetailsURL:        h.reverse(routes.GetTerm.String(), path.ToSlice()...),

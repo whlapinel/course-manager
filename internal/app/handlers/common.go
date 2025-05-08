@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	appcomponents "gh_static_portfolio/internal/app/components"
+	managertemplates "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -9,6 +10,17 @@ import (
 
 func BreadCrumbs(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) managertemplates.BreadCrumbs {
 	return managertemplates.BreadCrumbs{
+		Nodes:            nodes,
+		UserDetailsURL:   userDetailsURL(path, reverse),
+		TermDetailsURL:   termDetailsURL(path, reverse),
+		CourseDetailsURL: courseDetailsURL(path, reverse),
+		UnitDetailsURL:   unitDetailsURL(path, reverse),
+		LessonDetailsURL: lessonDetailsURL(path, reverse),
+	}
+
+}
+func BreadCrumbs2(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) appcomponents.BreadCrumbs {
+	return appcomponents.BreadCrumbs{
 		Nodes:            nodes,
 		UserDetailsURL:   userDetailsURL(path, reverse),
 		TermDetailsURL:   termDetailsURL(path, reverse),

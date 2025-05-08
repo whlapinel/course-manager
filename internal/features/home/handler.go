@@ -2,7 +2,7 @@ package home
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	mt "gh_static_portfolio/internal/newtemplates/app"
+	appcomponents "gh_static_portfolio/internal/newtemplates/components/app"
 	"gh_static_portfolio/internal/shared/routes"
 	web "gh_static_portfolio/internal/shared/web"
 	"log"
@@ -37,13 +37,13 @@ func routeHandlers(h *Handler) []web.RouteHandler {
 
 func (h Handler) showHome(c echo.Context) error {
 	log.Println("showHome running")
-	pageData := mt.HomePage{
+	pageData := HomePage{
 		UsersURL:  h.reverse(routes.GetUsers.String()),
 		SigninURL: h.reverse(routes.GetSignin.String()),
 		SignupURL: h.reverse(routes.GetSignup.String()),
 	}
-	template := mt.HomePageComponent(pageData)
-	layout := mt.CourseManagerLayout{
+	template := HomePageComponent(pageData)
+	layout := appcomponents.CourseManagerLayout{
 		User:       dto.User{},
 		HomeURL:    "/",
 		SigninURL:  h.reverse(routes.GetSignin.String()),

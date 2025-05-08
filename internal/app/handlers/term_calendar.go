@@ -3,7 +3,7 @@ package handlers
 import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	managertemplates "gh_static_portfolio/internal/newtemplates/app"
+	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -75,7 +75,7 @@ func (h *termCalendarHandler) showTermCalendar(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page := managertemplates.TermCalendar{
+	page := calendarviews.TermCalendar{
 		Term:                term,
 		ListTermsURL:        h.reverse(routes.GetTerms.String(), path.ToSlice()...),
 		TermDetailsURL:      h.reverse(routes.GetTerm.String(), path.ToSlice()...),
@@ -85,7 +85,7 @@ func (h *termCalendarHandler) showTermCalendar(c echo.Context) error {
 		DeleteOccasionURL:   web.URLFunc(routes.DeleteTermOccasion, h.reverse, path.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(nodes, path, h.reverse),
 		CalendarDates:       dates,
+		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
-	component := page.Component()
-	return web.Respond(c, "", component, managertemplates.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
+	return Respond(c, page)
 }

@@ -1,14 +1,14 @@
 package localfilesystem
 
 import (
-	"gh_static_portfolio/internal/core/filesystem"
+	"gh_static_portfolio/internal/features/files"
 	"log"
 	"testing"
 )
 
 var data []byte
 var newData []byte
-var fsystem filesystem.FileRepository
+var fsystem files.FileRepository
 
 func TestMain(m *testing.M) {
 	fsystem = New()

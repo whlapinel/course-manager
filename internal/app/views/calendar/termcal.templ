@@ -1,0 +1,31 @@
+package calendarviews
+
+templ TermCalendarComponent(page TermCalendar) {
+	@NewCalendarComponent(page)
+}
+
+
+templ TermOccasionEditorComponent(data TermOccasionEditor) {
+	<div id={ data.ComponentID() }>
+		if data.IsEditing {
+			<form id={ data.ComponentID() }>
+				<input type="text" value={ data.Occasion.Name } name="name" class="bg-black"/>
+				<button hx-post={ data.PostEditOccasionURL } hx-target="#page">Submit</button>
+			</form>
+		} else {
+			@OccasionComponent(data.Occasion)
+			<button
+				hx-get={ data.GetEditOccasionURL }
+				hx-target={ "#" + data.ComponentID() }
+			>
+				📝
+			</button>
+			<button
+				hx-delete={ data.DeleteOccasionURL }
+				hx-target={ "#" + data.ComponentID() }
+			>
+				❌
+			</button>
+		}
+	</div>
+}

@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	mt "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	mt "gh_static_portfolio/internal/newtemplates/app"
+	lessonviews "gh_static_portfolio/internal/app/views/lesson"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -86,7 +87,7 @@ func (h *lessonHandler) showDetails(c echo.Context) error {
 		return err
 	}
 	nodeData := h.nodeDetails(path, nodes)
-	page := mt.LessonDetailsPage{
+	page := lessonviews.LessonDetailsPage{
 		NodeDetailsPage: nodeData,
 		AssetsURLFunc:   web.AssetsURLFunc,
 		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
@@ -104,7 +105,7 @@ func (h *lessonHandler) showEdit(c echo.Context) error {
 		return err
 	}
 	nodeData := h.nodeDetails(path, nodes)
-	lessonData := mt.LessonDetailsPage{
+	lessonData := lessonviews.LessonDetailsPage{
 		NodeDetailsPage: nodeData,
 		AssetsURLFunc:   web.AssetsURLFunc,
 		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),

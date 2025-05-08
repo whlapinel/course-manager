@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	appcomponents "gh_static_portfolio/internal/app/components"
+	mt "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	mt "gh_static_portfolio/internal/newtemplates/app"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -61,7 +62,7 @@ func (h *unitHandler) listByCourse(c echo.Context) error {
 		return err
 	}
 	course.Units = units
-	page := mt.NodeListPage{
+	page := appcomponents.NodeListPage{
 		ParentNode:          course,
 		Children:            course.Children(),
 		ChildDetailsURL:     web.URLFunc(routes.GetUnit, h.reverse, path.ToSlice()...),
@@ -88,7 +89,6 @@ func (h *unitHandler) showDetails(c echo.Context) error {
 	page := h.nodeDetails(path, nodes)
 	return Respond(c, page)
 }
-
 
 func (h *unitHandler) showEdit(c echo.Context) error {
 	path, err := routes.ParseNodePath(c)

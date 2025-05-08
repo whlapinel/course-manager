@@ -1,0 +1,34 @@
+
+package appcomponents
+
+import "gh_static_portfolio/internal/newtemplates/components/base"
+
+templ PageLayoutComponent(props Page) {
+	// @props.BreadCrumbs().Component()
+	// @PageHeadingComponent(props.PageLayout().PageTitle)
+	@components.PageLayoutComponent(props.PageLayout())
+	@UpNavComponent(props.PageLayout().UpNav)
+	<div class="p-4">
+		{ children... }
+	</div>
+}
+
+templ Confirm(msg string) {
+	<dialog open class="p-4">
+		<form method="dialog">
+			<p>{ msg }</p>
+			<button>OK</button>
+		</form>
+	</dialog>
+}
+
+templ UpNavComponent(props components.UpNav) {
+	if props.URL != "" {
+		<div class="flex">
+			@components.UpArrowIcon()
+			<button hx-get={ props.URL } hx-target={ "#page" } hx-push-url="true" class="text-xl">
+				{ props.Text }
+			</button>
+		</div>
+	}
+}

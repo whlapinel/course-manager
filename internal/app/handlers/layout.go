@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	mt "gh_static_portfolio/internal/newtemplates/app"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func BaseLayout(reverse web.Reverse, page Page, user dto.User) templ.Component {
-	cml := mt.CourseManagerLayout{
+	cml := appcomponents.CourseManagerLayout{
 		HomeURL:    "/",
 		Page:       page.HTMXResponse(),
 		User:       user,
@@ -21,10 +21,28 @@ func BaseLayout(reverse web.Reverse, page Page, user dto.User) templ.Component {
 	return cml.Component()
 }
 
-func BaseLayout2(reverse web.Reverse, user dto.User) mt.CourseManagerLayout {
-	return mt.CourseManagerLayout{
+func BaseLayout2(reverse web.Reverse, user dto.User) appcomponents.CourseManagerLayout {
+	return appcomponents.CourseManagerLayout{
 		HomeURL:    "/",
 		User:       user,
+		SigninURL:  reverse(routes.GetSignin.String()),
+		SignupURL:  reverse(routes.GetSignup.String()),
+		SignoutURL: reverse(routes.PostSignout.String()),
+	}
+}
+func BaseLayout3(reverse web.Reverse, user dto.User) appcomponents.CourseManagerLayout {
+	return appcomponents.CourseManagerLayout{
+		HomeURL:    "/",
+		User:       user,
+		SigninURL:  reverse(routes.GetSignin.String()),
+		SignupURL:  reverse(routes.GetSignup.String()),
+		SignoutURL: reverse(routes.PostSignout.String()),
+	}
+}
+
+func BaseLayoutWithoutUser(reverse web.Reverse) appcomponents.CourseManagerLayout {
+	return appcomponents.CourseManagerLayout{
+		HomeURL:    "/",
 		SigninURL:  reverse(routes.GetSignin.String()),
 		SignupURL:  reverse(routes.GetSignup.String()),
 		SignoutURL: reverse(routes.PostSignout.String()),

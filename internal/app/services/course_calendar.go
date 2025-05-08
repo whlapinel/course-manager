@@ -2,7 +2,7 @@ package services
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	mt "gh_static_portfolio/internal/newtemplates/app"
+	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 )
 
 type CourseCalendarService struct {
@@ -35,7 +35,7 @@ func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {
 	return courseDTO, nil
 }
 
-func (svc *CourseCalendarService) CalendarDates(courseID int) (mt.CalendarDates, error) {
+func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.CalendarDates, error) {
 	courseDTO, err := svc.getCourse(courseID)
 	if err != nil {
 		return nil, err
@@ -44,14 +44,18 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (mt.CalendarDates,
 	if err != nil {
 		return nil, err
 	}
-	var datesMap = make(mt.CalendarDates)
+	units, err := svc.getUnits(courseID)
+	if err != nil {
+		return nil, err
+	}
+	var datesMap = make(calendarviews.CalendarDates)
 	for _, occ := range termDTO.Occasions {
 		item := datesMap[occ.Date]
 		item.Date = occ.Date
 		item.Occasions = append(item.Occasions, occ)
 		datesMap[occ.Date] = item
 	}
-	for _, unit := range courseDTO.Units {
+	for _, unit := range units {
 		lessons, err := svc.getLessons(unit.ID)
 		if err != nil {
 			return nil, err

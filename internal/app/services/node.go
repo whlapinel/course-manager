@@ -5,9 +5,6 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
-	"log"
-	"path/filepath"
-	"strings"
 )
 
 type GetUserDTO func(id string) (dto.User, error)
@@ -86,35 +83,4 @@ func (svc *NodeService) Nodes(path routes.NodePath) (node.Nodes, error) {
 		}
 	}
 	return nodes, nil
-}
-
-// nodes is path from root, where term is the root
-func NodeDirPath(nodes ...node.Node) string {
-	var path = "./internal/data"
-	for _, node := range nodes {
-		log.Println("node", node)
-		if node == nil {
-			break
-		}
-		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
-		var dirName string
-		if id, ok := node.GetID().(string); ok {
-			dirName = fmt.Sprintf("%s_%s", strings.ToLower(node.TypeName()), id)
-		} else if id, ok := node.GetID().(int); ok {
-			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), id)
-		}
-		path = filepath.Join(
-			path,
-			dirName,
-		)
-	}
-	return path
-}
-
-func NodeFilesDirPath(nodes ...node.Node) string {
-	return filepath.Join(NodeDirPath(nodes...), "files")
-}
-
-func NodeImagePath(nodes ...node.Node) string {
-	return filepath.Join(NodeDirPath(nodes...), "image.png")
 }

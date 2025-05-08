@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
-	mt "gh_static_portfolio/internal/newtemplates/app"
+	mt "gh_static_portfolio/internal/app/views/course"
+	fileviews "gh_static_portfolio/internal/app/views/files"
+	"gh_static_portfolio/internal/features/files"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -16,14 +19,14 @@ import (
 type courseHandler struct {
 	service     *services.CourseService
 	nodeService *services.NodeService
-	fileService *services.FileService
+	fileService *files.Service
 	reverse     web.Reverse
 }
 
 func NewCourseHandler(
 	service *services.CourseService,
 	nodeService *services.NodeService,
-	fileService *services.FileService,
+	fileService *files.Service,
 	reverse web.Reverse,
 ) *courseHandler {
 	return &courseHandler{
@@ -70,7 +73,7 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 		return err
 	}
 	term.Courses = courses
-	nodePage := mt.NodeListPage{
+	nodePage := appcomponents.NodeListPage{
 		ParentNode:       term,
 		Children:         term.Children(),
 		ChildDetailsURL:  web.URLFunc(routes.GetCourse, h.reverse, path.ToSlice()...),
@@ -109,7 +112,6 @@ func (h *courseHandler) showDetails(c echo.Context) error {
 	}
 	return Respond(c, page)
 }
-
 
 func (h *courseHandler) showEdit(c echo.Context) error {
 	path, err := routes.ParseNodePath(c)
@@ -186,15 +188,15 @@ func (h *courseHandler) showFiles(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page := mt.FilesPage{
+	page := fileviews.FilesPage{
 		Root: filePath == ".",
-		ParentDirectory: mt.FilesPageItem{
+		ParentDirectory: fileviews.FilesPageItem{
 			Name:  parentPath,
 			URL:   h.reverse(routes.GetCourseFile.String(), nodes.ToSlice(filePath)),
 			Path:  parentPath,
 			IsDir: true,
 		},
-		CurrentDirectory: mt.FilesPageItem{
+		CurrentDirectory: fileviews.FilesPageItem{
 			Name:  filePath,
 			URL:   h.reverse(routes.GetCourseFile.String(), nodes.ToSlice(filePath)),
 			Path:  filePath,
@@ -212,8 +214,8 @@ func (h *courseHandler) showFiles(c echo.Context) error {
 	return Respond(c, page)
 }
 
-func (h *courseHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
-	nodeData := mt.NodeDetailsPage{
+func (h *courseHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) appcomponents.NodeDetailsPage {
+	nodeData := appcomponents.NodeDetailsPage{
 		Node:                nodes.Course,
 		ParentNode:          nodes.Term,
 		ListChildrenURL:     h.reverse(routes.GetUnits.String(), path.ToSlice()...),

@@ -4,11 +4,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
+	fileviews "gh_static_portfolio/internal/app/views/files"
+	markdownviews "gh_static_portfolio/internal/app/views/markdown"
+	termviews "gh_static_portfolio/internal/app/views/term"
 	"gh_static_portfolio/internal/core/term"
-	managertemplates "gh_static_portfolio/internal/newtemplates/app"
-	mt "gh_static_portfolio/internal/newtemplates/app"
+	"gh_static_portfolio/internal/features/files"
+	"gh_static_portfolio/internal/features/markdown"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -21,23 +25,26 @@ import (
 )
 
 type termHandler struct {
-	nodeService *services.NodeService
-	service     *services.TermService
-	fileService *services.FileService
-	reverse     web.Reverse
+	nodeService     *services.NodeService
+	service         *services.TermService
+	fileService     *files.Service
+	markdownService *markdown.Service
+	reverse         web.Reverse
 }
 
 func NewTermHandler(
 	service *services.TermService,
 	nodeService *services.NodeService,
-	fileService *services.FileService,
+	fileService *files.Service,
+	markdownService *markdown.Service,
 	reverse web.Reverse,
 ) *termHandler {
 	return &termHandler{
-		service:     service,
-		nodeService: nodeService,
-		reverse:     reverse,
-		fileService: fileService,
+		service:         service,
+		nodeService:     nodeService,
+		reverse:         reverse,
+		fileService:     fileService,
+		markdownService: markdownService,
 	}
 }
 
@@ -79,7 +86,7 @@ func (h *termHandler) showCreateNew(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page := managertemplates.NodeCreatePage{
+	page := appcomponents.NodeCreatePage{
 		ParentNode:        nodes.User,
 		NodeType:          dto.TermTypeName,
 		Params:            nodePath,
@@ -159,7 +166,7 @@ func (h *termHandler) listByUser(c echo.Context) error {
 		return err
 	}
 	user.Terms = terms
-	nodePage := managertemplates.NodeListPage{
+	nodePage := appcomponents.NodeListPage{
 		ParentNode:       user,
 		Children:         user.Children(),
 		ChildDetailsURL:  web.URLFunc(routes.GetTerm, h.reverse, nodePath.ToSlice()...),
@@ -167,9 +174,9 @@ func (h *termHandler) listByUser(c echo.Context) error {
 		DeleteChildURL:   web.URLFunc(routes.DeleteTerm, h.reverse, nodePath.ToSlice()...),
 		ShowNewChildURL:  h.reverse(routes.GetNewTerm.String(), nodePath.ToSlice()...),
 		UpNavURL:         h.reverse(routes.GetUser.String(), nodePath.ToSlice()...),
-		BreadCrumbsData:  BreadCrumbs(nodes, nodePath, h.reverse),
+		BreadCrumbsData:  BreadCrumbs2(nodes, nodePath, h.reverse),
 	}
-	page := managertemplates.TermsListPage{
+	page := termviews.TermsListPage{
 		ShowTermCalendarURL: web.URLFunc(routes.GetTermCalendar, h.reverse, nodePath.ToSlice()...),
 		NodeListPage:        nodePage,
 	}
@@ -230,7 +237,7 @@ func (h *termHandler) postEditFile(c echo.Context) error {
 	if fileInfo.IsDir {
 		return fmt.Errorf("%s is a directory", filePath)
 	}
-	content := c.FormValue(string(mt.EditSlidesTextAreaID))
+	content := c.FormValue(string(markdownviews.EditSlidesTextAreaID))
 	log.Println("content", content)
 	err = h.fileService.Update([]byte(content), filePath, nodes)
 	if err != nil {
@@ -263,12 +270,12 @@ func (h *termHandler) showEditFile(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page := mt.MarkdownEditor{
-		Contents:        content,
-		PostEditFileURL: web.URLFunc(routes.GetTermEditFile, h.reverse, path.ToSlice()...)(filePath),
+	page := markdownviews.MarkdownEditor{
+		Contents:            string(content),
+		PostEditFileURL:     web.URLFunc(routes.GetTermEditFile, h.reverse, path.ToSlice()...)(filePath),
+		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
-	component := page.Component()
-	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
+	return Respond(c, page)
 }
 
 func (h *termHandler) viewMarkdown(c echo.Context) error {
@@ -284,23 +291,28 @@ func (h *termHandler) viewMarkdown(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	html, err := h.fileService.ViewMarkdown(filePath, nodes)
+	content, err := h.fileService.FileContent(filePath, nodes)
 	if err != nil {
 		return err
 	}
-	doc := mt.MarkdownDocument{
+	html, err := h.markdownService.ToHTML(content)
+	if err != nil {
+		return err
+	}
+	doc := markdownviews.MarkdownDocument{
 		Title:   filepath.Base(filePath),
 		Content: string(html),
 		Static:  false,
 	}
 	var buf bytes.Buffer
-	err = mt.DocLayout(doc).Render(context.Background(), &buf)
+	err = markdownviews.DocLayout(doc).Render(context.Background(), &buf)
 	if err != nil {
 		return err
 	}
 	doc.Content = buf.String()
-	component := mt.MarkdownIFrame(doc)
-	return web.Respond(c, "", component, mt.BaseLayout(h.reverse, component, nodes.User.(dto.User)))
+	component := markdownviews.MarkdownIFrame(doc)
+	layout := BaseLayout3(h.reverse, nodes.User.(dto.User))
+	return web.Respond(c, "", component, layout.Component2(component))
 }
 
 func (h *termHandler) showFiles(c echo.Context) error {
@@ -329,15 +341,15 @@ func (h *termHandler) showFiles(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	page := mt.FilesPage{
+	page := fileviews.FilesPage{
 		Root: filePath == ".",
-		ParentDirectory: mt.FilesPageItem{
+		ParentDirectory: fileviews.FilesPageItem{
 			Name:  parentPath,
 			URL:   h.reverse(routes.GetTermFile.String(), nodes.User, nodes.Term, filePath),
 			Path:  parentPath,
 			IsDir: true,
 		},
-		CurrentDirectory: mt.FilesPageItem{
+		CurrentDirectory: fileviews.FilesPageItem{
 			Name:  filePath,
 			URL:   h.reverse(routes.GetTermFile.String(), nodes.User, nodes.Term, filePath),
 			Path:  filePath,
@@ -397,10 +409,10 @@ func (h *termHandler) showDetails(c echo.Context) error {
 	}
 
 	nodePage := h.nodeDetails(path, nodes)
-	termPage := mt.TermDetailsPage{
+	termPage := termviews.TermDetailsPage{
 		NodeDetailsPage:      nodePage,
 		ShowEditTermDatesURL: h.reverse(routes.GetTermDates.String(), path.ToSlice()...),
-		CourseManagerLayout:  BaseLayout2(h.reverse, nodes.User.(dto.User)),
+		CourseManagerLayout:  BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
 	return Respond(c, termPage)
 }
@@ -416,16 +428,16 @@ func (h *termHandler) showEdit(c echo.Context) error {
 	}
 	nodeData := h.nodeDetails(path, nodes)
 	nodeData.IsEdit = true
-	page := mt.TermDetailsPage{
+	page := termviews.TermDetailsPage{
 		NodeDetailsPage:      nodeData,
 		ShowEditTermDatesURL: h.reverse(routes.GetTermDates.String(), path.ToSlice()...),
-		CourseManagerLayout:  BaseLayout2(h.reverse, nodes.User.(dto.User)),
+		CourseManagerLayout:  BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}.DetailsEdit()
 	return Respond(c, page)
 }
 
-func (h *termHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
-	nodePage := mt.NodeDetailsPage{
+func (h *termHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) appcomponents.NodeDetailsPage {
+	nodePage := appcomponents.NodeDetailsPage{
 		Node:            nodes.Term,
 		ParentNode:      nodes.User,
 		GetEditNodeURL:  h.reverse(routes.GetEditTerm.String(), path.ToSlice()...),
@@ -434,7 +446,7 @@ func (h *termHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.Nod
 		UpNavURL:        h.reverse(routes.GetUser.String(), path.ToSlice()...),
 		CancelEditURL:   h.reverse(routes.GetTerm.String(), path.ToSlice()...),
 		ServerFilesURL:  h.reverse(routes.GetTermFiles.String(), path.ToSlice()...),
-		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),
+		BreadCrumbs:     BreadCrumbs2(nodes, path, h.reverse),
 	}
 	return nodePage
 }

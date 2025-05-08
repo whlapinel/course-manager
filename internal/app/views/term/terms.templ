@@ -1,0 +1,36 @@
+package termviews
+
+import "time"
+import "gh_static_portfolio/internal/app/components"
+
+templ TermDetailsComponent(page TermDetailsPage) {
+	@appcomponents.NodeDetailsComponent(page.NodeDetailsPage) {
+		<button
+			hx-get={ page.ShowEditTermDatesURL }
+			hx-target={ "#page" }
+		>Non Instructional Dates</button>
+	}
+}
+
+templ AddNonInstructDayComponent(page AddNonInstructDayPage) {
+	@appcomponents.PageLayoutComponent(page)
+	<p>Note: Weekends are automatically excluded from instructional days.</p>
+	<form hx-post={ page.PostAddDayURL } hx-target={ "#page" }>
+		<label for="date">Date</label>
+		<input type="date" id="date" name="date" class="bg-black" required/>
+		<button type="submit">Add</button>
+	</form>
+	<ul>
+		if len(page.Term.NonInstructionalDays) == 0 {
+			<li>No non-instructional days</li>
+		}
+		for _, day := range page.Term.NonInstructionalDays {
+			<li>{ day.Format(time.DateOnly) }</li>
+		}
+	</ul>
+}
+
+templ TermsListPageComponent(page TermsListPage) {
+	@appcomponents.NodeListComponent(page.NodeListPage)
+}
+

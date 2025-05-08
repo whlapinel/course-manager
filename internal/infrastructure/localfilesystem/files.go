@@ -2,7 +2,7 @@ package localfilesystem
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/core/filesystem"
+	"gh_static_portfolio/internal/features/files"
 	"io"
 	"io/fs"
 	"os"
@@ -12,20 +12,20 @@ import (
 type localFileSystem struct {
 }
 
-func New() filesystem.FileRepository {
+func New() files.FileRepository {
 	return &localFileSystem{}
 }
 
 // returns FileInfo. Create rootDir if it doesn't exist
-func (l *localFileSystem) FileInfo(relPath string, rootDir string) (filesystem.FileInfo, error) {
-	fileInfo := filesystem.FileInfo{}
+func (l *localFileSystem) FileInfo(relPath string, rootDir string) (files.FileInfo, error) {
+	fileInfo := files.FileInfo{}
 	err := os.MkdirAll(rootDir, os.ModePerm)
 	if err != nil {
-		return filesystem.FileInfo{}, err
+		return files.FileInfo{}, err
 	}
 	root, err := os.OpenRoot(rootDir)
 	if err != nil {
-		return filesystem.FileInfo{}, err
+		return files.FileInfo{}, err
 	}
 	relPath = filepath.Clean(relPath)
 	defer root.Close()

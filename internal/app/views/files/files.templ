@@ -1,0 +1,106 @@
+package fileviews
+
+import (
+	"gh_static_portfolio/internal/templates/components/base"
+	"gh_static_portfolio/internal/util"
+	"gh_static_portfolio/internal/app/components"
+)
+
+templ FilesComponent(page FilesPage) {
+	@appcomponents.PageLayoutComponent(page)
+	<div class="grid grid-cols-2">
+		<form hx-post={ page.UploadFileURL(page.CurrentPath) } enctype="multipart/form-data">
+			<label for="file">Choose a file:</label>
+			<input type="file" name="file" id="file"/>
+			<button type="submit">Upload</button>
+		</form>
+		<ul class="flex">
+			for _, item := range page.Files {
+				<li>
+					if !item.IsDir {
+						<a href={ templ.SafeURL(page.OpenFileURL(page.CurrentPath)) }>{ item.Path }</a>
+					} else {
+						<button
+							hx-get={ page.OpenFileURL(page.CurrentPath) }
+							hx-target="#page"
+							hx-push-url="true"
+						>
+							{ item.Path }
+						</button>
+					}
+					if util.IsMarkdown(item.Path) {
+						@page.ViewMarkdownButton(item)
+					}
+				</li>
+			}
+		</ul>
+	</div>
+	<div id="markdown"></div>
+}
+
+templ NewFilesComponent(data FilesPage) {
+	@appcomponents.PageLayoutComponent(data)
+	<div
+		id="files"
+		class="p-4"
+	>
+		<form hx-post={ data.UploadFileURL(data.CurrentPath) } enctype="multipart/form-data">
+			<label for="file">Choose a file:</label>
+			<input type="file" name="file" id="file"/>
+			<button type="submit">Upload</button>
+		</form>
+		if !data.Root {
+			<a
+				hx-get={ data.ParentDirectory.URL }
+				hx-target={ "#files" }
+				hx-swap="outerHTML"
+				class="flex gap-1 cursor-pointer bg-blue-500 pl-1 pr-2 rounded max-w-fit"
+			>
+				@components.UpArrowIcon()
+				{ data.ParentDirectory.Name }
+			</a>
+		}
+		<h2>Files in { data.CurrentDirectory.Name }</h2>
+		<ul role="list" class="divide-y divide-white/10 rounded-md border border-white/20">
+			for _, file := range data.Files {
+				if file.IsDir {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a
+								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
+								hx-get={ data.OpenDirURL(file.Name) }
+								hx-target="#files"
+								hx-swap="outerHTML"
+							>
+								@components.FolderIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+						</div>
+					</li>
+				} else {
+					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+						<div class="flex w-0 flex-1 items-center">
+							<a
+								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
+								href={ templ.SafeURL(data.OpenFileURL(file.Path)) }
+							>
+								@components.DownloadIcon()
+								<div class="ml-4 flex min-w-0 flex-1 gap-2">
+									<span class="font-medium text-indigo-400 hover:text-indigo-300">{ file.Name }</span>
+								</div>
+							</a>
+							if util.IsMarkdown(file.Name) {
+								@data.ViewMarkdownButton(file)
+								@data.EditMarkdownButton(file)
+							}
+						</div>
+					</li>
+				}
+			}
+		</ul>
+		<div id="markdown"></div>
+	</div>
+}
+

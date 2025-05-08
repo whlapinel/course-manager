@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
-	app, err := app.New()
+	// feature-level services
+	marpHost := os.Getenv("MARP_HOST")
+	marpPort := os.Getenv("MARP_PORT")
+	baseURL := fmt.Sprintf("http://%s:%s", marpHost, marpPort)
+	app, err := app.New(app.NewAppParams{MarpBaseURL: baseURL})
 	if err != nil {
 		log.Fatal(err)
 	}

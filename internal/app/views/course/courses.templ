@@ -1,0 +1,71 @@
+package courseviews
+
+import "strconv"
+import "gh_static_portfolio/internal/app/components"
+
+templ CourseListComponent(props CoursesListPage) {
+	@appcomponents.NodeListComponent(props.NodeListPage)
+}
+
+templ CourseDetailsComponent(props CourseDetailsPage) {
+	@appcomponents.NodeDetailsComponent(props.NodeDetailsPage) {
+		<details>
+			if props.Course().StandardSet.ID != 0 {
+				<summary>Standard Set: { props.Course().StandardSet.CourseName }</summary>
+			} else {
+				<summary>Standard Set: None Selected</summary>
+				<form hx-post={ props.PostSelectStandardSetURL } hx-target="#page">
+					<select id="standard-set-select" name="standard-set">
+						for _, set := range props.StandardSets {
+							<option value={ strconv.Itoa(set.ID) }>{ set.CourseName }</option>
+						}
+					</select>
+					<button type="submit">Submit</button>
+				</form>
+			}
+			<ul>
+				for _, standard := range props.Course().StandardSet.Standards {
+					<li>
+						<details>
+							<summary>{ strconv.Itoa(standard.Number) }{ standard.Name }</summary>
+							<ul>
+								for _, objective := range standard.Children {
+									<li>{ strconv.Itoa(objective.Number) }{ objective.Name }</li>
+								}
+							</ul>
+						</details>
+					</li>
+				}
+			</ul>
+		</details>
+		<button
+			hx-get={ props.GetCopyCourseURL }
+			hx-swap="outerHTML"
+		>
+			Copy Course To Term
+		</button>
+	}
+}
+
+templ CopyCourseComponent(props CopyCourseData) {
+	<form
+		id="copy-course-form"
+	>
+		<select
+			class="bg-black"
+			id="term-select"
+			name="term-id"
+		>
+			for _, term := range props.Terms {
+				<option value={ strconv.Itoa(term.ID) }>{ term.Name }</option>
+			}
+		</select>
+		<button
+			hx-post={ props.E.Reverse(props.PostCopyCourseToTermRHN, props.TermID, props.CourseID) }
+			hx-include="#copy-course-form"
+			type="submit"
+			hx-target="#page"
+		>Copy Course</button>
+	</form>
+}
+

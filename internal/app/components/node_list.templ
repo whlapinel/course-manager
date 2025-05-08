@@ -1,0 +1,35 @@
+package appcomponents
+
+templ NodeListComponent(props NodeListPage) {
+	@PageLayoutComponent(props) {
+		<ul class="flex flex-col gap-2">
+			if len(props.Children) == 0 {
+				<h2>No { props.ParentNode.ChildTypeName() }s to display for this { props.ParentNode.ParentTypeName() }</h2>
+			}
+			for i, node := range props.Children {
+				if node == nil {
+					<p>Node is nil!</p>
+				} else {
+					<li
+						class="flex gap-1 items-stretch"
+						id={ props.ListItemElementID(node).String() }
+					>
+						@props.DeleteNodeButton(node)
+						if node.ChildTypeName() != "" {
+							@props.NodeChildrenButton(node)
+						}
+						@props.NodeDetailsButton(node)
+						for _, data := range props.ChildUI {
+							@data[i].Component()
+						}
+						if node.Designation() != "" {
+							<span class="self-center">{ node.Designation() }</span>
+						}
+						<span class="self-center">{ node.GetName() }</span>
+					</li>
+				}
+			}
+			@props.NodeCreateButton()
+		</ul>
+	}
+}

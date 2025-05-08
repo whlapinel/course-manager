@@ -1,0 +1,30 @@
+package standardsviews
+
+import "strconv"
+
+templ StandardsFragmentComponent(data StandardsFragment) {
+	<ul>
+		for _, objective := range data.NodeStandards {
+			<li id="objective">
+				{ strconv.Itoa(objective.ParentNum) }.{ strconv.Itoa(objective.Number) } { objective.Name }
+				<button hx-delete={ data.DeleteStandardURL(objective.ID) } hx-target="#page">Remove</button>
+			</li>
+		}
+	</ul>
+	<h3>Add Objective</h3>
+	<ul>
+		for _, standard := range data.CourseStandards {
+			<details>
+				<summary>{ standard.Name }</summary>
+				<select name="objective" id={ "objective-select-" + strconv.Itoa(standard.ID) } class="bg-black">
+					for _, objective := range standard.Children {
+						<option value={ strconv.Itoa(objective.ID) }>
+							{ strconv.Itoa(objective.ParentNum) }{ "." }{ strconv.Itoa(objective.Number) }{ " " }{ objective.Name }
+						</option>
+					}
+				</select>
+				<button hx-post={ data.PostStandardURL } hx-include={ "#objective-select-" + strconv.Itoa(standard.ID) } hx-target="#page">Add</button>
+			</details>
+		}
+	</ul>
+}
