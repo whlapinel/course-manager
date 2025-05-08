@@ -1,30 +1,31 @@
 package slides
 
 import (
-	"fmt"
-	"gh_static_portfolio/internal/shared/routes"
+	"gh_static_portfolio/internal/ports"
+	"gh_static_portfolio/internal/shared/node"
 	"net/url"
 )
 
 type Service struct {
-	MarpBaseURL string
+	marpBaseURL string
+	paths       ports.PathingService
 }
 
-func NewSlidesService(marpBaseURL string) *Service {
+func NewSlidesService(
+	marpBaseURL string,
+	paths ports.PathingService,
+) *Service {
 	return &Service{
-		MarpBaseURL: marpBaseURL,
+		marpBaseURL: marpBaseURL,
+		paths:       paths,
 	}
-
 }
 
-func (s *Service) marpSlidesPath(params routes.NodePath) (string, error) {
-	// marpHost := os.Getenv("MARP_HOST")
-	// marpPort := os.Getenv("MARP_PORT")
-	// baseURL := fmt.Sprintf("http://%s:%s", marpHost, marpPort)
-	userParam := fmt.Sprintf("user_%s", params.UserID)
-	termParam := fmt.Sprintf("term_%d", params.TermID)
-	courseParam := fmt.Sprintf("course_%d", params.CourseID)
-	unitParam := fmt.Sprintf("unit_%d", params.UnitID)
-	lessonParam := fmt.Sprintf("lesson_%d", params.LessonID)
-	return url.JoinPath(s.MarpBaseURL, "users", userParam, "terms", termParam, "courses", courseParam, "units", unitParam, "lessons", lessonParam, "slides.md")
+func (s *Service) marpSlidesPath(nodes ...node.Node) (string, error) {
+	relPath := s.paths.NodeDirPath(nodes...)
+	fullPath, err := url.JoinPath(s.marpBaseURL, relPath, "slides.md")
+	if err != nil {
+		return "", err
+	}
+	return fullPath, nil
 }

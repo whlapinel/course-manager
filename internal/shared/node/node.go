@@ -24,3 +24,13 @@ type Nodes struct {
 func (nodes Nodes) ToSlice(addParams ...any) []Node {
 	return []Node{nodes.User, nodes.Term, nodes.Course, nodes.Unit, nodes.Lesson}
 }
+
+func (nodes Nodes) CurrentNode() Node {
+	nodeSlice := nodes.ToSlice()
+	for i, node := range nodeSlice {
+		if node == nil {
+			return nodeSlice[i-1]
+		}
+	}
+	return nodeSlice[len(nodeSlice)-1]
+}

@@ -12,7 +12,7 @@ import (
 	"gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
-	"gh_static_portfolio/internal/util"
+	"gh_static_portfolio/internal/shared/util"
 	"strconv"
 	"time"
 )

@@ -2,7 +2,7 @@ package appcomponents
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/templates/components/base"
+	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 )

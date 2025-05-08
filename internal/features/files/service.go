@@ -1,33 +1,34 @@
 package files
 
 import (
-	"fmt"
 	fileviews "gh_static_portfolio/internal/app/views/files"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/node"
-	"gh_static_portfolio/internal/util"
+	"gh_static_portfolio/internal/shared/util"
 	"io"
-	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type Service struct {
-	fileRepo FileRepository
+	fileRepo    FileRepository
+	pathService ports.PathingService
 }
 
 func NewFileService(
 	fileRepo FileRepository,
+	pathService ports.PathingService,
 
 ) *Service {
 	return &Service{
-		fileRepo: fileRepo,
+		fileRepo:    fileRepo,
+		pathService: pathService,
 	}
 }
 
 func (svc *Service) WriteMarkdown(relPath string, content []byte, nodes node.Nodes) error {
-	root := NodeFilesDirPath(nodes.ToSlice()...)
+	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	err := svc.fileRepo.Update(content, root, relPath)
 	if err != nil {
 		return err
@@ -36,7 +37,7 @@ func (svc *Service) WriteMarkdown(relPath string, content []byte, nodes node.Nod
 }
 
 func (svc *Service) FileContent(relPath string, nodes node.Nodes) ([]byte, error) {
-	root := NodeFilesDirPath(nodes.ToSlice()...)
+	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	content, err := svc.fileRepo.Read(root, relPath)
 	if err != nil {
 		return nil, err
@@ -46,7 +47,7 @@ func (svc *Service) FileContent(relPath string, nodes node.Nodes) ([]byte, error
 }
 
 func (svc *Service) FileInfo(relPath string, nodes node.Nodes) (FileInfo, error) {
-	root := NodeFilesDirPath(nodes.ToSlice()...)
+	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	fileInfo, err := svc.fileRepo.FileInfo(relPath, root)
 	if err != nil {
 		return fileInfo, err
@@ -55,7 +56,7 @@ func (svc *Service) FileInfo(relPath string, nodes node.Nodes) (FileInfo, error)
 }
 
 func (svc *Service) Update(content []byte, relPath string, nodes node.Nodes) error {
-	root := NodeFilesDirPath(nodes.ToSlice()...)
+	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	err := svc.fileRepo.Update(content, root, relPath)
 	if err != nil {
 		return err
@@ -73,7 +74,7 @@ func (svc *Service) Save(header *multipart.FileHeader, relPath string, nodes nod
 	if err != nil {
 		return err
 	}
-	root := NodeFilesDirPath(nodes.ToSlice()...)
+	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	err = svc.fileRepo.Save(content, root, relPath)
 	if err != nil {
 		return err
@@ -82,7 +83,7 @@ func (svc *Service) Save(header *multipart.FileHeader, relPath string, nodes nod
 }
 
 func (svc *Service) NodeFiles(path string, nodes ...node.Node) ([]fileviews.FilesPageItem, error) {
-	root := NodeFilesDirPath(nodes...)
+	root := svc.pathService.NodeFilesDirPath(nodes...)
 	entries, err := svc.fileRepo.List(root, path)
 	if err != nil {
 		return nil, err
@@ -105,7 +106,7 @@ func (svc *Service) NodeFiles(path string, nodes ...node.Node) ([]fileviews.File
 }
 
 func (svc *Service) DeleteFile(path string, nodes ...node.Node) error {
-	root := NodeFilesDirPath(nodes...)
+	root := svc.pathService.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	_, err := os.Stat(path)
 	if err != nil {
@@ -116,35 +117,4 @@ func (svc *Service) DeleteFile(path string, nodes ...node.Node) error {
 		return err
 	}
 	return nil
-}
-
-// nodes is path from root, where term is the root
-func NodeDirPath(nodes ...node.Node) string {
-	var path = "./internal/data"
-	for _, node := range nodes {
-		log.Println("node", node)
-		if node == nil {
-			break
-		}
-		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
-		var dirName string
-		if id, ok := node.GetID().(string); ok {
-			dirName = fmt.Sprintf("%s_%s", strings.ToLower(node.TypeName()), id)
-		} else if id, ok := node.GetID().(int); ok {
-			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), id)
-		}
-		path = filepath.Join(
-			path,
-			dirName,
-		)
-	}
-	return path
-}
-
-func NodeFilesDirPath(nodes ...node.Node) string {
-	return filepath.Join(NodeDirPath(nodes...), "files")
-}
-
-func NodeImagePath(nodes ...node.Node) string {
-	return filepath.Join(NodeDirPath(nodes...), "image.png")
 }

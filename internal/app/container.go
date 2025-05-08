@@ -11,18 +11,24 @@ import (
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/features/markdown"
+	"gh_static_portfolio/internal/features/sitegen"
 	"gh_static_portfolio/internal/features/slides"
 	"gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/features/user"
+	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
+	"gh_static_portfolio/internal/infrastructure/pathing"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
 	"gh_static_portfolio/internal/shared/routes"
 	"log"
 
 	"github.com/labstack/echo/v4"
 )
+
+const dbPath = "./course_manager.db"
+const dataFilesRoot = "./internal/data"
 
 type App struct {
 	Echo *echo.Echo
@@ -38,10 +44,14 @@ func New(params NewAppParams) (*App, error) {
 	e.Use(logger)
 	e.Debug = true
 	assets.RegisterStatic(e)
-	queries, db, err := sqlite.InitDB("./course_manager.db")
+	queries, db, err := sqlite.InitDB(dbPath)
 	if err != nil {
 		return nil, err
 	}
+
+	// infrastructure init
+	hugoGenerator := hugo.New()
+
 	// repositories
 	filesRepo := localfilesystem.New()
 	userRepo := sqlite.NewUserRepo(queries)
@@ -59,6 +69,9 @@ func New(params NewAppParams) (*App, error) {
 	unitService := unit.NewService(unitRepo)
 	lessonService := lesson.NewService(lessonRepo)
 	termOccasionService := termoccasion.NewService(termOccasionRepo)
+
+	// infrastructure services
+	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
 
 	// route groups
 	root := e.Group("")
@@ -78,8 +91,9 @@ func New(params NewAppParams) (*App, error) {
 
 	// file system, goldmark, and marp services
 	markdownService := markdown.NewService()
-	fileService := files.NewFileService(filesRepo)
-	slidesService := slides.NewSlidesService(params.MarpBaseURL)
+	fileService := files.NewFileService(filesRepo, dataFilesPathingSvc)
+	slidesService := slides.NewSlidesService(params.MarpBaseURL, dataFilesPathingSvc)
+	sitegenService := sitegen.New(hugoGenerator)
 
 	// application-level services
 	lessonAppService := services.NewLessonService(lessonService, slidesService)
@@ -99,7 +113,7 @@ func New(params NewAppParams) (*App, error) {
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
-	dashboardAppHandler := handlers.NewDashboardHandler(userAppService, nodeAppService, e.Reverse)
+	dashboardAppHandler := handlers.NewDashboardHandler(sitegenService, userAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterAuthRoutes(protected, authHandler)

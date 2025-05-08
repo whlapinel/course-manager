@@ -1,5 +1,7 @@
 package standard
 
+import "fmt"
+
 type StandardSet struct {
 	ID         int
 	CourseName string
@@ -19,6 +21,10 @@ type Objective struct {
 	Number      int    // number should not include parent number
 	Name        string // official, from the state
 	Description string // unofficial, teacher or PLC created
+}
+
+func (o Objective) Designation() string {
+	return fmt.Sprintf("%d.%d", o.ParentNum, o.Number)
 }
 
 // implements node sorter

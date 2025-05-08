@@ -4,11 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	ac "gh_static_portfolio/internal/app/components"
-	appcomponents "gh_static_portfolio/internal/app/components"
 	av "gh_static_portfolio/internal/app/views/authentication"
 	"gh_static_portfolio/internal/core/user"
 	"gh_static_portfolio/internal/features/auth"
-	authentication "gh_static_portfolio/internal/newauthentication"
 	components "gh_static_portfolio/internal/newtemplates/components/base"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -61,7 +59,7 @@ func (h *authHandler) showSignin(c echo.Context) error {
 }
 
 func (h *authHandler) postSignin(c echo.Context) error {
-	payload, err := authentication.GoogleAuth(c)
+	payload, err := h.service.GoogleAuth(c)
 	if err != nil {
 		log.Println(err)
 		return c.String(500, "Failed to authenticate")
@@ -76,7 +74,7 @@ func (h *authHandler) postSignin(c echo.Context) error {
 		return c.String(500, err.Error())
 	}
 	log.Println("userID", currUser.ID)
-	t, err := authentication.IssueToken(authentication.TokenParams{User: user.User{
+	t, err := h.service.IssueToken(auth.TokenParams{User: user.User{
 		ID:        sub,
 		Email:     currUser.Email,
 		FirstName: currUser.FirstName,
@@ -86,7 +84,7 @@ func (h *authHandler) postSignin(c echo.Context) error {
 	if err != nil {
 		return c.String(500, "Failed to issue token")
 	}
-	authentication.WriteToken(c, t)
+	h.service.WriteToken(c, t)
 	return c.Redirect(303, "/users")
 }
 
@@ -147,7 +145,7 @@ func (h *authHandler) RespondUnauthorized(c echo.Context, reason UnauthReason) e
 			Target: "#page",
 		},
 	}
-	htmxPage := appcomponents.BasicHTMXPage[av.UnauthorizedPage]{
+	htmxPage := ac.BasicHTMXPage[av.UnauthorizedPage]{
 		Page: page,
 	}
 	return Respond(c, htmxPage)

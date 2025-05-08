@@ -6,7 +6,7 @@ import (
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/core/term"
 	"gh_static_portfolio/internal/shared/web"
-	cmp "gh_static_portfolio/internal/templates/components/base"
+	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"

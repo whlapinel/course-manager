@@ -1,8 +1,8 @@
 package home
 
 import (
+	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	appcomponents "gh_static_portfolio/internal/newtemplates/components/app"
 	"gh_static_portfolio/internal/shared/routes"
 	web "gh_static_portfolio/internal/shared/web"
 	"log"

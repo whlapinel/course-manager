@@ -36,7 +36,7 @@ func UserMenuComponent(props UserMenu) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(props.Image)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/user_menu.templ`, Line: 18, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/user_menu.templ`, Line: 18, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

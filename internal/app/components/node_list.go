@@ -5,12 +5,11 @@ import (
 	"gh_static_portfolio/internal/domain"
 	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/shared/util"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 
 	"github.com/a-h/templ"
-
-	tpl "gh_static_portfolio/internal/newtemplates/shared"
 )
 
 type NodeListPage struct {
@@ -118,5 +117,5 @@ func (list NodeListPage) PageTitle() string {
 }
 
 func (list NodeListPage) ListItemElementID(node node.Node) ElementID {
-	return ElementID(fmt.Sprintf("%s-%d", tpl.KebabCase(node.TypeName()), node.GetID()))
+	return ElementID(fmt.Sprintf("%s-%d", util.KebabCase(node.TypeName()), node.GetID()))
 }

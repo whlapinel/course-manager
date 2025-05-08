@@ -7,7 +7,7 @@ import (
 	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
-	"gh_static_portfolio/internal/util"
+	"gh_static_portfolio/internal/shared/util"
 	"log"
 	"time"
 

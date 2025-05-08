@@ -2,7 +2,7 @@ package appcomponents
 
 import (
 	"gh_static_portfolio/internal/domain"
-	templates "gh_static_portfolio/internal/templates/shared"
+	"gh_static_portfolio/internal/shared/util"
 	"log"
 	"net/url"
 
@@ -53,9 +53,10 @@ type EditField struct {
 }
 
 func FieldContainerID(fieldName string) string {
-	return templates.KebabCase(fieldName) + "-container"
+	return util.KebabCase(fieldName) + "-container"
 }
 
 func FieldInputID(fieldName string) string {
-	return templates.KebabCase(fieldName)
+	return util.KebabCase(fieldName)
 }
+

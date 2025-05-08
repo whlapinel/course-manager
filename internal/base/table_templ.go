@@ -36,7 +36,7 @@ func TableComponent(data Table) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/table.templ`, Line: 10, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/table.templ`, Line: 10, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -49,7 +49,7 @@ func TableComponent(data Table) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Subtitle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/table.templ`, Line: 11, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/table.templ`, Line: 11, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -75,7 +75,7 @@ func TableComponent(data Table) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(header)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/table.templ`, Line: 22, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/table.templ`, Line: 22, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -189,7 +189,7 @@ func tableTextCellComponent(data TableTextCell) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.Text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/table.templ`, Line: 54, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/table.templ`, Line: 54, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -254,7 +254,7 @@ func tableLinkCellComponent(data TableLinkCell) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.Text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/newtemplates/components/base/table.templ`, Line: 64, Col: 14}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/base/table.templ`, Line: 64, Col: 14}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {

@@ -1,11 +1,15 @@
 package sitegen
 
-import "os"
+import (
+	"gh_static_portfolio/internal/ports"
+)
 
 type Service struct {
-	hugo *os.Process
+	ports.SiteGenerator
 }
 
-func New(hugo *os.Process) *Service {
-	return &Service{}
+func New(generator ports.SiteGenerator) *Service {
+	return &Service{
+		SiteGenerator: generator,
+	}
 }

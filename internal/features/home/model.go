@@ -1,8 +1,8 @@
 package home
 
 import (
-	appcomponents "gh_static_portfolio/internal/newtemplates/components/app"
-	cmp "gh_static_portfolio/internal/templates/components/base"
+	appcomponents "gh_static_portfolio/internal/app/components"
+	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 )

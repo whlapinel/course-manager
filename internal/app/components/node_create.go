@@ -6,7 +6,7 @@ import (
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/routes"
-	tpl "gh_static_portfolio/internal/templates/shared"
+	"gh_static_portfolio/internal/shared/util"
 
 	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
@@ -56,7 +56,7 @@ func (page NodeCreatePage) BreadCrumbs() BreadCrumbs {
 }
 
 func NodeCreateFormID(nodeType domain.NodeTypeName) string {
-	return tpl.KebabCase(nodeType.String()) + "-form"
+	return util.KebabCase(nodeType.String()) + "-form"
 }
 
 func CreateNodeFormComponent(page NodeCreatePage) templ.Component {
