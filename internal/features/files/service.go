@@ -3,7 +3,6 @@ package files
 import (
 	fileviews "gh_static_portfolio/internal/app/views/files"
 	"gh_static_portfolio/internal/ports"
-	"gh_static_portfolio/internal/shared/node"
 	"gh_static_portfolio/internal/shared/util"
 	"io"
 	"mime/multipart"
@@ -12,12 +11,12 @@ import (
 )
 
 type Service struct {
-	fileRepo    FileRepository
+	fileRepo    ports.FileRepository
 	pathService ports.PathingService
 }
 
 func NewFileService(
-	fileRepo FileRepository,
+	fileRepo ports.FileRepository,
 	pathService ports.PathingService,
 
 ) *Service {
@@ -27,7 +26,7 @@ func NewFileService(
 	}
 }
 
-func (svc *Service) WriteMarkdown(relPath string, content []byte, nodes node.Nodes) error {
+func (svc *Service) WriteMarkdown(relPath string, content []byte, nodes ports.Nodes) error {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	err := svc.fileRepo.Update(content, root, relPath)
 	if err != nil {
@@ -36,7 +35,7 @@ func (svc *Service) WriteMarkdown(relPath string, content []byte, nodes node.Nod
 	return nil
 }
 
-func (svc *Service) FileContent(relPath string, nodes node.Nodes) ([]byte, error) {
+func (svc *Service) FileContent(relPath string, nodes ports.Nodes) ([]byte, error) {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	content, err := svc.fileRepo.Read(root, relPath)
 	if err != nil {
@@ -46,7 +45,7 @@ func (svc *Service) FileContent(relPath string, nodes node.Nodes) ([]byte, error
 
 }
 
-func (svc *Service) FileInfo(relPath string, nodes node.Nodes) (FileInfo, error) {
+func (svc *Service) FileInfo(relPath string, nodes ports.Nodes) (ports.FileInfo, error) {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	fileInfo, err := svc.fileRepo.FileInfo(relPath, root)
 	if err != nil {
@@ -55,7 +54,7 @@ func (svc *Service) FileInfo(relPath string, nodes node.Nodes) (FileInfo, error)
 	return fileInfo, nil
 }
 
-func (svc *Service) Update(content []byte, relPath string, nodes node.Nodes) error {
+func (svc *Service) Update(content []byte, relPath string, nodes ports.Nodes) error {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
 	err := svc.fileRepo.Update(content, root, relPath)
 	if err != nil {
@@ -64,7 +63,7 @@ func (svc *Service) Update(content []byte, relPath string, nodes node.Nodes) err
 	return nil
 }
 
-func (svc *Service) Save(header *multipart.FileHeader, relPath string, nodes node.Nodes) error {
+func (svc *Service) Save(header *multipart.FileHeader, relPath string, nodes ports.Nodes) error {
 	file, err := header.Open()
 	if err != nil {
 		return err
@@ -82,7 +81,7 @@ func (svc *Service) Save(header *multipart.FileHeader, relPath string, nodes nod
 	return nil
 }
 
-func (svc *Service) NodeFiles(path string, nodes ...node.Node) ([]fileviews.FilesPageItem, error) {
+func (svc *Service) NodeFiles(path string, nodes ...ports.Node) ([]fileviews.FilesPageItem, error) {
 	root := svc.pathService.NodeFilesDirPath(nodes...)
 	entries, err := svc.fileRepo.List(root, path)
 	if err != nil {
@@ -105,7 +104,7 @@ func (svc *Service) NodeFiles(path string, nodes ...node.Node) ([]fileviews.File
 	return items, nil
 }
 
-func (svc *Service) DeleteFile(path string, nodes ...node.Node) error {
+func (svc *Service) DeleteFile(path string, nodes ...ports.Node) error {
 	root := svc.pathService.NodeFilesDirPath(nodes...)
 	path = filepath.Join(root, path)
 	_, err := os.Stat(path)

@@ -3,7 +3,7 @@ package services
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 )
 
@@ -39,42 +39,42 @@ func NewNodeService(
 
 }
 
-func (svc *NodeService) Nodes(path routes.NodePath) (node.Nodes, error) {
-	var nodes node.Nodes
+func (svc *NodeService) Nodes(path routes.NodePath) (ports.Nodes, error) {
+	var nodes ports.Nodes
 	if path.UserID != "" {
 		if svc == nil {
-			return node.Nodes{}, fmt.Errorf("svc is nil")
+			return ports.Nodes{}, fmt.Errorf("svc is nil")
 		}
 		if svc.user == nil {
-			return node.Nodes{}, fmt.Errorf("svc.user function is nil")
+			return ports.Nodes{}, fmt.Errorf("svc.user function is nil")
 		}
 		user, err := svc.user(path.UserID)
 		if err != nil {
-			return node.Nodes{}, err
+			return ports.Nodes{}, err
 		}
 		nodes.User = user
 		if path.TermID != 0 {
 			term, err := svc.term(path.TermID)
 			if err != nil {
-				return node.Nodes{}, err
+				return ports.Nodes{}, err
 			}
 			nodes.Term = term
 			if path.CourseID != 0 {
 				course, err := svc.course(path.CourseID)
 				if err != nil {
-					return node.Nodes{}, err
+					return ports.Nodes{}, err
 				}
 				nodes.Course = course
 				if path.UnitID != 0 {
 					unit, err := svc.unit(path.UnitID)
 					if err != nil {
-						return node.Nodes{}, err
+						return ports.Nodes{}, err
 					}
 					nodes.Unit = unit
 					if path.LessonID != 0 {
 						lesson, err := svc.lesson(path.LessonID)
 						if err != nil {
-							return node.Nodes{}, err
+							return ports.Nodes{}, err
 						}
 						nodes.Lesson = lesson
 					}

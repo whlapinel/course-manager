@@ -3,9 +3,9 @@ package templates
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/domain"
 	"gh_static_portfolio/internal/shared/node"
-	components "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 )

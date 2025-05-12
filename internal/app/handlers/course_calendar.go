@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -75,7 +75,7 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 	return Respond(c, page)
 }
 
-func (h *courseCalendarHandler) BreadCrumbs(nodes node.Nodes, path routes.NodePath) managertemplates.BreadCrumbs {
+func (h *courseCalendarHandler) BreadCrumbs(nodes ports.Nodes, path routes.NodePath) managertemplates.BreadCrumbs {
 	return BreadCrumbs(nodes, path, h.reverse)
 }
 

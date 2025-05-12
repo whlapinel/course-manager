@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 )
 
 type RootCourseNode struct {
@@ -25,8 +25,8 @@ func (r RootCourseNode) GetParentID() any {
 func (r RootCourseNode) GetDescription() string {
 	return ""
 }
-func (r RootCourseNode) Children() []node.Node {
-	var nodes []node.Node
+func (r RootCourseNode) Children() []ports.Node {
+	var nodes []ports.Node
 	for _, user := range r.Users {
 		nodes = append(nodes, user)
 	}

@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"gh_static_portfolio/internal/newtemplates/components/base"
+	"gh_static_portfolio/internal/base"
 	"strconv"
 	"time"
 )

@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/unit"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 )
 
 type Unit struct {
@@ -27,8 +27,8 @@ func (u Unit) GetParentID() any {
 	return u.CourseID
 }
 
-func (u Unit) Children() []node.Node {
-	var nodes []node.Node
+func (u Unit) Children() []ports.Node {
+	var nodes []ports.Node
 	for _, l := range u.Lessons {
 		nodes = append(nodes, l)
 	}

@@ -4,8 +4,8 @@ import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
-	"gh_static_portfolio/internal/shared/node"
+	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
 	"log"
@@ -155,7 +155,7 @@ func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection) tem
 
 type AddLessonToDatePage struct {
 	Date              time.Time
-	Nodes             node.Nodes
+	Nodes             ports.Nodes
 	Params            routes.NodePath
 	Course            dto.Course
 	ListLessonsRHN    string

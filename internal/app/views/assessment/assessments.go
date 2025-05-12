@@ -3,8 +3,8 @@ package assessmentviews
 import (
 	"fmt"
 	ac "gh_static_portfolio/internal/app/components"
+	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/domain"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 	"gh_static_portfolio/internal/util"
 	"net/url"
 	"strconv"

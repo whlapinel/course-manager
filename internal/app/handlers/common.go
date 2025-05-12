@@ -3,12 +3,12 @@ package handlers
 import (
 	appcomponents "gh_static_portfolio/internal/app/components"
 	managertemplates "gh_static_portfolio/internal/app/components"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 )
 
-func BreadCrumbs(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) managertemplates.BreadCrumbs {
+func BreadCrumbs(nodes ports.Nodes, path routes.NodePath, reverse web.Reverse) managertemplates.BreadCrumbs {
 	return managertemplates.BreadCrumbs{
 		Nodes:            nodes,
 		UserDetailsURL:   userDetailsURL(path, reverse),
@@ -19,7 +19,7 @@ func BreadCrumbs(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) ma
 	}
 
 }
-func BreadCrumbs2(nodes node.Nodes, path routes.NodePath, reverse web.Reverse) appcomponents.BreadCrumbs {
+func BreadCrumbs2(nodes ports.Nodes, path routes.NodePath, reverse web.Reverse) appcomponents.BreadCrumbs {
 	return appcomponents.BreadCrumbs{
 		Nodes:            nodes,
 		UserDetailsURL:   userDetailsURL(path, reverse),

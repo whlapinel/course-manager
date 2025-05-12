@@ -3,16 +3,16 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/shared/node"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
+	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/ports"
 	"strconv"
 
 	"github.com/a-h/templ"
 )
 
 type NodeDetailsPage struct {
-	Node            node.Node
-	ParentNode      node.Node
+	Node            ports.Node
+	ParentNode      ports.Node
 	GetEditNodeURL  string
 	PostEditNodeURL string
 	ListChildrenURL string

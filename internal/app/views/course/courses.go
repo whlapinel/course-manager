@@ -3,10 +3,10 @@ package courseviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
+	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/core/term"
 	"gh_static_portfolio/internal/shared/web"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -112,4 +112,3 @@ func (data ShowAssessmentsButton) Component() templ.Component {
 	}
 	return button.Component()
 }
-

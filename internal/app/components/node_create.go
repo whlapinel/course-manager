@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/shared/node"
+	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
-
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
 
 	"github.com/a-h/templ"
 )
 
 type NodeCreatePage struct {
-	ParentNode        node.Node
+	ParentNode        ports.Node
 	NodeType          dto.NodeTypeName
 	Params            routes.NodePath
 	PostCreateNodeURL string

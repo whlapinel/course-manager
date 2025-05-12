@@ -1,8 +1,8 @@
 package templates
 
 import (
+	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/shared/node"
-	components "gh_static_portfolio/internal/newtemplates/components/base"
 	"log"
 
 	"github.com/a-h/templ"

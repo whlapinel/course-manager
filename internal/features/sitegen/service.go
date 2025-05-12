@@ -13,3 +13,7 @@ func New(generator ports.SiteGenerator) *Service {
 		SiteGenerator: generator,
 	}
 }
+
+func (s *Service) Build() error {
+	return s.SiteGenerator.Build()
+}

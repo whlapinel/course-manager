@@ -3,7 +3,7 @@ package termviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
+	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 

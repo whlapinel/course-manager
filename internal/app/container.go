@@ -20,6 +20,7 @@ import (
 	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
 	"gh_static_portfolio/internal/infrastructure/pathing"
+	slidesrenderer "gh_static_portfolio/internal/infrastructure/slides"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
 	"gh_static_portfolio/internal/shared/routes"
 	"log"
@@ -72,6 +73,9 @@ func New(params NewAppParams) (*App, error) {
 
 	// infrastructure services
 	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
+	markdownRenderer := markdown.NewService()
+	slidesRenderer := slidesrenderer.New(params.MarpBaseURL, dataFilesPathingSvc)
+	siteGenerator := sitegen.New(hugoGenerator)
 
 	// route groups
 	root := e.Group("")
@@ -89,11 +93,9 @@ func New(params NewAppParams) (*App, error) {
 		return nil, err
 	}
 
-	// file system, goldmark, and marp services
-	markdownService := markdown.NewService()
-	fileService := files.NewFileService(filesRepo, dataFilesPathingSvc)
-	slidesService := slides.NewSlidesService(params.MarpBaseURL, dataFilesPathingSvc)
-	sitegenService := sitegen.New(hugoGenerator)
+	// feature services
+	fileSystem := files.NewFileService(filesRepo, dataFilesPathingSvc)
+	slidesService := slides.New(params.MarpBaseURL, slidesRenderer, dataFilesPathingSvc, filesRepo)
 
 	// application-level services
 	lessonAppService := services.NewLessonService(lessonService, slidesService)
@@ -109,11 +111,11 @@ func New(params NewAppParams) (*App, error) {
 	authHandler := handlers.NewAuthHandler(authService, e.Reverse)
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
-	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
-	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileSystem, markdownRenderer, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
-	dashboardAppHandler := handlers.NewDashboardHandler(sitegenService, userAppService, nodeAppService, e.Reverse)
+	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterAuthRoutes(protected, authHandler)

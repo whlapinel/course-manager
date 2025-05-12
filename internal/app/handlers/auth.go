@@ -7,7 +7,7 @@ import (
 	av "gh_static_portfolio/internal/app/views/authentication"
 	"gh_static_portfolio/internal/core/user"
 	"gh_static_portfolio/internal/features/auth"
-	components "gh_static_portfolio/internal/newtemplates/components/base"
+	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"

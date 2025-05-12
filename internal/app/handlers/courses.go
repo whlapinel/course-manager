@@ -7,7 +7,7 @@ import (
 	mt "gh_static_portfolio/internal/app/views/course"
 	fileviews "gh_static_portfolio/internal/app/views/files"
 	"gh_static_portfolio/internal/features/files"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -214,7 +214,7 @@ func (h *courseHandler) showFiles(c echo.Context) error {
 	return Respond(c, page)
 }
 
-func (h *courseHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) appcomponents.NodeDetailsPage {
+func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {
 	nodeData := appcomponents.NodeDetailsPage{
 		Node:                nodes.Course,
 		ParentNode:          nodes.Term,

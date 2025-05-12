@@ -1,7 +1,7 @@
 package appcomponents
 
 import (
-	components "gh_static_portfolio/internal/newtemplates/components/base"
+	components "gh_static_portfolio/internal/base"
 
 	"github.com/a-h/templ"
 )

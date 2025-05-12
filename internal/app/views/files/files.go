@@ -2,8 +2,8 @@ package fileviews
 
 import (
 	ac "gh_static_portfolio/internal/app/components"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
-	"gh_static_portfolio/internal/shared/node"
+	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 
@@ -19,7 +19,7 @@ type FilesPage struct {
 	OpenDirURL          web.AddParams
 	OpenFileURL         web.AddParams
 	UploadFileURL       web.AddParams
-	Node                node.Node
+	Node                ports.Node
 	Files               []FilesPageItem
 	PopRouteSegmentRHN  string
 	BreadCrumbsData     ac.BreadCrumbs

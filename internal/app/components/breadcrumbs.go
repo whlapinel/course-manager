@@ -1,14 +1,14 @@
 package appcomponents
 
 import (
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
-	"gh_static_portfolio/internal/shared/node"
+	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/ports"
 
 	"github.com/a-h/templ"
 )
 
 type BreadCrumbs struct {
-	node.Nodes
+	ports.Nodes
 	UserDetailsURL   string
 	TermDetailsURL   string
 	CourseDetailsURL string

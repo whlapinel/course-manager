@@ -8,7 +8,7 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "gh_static_portfolio/internal/newtemplates/components/base"
+import "gh_static_portfolio/internal/base"
 
 func FilesPageSectionComponent(data FilesPageSection) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

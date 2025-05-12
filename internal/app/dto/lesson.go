@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/core/assessment"
 	"gh_static_portfolio/internal/core/lesson"
 	"gh_static_portfolio/internal/core/standard"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"slices"
 	"time"
 )
@@ -32,8 +32,8 @@ func (l Lesson) GetParentID() any {
 	return l.UnitID
 }
 
-func (l Lesson) Children() []node.Node {
-	return []node.Node{}
+func (l Lesson) Children() []ports.Node {
+	return []ports.Node{}
 }
 
 func (l Lesson) TypeName() string {

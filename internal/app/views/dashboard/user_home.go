@@ -3,7 +3,7 @@ package dashboardviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/newtemplates/components/base"
+	cmp "gh_static_portfolio/internal/base"
 
 	"github.com/a-h/templ"
 )

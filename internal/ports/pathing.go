@@ -1,11 +1,9 @@
 package ports
 
-import (
-	"gh_static_portfolio/internal/shared/node"
-)
-
 type PathingService interface {
-	NodeDirPath(...node.Node) string
-	NodeFilesDirPath(...node.Node) string
-	NodeImagePath(...node.Node) string
+	NodeDirPath(...Node) string
+	NodeSlidesMarkdownPath(...Node) string
+	NodeSlidesHTMLPath(...Node) string
+	NodeFilesDirPath(...Node) string
+	NodeImagePath(...Node) string
 }

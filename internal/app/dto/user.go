@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/user"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"strings"
 )
 
@@ -22,8 +22,8 @@ func (u User) ChildTypeName() string {
 }
 
 // Children implements CourseNode.
-func (u User) Children() []node.Node {
-	var nodes []node.Node
+func (u User) Children() []ports.Node {
+	var nodes []ports.Node
 	for _, term := range u.Terms {
 		nodes = append(nodes, term)
 	}

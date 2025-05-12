@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	lessonviews "gh_static_portfolio/internal/app/views/lesson"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -154,7 +154,7 @@ func (h *lessonHandler) postEdit(c echo.Context) error {
 	return c.Redirect(303, h.reverse(routes.GetUnit.String(), nodePath.ToSlice()...))
 }
 
-func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) mt.NodeDetailsPage {
+func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) mt.NodeDetailsPage {
 	nodePage := mt.NodeDetailsPage{
 		Node:                nodes.Lesson,
 		ParentNode:          nodes.Unit,

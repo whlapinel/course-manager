@@ -1,4 +1,4 @@
-package node
+package ports
 
 type Node interface {
 	GetID() any // could be string or int

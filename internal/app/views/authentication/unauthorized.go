@@ -2,7 +2,7 @@ package authviews
 
 import (
 	appcomponents "gh_static_portfolio/internal/app/components"
-	components "gh_static_portfolio/internal/newtemplates/components/base"
+	components "gh_static_portfolio/internal/base"
 
 	"github.com/a-h/templ"
 )

@@ -13,7 +13,7 @@ import (
 	"gh_static_portfolio/internal/core/term"
 	"gh_static_portfolio/internal/features/files"
 	"gh_static_portfolio/internal/features/markdown"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -436,7 +436,7 @@ func (h *termHandler) showEdit(c echo.Context) error {
 	return Respond(c, page)
 }
 
-func (h *termHandler) nodeDetails(path routes.NodePath, nodes node.Nodes) appcomponents.NodeDetailsPage {
+func (h *termHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {
 	nodePage := appcomponents.NodeDetailsPage{
 		Node:            nodes.Term,
 		ParentNode:      nodes.User,
