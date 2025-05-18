@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/domain"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 
 	"github.com/a-h/templ"
 )
@@ -26,7 +26,7 @@ type StaticPage interface {
 type StaticNodeListPage struct {
 	PageData
 	Path   string
-	Parent node.Node
+	Parent ports.Node
 	components.Table
 }
 
@@ -49,11 +49,11 @@ func (page StaticNodeListPage) Filepath() string {
 
 type StaticNodeListParams struct {
 	PageData
-	Nodes                    node.Nodes
+	Nodes                    ports.Nodes
 	Path                     string
-	ListChildChildrenURLFunc func(nodes ...node.Node) string
-	ChildDetailsURLFunc      func(nodes ...node.Node) string
-	CourseCalendarURL        func(nodes ...node.Node) string
+	ListChildChildrenURLFunc func(nodes ...ports.Node) string
+	ChildDetailsURLFunc      func(nodes ...ports.Node) string
+	CourseCalendarURL        func(nodes ...ports.Node) string
 }
 
 func NewStaticNodeListPage(params StaticNodeListParams) (StaticNodeListPage, error) {

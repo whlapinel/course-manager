@@ -1,6 +1,8 @@
 package term
 
-import "gh_static_portfolio/internal/core/term"
+import (
+	"gh_static_portfolio/internal/core/term"
+)
 
 type Service struct {
 	repo Repository

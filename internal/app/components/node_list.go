@@ -2,7 +2,7 @@ package appcomponents
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
 	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/util"
@@ -109,7 +109,7 @@ func (list NodeListPage) upNavText() string {
 }
 
 func (list NodeListPage) PageTitle() string {
-	if list.ParentNode.TypeName() != domain.RootTypeName.String() {
+	if list.ParentNode.TypeName() != dto.RootTypeName.String() {
 		return fmt.Sprintf("%ss for %s: %s", list.ParentNode.ChildTypeName(), list.ParentNode.TypeName(), list.ParentNode.GetName())
 	} else {
 		return fmt.Sprintf("%ss", list.ParentNode.ChildTypeName())

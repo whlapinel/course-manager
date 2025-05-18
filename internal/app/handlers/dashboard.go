@@ -34,7 +34,7 @@ func NewDashboardHandler(
 	}
 }
 
-func RegisterUserRoutes(group *echo.Group, h *dashboardHandler) error {
+func RegisterDashboardRoutes(group *echo.Group, h *dashboardHandler) error {
 	for _, handler := range dashboardRouteHandlers(h) {
 		err := web.RegisterRoute(group, handler)
 		if err != nil {
@@ -53,7 +53,12 @@ func dashboardRouteHandlers(h *dashboardHandler) []web.RouteHandler {
 }
 
 func (h *dashboardHandler) generateSite(c echo.Context) error {
-	panic("not implemented")
+	userID := c.Get("id").(string)
+	err := h.sitegen.Build(userID, 2)
+	if err != nil {
+		return err
+	}
+	return c.String(200, "site generated")
 }
 
 // this reads the user's id from the context and redirects to the user's dashboard

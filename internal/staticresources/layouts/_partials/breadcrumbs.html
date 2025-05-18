@@ -1,0 +1,12 @@
+{{with .Params.breadcrumbs}}
+<nav class="flex gap-2">
+  <!-- context is breadcrumbs object -->
+  {{ range .items }}
+  <!--  -->
+  {{ with $.GetPage .url }}
+  <a href="{{.RelPermalink}}">{{.LinkTitle}}</a>
+  {{end}}
+  <!--  -->
+  {{end}}
+</nav>
+{{end}}

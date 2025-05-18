@@ -3,7 +3,6 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/domain"
 	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
@@ -54,7 +53,7 @@ func (page NodeCreatePage) BreadCrumbs() BreadCrumbs {
 
 }
 
-func NodeCreateFormID(nodeType domain.NodeTypeName) string {
+func NodeCreateFormID(nodeType dto.NodeTypeName) string {
 	return util.KebabCase(nodeType.String()) + "-form"
 }
 

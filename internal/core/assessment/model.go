@@ -3,17 +3,17 @@ package assessment
 import "time"
 
 type Assessment struct {
-	ID           int
-	CourseID     int
-	UnitID       int
-	LessonID     int
-	Name         string
-	Instructions string
-	File         string
-	Category     AssessmentCategory
-	DateAssigned time.Time
-	DateDue      time.Time
-	Dropped      bool
+	ID           int                `json:"id"`
+	CourseID     int                `json:"courseID"`
+	UnitID       int                `json:"unitID"`
+	LessonID     int                `json:"lessonID"`
+	Name         string             `json:"name"`
+	Instructions string             `json:"instructions"`
+	File         string             `json:"file"`
+	Category     AssessmentCategory `json:"category"`
+	DateAssigned time.Time          `json:"dateAssigned"`
+	DateDue      time.Time          `json:"dateDue"`
+	Dropped      bool               `json:"dropped"`
 }
 
 type AssessmentCategory string

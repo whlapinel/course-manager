@@ -8,9 +8,9 @@ import (
 )
 
 type Course struct {
-	course.Course
-	Units []Unit
-	standard.StandardSet
+	course.Course        `json:"course"`
+	Units                []Unit `json:"units"`
+	standard.StandardSet `json:"standardSet"`
 }
 
 type CourseType int

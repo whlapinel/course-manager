@@ -1,6 +1,4 @@
-
 services:
-    
   echo:
     image: whlapinel/course-manager:local-dev
     command: ["./cmd/new_app/new_app"]
@@ -12,5 +10,7 @@ services:
       - ./cmd/new_app:/app/cmd/new_app
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
+      - ./hugosites:/app/hugosites
+      - ./internal/staticresources:/app/internal/staticresources
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
       - ./course_manager.db:/app/course_manager.db

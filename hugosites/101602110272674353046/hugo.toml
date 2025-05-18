@@ -1,0 +1,49 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Mr. Lapinel'
+
+[module]
+
+[[module.mounts]]
+source = 'content'
+target = 'content'
+
+[[module.mounts]]
+source = '/app/internal/data/users/user_101602110272674353046'
+target = 'content'
+
+[[module.mounts]]
+source = '/app/internal/staticresources/content'
+target = 'content'
+
+[[module.mounts]]
+source = 'assets'
+target = 'assets'
+
+[[module.mounts]]
+source = '/app/internal/data/users/user_101602110272674353046'
+target = 'assets'
+
+[[module.mounts]]
+source = 'static'
+target = 'static'
+
+[[module.mounts]]
+source = '/app/internal/staticresources/static'
+target = 'static'
+
+[[module.mounts]]
+source = 'layouts'
+target = 'layouts'
+
+[[module.mounts]]
+source = '/app/internal/staticresources/layouts'
+target = 'layouts'
+
+[params]
+userName = "billy bob"
+# [markup]
+#   [markup.goldmark]
+#     [markup.goldmark.parser]
+#       [markup.goldmark.parser.attribute]
+#         title = true

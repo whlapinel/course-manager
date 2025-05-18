@@ -7,8 +7,8 @@ import (
 )
 
 type Unit struct {
-	unit.Unit
-	Lessons []Lesson
+	unit.Unit `json:"unit"`
+	Lessons   []Lesson `json:"lessons"`
 }
 
 func (u Unit) GetName() string {

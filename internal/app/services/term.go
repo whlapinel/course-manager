@@ -21,6 +21,17 @@ func NewTermService(
 	}
 }
 
+func (svc *TermService) ByID(termID int) (dto.Term, error) {
+	term, err := svc.termService.ByID(termID)
+	if err != nil {
+		return dto.Term{}, err
+	}
+	termDTO := dto.Term{
+		Term: term,
+	}
+	return termDTO, nil
+}
+
 func (svc *TermService) Save(term dto.Term) error {
 	return svc.termService.Save(term.Term)
 }

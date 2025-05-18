@@ -2,7 +2,7 @@ package appcomponents
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
 	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/ports"
 	"strconv"
@@ -70,7 +70,7 @@ func (page NodeDetailsPage) PageTitle() string {
 
 func (page NodeDetailsPage) upNavText() string {
 	parentPageText := page.Node.TypeName()
-	if page.Node.ParentTypeName() == string(domain.RootTypeName) {
+	if page.Node.ParentTypeName() == string(dto.RootTypeName) {
 		parentPageText = "🏠"
 		return fmt.Sprintf("Up to %s", parentPageText)
 	}

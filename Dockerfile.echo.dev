@@ -6,5 +6,14 @@ WORKDIR /app
 # Install dependencies (if needed)
 RUN apt-get update && apt-get install -y ca-certificates
 
+# Install dependencies and Hugo
+RUN apt-get update && \
+    apt-get install -y ca-certificates curl && \
+    curl -L -o hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v0.147.3/hugo_0.147.3_Linux-64bit.tar.gz && \
+    tar -xzf hugo.tar.gz hugo && \
+    mv hugo /usr/local/bin/hugo && \
+    rm hugo.tar.gz
+
+
 # Mount the locally built binary at runtime
-CMD ["./cmd/web_app/web_app"]
+CMD ["./cmd/new_app/new_app"]

@@ -11,9 +11,9 @@ import (
 )
 
 type Lesson struct {
-	lesson.Lesson
-	Standards   []standard.Standard
-	Assessments []assessment.Assessment
+	lesson.Lesson `json:"lesson"`
+	Standards     []standard.Standard     `json:"standards"`
+	Assessments   []assessment.Assessment `json:"assessments"`
 }
 
 func (l Lesson) GetName() string {
@@ -156,8 +156,8 @@ func (l Lesson) SortDates() Lesson {
 
 // returns designation e.g. Lesson 1.2
 func (l Lesson) Designation() string {
-	if l.UnitNum >= 0 {
-		return fmt.Sprintf("Lesson %d.%d", l.UnitNum, l.Number)
+	if l.UnitNumber >= 0 {
+		return fmt.Sprintf("Lesson %d.%d", l.UnitNumber, l.Number)
 	}
 	return fmt.Sprintf("%s: Day %d", l.UnitName, l.Number)
 }

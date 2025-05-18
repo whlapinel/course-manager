@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/app/dto"
 	"strconv"
 	"strings"
 )
@@ -82,7 +82,7 @@ func CancelEditButton() templ.Component {
 }
 
 func upNavText(typeName string) string {
-	if typeName == string(domain.RootTypeName) {
+	if typeName == string(dto.RootTypeName) {
 		return "Home"
 	}
 	return typeName + "s"

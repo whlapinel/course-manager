@@ -14,6 +14,6 @@ func New(generator ports.SiteGenerator) *Service {
 	}
 }
 
-func (s *Service) Build() error {
-	return s.SiteGenerator.Build()
+func (s *Service) Build(userID string, termID int) error {
+	return s.SiteGenerator.Build(userID, termID)
 }

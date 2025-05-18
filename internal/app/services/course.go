@@ -19,7 +19,18 @@ func NewCourseService(
 }
 
 func (svc *CourseService) ListByTerm(termID int) ([]dto.Course, error) {
-	return svc.courseService.ByTermID(termID)
+	courses, err := svc.courseService.ByTermID(termID)
+	if err != nil {
+		return nil, err
+	}
+	var courseDTOs []dto.Course
+	for _, course := range courses {
+		courseDTO := dto.Course{
+			Course: course,
+		}
+		courseDTOs = append(courseDTOs, courseDTO)
+	}
+	return courseDTOs, nil
 }
 
 func (svc *CourseService) Update(course dto.Course) error {

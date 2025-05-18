@@ -1,10 +1,10 @@
 package course
 
 type Course struct {
-	ID          int
-	ParentID    int
-	Name        string
-	Description string
+	ID          int    `json:"id"`
+	ParentID    int    `json:"parentID"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type CourseType int

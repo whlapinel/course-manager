@@ -4,7 +4,9 @@ import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	cmp "gh_static_portfolio/internal/base"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/core/assessment"
+	"gh_static_portfolio/internal/core/standard"
+	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"strconv"
 	"time"
@@ -104,12 +106,12 @@ func (page LessonDetailsPage) Tabs() templ.Component {
 }
 
 type ObjectiveSelect struct {
-	Objectives []domain.Standard
+	Objectives []standard.Standard
 }
 
 type EditAssessmentForm struct {
-	Params                domain.NodePath
-	Assessment            domain.Assessment
+	Params                routes.NodePath
+	Assessment            assessment.Assessment
 	PostEditAssessmentURL string
 	LessonDetailsURL      string
 }
@@ -138,7 +140,7 @@ func (data EditAssessmentForm) NewEditAssessmentFormComponent() templ.Component 
 		Value: data.Assessment.DateDue.Format(time.DateOnly),
 	})
 	var options []cmp.Option
-	for _, category := range domain.Categories {
+	for _, category := range assessment.Categories {
 		catOption := cmp.Option{
 			Value:    string(category),
 			Content:  string(category),

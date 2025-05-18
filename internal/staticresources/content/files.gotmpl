@@ -1,0 +1,35 @@
+<!-- Add raw files as resources -->
+{{ range .params.files }}
+  {{ $filepath:= . }}
+  {{ with resources.Get . }}
+    {{ $content := dict
+      "mediaType" .MediaType
+      "value" .
+    }}
+    {{ $resource := dict
+      "path" $filepath
+      "content" .
+      "title" $filepath
+    }}
+    {{ $.AddResource $resource }}
+  {{ end }}
+{{ end }}
+<!-- Add markdown files as standalone pages -->
+{{ range .params.filePages }}
+  {{ $filepath := . }}
+  {{ with resources.Get . }}
+    {{ warnf "this is a test" }}
+    {{ $content := dict
+      "mediaType" "text/markdown"
+      "value" .
+    }}
+    {{ $childPage := dict
+      "type" "standalone"
+      "title" $filepath
+      "path" $filepath
+      "content" $content
+      "kind" "page"
+    }}
+    {{ $.AddPage $childPage }}
+  {{ end }}
+{{ end }}

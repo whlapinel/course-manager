@@ -167,14 +167,15 @@ func (h *termHandler) listByUser(c echo.Context) error {
 	}
 	user.Terms = terms
 	nodePage := appcomponents.NodeListPage{
-		ParentNode:       user,
-		Children:         user.Children(),
-		ChildDetailsURL:  web.URLFunc(routes.GetTerm, h.reverse, nodePath.ToSlice()...),
-		ChildChildrenURL: web.URLFunc(routes.GetCourses, h.reverse, nodePath.ToSlice()...),
-		DeleteChildURL:   web.URLFunc(routes.DeleteTerm, h.reverse, nodePath.ToSlice()...),
-		ShowNewChildURL:  h.reverse(routes.GetNewTerm.String(), nodePath.ToSlice()...),
-		UpNavURL:         h.reverse(routes.GetUser.String(), nodePath.ToSlice()...),
-		BreadCrumbsData:  BreadCrumbs2(nodes, nodePath, h.reverse),
+		ParentNode:          user,
+		Children:            user.Children(),
+		ChildDetailsURL:     web.URLFunc(routes.GetTerm, h.reverse, nodePath.ToSlice()...),
+		ChildChildrenURL:    web.URLFunc(routes.GetCourses, h.reverse, nodePath.ToSlice()...),
+		DeleteChildURL:      web.URLFunc(routes.DeleteTerm, h.reverse, nodePath.ToSlice()...),
+		ShowNewChildURL:     h.reverse(routes.GetNewTerm.String(), nodePath.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetUser.String(), nodePath.ToSlice()...),
+		BreadCrumbsData:     BreadCrumbs2(nodes, nodePath, h.reverse),
+		CourseManagerLayout: BaseLayout3(h.reverse, user),
 	}
 	page := termviews.TermsListPage{
 		ShowTermCalendarURL: web.URLFunc(routes.GetTermCalendar, h.reverse, nodePath.ToSlice()...),

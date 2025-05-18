@@ -3,10 +3,10 @@ package templates
 import (
 	"gh_static_portfolio/internal/app/dto"
 	components "gh_static_portfolio/internal/base"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 )
 
-func BreadCrumbs(nodes node.Nodes, urlFunc func(...node.Node) string) components.BreadCrumbs {
+func BreadCrumbs(nodes ports.Nodes, urlFunc func(...ports.Node) string) components.BreadCrumbs {
 	var items []components.BreadCrumbsItem
 	nodeSlice := nodes.ToSlice()
 	for i, node := range nodeSlice {

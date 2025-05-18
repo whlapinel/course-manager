@@ -42,7 +42,7 @@ func (l *lessonRepo) ByID(lessonID int) (lesson.Lesson, error) {
 	return lesson.Lesson{
 		ID:          int(dbLesson.ID),
 		UnitID:      int(dbLesson.UnitID),
-		UnitNum:     int(dbLesson.UnitNum),
+		UnitNumber:     int(dbLesson.UnitNumber),
 		UnitName:    dbLesson.UnitName,
 		Number:      int(dbLesson.Number),
 		Name:        dbLesson.Name.String,
@@ -65,7 +65,7 @@ func (l *lessonRepo) ByUnitID(unitID int) ([]lesson.Lesson, error) {
 			Number:      int(dbLesson.Number),
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
-			UnitNum:     int(dbLesson.UnitNum),
+			UnitNumber:     int(dbLesson.UnitNumber),
 			UnitName:    dbLesson.UnitName,
 		}
 		dbLessonDates, err := l.queries.GetLessonDates(context.Background(), int64(lesson.ID))

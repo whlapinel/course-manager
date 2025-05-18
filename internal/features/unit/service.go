@@ -1,6 +1,8 @@
 package unit
 
-import "gh_static_portfolio/internal/core/unit"
+import (
+	"gh_static_portfolio/internal/core/unit"
+)
 
 type Service struct {
 	repo Repository

@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./internal/templates/**/*.{html,js,templ}"
+        "./internal/**/*.{html,js,templ}",
+        "./hugosites/**/*.{html,js,gotmpl}",
     ],
     theme: {
         extend: {},

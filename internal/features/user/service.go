@@ -1,6 +1,8 @@
 package user
 
-import "gh_static_portfolio/internal/core/user"
+import (
+	"gh_static_portfolio/internal/core/user"
+)
 
 type Service struct {
 	repo Repository

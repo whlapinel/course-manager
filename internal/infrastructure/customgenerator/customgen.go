@@ -8,7 +8,6 @@ import (
 	templates "gh_static_portfolio/internal/infrastructure/customgenerator/views"
 
 	"gh_static_portfolio/internal/ports"
-	"gh_static_portfolio/internal/shared/node"
 	"io"
 	"io/fs"
 	"log"
@@ -34,30 +33,30 @@ func New(
 }
 
 // Build implements ports.SiteGenerator.
-func (c *customGenerator) Build() error {
+func (c *customGenerator) Build(userID string, termID int) error {
 	panic("unimplemented")
 }
 
 const AssetsDir = "./sites/assets"
 
-func NodeListPageURL(nodes ...node.Node) string {
+func NodeListPageURL(nodes ...ports.Node) string {
 	path := NodeListPagePath(nodes...)
 	return URL(path)
 }
 
-func NodeDetailsPageURL(nodes ...node.Node) string {
+func NodeDetailsPageURL(nodes ...ports.Node) string {
 	path := NodeDetailsPagePath(nodes...)
 	return URL(path)
 }
 
-func NodeFilesPagePath(relPath string, nodes ...node.Node) string {
+func NodeFilesPagePath(relPath string, nodes ...ports.Node) string {
 	path := FilePath(relPath, nodes...)
 	path = filepath.Join(path, "files.html")
 	return path
 }
 
 // intended as a callback for breadcrumbs
-func NodeURL(nodes ...node.Node) string {
+func NodeURL(nodes ...ports.Node) string {
 	currNode := nodes[len(nodes)-1]
 	if currNode.ChildTypeName() == "" {
 		return NodeDetailsPageURL(nodes...)
@@ -75,32 +74,32 @@ func URL(path string) string {
 	return "/" // Return root if there aren't enough segments
 }
 
-func FilePath(relPath string, nodes ...node.Node) string {
+func FilePath(relPath string, nodes ...ports.Node) string {
 	path := NodeFilesRootPath(nodes...)
 	path = filepath.Join(path, relPath)
 	return path
 }
 
-func FilesPageURL(relPath string, nodes ...node.Node) string {
+func FilesPageURL(relPath string, nodes ...ports.Node) string {
 	return URL(NodeFilesPagePath(relPath, nodes...))
 
 }
 
-func FileURL(relPath string, nodes ...node.Node) string {
+func FileURL(relPath string, nodes ...ports.Node) string {
 	return URL(FilePath(relPath, nodes...))
 }
 
-func ViewMarkdownPath(relPath string, nodes ...node.Node) string {
+func ViewMarkdownPath(relPath string, nodes ...ports.Node) string {
 	path := FilePath(relPath, nodes...)
 	path = strings.ReplaceAll(path, ".md", ".html")
 	return path
 }
 
-func ViewMarkdownURL(relPath string, nodes ...node.Node) string {
+func ViewMarkdownURL(relPath string, nodes ...ports.Node) string {
 	return URL(ViewMarkdownPath(relPath, nodes...))
 }
 
-func CourseCalendarURL(nodes ...node.Node) string {
+func CourseCalendarURL(nodes ...ports.Node) string {
 	return URL(CourseCalendarPagePath(nodes...))
 }
 
@@ -113,7 +112,7 @@ func StaticSiteRootDir(user dto.User) string {
 	return filepath.Join("sites", user.Username())
 }
 
-func StaticNodePath(nodes ...node.Node) string {
+func StaticNodePath(nodes ...ports.Node) string {
 	user, ok := nodes[0].(dto.User)
 	if !ok {
 		panic("node is not user")
@@ -135,21 +134,21 @@ func StaticNodePath(nodes ...node.Node) string {
 	return path
 }
 
-func CourseCalendarPagePath(nodes ...node.Node) string {
+func CourseCalendarPagePath(nodes ...ports.Node) string {
 	path := StaticNodePath(nodes...)
 	leafNode := nodes[len(nodes)-1] // last node is current node
 	path = filepath.Join(path, fmt.Sprintf("%s_%d_calendar.html", strings.ToLower(leafNode.TypeName()), leafNode.GetID()))
 	return path
 }
 
-func NodeListPagePath(nodes ...node.Node) string {
+func NodeListPagePath(nodes ...ports.Node) string {
 	path := StaticNodePath(nodes...)
 	leafNode := nodes[len(nodes)-1] // last node is current node
 	path = filepath.Join(path, fmt.Sprintf("%s_%d.html", strings.ToLower(leafNode.TypeName()), leafNode.GetID()))
 	return path
 }
 
-func NodeDetailsPagePath(nodes ...node.Node) string {
+func NodeDetailsPagePath(nodes ...ports.Node) string {
 	path := StaticNodePath(nodes...)
 	currNode := nodes[len(nodes)-1] // last node is current node
 	path = filepath.Join(path, fmt.Sprintf("%s_%d_details.html", strings.ToLower(currNode.TypeName()), currNode.GetID()))
@@ -157,40 +156,40 @@ func NodeDetailsPagePath(nodes ...node.Node) string {
 }
 
 // Student-facing site
-func NodeImagePath(nodes ...node.Node) string {
+func NodeImagePath(nodes ...ports.Node) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "image.png")
 }
 
-func NodeFilesRootPath(nodes ...node.Node) string {
+func NodeFilesRootPath(nodes ...ports.Node) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "files")
 }
 
 // file copied from data folder, simply marp written to a file
-func NodeSlidesPath(nodes ...node.Node) string {
+func NodeSlidesPath(nodes ...ports.Node) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "slides.html")
 }
 
 // iframe with src set to node slides path
-func SlidesFragmentPath(nodes ...node.Node) string {
+func SlidesFragmentPath(nodes ...ports.Node) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "slides-fragment.html")
 }
-func AssessmentsFragmentPath(nodes ...node.Node) string {
+func AssessmentsFragmentPath(nodes ...ports.Node) string {
 	dir := StaticNodePath(nodes...)
 	return filepath.Join(dir, "assessment-fragment.html")
 }
 
-func SlidesFragment(nodes node.Nodes) templates.StaticPage {
+func SlidesFragment(nodes ports.Nodes) templates.StaticPage {
 	return templates.SlidesFragment{
 		Path:            SlidesFragmentPath(nodes.ToSlice()...),
 		LessonSlidesURL: URL(NodeSlidesPath(nodes.ToSlice()...)),
 	}
 }
 
-func AssessmentsFragment(page templates.StaticLessonDetailsPage, assessments []assessment.Assessment, nodes node.Nodes) templates.StaticPage {
+func AssessmentsFragment(page templates.StaticLessonDetailsPage, assessments []assessment.Assessment, nodes ports.Nodes) templates.StaticPage {
 	return templates.AssessmentsFragment{
 		StaticLessonDetailsPage: page,
 		Path:                    AssessmentsFragmentPath(nodes.ToSlice()...),
@@ -198,7 +197,7 @@ func AssessmentsFragment(page templates.StaticLessonDetailsPage, assessments []a
 	}
 }
 
-func NodeDetailsPage(nodes node.Nodes) templates.StaticNodeDetailsPage {
+func NodeDetailsPage(nodes ports.Nodes) templates.StaticNodeDetailsPage {
 	return templates.StaticNodeDetailsPage{
 		Node:         nodes.CurrentNode(),
 		Path:         NodeDetailsPagePath(nodes.ToSlice()...),
@@ -207,7 +206,7 @@ func NodeDetailsPage(nodes node.Nodes) templates.StaticNodeDetailsPage {
 	}
 }
 
-func NodeFilesPages(relPath string, nodes node.Nodes) []templates.FilesPageSection {
+func NodeFilesPages(relPath string, nodes ports.Nodes) []templates.FilesPageSection {
 	var pages []templates.FilesPageSection
 	path := FilePath(relPath, nodes.ToSlice()...)
 	files, _ := os.ReadDir(path)
@@ -260,7 +259,7 @@ func NodeFilesPages(relPath string, nodes node.Nodes) []templates.FilesPageSecti
 
 }
 
-func NodeListPage(nodes node.Nodes) (templates.StaticNodeListPage, error) {
+func NodeListPage(nodes ports.Nodes) (templates.StaticNodeListPage, error) {
 	page, err := templates.NewStaticNodeListPage(templates.StaticNodeListParams{
 		PageData:                 Layout(nodes),
 		Nodes:                    nodes,
@@ -275,7 +274,7 @@ func NodeListPage(nodes node.Nodes) (templates.StaticNodeListPage, error) {
 	return page, nil
 }
 
-func Layout(nodes node.Nodes) templates.PageData {
+func Layout(nodes ports.Nodes) templates.PageData {
 	return templates.PageData{
 		User:        nodes.User.(dto.User),
 		AssetsURL:   StaticAssetsURL,
@@ -284,7 +283,7 @@ func Layout(nodes node.Nodes) templates.PageData {
 }
 
 func (svc *customGenerator) generate(user dto.User, term dto.Term) error {
-	nodes := node.Nodes{
+	nodes := ports.Nodes{
 		User: user,
 		Term: term,
 	}
@@ -318,7 +317,7 @@ func (svc *customGenerator) generate(user dto.User, term dto.Term) error {
 		return err
 	}
 	for _, course := range term.Courses {
-		nodes := node.Nodes{
+		nodes := ports.Nodes{
 			User:   user,
 			Term:   term,
 			Course: course,
@@ -339,7 +338,7 @@ func (svc *customGenerator) generate(user dto.User, term dto.Term) error {
 			return err
 		}
 		for _, unit := range course.Units {
-			nodes := node.Nodes{
+			nodes := ports.Nodes{
 				User:   user,
 				Term:   term,
 				Course: course,
@@ -350,7 +349,7 @@ func (svc *customGenerator) generate(user dto.User, term dto.Term) error {
 				return err
 			}
 			for _, lesson := range unit.Lessons {
-				nodes := node.Nodes{
+				nodes := ports.Nodes{
 					User:   user,
 					Term:   term,
 					Course: course,
@@ -435,7 +434,7 @@ func copyFile(srcPath, destPath string) error {
 }
 
 // renders details page and list page for each node
-func renderNodePages(nodes node.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
+func renderNodePages(nodes ports.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
 	staticPage := NodeDetailsPage(nodes)
 	select {
 	case <-ctx.Done():
@@ -462,7 +461,7 @@ func renderNodePages(nodes node.Nodes, errChan chan<- error, wg *sync.WaitGroup,
 }
 
 // renders details page and list page for each node
-func renderLessonPages(nodes node.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
+func renderLessonPages(nodes ports.Nodes, errChan chan<- error, wg *sync.WaitGroup, ctx context.Context, cancel context.CancelFunc) error {
 	nodePage := NodeDetailsPage(nodes)
 	if nodePage.AssetsURL == nil {
 		log.Fatal("AssetsURL func is nil!!")

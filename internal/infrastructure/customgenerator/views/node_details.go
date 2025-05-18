@@ -2,7 +2,7 @@ package templates
 
 import (
 	components "gh_static_portfolio/internal/base"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"log"
 
 	"github.com/a-h/templ"
@@ -11,11 +11,11 @@ import (
 type StaticNodeDetailsPage struct {
 	PageData
 	Path         string
-	Node         node.Node
+	Node         ports.Node
 	FilesPageURL string
 }
 
-func (page StaticNodeDetailsPage) GetNode() node.Node {
+func (page StaticNodeDetailsPage) GetNode() ports.Node {
 	return page.Node
 }
 
@@ -59,7 +59,7 @@ func (page StaticNodeDetailsPage) Filepath() string {
 }
 
 type DetailsPage interface {
-	GetNode() node.Node
+	GetNode() ports.Node
 	Info() templ.Component // for other info that might not apply to all nodes
 	Tabs() templ.Component
 	BreadCrumbs() templ.Component

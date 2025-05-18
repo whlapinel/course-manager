@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"log"
 	"time"
 
@@ -13,11 +13,11 @@ import (
 
 type CourseCalendarPage struct {
 	PageData
-	Nodes         node.Nodes
+	Nodes         ports.Nodes
 	CalendarDates CalendarDates
 	Path          string
 	AssetsURL     func(relPath string) string
-	LessonPageURL func(nodes ...node.Node) string
+	LessonPageURL func(nodes ...ports.Node) string
 }
 
 func (page CourseCalendarPage) BreadCrumbs() templ.Component {

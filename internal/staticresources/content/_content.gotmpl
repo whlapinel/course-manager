@@ -1,0 +1,11 @@
+{{ range site.Data.data }}
+  {{ warnf "testing the warning in _content.gotmpl" }}
+  {{ $page := dict
+    "path" .path
+    "kind" .kind
+    "type" .type
+    "title" .title
+    "params" .params
+  }}
+  {{ $.AddPage $page }}
+{{ end }}

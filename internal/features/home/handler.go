@@ -12,11 +12,10 @@ import (
 
 type Handler struct {
 	reverse web.Reverse
-	service Service
 }
 
-func NewHandler(service Service, e *echo.Echo) *Handler {
-	return &Handler{service: service, reverse: e.Reverse}
+func NewHandler(reverse web.Reverse) *Handler {
+	return &Handler{reverse: reverse}
 }
 
 func RegisterRoutes(group *echo.Group, h *Handler) error {

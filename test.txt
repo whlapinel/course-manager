@@ -1,1 +1,1 @@
-Hello SCP!
+Hello, this is a test file!

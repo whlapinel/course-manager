@@ -1,5 +1,5 @@
 package ports
 
 type SiteGenerator interface {
-	Build() error
+	Build(userID string, termID int) error
 }

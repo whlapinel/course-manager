@@ -10,9 +10,9 @@ import (
 )
 
 type Term struct {
-	term.Term
-	Courses   []Course
-	Occasions []occasion.Occasion
+	term.Term `json:"term"`
+	Courses   []Course            `json:"courses"`
+	Occasions []occasion.Occasion `json:"occasions"`
 }
 
 func (t Term) GetName() string {

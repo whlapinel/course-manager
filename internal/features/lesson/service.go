@@ -14,7 +14,7 @@ func NewService(repo Repository) *Service {
 	}
 }
 
-func (svc *Service) Update(lesson lesson.Lesson) error{
+func (svc *Service) Update(lesson lesson.Lesson) error {
 	return svc.repo.Update(lesson)
 }
 

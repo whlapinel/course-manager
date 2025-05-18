@@ -53,5 +53,5 @@ func (page UserHomePage) HTMXResponse() templ.Component {
 }
 
 func (page UserHomePage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component()
+	return page.CourseManagerLayout.Component2(page.Component())
 }

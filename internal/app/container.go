@@ -29,7 +29,8 @@ import (
 )
 
 const dbPath = "./course_manager.db"
-const dataFilesRoot = "./internal/data"
+const dataFilesRoot = "./internal/data/users"
+const staticSitesRoot = "./hugosites"
 
 type App struct {
 	Echo *echo.Echo
@@ -50,9 +51,6 @@ func New(params NewAppParams) (*App, error) {
 		return nil, err
 	}
 
-	// infrastructure init
-	hugoGenerator := hugo.New()
-
 	// repositories
 	filesRepo := localfilesystem.New()
 	userRepo := sqlite.NewUserRepo(queries)
@@ -62,6 +60,12 @@ func New(params NewAppParams) (*App, error) {
 	lessonRepo := sqlite.NewLessonRepo(queries)
 	termOccasionRepo := sqlite.NewTermOccasionRepo(queries)
 
+	// infrastructure
+	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
+	staticSiteDataPathingSvc := pathing.NewNodePathService(staticSitesRoot)
+	markdownRenderer := markdown.NewService()
+	slidesRenderer := slidesrenderer.New(params.MarpBaseURL, dataFilesPathingSvc)
+
 	// feature services
 	authService := auth.NewService(userRepo)
 	userService := user.NewService(userRepo)
@@ -70,30 +74,6 @@ func New(params NewAppParams) (*App, error) {
 	unitService := unit.NewService(unitRepo)
 	lessonService := lesson.NewService(lessonRepo)
 	termOccasionService := termoccasion.NewService(termOccasionRepo)
-
-	// infrastructure services
-	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
-	markdownRenderer := markdown.NewService()
-	slidesRenderer := slidesrenderer.New(params.MarpBaseURL, dataFilesPathingSvc)
-	siteGenerator := sitegen.New(hugoGenerator)
-
-	// route groups
-	root := e.Group("")
-	protected := root.Group(
-		"",
-		authService.AddCookieToHeader,
-		authService.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())),
-		authService.GetClaims,
-	)
-
-	homeService := home.NewService(struct{}{})
-	homeHandler := home.NewHandler(*homeService, e)
-	err = home.RegisterRoutes(root, homeHandler)
-	if err != nil {
-		return nil, err
-	}
-
-	// feature services
 	fileSystem := files.NewFileService(filesRepo, dataFilesPathingSvc)
 	slidesService := slides.New(params.MarpBaseURL, slidesRenderer, dataFilesPathingSvc, filesRepo)
 
@@ -107,8 +87,48 @@ func New(params NewAppParams) (*App, error) {
 	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
 	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByCourseID, lessonAppService.ByUnitID, termAppService.WithOccasions)
 
-	// application-level handlers
+	// infrastructure init
+	hugoParams := hugo.Params{
+		HugoURL:                  "hugo",
+		SitesRootDir:             "hugosites",
+		DataFilesRoot:            dataFilesRoot,
+		StaticSitePathingService: staticSiteDataPathingSvc,
+		DataPathingService:       dataFilesPathingSvc,
+		GetUser:                  userAppService.ByID,
+		GetTerm:                  termAppService.ByID,
+		GetCourses:               courseAppService.ListByTerm,
+		GetUnits:                 unitAppService.ByCourseID,
+		GetLessons:               lessonAppService.ByUnitID,
+	}
+	hugoGenerator, err := hugo.New(hugoParams)
+	if err != nil {
+		return nil, err
+	}
+
+	// site generator service
+	siteGenerator := sitegen.New(hugoGenerator)
+
+	// route groups
+	root := e.Group("")
+	homeHandler := home.NewHandler(e.Reverse)
+	err = home.RegisterRoutes(root, homeHandler)
+	if err != nil {
+		return nil, err
+	}
 	authHandler := handlers.NewAuthHandler(authService, e.Reverse)
+	err = handlers.RegisterAuthRoutes(root, authHandler)
+	if err != nil {
+		return nil, err
+	}
+
+	protected := root.Group(
+		"",
+		authService.AddCookieToHeader,
+		authService.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())),
+		authService.GetClaims,
+	)
+
+	// application-level handlers
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
@@ -118,11 +138,7 @@ func New(params NewAppParams) (*App, error) {
 	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
-	err = handlers.RegisterAuthRoutes(protected, authHandler)
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.RegisterUserRoutes(protected, dashboardAppHandler)
+	err = handlers.RegisterDashboardRoutes(protected, dashboardAppHandler)
 	if err != nil {
 		return nil, err
 	}

@@ -3,12 +3,12 @@ package term
 import "time"
 
 type Term struct {
-	UserID               string
-	Start                time.Time
-	End                  time.Time
-	NonInstructionalDays []time.Time
-	InstructionalDays    []time.Time
-	ID                   int
-	Name                 string
-	Description          string
+	ID                   int         `json:"id"`
+	Name                 string      `json:"name"`
+	Description          string      `json:"description"`
+	UserID               string      `json:"userID"`
+	Start                time.Time   `json:"start"`
+	End                  time.Time   `json:"end"`
+	NonInstructionalDays []time.Time `json:"nonInstructionalDays"`
+	InstructionalDays    []time.Time `json:"instructionalDays"`
 }

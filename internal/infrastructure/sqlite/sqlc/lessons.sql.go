@@ -69,7 +69,7 @@ func (q *Queries) DeleteLessonStandard(ctx context.Context, arg DeleteLessonStan
 const getLesson = `-- name: GetLesson :one
 SELECT
   l.id, l.unit_id, l.number, l.name, l.description,
-  u.number AS unit_num,
+  u.number AS unit_number,
   u.name AS unit_name
 FROM
   lessons l
@@ -84,7 +84,7 @@ type GetLessonRow struct {
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
-	UnitNum     int64
+	UnitNumber  int64
 	UnitName    string
 }
 
@@ -97,7 +97,7 @@ func (q *Queries) GetLesson(ctx context.Context, id int64) (GetLessonRow, error)
 		&i.Number,
 		&i.Name,
 		&i.Description,
-		&i.UnitNum,
+		&i.UnitNumber,
 		&i.UnitName,
 	)
 	return i, err
@@ -142,7 +142,7 @@ SELECT
   l.number,
   l.name,
   l.description,
-  u.number AS unit_num,
+  u.number AS unit_number,
   u.name AS unit_name
 FROM
   lessons l
@@ -156,7 +156,7 @@ type GetLessonsRow struct {
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
-	UnitNum     int64
+	UnitNumber  int64
 	UnitName    string
 }
 
@@ -174,7 +174,7 @@ func (q *Queries) GetLessons(ctx context.Context, unitID int64) ([]GetLessonsRow
 			&i.Number,
 			&i.Name,
 			&i.Description,
-			&i.UnitNum,
+			&i.UnitNumber,
 			&i.UnitName,
 		); err != nil {
 			return nil, err
@@ -253,7 +253,7 @@ const getLessonsOnDateForCourse = `-- name: GetLessonsOnDateForCourse :many
 SELECT
   ld.lesson_id, ld.date_id,
   l.id, l.unit_id, l.number, l.name, l.description,
-  u.number as unit_num,
+  u.number as unit_number,
   u.name as unit_name
 from
   lesson_dates ld
@@ -280,7 +280,7 @@ type GetLessonsOnDateForCourseRow struct {
 	Number      int64
 	Name        sql.NullString
 	Description sql.NullString
-	UnitNum     int64
+	UnitNumber  int64
 	UnitName    string
 }
 
@@ -301,7 +301,7 @@ func (q *Queries) GetLessonsOnDateForCourse(ctx context.Context, arg GetLessonsO
 			&i.Number,
 			&i.Name,
 			&i.Description,
-			&i.UnitNum,
+			&i.UnitNumber,
 			&i.UnitName,
 		); err != nil {
 			return nil, err

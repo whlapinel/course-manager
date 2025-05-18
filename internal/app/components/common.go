@@ -1,7 +1,7 @@
 package appcomponents
 
 import (
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
 	"log"
 	"net/url"
@@ -43,7 +43,7 @@ func AddQueryParam(path, key, value string) string {
 }
 
 type EditField struct {
-	Params           domain.NodePath
+	Params           routes.NodePath
 	FieldName        string
 	Content          string
 	GetEditFieldURL  string

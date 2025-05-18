@@ -1,0 +1,12 @@
+{{ $size := "" }}
+{{ if eq .Level 1 }}{{ $size = "text-4xl" }}{{ end }}
+{{ if eq .Level 2 }}{{ $size = "text-3xl" }}{{ end }}
+{{ if eq .Level 3 }}{{ $size = "text-2xl" }}{{ end }}
+{{ if eq .Level 4 }}{{ $size = "text-xl" }}{{ end }}
+{{ if eq .Level 5 }}{{ $size = "text-lg" }}{{ end }}
+{{ if eq .Level 6 }}{{ $size = "text-base" }}{{ end }}
+
+<h{{ .Level }} id="{{ .Anchor }}" class="bg-blue-500 {{ $size }}">
+  {{ .Text }}
+  <a href="#{{ .Anchor }}">#</a>
+</h{{ .Level }}>

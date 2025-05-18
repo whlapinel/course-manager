@@ -2,7 +2,8 @@ package lessonviews
 
 import (
 	"gh_static_portfolio/internal/app/components"
-	"gh_static_portfolio/internal/domain"
+	"gh_static_portfolio/internal/core/assessment"
+	"gh_static_portfolio/internal/shared/routes"
 	"github.com/labstack/echo/v4"
 	"strconv"
 	"time"
@@ -29,24 +30,24 @@ templ EditAssessmentFormComponent(props EditAssessmentForm) {
 			<label for="category">Category</label>
 			<select name="category" id="category" class="bg-black">
 				<option
-					value={ string(domain.Prepare) }
-					selected?={ props.Assessment.Category == domain.Prepare }
+					value={ string(assessment.Prepare) }
+					selected?={ props.Assessment.Category == assessment.Prepare }
 				>Prepare</option>
 				<option
-					value={ string(domain.Rehearse) }
-					selected?={ props.Assessment.Category == domain.Rehearse }
+					value={ string(assessment.Rehearse) }
+					selected?={ props.Assessment.Category == assessment.Rehearse }
 				>Rehearse</option>
 				<option
-					value={ string(domain.Perform) }
-					selected?={ props.Assessment.Category == domain.Perform }
+					value={ string(assessment.Perform) }
+					selected?={ props.Assessment.Category == assessment.Perform }
 				>Perform</option>
 				<option
-					value={ string(domain.Midterm) }
-					selected?={ props.Assessment.Category == domain.Midterm }
+					value={ string(assessment.Midterm) }
+					selected?={ props.Assessment.Category == assessment.Midterm }
 				>Midterm</option>
 				<option
-					value={ string(domain.Final) }
-					selected?={ props.Assessment.Category == domain.Final }
+					value={ string(assessment.Final) }
+					selected?={ props.Assessment.Category == assessment.Final }
 				>Final</option>
 			</select>
 			<label for="file">File</label>
@@ -71,7 +72,7 @@ templ EditAssessmentFormComponent(props EditAssessmentForm) {
 templ ObjectiveSelectComponent(props ObjectiveSelect) {
 	<select id="objectives-select" name="objective">
 		for _, objective := range props.Objectives {
-			<option value={ strconv.Itoa(objective.ID) }>{ objective.Name }</option>
+			<option value={ strconv.Itoa(objective.Objective.ID) }>{ objective.Name }</option>
 		}
 	</select>
 }
@@ -100,7 +101,7 @@ templ SlidesComponent(data Slides) {
 // 		value={ name }
 // 	/>
 // }
-templ EditSlidesTemplate(params domain.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
+templ EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
 	// <textarea
 	// 	id={ EditSlidesTextAreaID.String() }
 	// 	name={ EditSlidesTextAreaID.String() }

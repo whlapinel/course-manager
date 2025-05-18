@@ -2,26 +2,37 @@ package pathing
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/ports"
 	"path/filepath"
 	"strings"
 )
 
 type nodePathService struct {
-	Root string
+	segments []string
 }
 
 func NewNodePathService(root string) ports.PathingService {
-	return &nodePathService{Root: root}
+	return &nodePathService{segments: []string{root}}
+}
+
+func (n *nodePathService) WithNewRoot(root string) ports.PathingService {
+	return &nodePathService{segments: []string{root}}
+}
+
+func (n *nodePathService) WithSegment(segment string) ports.PathingService {
+	return &nodePathService{segments: append(n.segments, segment)}
 }
 
 func (n *nodePathService) NodeDirPath(nodes ...ports.Node) string {
-	path := n.Root
+	var pathSegments = n.segments
 	for _, node := range nodes {
 		if node == nil {
 			break
 		}
-		path = filepath.Join(path, strings.ToLower(node.TypeName()+"s"))
+		if _, ok := node.(dto.User); !ok {
+			pathSegments = append(pathSegments, strings.ToLower(node.TypeName()+"s"))
+		}
 		var dirName string
 		switch id := node.GetID().(type) {
 		case string:
@@ -29,9 +40,15 @@ func (n *nodePathService) NodeDirPath(nodes ...ports.Node) string {
 		case int:
 			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), id)
 		}
-		path = filepath.Join(path, dirName)
+		pathSegments = append(pathSegments, dirName)
 	}
-	return path
+	return filepath.Join(pathSegments...)
+}
+
+func (n *nodePathService) NodeChildrenDirPath(nodes ...ports.Node) string {
+	path := n.NodeDirPath(nodes...)
+	lastNode := nodes[len(nodes)-1]
+	return filepath.Join(path, strings.ToLower(lastNode.ChildTypeName())+"s")
 }
 
 func (n *nodePathService) NodeSlidesHTMLPath(nodes ...ports.Node) string {

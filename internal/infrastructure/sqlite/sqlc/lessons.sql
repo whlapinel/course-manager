@@ -12,7 +12,7 @@ VALUES
 -- name: GetLesson :one
 SELECT
   l.*,
-  u.number AS unit_num,
+  u.number AS unit_number,
   u.name AS unit_name
 FROM
   lessons l
@@ -26,7 +26,7 @@ SELECT
   l.number,
   l.name,
   l.description,
-  u.number AS unit_num,
+  u.number AS unit_number,
   u.name AS unit_name
 FROM
   lessons l
@@ -53,7 +53,7 @@ VALUES
 SELECT
   ld.*,
   l.*,
-  u.number as unit_num,
+  u.number as unit_number,
   u.name as unit_name
 from
   lesson_dates ld

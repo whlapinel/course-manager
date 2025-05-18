@@ -4,7 +4,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/core/assessment"
-	"gh_static_portfolio/internal/shared/node"
+	"gh_static_portfolio/internal/ports"
 	"path/filepath"
 
 	"github.com/a-h/templ"
@@ -15,12 +15,12 @@ type Link struct {
 	URL  string
 }
 type StaticLessonDetailsPage struct {
-	node.Nodes
+	ports.Nodes
 	StaticNodeDetailsPage
 	LessonSlidesURL string
 	AssessmentsURL  string
-	ViewMarkdownURL func(relPath string, nodes ...node.Node) string
-	FilesURLFunc    func(relPath string, nodes ...node.Node) string
+	ViewMarkdownURL func(relPath string, nodes ...ports.Node) string
+	FilesURLFunc    func(relPath string, nodes ...ports.Node) string
 }
 
 func (page StaticLessonDetailsPage) Component() templ.Component {

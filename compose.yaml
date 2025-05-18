@@ -1,4 +1,3 @@
-
 services:
   marp:
     # marp doesn't shut down gracefully with SIGINT or SIGTERM so just kill it immediately
@@ -29,10 +28,19 @@ services:
       - ./sites:/app/sites
       - ./caddy_data:/root/.local/share/caddy
       - ./caddy_config:/root/.config/caddy
-    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.dev", "--adapter", "caddyfile"]
-    
+    command:
+      [
+        "caddy",
+        "run",
+        "--config",
+        "/etc/caddy/Caddyfile.dev",
+        "--adapter",
+        "caddyfile",
+      ]
+
   echo:
     image: whlapinel/course-manager:0.2.0-dev
+    user: "${UID}:${GID}"
     command: ["./cmd/web_app/web_app"]
     networks:
       - app-network
@@ -44,17 +52,35 @@ services:
     volumes:
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
+      - ./hugosites:/app/hugosites
+      - ./internal/staticresources:/app/internal/staticresources
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
-    restart: unless-stopped 
-    
+    restart: unless-stopped
+
+  # hugo:
+  #   image: whlapinel/course-manager-hugo:latest
+  #   command: ["./"]
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.hugo
+  #   volumes:
+  #     - ./internal/data/users:/app/internal/data/users
+  #     - ./hugosites:/app/sites
+
   migrate:
     profiles:
       - migrations
     image: whlapinel/course-manager:0.2.0-dev
-    command: ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]
+    user: "${UID}:${GID}"
+
+    command:
+      ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]
     volumes:
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
-
 
 networks:
   app-network:

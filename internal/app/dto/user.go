@@ -8,8 +8,8 @@ import (
 )
 
 type User struct {
-	user.User
-	Terms []Term
+	user.User `json:"user"`
+	Terms     []Term `json:"terms"`
 }
 
 func (u User) Username() string {

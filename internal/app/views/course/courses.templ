@@ -29,7 +29,7 @@ templ CourseDetailsComponent(props CourseDetailsPage) {
 						<details>
 							<summary>{ strconv.Itoa(standard.Number) }{ standard.Name }</summary>
 							<ul>
-								for _, objective := range standard.Children {
+								for _, objective := range standard.Objectives {
 									<li>{ strconv.Itoa(objective.Number) }{ objective.Name }</li>
 								}
 							</ul>
@@ -68,4 +68,3 @@ templ CopyCourseComponent(props CopyCourseData) {
 		>Copy Course</button>
 	</form>
 }
-
