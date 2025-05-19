@@ -1,15 +1,13 @@
 <details>
   <summary>Debugging info</summary>
   <ul>
-    {{with resources.Get "testing.txt"}}
-    <!--  -->
-    <li>{{.}}</li>
-    {{end}}
+    {{ with resources.Get "testing.txt" }}
+      <li>{{ . }}</li>
+    {{ end }}
   </ul>
   {{ range $k, $v := .Params }}
-  <p>Key: {{ $k }} — Value: {{ $v }}</p>
+    <p>Key: {{ $k }} — Value: {{ $v }}</p>
   {{ end }}
-  <!--  -->
-  <p>Kind: {{.Kind}}</p>
-  <p>Type: {{.Type}}</p>
+  <p>Kind: {{ .Kind }}</p>
+  <p>Type: {{ .Type }}</p>
 </details>

@@ -38,6 +38,7 @@ type App struct {
 }
 
 type NewAppParams struct {
+	Domain      string
 	MarpBaseURL string
 }
 
@@ -89,6 +90,7 @@ func New(params NewAppParams) (*App, error) {
 
 	// infrastructure init
 	hugoParams := hugo.Params{
+		Domain:                   params.Domain,
 		HugoURL:                  "hugo",
 		SitesRootDir:             "hugosites",
 		DataFilesRoot:            dataFilesRoot,

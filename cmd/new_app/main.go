@@ -14,10 +14,6 @@ func main() {
 	marpHost := os.Getenv("MARP_HOST")
 	marpPort := os.Getenv("MARP_PORT")
 	baseURL := fmt.Sprintf("http://%s:%s", marpHost, marpPort)
-	app, err := app.New(app.NewAppParams{MarpBaseURL: baseURL})
-	if err != nil {
-		log.Fatal(err)
-	}
 	host := os.Getenv("ECHO_HOST")
 	if host == "" {
 		host = "localhost"
@@ -29,5 +25,9 @@ func main() {
 	}
 	log.Println("Port:", port)
 	startString := fmt.Sprintf("%s:%s", host, port)
+	app, err := app.New(app.NewAppParams{Domain: "localhost", MarpBaseURL: baseURL})
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Fatal(app.Start(startString))
 }

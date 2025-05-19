@@ -1,25 +1,12 @@
-{{define "main"}}
-
-<h1 class="bg-blue-500">{{ .Title }}</h1>
-<p>{{ .Content }}</p>
-<!-- link to parent page-->
-<!--  -->
-{{ partial "breadcrumbs.html" . }}
-<!--  -->
-{{ with .GetPage .Params.parentpath }}
-<h2><a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a></h2>
+{{ define "main" }}
+  {{ partial "breadcrumbs.html" . }}
+  <h1 class="bg-blue-500">{{ .Title }}</h1>
+  <p>{{ .Content }}</p>
+  {{ with .GetPage .Params.parentpath }}
+    <h2><a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a></h2>
+  {{ end }}
+  {{ range where .Pages "Type" .Type }}
+    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+  {{ end }}
+  {{ partial "debugging.html" . }}
 {{ end }}
-
-<!--  -->
-
-{{ range .RegularPages }}
-<!-- this part works -->
-
-<h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-<!--  -->
-
-{{end}}
-<!--  -->
-{{partial "debugging.html" . }}
-<!--  -->
-{{end}}

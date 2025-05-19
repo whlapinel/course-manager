@@ -12,6 +12,8 @@
 - Goose (for db migrations)
 - Tailwind
 - Typescript
+- Hugo stuff
+  - [prettier plugin](https://github.com/NiklasPor/prettier-plugin-go-template)
 
 ## Production Environment Dependencies
 
@@ -73,8 +75,7 @@ task run-prod
 - runs the migration binary as a separate container
 - starts caddy, marp, and the app ('echo') servers.
 
-## Progress Log
-Note: This is more of a stream of consciousness thing. For a more structured format please see the [Change Log](./changes.md)
+[Change Log](./changes.md)
 
 ### 4/5/25
 

@@ -21,9 +21,11 @@ func (d *LessonPageData) Page() *HomogenizedPageData {
 	homoPageData.Path = d.Path
 	homoPageData.Title = d.Name
 	homoPageData.Params = struct {
-		FilesPagePath string `json:"filesPagePath"`
+		FilesPagePath string             `json:"filesPagePath"`
+		BreadCrumbs   BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
 		FilesPagePath: d.FilesPage.Path,
+		BreadCrumbs:   BreadCrumbs(d.Path),
 	}
 	return &homoPageData
 }

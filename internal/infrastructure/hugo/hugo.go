@@ -15,6 +15,7 @@ import (
 )
 
 type Params struct {
+	Domain                   string
 	HugoURL                  string
 	SitesRootDir             string
 	DataFilesRoot            string
@@ -30,6 +31,20 @@ type Params struct {
 type hugoGenerator struct {
 	Params
 	DataFilesSymlinkRoot string
+}
+
+func (h *hugoGenerator) configure(user dto.User) error {
+	userDataPath, err := filepath.Abs(h.DataPathingService.NodeDirPath(user))
+	if err != nil {
+		return err
+	}
+	config := NewConfig(user, NewHugoConfigParams{
+		Domain:       h.Domain,
+		Title:        user.Username(),
+		UserDataPath: userDataPath,
+		ConfigPath:   filepath.Join(h.SitesRootDir, user.ID, "hugo.toml"),
+	})
+	return config.Write()
 }
 
 func New(params Params) (ports.SiteGenerator, error) {
@@ -73,7 +88,15 @@ func (h *hugoGenerator) dataDir(userID string) string {
 }
 
 func (h *hugoGenerator) Build(userID string, termID int) error {
-	pageData, err := h.PageData(userID, termID)
+	user, err := h.GetUser(userID)
+	if err != nil {
+		return err
+	}
+	err = h.configure(user)
+	if err != nil {
+		return err
+	}
+	pageData, err := h.PageData(user, termID)
 	if err != nil {
 		return err
 	}
@@ -151,13 +174,8 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 	return homogenized
 }
 
-func (h *hugoGenerator) PageData(userID string, termID int) (*PageData, error) {
-	sitePathingService := h.StaticSitePathingService.WithSegment(userID)
-
-	user, err := h.GetUser(userID)
-	if err != nil {
-		return nil, err
-	}
+func (h *hugoGenerator) PageData(user dto.User, termID int) (*PageData, error) {
+	sitePathingService := h.StaticSitePathingService.WithSegment(user.ID)
 	term, err := h.GetTerm(termID)
 	if err != nil {
 		return nil, err

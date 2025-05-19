@@ -26,6 +26,7 @@ services:
       - .env
     volumes:
       - ./sites:/app/sites
+      - ./hugosites:/app/hugosites
       - ./caddy_data:/root/.local/share/caddy
       - ./caddy_config:/root/.config/caddy
     command:

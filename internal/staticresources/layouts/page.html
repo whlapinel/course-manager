@@ -1,41 +1,19 @@
-{{define "main"}}
-<h1>{{ .Title }}</h1>
-{{warnf "testing the warning in default page template"}}
-
-<!--  -->
-
-{{ .Content }}
-
-<!--  -->
-
-<!--  -->
-{{ partial "breadcrumbs.html" . }}
-<!--  -->
-
-{{ with .Parent }}
-<a href="{{ .RelPermalink }}">Up to {{ .Title }}</a>
+{{ define "main" }}
+  {{ partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  {{ with .Parent }}
+    <a href="{{ .RelPermalink }}">Up to {{ .Title }}</a>
+  {{ end }}
+  {{ with .Params.filesPagePath }}
+    {{ with $.GetPage . }}
+      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+    {{ end }}
+  {{ end }}
+  {{ with .Params.childsectionpath }}
+    {{ with $.GetPage . }}
+      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+    {{ end }}
+  {{ end }}
+  {{ partial "debugging.html" . }}
 {{ end }}
-<!--  -->
-{{with .Params.filesPagePath}}
-<!--  -->
-{{with $.GetPage .}}
-<h2><a href="{{ .RelPermalink }}">{{.LinkTitle}}</a></h2>
-{{end}}
-<!--  -->
-{{end}}
-
-<!-- -->
-{{with .Params.childsectionpath}}
-<!--  -->
-{{ with $.GetPage . }}
-<!-- this part works. note that .Pages and .RegularPages doesn't work with pages of kind "page", only with kind "section" -->
-<h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-{{ end }}
-<!--  -->
-{{end}}
-<!--  -->
-{{partial "debugging.html" . }}
-
-<!-- separator -->
-
-{{end}}

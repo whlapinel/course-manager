@@ -1,4 +1,4 @@
-baseURL = 'https://101602110272674353046.localhost'
+baseURL = '101602110272674353046.0.0.0.0:1323'
 languageCode = 'en-us'
 title = 'wlapinel'
 [module]
@@ -6,7 +6,7 @@ title = 'wlapinel'
 source = 'content'
 target = 'content'
 [[module.mounts]]
-source = '/app/internal/data/users/user_101602110272674353046'
+source = 'internal/data/users/user_101602110272674353046'
 target = 'content'
 [[module.mounts]]
 source = '/app/internal/staticresources/content'
@@ -15,7 +15,7 @@ target = 'content'
 source = 'assets'
 target = 'assets'
 [[module.mounts]]
-source = '/app/internal/data/users/user_101602110272674353046'
+source = 'internal/data/users/user_101602110272674353046'
 target = 'assets'
 [[module.mounts]]
 source = 'static'

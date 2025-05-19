@@ -28,11 +28,13 @@ func (d *UnitPageData) Page() *HomogenizedPageData {
 	homoPageData.Path = d.Path
 	homoPageData.Title = d.Name
 	homoPageData.Params = struct {
-		ChildSectionPath string `json:"childSectionPath"`
-		FilesPagePath    string `json:"filesPagePath"`
+		ChildSectionPath string             `json:"childSectionPath"`
+		FilesPagePath    string             `json:"filesPagePath"`
+		BreadCrumbs      BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
 		ChildSectionPath: d.LessonsListPagePath,
 		FilesPagePath:    d.FilesPage.Path,
+		BreadCrumbs:      BreadCrumbs(d.Path),
 	}
 	return &homoPageData
 }
@@ -44,9 +46,11 @@ func (d *UnitPageData) Section() *HomogenizedPageData {
 	homoPageData.Path = d.LessonsListPagePath
 	homoPageData.Title = "Lessons"
 	homoPageData.Params = struct {
-		ParentPath string `json:"parentPath"`
+		ParentPath  string             `json:"parentPath"`
+		BreadCrumbs BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
-		ParentPath: d.Path,
+		ParentPath:  d.Path,
+		BreadCrumbs: BreadCrumbs(d.Path),
 	}
 	return &homoPageData
 }

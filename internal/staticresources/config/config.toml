@@ -1,12 +1,12 @@
-baseURL = 'https://101602110272674353046.localhost'
+baseURL = '{{ .BaseURL }}'
 languageCode = 'en-us'
-title = 'wlapinel'
+title = '{{ .Title }}'
 [module]
 [[module.mounts]]
 source = 'content'
 target = 'content'
 [[module.mounts]]
-source = '/app/internal/data/users/user_101602110272674353046'
+source = '{{ .UserDataPath }}'
 target = 'content'
 [[module.mounts]]
 source = '/app/internal/staticresources/content'
@@ -15,7 +15,7 @@ target = 'content'
 source = 'assets'
 target = 'assets'
 [[module.mounts]]
-source = '/app/internal/data/users/user_101602110272674353046'
+source = '{{ .UserDataPath }}'
 target = 'assets'
 [[module.mounts]]
 source = 'static'
