@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/ports"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -44,13 +45,10 @@ func (s *service) NewGetSlides(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	content := make([]byte, 2048)
-	count, err := res.Body.Read(content)
+	defer res.Body.Close()
+	content, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
-	}
-	if count == 0 {
-		return nil, fmt.Errorf("content of slides was 0")
 	}
 	return content, nil
 

@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"bytes"
-	"context"
 	mt "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
@@ -13,7 +11,6 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
@@ -75,13 +72,8 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	var buf bytes.Buffer
-	err = templ.Raw[string](string(html)).Render(context.Background(), &buf)
-	if err != nil {
-		return err
-	}
 	slides := lessonviews.Slides{
-		HTML:          buf.String(),
+		HTML:          string(html),
 		EditSlidesURL: routes.GetEditLessonSlides.String(),
 	}
 	return web.Respond(c, routes.GetLesson.String(), slides.Component(), nil)
