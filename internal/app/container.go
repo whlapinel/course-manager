@@ -10,7 +10,6 @@ import (
 	"gh_static_portfolio/internal/features/files"
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
-	"gh_static_portfolio/internal/features/markdown"
 	"gh_static_portfolio/internal/features/sitegen"
 	"gh_static_portfolio/internal/features/slides"
 	"gh_static_portfolio/internal/features/term"
@@ -19,6 +18,7 @@ import (
 	"gh_static_portfolio/internal/features/user"
 	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
+	"gh_static_portfolio/internal/infrastructure/markdown"
 	"gh_static_portfolio/internal/infrastructure/pathing"
 	slidesrenderer "gh_static_portfolio/internal/infrastructure/slides"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
@@ -64,7 +64,7 @@ func New(params NewAppParams) (*App, error) {
 	// infrastructure
 	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
 	staticSiteDataPathingSvc := pathing.NewNodePathService(staticSitesRoot)
-	markdownRenderer := markdown.NewService()
+	markdownRenderer := markdown.New()
 	slidesRenderer := slidesrenderer.New(params.MarpBaseURL, dataFilesPathingSvc)
 
 	// feature services
@@ -87,6 +87,7 @@ func New(params NewAppParams) (*App, error) {
 	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.WithOccasions, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
 	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
 	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByCourseID, lessonAppService.ByUnitID, termAppService.WithOccasions)
+	markdownService := services.NewMarkdownService(markdownRenderer, dataFilesPathingSvc, filesRepo)
 
 	// infrastructure init
 	hugoParams := hugo.Params{
@@ -135,7 +136,7 @@ func New(params NewAppParams) (*App, error) {
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
-	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileSystem, markdownRenderer, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileSystem, markdownService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
 	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, nodeAppService, e.Reverse)
 

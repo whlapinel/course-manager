@@ -12,7 +12,6 @@ import (
 	termviews "gh_static_portfolio/internal/app/views/term"
 	"gh_static_portfolio/internal/core/term"
 	"gh_static_portfolio/internal/features/files"
-	"gh_static_portfolio/internal/features/markdown"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -25,26 +24,26 @@ import (
 )
 
 type termHandler struct {
-	nodeService     *services.NodeService
-	service         *services.TermService
-	fileService     *files.Service
-	markdownService *markdown.Service
-	reverse         web.Reverse
+	nodeService *services.NodeService
+	service     *services.TermService
+	fileService *files.Service
+	markdown    *services.MarkdownService
+	reverse     web.Reverse
 }
 
 func NewTermHandler(
 	service *services.TermService,
 	nodeService *services.NodeService,
 	fileService *files.Service,
-	markdownService *markdown.Service,
+	markdownService *services.MarkdownService,
 	reverse web.Reverse,
 ) *termHandler {
 	return &termHandler{
-		service:         service,
-		nodeService:     nodeService,
-		reverse:         reverse,
-		fileService:     fileService,
-		markdownService: markdownService,
+		service:     service,
+		nodeService: nodeService,
+		reverse:     reverse,
+		fileService: fileService,
+		markdown:    markdownService,
 	}
 }
 
@@ -292,11 +291,7 @@ func (h *termHandler) viewMarkdown(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	content, err := h.fileService.FileContent(filePath, nodes)
-	if err != nil {
-		return err
-	}
-	html, err := h.markdownService.ToHTML(content)
+	html, err := h.markdown.ViewMarkdown(filePath, nodes.ToSlice()...)
 	if err != nil {
 		return err
 	}

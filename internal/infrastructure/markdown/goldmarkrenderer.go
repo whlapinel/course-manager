@@ -2,22 +2,22 @@ package markdown
 
 import (
 	"bytes"
-	"log"
-
-	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
+	"gh_static_portfolio/internal/ports"
 
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
+
+	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 )
 
-type Service struct {
+type goldmarkRenderer struct {
 	goldmark.Markdown
 }
 
-func NewService() *Service {
+func New() ports.MarkdownRenderer {
 	// create goldmark.Markdown
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM, highlighting.NewHighlighting(
@@ -34,17 +34,17 @@ func NewService() *Service {
 			html.WithXHTML(),
 		),
 	)
-
-	return &Service{
+	return goldmarkRenderer{
 		Markdown: md,
 	}
 }
 
-// ToHTML implements file.MarkdownRenderer.
-func (g *Service) ToHTML(markdown []byte) ([]byte, error) {
+// Render implements ports.MarkdownRenderer.
+func (g goldmarkRenderer) Render(content []byte) (string, error) {
 	var buf bytes.Buffer
-	if err := g.Markdown.Convert(markdown, &buf); err != nil {
-		log.Fatalf("Failed to convert Markdown: %v", err)
+	err := g.Markdown.Convert(content, &buf)
+	if err != nil {
+		return "", err
 	}
-	return buf.Bytes(), nil
+	return buf.String(), nil
 }
