@@ -33,6 +33,10 @@ type hugoGenerator struct {
 	DataFilesSymlinkRoot string
 }
 
+func (h *hugoGenerator) StaticSiteURL(userID string) string {
+	return staticURLMaker(h.Domain)(userID)
+}
+
 func (h *hugoGenerator) configure(user dto.User) error {
 	userDataPath, err := filepath.Abs(h.DataPathingService.NodeDirPath(user))
 	if err != nil {
@@ -54,7 +58,7 @@ func New(params Params) (ports.SiteGenerator, error) {
 }
 
 func (h *hugoGenerator) BaseURL(userID string) func(userID string) string {
-	return StaticURLMaker(userID)
+	return staticURLMaker(userID)
 }
 
 func (h *hugoGenerator) SinglePagePath(svc ports.PathingService, nodes ...ports.Node) (string, error) {

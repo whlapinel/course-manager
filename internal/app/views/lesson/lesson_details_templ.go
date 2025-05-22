@@ -433,7 +433,7 @@ func SlidesComponent(data Slides) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(data.HTML)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 83, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 84, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -447,23 +447,6 @@ func SlidesComponent(data Slides) templ.Component {
 	})
 }
 
-// templ DescriptionInput(inputID ElementID, description string) {
-// 	<textarea
-// 		id={ string(inputID) }
-// 		class="bg-black min-w-52 min-h-fit"
-// 		name={ string(inputID) }
-// 	>{ description }</textarea>
-// }
-
-//	templ NameInput(inputID ElementID, name string) {
-//		<input
-//			class="bg-black"
-//			id={ string(inputID) }
-//			name={ string(inputID) }
-//			type="text"
-//			value={ name }
-//		/>
-//	}
 func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -492,7 +475,7 @@ func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 121, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 100, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -505,7 +488,7 @@ func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs("slides-editor-text-area")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 122, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 101, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -518,7 +501,7 @@ func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostR
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(contents)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 126, Col: 12}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 105, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -551,7 +534,7 @@ func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostR
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(e.Reverse(editSlidesPostRouteHandler, params.ToSlice()...))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 146, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 125, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -564,7 +547,7 @@ func EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostR
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(EditSlidesTextAreaID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 146, Col: 132}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/views/lesson/lesson_details.templ`, Line: 125, Col: 132}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {

@@ -80,35 +80,14 @@ templ ObjectiveSelectComponent(props ObjectiveSelect) {
 templ SlidesComponent(data Slides) {
 	<div id="slides">
 		@data.EditSlidesButton()
-		<iframe srcdoc={ data.HTML } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
+		<iframe
+			srcdoc={ data.HTML }
+			class="h-[40rem] w-full border-solid border-orange-500"
+		></iframe>
 	</div>
 }
 
-// templ DescriptionInput(inputID ElementID, description string) {
-// 	<textarea
-// 		id={ string(inputID) }
-// 		class="bg-black min-w-52 min-h-fit"
-// 		name={ string(inputID) }
-// 	>{ description }</textarea>
-// }
-
-// templ NameInput(inputID ElementID, name string) {
-// 	<input
-// 		class="bg-black"
-// 		id={ string(inputID) }
-// 		name={ string(inputID) }
-// 		type="text"
-// 		value={ name }
-// 	/>
-// }
 templ EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
-	// <textarea
-	// 	id={ EditSlidesTextAreaID.String() }
-	// 	name={ EditSlidesTextAreaID.String() }
-	// 	class="bg-slate-900 min-w-full min-h-96 font-mono"
-	// >
-	// 	{ contents }
-	// </textarea>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"/>
 	<style>
         .CodeMirror {

@@ -90,6 +90,7 @@ func (h *dashboardHandler) showDashboard(c echo.Context) error {
 		ListTermsURL:        h.reverse(routes.GetTerms.String(), params.ToSlice()...),
 		User:                userDTO,
 		CourseManagerLayout: BaseLayout3(h.reverse, user),
+		StaticSiteURL:       h.sitegen.StaticSiteURL(user.ID),
 	}
 	return Respond(c, page)
 }

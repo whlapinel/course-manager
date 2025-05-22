@@ -131,7 +131,7 @@ func New(params NewAppParams) (*App, error) {
 	)
 
 	// application-level handlers
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesRenderer)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)

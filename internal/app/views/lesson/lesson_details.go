@@ -58,6 +58,7 @@ func (page LessonDetailsPage) Lesson() dto.Lesson {
 type Slides struct {
 	HTML          string
 	EditSlidesURL string
+	LessonDetailsPage
 }
 
 func (data Slides) Component() templ.Component {

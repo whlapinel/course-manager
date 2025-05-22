@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
 	mt "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
@@ -11,20 +13,31 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
 type lessonHandler struct {
 	nodeService *services.NodeService
 	service     *services.LessonService
+	paths       ports.PathingService
 	reverse     web.Reverse
+	slides      ports.SlideRenderer
 }
 
-func NewLessonHandler(service *services.LessonService, nodeService *services.NodeService, reverse web.Reverse) *lessonHandler {
+func NewLessonHandler(
+	service *services.LessonService,
+	nodeService *services.NodeService,
+	reverse web.Reverse,
+	paths ports.PathingService,
+	slides ports.SlideRenderer,
+) *lessonHandler {
 	return &lessonHandler{
 		service:     service,
 		nodeService: nodeService,
 		reverse:     reverse,
+		paths:       paths,
+		slides:      slides,
 	}
 }
 
@@ -44,7 +57,35 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 		{Method: web.GET, RoutePath: routes.Lesson, HandlerName: routes.GetLesson, HandlerFunc: h.showDetails},
 		{Method: web.GET, RoutePath: routes.LessonEdit, HandlerName: routes.GetEditLesson, HandlerFunc: h.showEdit},
 		web.NewRouteHandler(web.GET, routes.LessonEdit, routes.PostEditLesson, h.postEdit),
+		web.NewRouteHandler(web.GET, routes.LessonSlides, routes.GetLessonSlides, h.showSlides),
 	}
+}
+
+func (h *lessonHandler) showSlides(c echo.Context) error {
+	path, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.nodeService.Nodes(path)
+	if err != nil {
+		return err
+	}
+	slidesURL := h.paths.NodeSlidesMarkdownPath(nodes.ToSlice()...)
+	html, err := h.slides.NewGetSlides(slidesURL)
+	if err != nil {
+		return err
+	}
+	var buf bytes.Buffer
+	err = templ.Raw[string](string(html)).Render(context.Background(), &buf)
+	if err != nil {
+		return err
+	}
+	slides := lessonviews.Slides{
+		HTML:          buf.String(),
+		EditSlidesURL: routes.GetEditLessonSlides.String(),
+	}
+	return web.Respond(c, routes.GetLesson.String(), slides.Component(), nil)
+
 }
 
 func (h *lessonHandler) listByUnit(c echo.Context) error {
@@ -91,6 +132,7 @@ func (h *lessonHandler) showDetails(c echo.Context) error {
 		NodeDetailsPage: nodeData,
 		AssetsURLFunc:   web.AssetsURLFunc,
 		ViewMarkdownURL: web.URLFunc(web.HandlerName(routes.LessonViewFile), h.reverse),
+		GetSlidesURL:    h.reverse(routes.GetLessonSlides.String(), path.ToSlice()...),
 	}
 	return Respond(c, page)
 }

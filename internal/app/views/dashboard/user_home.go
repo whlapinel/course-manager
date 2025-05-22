@@ -13,6 +13,7 @@ type UserHomePage struct {
 	ListTermsURL    string
 	GenerateSiteURL string
 	SyncSiteURL     string
+	StaticSiteURL   string
 	ac.BreadCrumbs
 	ac.CourseManagerLayout
 }
@@ -36,12 +37,19 @@ func (page UserHomePage) ViewTermsButton() templ.Component {
 	}.Component()
 }
 
+func (page UserHomePage) ViewSiteLink() templ.Component {
+	return cmp.Link{
+		Text:   "Static Site",
+		URL:    page.StaticSiteURL,
+		Target: cmp.NewTab,
+	}.Component()
+}
+
 func (page UserHomePage) PageLayout() cmp.PageLayout {
 	return cmp.PageLayout{
 		PageTitle: "Home",
 		Crumbs:    page.BreadCrumbs.BreadCrumbs(),
 	}
-
 }
 
 func (page UserHomePage) Component() templ.Component {

@@ -7,11 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 type service struct {
 	marpBaseURL string
 	paths       ports.PathingService
+	files       ports.FileRepository
 }
 
 func New(
@@ -24,7 +26,20 @@ func New(
 	}
 }
 
-func (s *service) NewGetSlides(url string) ([]byte, error) {
+func (s *service) dataPathToURL(path string) (string, error) {
+	segments := strings.Split(path, "/")
+	slidesURL, err := url.JoinPath(s.marpBaseURL, segments[2:]...)
+	if err != nil {
+		return "", err
+	}
+	return slidesURL, nil
+}
+
+func (s *service) NewGetSlides(path string) ([]byte, error) {
+	url, err := s.dataPathToURL(path)
+	if err != nil {
+		return nil, err
+	}
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
