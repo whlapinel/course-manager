@@ -9,6 +9,12 @@ import (
 	"text/template"
 )
 
+func StaticURLMaker(domain string) func(string) string {
+	return func(userID string) string {
+		return fmt.Sprintf("https://%s.%s", userID, domain)
+	}
+}
+
 type HugoConfig struct {
 	BaseURL      string
 	Title        string
@@ -26,7 +32,7 @@ type NewHugoConfigParams struct {
 
 func NewConfig(user dto.User, params NewHugoConfigParams) HugoConfig {
 	return HugoConfig{
-		BaseURL: fmt.Sprintf("https://%s.%s", user.ID, params.Domain),
+		BaseURL: StaticURLMaker(params.Domain)(user.ID),
 		// BaseURL:      params.Domain,
 		Title:        params.Title,
 		UserDataPath: params.UserDataPath,

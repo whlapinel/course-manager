@@ -53,6 +53,10 @@ func New(params Params) (ports.SiteGenerator, error) {
 	}, nil
 }
 
+func (h *hugoGenerator) BaseURL(userID string) func(userID string) string {
+	return StaticURLMaker(userID)
+}
+
 func (h *hugoGenerator) SinglePagePath(svc ports.PathingService, nodes ...ports.Node) (string, error) {
 	path := svc.NodeDirPath(nodes...)
 	path, err := h.contentPath(path)
