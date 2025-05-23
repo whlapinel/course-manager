@@ -11,7 +11,6 @@ import (
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/features/sitegen"
-	"gh_static_portfolio/internal/features/slides"
 	"gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
@@ -19,8 +18,8 @@ import (
 	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
 	"gh_static_portfolio/internal/infrastructure/markdown"
+	"gh_static_portfolio/internal/infrastructure/marpclient"
 	"gh_static_portfolio/internal/infrastructure/pathing"
-	slidesrenderer "gh_static_portfolio/internal/infrastructure/slides"
 	"gh_static_portfolio/internal/infrastructure/sqlite"
 	"gh_static_portfolio/internal/shared/routes"
 	"log"
@@ -65,7 +64,7 @@ func New(params NewAppParams) (*App, error) {
 	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
 	staticSiteDataPathingSvc := pathing.NewNodePathService(staticSitesRoot)
 	markdownRenderer := markdown.New()
-	slidesRenderer := slidesrenderer.New(params.MarpBaseURL, dataFilesPathingSvc)
+	marp := marpclient.New(params.MarpBaseURL)
 
 	// feature services
 	authService := auth.NewService(userRepo)
@@ -76,10 +75,10 @@ func New(params NewAppParams) (*App, error) {
 	lessonService := lesson.NewService(lessonRepo)
 	termOccasionService := termoccasion.NewService(termOccasionRepo)
 	fileSystem := files.NewFileService(filesRepo, dataFilesPathingSvc)
-	slidesService := slides.New(params.MarpBaseURL, slidesRenderer, dataFilesPathingSvc, filesRepo)
+	slidesService := services.NewSlidesService(params.MarpBaseURL, marp, dataFilesPathingSvc, filesRepo)
 
 	// application-level services
-	lessonAppService := services.NewLessonService(lessonService, slidesService)
+	lessonAppService := services.NewLessonService(lessonService)
 	unitAppService := services.NewUnitService(unitService)
 	courseAppService := services.NewCourseService(courseService)
 	termAppService := services.NewTermService(termService, termOccasionService)
@@ -132,7 +131,7 @@ func New(params NewAppParams) (*App, error) {
 	)
 
 	// application-level handlers
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesRenderer)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)

@@ -19,7 +19,7 @@ type lessonHandler struct {
 	service     *services.LessonService
 	paths       ports.PathingService
 	reverse     web.Reverse
-	slides      ports.SlideRenderer
+	slides      *services.SlidesService
 }
 
 func NewLessonHandler(
@@ -27,7 +27,7 @@ func NewLessonHandler(
 	nodeService *services.NodeService,
 	reverse web.Reverse,
 	paths ports.PathingService,
-	slides ports.SlideRenderer,
+	slides *services.SlidesService,
 ) *lessonHandler {
 	return &lessonHandler{
 		service:     service,
@@ -59,6 +59,7 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 }
 
 func (h *lessonHandler) showSlides(c echo.Context) error {
+	log.Println("lessonHandler running")
 	path, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
@@ -67,8 +68,7 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	slidesURL := h.paths.NodeSlidesMarkdownPath(nodes.ToSlice()...)
-	html, err := h.slides.NewGetSlides(slidesURL)
+	html, err := h.slides.GetSlides(nodes.ToSlice()...)
 	if err != nil {
 		return err
 	}

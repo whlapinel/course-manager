@@ -1,21 +1,23 @@
-package slides
+package services
 
 import (
 	"errors"
 	"gh_static_portfolio/internal/ports"
+	"log"
 	"net/url"
 	"os"
+	"strings"
 )
 
-type Service struct {
+type SlidesService struct {
 	marpBaseURL string
 	slides      ports.SlideRenderer
 	pathing     ports.PathingService
 	files       ports.FileRepository
 }
 
-func New(marpBaseURL string, slides ports.SlideRenderer, pathing ports.PathingService, files ports.FileRepository) *Service {
-	return &Service{
+func NewSlidesService(marpBaseURL string, slides ports.SlideRenderer, pathing ports.PathingService, files ports.FileRepository) *SlidesService {
+	return &SlidesService{
 		marpBaseURL: marpBaseURL,
 		slides:      slides,
 		pathing:     pathing,
@@ -23,7 +25,8 @@ func New(marpBaseURL string, slides ports.SlideRenderer, pathing ports.PathingSe
 	}
 }
 
-func (s *Service) GetSlides(nodes ...ports.Node) ([]byte, error) {
+func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
+	log.Println("slidesService.GetSlides running")
 	// stat the markdown file
 	nodeDir := s.pathing.NodeDirPath(nodes...)
 	mdPath := s.pathing.NodeSlidesMarkdownPath(nodes...)
@@ -31,21 +34,27 @@ func (s *Service) GetSlides(nodes ...ports.Node) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	slidesURL, err := url.JoinPath(s.marpBaseURL, mdPath)
+	log.Println("slidesPath:", mdPath)
+	slidesURL, err := s.dataPathToMarpURL(mdPath)
 	if err != nil {
 		return nil, err
 	}
+	log.Println("slidesURL:", slidesURL)
+
 	markdownModTime := info.ModTime()
 
 	// stat the html file
 	htmlPath := s.pathing.NodeSlidesHTMLPath(nodes...)
 	info, err = os.Stat(htmlPath)
 	if err != nil {
+		log.Printf("error stat %s: %v", htmlPath, err)
 		// if the html file doesn't exist,
 		if errors.Is(err, os.ErrNotExist) {
+			log.Printf("%s does not exist. fetching from marp server at %s", htmlPath, slidesURL)
 			// get the html
-			content, err := s.slides.NewGetSlides(slidesURL)
+			content, err := s.slides.GetSlides(slidesURL)
 			if err != nil {
+				log.Printf("error fetching from marp server: %s", err)
 				return nil, err
 			}
 
@@ -67,7 +76,7 @@ func (s *Service) GetSlides(nodes ...ports.Node) ([]byte, error) {
 	if htmlModTime.Before(markdownModTime) {
 
 		// get the html
-		content, err := s.slides.NewGetSlides(slidesURL)
+		content, err := s.slides.GetSlides(slidesURL)
 		if err != nil {
 			return nil, err
 		}
@@ -91,4 +100,9 @@ func (s *Service) GetSlides(nodes ...ports.Node) ([]byte, error) {
 	}
 	return content, nil
 
+}
+
+func (s *SlidesService) dataPathToMarpURL(path string) (string, error) {
+	segments := strings.Split(path, "/")
+	return url.JoinPath(s.marpBaseURL, segments[2:]...)
 }

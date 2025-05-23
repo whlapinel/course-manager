@@ -3,18 +3,15 @@ package services
 import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/features/lesson"
-	"gh_static_portfolio/internal/features/slides"
 )
 
 type LessonService struct {
 	lessonService *lesson.Service
-	slidesService *slides.Service
 }
 
-func NewLessonService(lessonSvc *lesson.Service, slidesService *slides.Service) *LessonService {
+func NewLessonService(lessonSvc *lesson.Service) *LessonService {
 	return &LessonService{
 		lessonService: lessonSvc,
-		slidesService: slidesService,
 	}
 }
 
