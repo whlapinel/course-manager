@@ -7,7 +7,6 @@ import (
 	"gh_static_portfolio/internal/assets"
 	"gh_static_portfolio/internal/features/auth"
 	"gh_static_portfolio/internal/features/course"
-	"gh_static_portfolio/internal/features/files"
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/features/sitegen"
@@ -74,10 +73,10 @@ func New(params NewAppParams) (*App, error) {
 	unitService := unit.NewService(unitRepo)
 	lessonService := lesson.NewService(lessonRepo)
 	termOccasionService := termoccasion.NewService(termOccasionRepo)
-	fileSystem := files.NewFileService(filesRepo, dataFilesPathingSvc)
-	slidesService := services.NewSlidesService(params.MarpBaseURL, marp, dataFilesPathingSvc, filesRepo)
 
 	// application-level services
+	fileService := services.NewFileService(filesRepo, dataFilesPathingSvc)
+	slidesService := services.NewSlidesService(params.MarpBaseURL, marp, dataFilesPathingSvc, filesRepo)
 	lessonAppService := services.NewLessonService(lessonService)
 	unitAppService := services.NewUnitService(unitService)
 	courseAppService := services.NewCourseService(courseService)
@@ -131,11 +130,11 @@ func New(params NewAppParams) (*App, error) {
 	)
 
 	// application-level handlers
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService)
-	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, e.Reverse)
-	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileSystem, e.Reverse)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService)
+	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
-	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileSystem, markdownService, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
 	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, nodeAppService, e.Reverse)
 

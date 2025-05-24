@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.CodeMirror {
+  height: auto;
+  /* Adjusts the editor height dynamically */
+}

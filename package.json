@@ -13,6 +13,7 @@
     "tailwindcss": "^3.4.10"
   },
   "devDependencies": {
+    "@types/codemirror": "^5.60.15",
     "nodemon": "^3.1.4",
     "prettier": "^3.5.3",
     "prettier-plugin-go-template": "^0.0.15",

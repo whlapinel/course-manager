@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/ports"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -55,8 +56,9 @@ func (l *localFileSystem) Update(contents []byte, rootDir, relPath string) error
 	defer root.Close()
 	// Ensure the parent directories exist
 	dir := filepath.Dir(relPath)
+	log.Println("dir", dir)
 	if dir != "." {
-		if err := root.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
+		if err := root.Mkdir(dir, os.ModePerm); err != nil && !os.IsExist(err) {
 			return fmt.Errorf("failed to create directories: %w", err)
 		}
 	}

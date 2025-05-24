@@ -15,53 +15,30 @@ templ DocLayout(data MarkdownDocument) {
 				<link rel="stylesheet" href="/dist/markdown-styles.css"/>
 			}
 		</head>
-		<body class="markdown-body">
+		<body class="markdown-body" id="markdown">
 			@templ.Raw(data.Content)
 		</body>
 	</html>
 }
 
 templ MarkdownIFrame(data MarkdownDocument) {
-	<iframe srcdoc={ data.Content } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
+	<iframe id="markdown" srcdoc={ data.Content } class="h-[40rem] w-full border-solid border-orange-500"></iframe>
 }
 
 templ MarkdownEditorComponent(props MarkdownEditor) {
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"/>
-	<style>
-        .CodeMirror {
-            height: auto;
-            /* Adjusts the editor height dynamically */
-        }
-    </style>
-	<!-- CodeMirror Editor -->
-	<textarea
-		id={ "slides-editor-text-area" }
-		name={ "slides-editor-text-area" }
-		class="bg-slate-900 min-w-full min-h-96 font-mono p-2"
-		id="editor"
-	>
-		{ props.Contents }
-	</textarea>
-	<!-- CodeMirror Scripts -->
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js"></script>
-	<script>
-
-		document.addEventListener("DOMContentLoaded", function () {
-			console.log("This runs after the DOM is fully loaded.");
-			// Initialize CodeMirror
-			const editor = CodeMirror.fromTextArea(document.getElementById("slides-editor-text-area"), {
-				lineNumbers: true,   // Display line numbers
-				mode: "markdown",      // Set syntax highlighting mode
-				theme: "default",    // Set theme (default in this example)
-				tabSize: 4           // Number of spaces for a tab
-			});
-		});
-    </script>
-	@appcomponents.ButtonContainer() {
-		@appcomponents.CancelEditButton()
-		<button hx-post={ props.PostEditFileURL } hx-target="#page" hx-include={ EditSlidesTextAreaID }>
-			Submit
-		</button>
-	}
+	<div id="markdown">
+		<!-- CodeMirror Editor -->
+		<textarea
+			id="code-editor"
+			name="code-editor"
+		>
+			{ props.Contents }
+		</textarea>
+		@appcomponents.ButtonContainer() {
+			@appcomponents.CancelEditButton()
+			<button hx-post={ props.PostEditFileURL } hx-target="#markdown" hx-include={ "#code-editor" }>
+				Submit
+			</button>
+		}
+	</div>
 }

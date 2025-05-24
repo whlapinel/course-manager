@@ -15,6 +15,12 @@ func NewUnitService(unitSvc *unit.Service) *UnitService {
 	}
 }
 
+func (svc *UnitService) Delete(unitID int) error {
+	return svc.unitService.Delete(unitID)
+}
+func (svc *UnitService) Save(unit dto.Unit) error {
+	return svc.unitService.Save(unit.Unit)
+}
 func (svc *UnitService) Update(unit dto.Unit) error {
 	return svc.unitService.Update(unit.Unit)
 }

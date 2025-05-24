@@ -14,6 +14,13 @@ func NewService(repo Repository) *Service {
 	}
 }
 
+func (svc *Service) Save(unit unit.Unit) error {
+	_, err := svc.repo.Save(unit)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (svc *Service) Update(unit unit.Unit) error {
 	return svc.repo.Update(unit)
 }
@@ -24,4 +31,8 @@ func (svc *Service) ByID(unitID int) (unit.Unit, error) {
 
 func (svc *Service) ByCourseID(courseID int) ([]unit.Unit, error) {
 	return svc.repo.ByCourseID(courseID)
+}
+
+func (svc *Service) Delete(unitID int) error {
+	return svc.repo.Delete(unitID)
 }

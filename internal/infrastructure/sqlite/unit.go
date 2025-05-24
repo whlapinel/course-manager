@@ -2,6 +2,8 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"gh_static_portfolio/internal/core/unit"
 	unitFeature "gh_static_portfolio/internal/features/unit"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
@@ -54,15 +56,44 @@ func (u *unitRepo) ByID(unitID int) (unit.Unit, error) {
 
 // Delete implements unit.Repository.
 func (u *unitRepo) Delete(unitID int) error {
-	panic("unimplemented")
+	_, err := u.queries.DeleteUnit(context.Background(), int64(unitID))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Save implements unit.Repository.
 func (u *unitRepo) Save(newUnit unit.Unit) (int, error) {
-	panic("unimplemented")
+	unitParams := database.SaveUnitParams{
+		CourseID: int64(newUnit.CourseID),
+		Name:     newUnit.Name,
+
+		Description: sql.NullString{
+			Valid:  newUnit.Description != "",
+			String: newUnit.Description,
+		},
+	}
+	dbUnit, err := u.queries.SaveUnit(context.Background(), unitParams)
+	if err != nil {
+		return 0, fmt.Errorf("unitRepo.SaveUnit: %s", err)
+	}
+	return int(dbUnit.ID), nil
+
 }
 
 // Update implements unit.Repository.
 func (u *unitRepo) Update(updated unit.Unit) error {
-	panic("unimplemented")
+	err := u.queries.UpdateUnit(context.Background(), database.UpdateUnitParams{
+		ID:   int64(updated.ID),
+		Name: updated.Name,
+		Description: sql.NullString{
+			Valid:  updated.Description != "",
+			String: updated.Description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

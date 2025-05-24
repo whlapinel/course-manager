@@ -55,27 +55,6 @@ func (page LessonDetailsPage) Lesson() dto.Lesson {
 	return page.Node.(dto.Lesson)
 }
 
-type Slides struct {
-	HTML          string
-	EditSlidesURL string
-	LessonDetailsPage
-}
-
-func (data Slides) Component() templ.Component {
-	return SlidesComponent(data)
-}
-
-func (data Slides) EditSlidesButton() templ.Component {
-	return cmp.Button{
-		Text:     "Edit Slides",
-		Method:   cmp.HxGet,
-		URL:      data.EditSlidesURL,
-		HxTarget: "#slides",
-		PushURL:  true,
-	}.Component()
-
-}
-
 func (data LessonDetailsPage) ViewMarkdownButton(filepath string) templ.Component {
 	return cmp.Button{
 		Text:     "View As HTML",

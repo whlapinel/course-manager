@@ -3,8 +3,6 @@ package lessonviews
 import (
 	"gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/core/assessment"
-	"gh_static_portfolio/internal/shared/routes"
-	"github.com/labstack/echo/v4"
 	"strconv"
 	"time"
 )
@@ -87,7 +85,7 @@ templ SlidesComponent(data Slides) {
 	</div>
 }
 
-templ EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPostRouteHandler string, e *echo.Echo) {
+templ EditSlidesTemplate(data SlidesEditor) {
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"/>
 	<style>
         .CodeMirror {
@@ -102,7 +100,7 @@ templ EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPost
 		class="bg-slate-900 min-w-full min-h-96 font-mono p-2"
 		id="editor"
 	>
-		{ contents }
+		{ data.Content }
 	</textarea>
 	<!-- CodeMirror Scripts -->
 	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
@@ -122,7 +120,7 @@ templ EditSlidesTemplate(params routes.NodePath, contents string, editSlidesPost
     </script>
 	@appcomponents.ButtonContainer() {
 		@appcomponents.CancelEditButton()
-		<button hx-post={ e.Reverse(editSlidesPostRouteHandler, params.ToSlice()...) } hx-target="#page" hx-include={ EditSlidesTextAreaID }>
+		<button hx-post={ data.PostEditSlidesURL } hx-target="#slides" hx-include={ "#" + EditSlidesTextAreaID }>
 			Submit
 		</button>
 	}

@@ -2,6 +2,8 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"gh_static_portfolio/internal/core/lesson"
 	lessonFeature "gh_static_portfolio/internal/features/lesson"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
@@ -42,7 +44,7 @@ func (l *lessonRepo) ByID(lessonID int) (lesson.Lesson, error) {
 	return lesson.Lesson{
 		ID:          int(dbLesson.ID),
 		UnitID:      int(dbLesson.UnitID),
-		UnitNumber:     int(dbLesson.UnitNumber),
+		UnitNumber:  int(dbLesson.UnitNumber),
 		UnitName:    dbLesson.UnitName,
 		Number:      int(dbLesson.Number),
 		Name:        dbLesson.Name.String,
@@ -65,7 +67,7 @@ func (l *lessonRepo) ByUnitID(unitID int) ([]lesson.Lesson, error) {
 			Number:      int(dbLesson.Number),
 			Name:        dbLesson.Name.String,
 			Description: dbLesson.Description.String,
-			UnitNumber:     int(dbLesson.UnitNumber),
+			UnitNumber:  int(dbLesson.UnitNumber),
 			UnitName:    dbLesson.UnitName,
 		}
 		dbLessonDates, err := l.queries.GetLessonDates(context.Background(), int64(lesson.ID))
@@ -89,12 +91,32 @@ func (l *lessonRepo) ByUnitID(unitID int) ([]lesson.Lesson, error) {
 
 // Delete implements lesson.Repository.
 func (l *lessonRepo) Delete(lessonID int) error {
-	panic("unimplemented")
+	err := l.queries.DeleteLesson(context.Background(), int64(lessonID))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Save implements lesson.Repository.
 func (l *lessonRepo) Save(newLesson lesson.Lesson) (int, error) {
-	panic("unimplemented")
+	lessonParams := database.SaveLessonParams{
+		UnitID: int64(newLesson.UnitID),
+		Name: sql.NullString{
+			Valid:  newLesson.Name != "",
+			String: newLesson.Name,
+		},
+
+		Description: sql.NullString{
+			Valid:  newLesson.Description != "",
+			String: newLesson.Description,
+		},
+	}
+	dbLesson, err := l.queries.SaveLesson(context.Background(), lessonParams)
+	if err != nil {
+		return 0, fmt.Errorf("lessonRepo.SaveLesson: %s", err)
+	}
+	return int(dbLesson.ID), nil
 }
 
 // Update implements lesson.Repository.

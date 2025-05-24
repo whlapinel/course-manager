@@ -33,6 +33,7 @@ var (
 // Unit file handler names
 var (
 	GetUnitFiles     = web.NewHandlerName(web.GET, UnitFiles)
+	PostUnitFile     = web.NewHandlerName(web.POST, UnitFiles)
 	GetUnitFile      = web.NewHandlerName(web.GET, UnitFile)
 	GetUnitEditFile  = web.NewHandlerName(web.GET, UnitFile)
 	PostUnitEditFile = web.NewHandlerName(web.POST, UnitEditFile)

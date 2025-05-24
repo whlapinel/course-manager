@@ -33,6 +33,7 @@ var (
 // Lesson file routes
 var (
 	GetLessonFiles     = web.NewHandlerName(web.GET, LessonFiles)
+	PostLessonFile     = web.NewHandlerName(web.POST, LessonFiles)
 	GetLessonFile      = web.NewHandlerName(web.GET, LessonFile)
 	GetLessonEditFile  = web.NewHandlerName(web.GET, LessonFile)
 	PostLessonEditFile = web.NewHandlerName(web.POST, LessonEditFile)

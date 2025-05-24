@@ -85,7 +85,7 @@ func upNavText(typeName string) string {
 	if typeName == string(dto.RootTypeName) {
 		return "Home"
 	}
-	return typeName + "s"
+	return typeName
 }
 
 func EditNameComponent(props NodeDetailsPage) templ.Component {

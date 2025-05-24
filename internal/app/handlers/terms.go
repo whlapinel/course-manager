@@ -11,7 +11,6 @@ import (
 	markdownviews "gh_static_portfolio/internal/app/views/markdown"
 	termviews "gh_static_portfolio/internal/app/views/term"
 	"gh_static_portfolio/internal/core/term"
-	"gh_static_portfolio/internal/features/files"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -26,7 +25,7 @@ import (
 type termHandler struct {
 	nodeService *services.NodeService
 	service     *services.TermService
-	fileService *files.Service
+	fileService *services.FileService
 	markdown    *services.MarkdownService
 	reverse     web.Reverse
 }
@@ -34,7 +33,7 @@ type termHandler struct {
 func NewTermHandler(
 	service *services.TermService,
 	nodeService *services.NodeService,
-	fileService *files.Service,
+	fileService *services.FileService,
 	markdownService *services.MarkdownService,
 	reverse web.Reverse,
 ) *termHandler {
@@ -59,7 +58,6 @@ func RegisterTermRoutes(group *echo.Group, h *termHandler) error {
 
 func termRouteHandlers(h *termHandler) []web.RouteHandler {
 	return []web.RouteHandler{
-
 		web.NewRouteHandler(web.GET, routes.Term, routes.GetTerm, h.showDetails),
 		web.NewRouteHandler(web.GET, routes.Terms, routes.GetTerms, h.listByUser),
 		web.NewRouteHandler(web.GET, routes.NewTerm, routes.GetNewTerm, h.showCreateNew),
@@ -86,12 +84,13 @@ func (h *termHandler) showCreateNew(c echo.Context) error {
 		return err
 	}
 	page := appcomponents.NodeCreatePage{
-		ParentNode:        nodes.User,
-		NodeType:          dto.TermTypeName,
-		Params:            nodePath,
-		PostCreateNodeURL: h.reverse(routes.PostTerm.String(), nodePath.ToSlice()...),
-		CancelURL:         h.reverse(routes.GetTerms.String(), nodePath.ToSlice()...),
-		BreadCrumbsData:   BreadCrumbs(nodes, nodePath, h.reverse),
+		ParentNode:          nodes.User,
+		NodeType:            dto.TermTypeName,
+		Params:              nodePath,
+		PostCreateNodeURL:   h.reverse(routes.PostTerm.String(), nodePath.ToSlice()...),
+		CancelURL:           h.reverse(routes.GetTerms.String(), nodePath.ToSlice()...),
+		BreadCrumbsData:     BreadCrumbs(nodes, nodePath, h.reverse),
+		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
 	return Respond(c, page)
 }
@@ -173,7 +172,7 @@ func (h *termHandler) listByUser(c echo.Context) error {
 		DeleteChildURL:      web.URLFunc(routes.DeleteTerm, h.reverse, nodePath.ToSlice()...),
 		ShowNewChildURL:     h.reverse(routes.GetNewTerm.String(), nodePath.ToSlice()...),
 		UpNavURL:            h.reverse(routes.GetUser.String(), nodePath.ToSlice()...),
-		BreadCrumbsData:     BreadCrumbs2(nodes, nodePath, h.reverse),
+		BreadCrumbsData:     BreadCrumbs(nodes, nodePath, h.reverse),
 		CourseManagerLayout: BaseLayout3(h.reverse, user),
 	}
 	page := termviews.TermsListPage{
@@ -237,13 +236,20 @@ func (h *termHandler) postEditFile(c echo.Context) error {
 	if fileInfo.IsDir {
 		return fmt.Errorf("%s is a directory", filePath)
 	}
-	content := c.FormValue(string(markdownviews.EditSlidesTextAreaID))
+	content := c.FormValue("code-editor")
 	log.Println("content", content)
 	err = h.fileService.Update([]byte(content), filePath, nodes)
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, web.URLFunc(routes.ViewTermFile, h.reverse, path.ToSlice()...)(filePath))
+	return c.Redirect(
+		303,
+		web.URLFunc(
+			routes.ViewTermFile,
+			h.reverse,
+			path.ToSlice()...,
+		)(filePath),
+	)
 }
 
 func (h *termHandler) showEditFile(c echo.Context) error {
@@ -272,10 +278,18 @@ func (h *termHandler) showEditFile(c echo.Context) error {
 	}
 	page := markdownviews.MarkdownEditor{
 		Contents:            string(content),
-		PostEditFileURL:     web.URLFunc(routes.GetTermEditFile, h.reverse, path.ToSlice()...)(filePath),
+		PostEditFileURL:     web.URLFunc(routes.PostTermEditFile, h.reverse, path.ToSlice()...)(filePath),
 		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
-	return Respond(c, page)
+	return web.Respond(
+		c,
+		h.reverse(
+			routes.GetTerm.String(),
+			path.ToSlice()...,
+		),
+		page.Component(),
+		nil,
+	)
 }
 
 func (h *termHandler) viewMarkdown(c echo.Context) error {
@@ -442,20 +456,7 @@ func (h *termHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appco
 		UpNavURL:        h.reverse(routes.GetUser.String(), path.ToSlice()...),
 		CancelEditURL:   h.reverse(routes.GetTerm.String(), path.ToSlice()...),
 		ServerFilesURL:  h.reverse(routes.GetTermFiles.String(), path.ToSlice()...),
-		BreadCrumbs:     BreadCrumbs2(nodes, path, h.reverse),
+		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),
 	}
 	return nodePage
 }
-
-// (done) ListChildren(echo.Context) error
-// (done) ShowFiles(echo.Context) error
-// (done) PostFile(echo.Context) error
-// (done) ViewFile(echo.Context) error
-// (done) ShowDetails(echo.Context) error
-// (done) ShowNewChild(echo.Context) error // e.g. if node is course, new child would be new unit
-// PostNewChild(echo.Context) error
-// ShowEdit(echo.Context) error
-// ShowEditFile(echo.Context) error
-// PostEditFile(echo.Context) error
-// PostEdit(echo.Context) error
-// Delete(echo.Context) error // i.e. delete node itself (not child)

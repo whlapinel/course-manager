@@ -25,3 +25,15 @@ func (svc *Service) ByID(courseID int) (course.Course, error) {
 func (svc *Service) ByTermID(termID int) ([]course.Course, error) {
 	return svc.repo.ByTermID(termID)
 }
+
+func (svc *Service) Delete(courseID int) error {
+	return svc.repo.Delete(courseID)
+}
+
+func (svc *Service) Save(course course.Course) error {
+	_, err := svc.repo.Save(course)
+	if err != nil {
+		return err
+	}
+	return nil
+}

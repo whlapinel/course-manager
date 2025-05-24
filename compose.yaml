@@ -41,7 +41,7 @@ services:
 
   echo:
     image: whlapinel/course-manager:0.2.0-dev
-    user: "${UID}:${GID}"
+    user: root
     command: ["./cmd/web_app/web_app"]
     networks:
       - app-network
@@ -58,25 +58,10 @@ services:
       - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
     restart: unless-stopped
 
-  # hugo:
-  #   image: whlapinel/course-manager-hugo:latest
-  #   command: ["./"]
-  #   networks:
-  #     - app-network
-  #   env_file:
-  #     - .env
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.hugo
-  #   volumes:
-  #     - ./internal/data/users:/app/internal/data/users
-  #     - ./hugosites:/app/sites
-
   migrate:
     profiles:
       - migrations
     image: whlapinel/course-manager:0.2.0-dev
-    user: "${UID}:${GID}"
 
     command:
       ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]

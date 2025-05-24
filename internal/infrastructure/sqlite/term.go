@@ -143,7 +143,8 @@ func (repo *termRepo) Save(term core.Term) (int, error) {
 	}
 	dbTerm, err := repo.queries.SaveTerm(context.Background(), termParams)
 	if err != nil {
-		return 0, fmt.Errorf("CourseRepo.SaveTerm: %s", err)
+		
+		return 0, fmt.Errorf("termRepo.SaveTerm: %s", err)
 	}
 	for _, date := range term.InstructionalDays {
 		dateParams := database.SaveDateParams{

@@ -2,6 +2,8 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"gh_static_portfolio/internal/core/course"
 	courseFeature "gh_static_portfolio/internal/features/course"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
@@ -51,15 +53,43 @@ func (repo *courseRepo) ByTermID(termID int) ([]course.Course, error) {
 
 // Delete implements course.Repository.
 func (c *courseRepo) Delete(courseID int) error {
-	panic("unimplemented")
+	_, err := c.queries.DeleteCourse(context.Background(), int64(courseID))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Save implements course.Repository.
-func (c *courseRepo) Save(newTerm course.Course) (int, error) {
-	panic("unimplemented")
+func (c *courseRepo) Save(newCourse course.Course) (int, error) {
+	courseParams := database.SaveCourseParams{
+		TermID: int64(newCourse.ParentID),
+		Name:   newCourse.Name,
+
+		Description: sql.NullString{
+			Valid:  newCourse.Description != "",
+			String: newCourse.Description,
+		},
+	}
+	dbCourse, err := c.queries.SaveCourse(context.Background(), courseParams)
+	if err != nil {
+		return 0, fmt.Errorf("courseRepo.SaveCourse: %s", err)
+	}
+	return int(dbCourse.ID), nil
 }
 
 // Update implements course.Repository.
 func (c *courseRepo) Update(updated course.Course) error {
-	panic("unimplemented")
+	err := c.queries.UpdateCourse(context.Background(), database.UpdateCourseParams{
+		ID:   int64(updated.ID),
+		Name: updated.Name,
+		Description: sql.NullString{
+			Valid:  updated.Description != "",
+			String: updated.Description,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

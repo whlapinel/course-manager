@@ -18,6 +18,10 @@ func NewCourseService(
 	}
 }
 
+func (svc *CourseService) Save(course dto.Course) error {
+	return svc.courseService.Save(course.Course)
+}
+
 func (svc *CourseService) ListByTerm(termID int) ([]dto.Course, error) {
 	courses, err := svc.courseService.ByTermID(termID)
 	if err != nil {
@@ -45,4 +49,9 @@ func (svc *CourseService) ByID(courseID int) (dto.Course, error) {
 	return dto.Course{
 		Course: course,
 	}, nil
+}
+
+func (svc *CourseService) Delete(courseID int) error {
+	return svc.courseService.Delete(courseID)
+
 }

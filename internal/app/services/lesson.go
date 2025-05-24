@@ -43,3 +43,10 @@ func (svc *LessonService) ByUnitID(unitID int) ([]dto.Lesson, error) {
 	}
 	return lessonDTOs, nil
 }
+func (svc *LessonService) Delete(lessonID int) error {
+	return svc.lessonService.Delete(lessonID)
+}
+
+func (svc *LessonService) Save(lesson dto.Lesson) error {
+	return svc.lessonService.Save(lesson.Lesson)
+}
