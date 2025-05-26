@@ -5,7 +5,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	cmp "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/core/standard"
-	"gh_static_portfolio/internal/core/term"
+	"gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/shared/web"
 
 	"github.com/a-h/templ"

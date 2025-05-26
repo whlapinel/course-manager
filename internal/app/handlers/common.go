@@ -22,17 +22,6 @@ func BreadCrumbs(nodes ports.Nodes, path routes.NodePath, reverse web.Reverse) a
 	}
 
 }
-// func BreadCrumbs2(nodes ports.Nodes, path routes.NodePath, reverse web.Reverse) appcomponents.BreadCrumbs {
-// 	return appcomponents.BreadCrumbs{
-// 		Nodes:            nodes,
-// 		UserDetailsURL:   userDetailsURL(path, reverse),
-// 		TermDetailsURL:   termDetailsURL(path, reverse),
-// 		CourseDetailsURL: courseDetailsURL(path, reverse),
-// 		UnitDetailsURL:   unitDetailsURL(path, reverse),
-// 		LessonDetailsURL: lessonDetailsURL(path, reverse),
-// 	}
-
-// }
 
 func userDetailsURL(path routes.NodePath, reverse web.Reverse) string {
 	return reverse(routes.GetUser.String(), path.ToSlice()...)

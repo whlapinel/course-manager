@@ -2,7 +2,7 @@ package dto
 
 import (
 	"fmt"
-	"gh_static_portfolio/internal/core/user"
+	"gh_static_portfolio/internal/features/user"
 	"gh_static_portfolio/internal/ports"
 	"strings"
 )

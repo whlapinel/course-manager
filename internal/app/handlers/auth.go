@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	ac "gh_static_portfolio/internal/app/components"
+	"gh_static_portfolio/internal/app/services"
 	av "gh_static_portfolio/internal/app/views/authentication"
-	"gh_static_portfolio/internal/core/user"
-	"gh_static_portfolio/internal/features/auth"
 	components "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/features/user"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -18,10 +18,10 @@ import (
 
 type authHandler struct {
 	reverse web.Reverse
-	service *auth.Service
+	service *services.AuthService
 }
 
-func NewAuthHandler(service *auth.Service, reverse web.Reverse) *authHandler {
+func NewAuthHandler(service *services.AuthService, reverse web.Reverse) *authHandler {
 	return &authHandler{service: service, reverse: reverse}
 }
 
@@ -74,7 +74,7 @@ func (h *authHandler) postSignin(c echo.Context) error {
 		return c.String(500, err.Error())
 	}
 	log.Println("userID", currUser.ID)
-	t, err := h.service.IssueToken(auth.TokenParams{User: user.User{
+	t, err := h.service.IssueToken(services.TokenParams{User: user.User{
 		ID:        sub,
 		Email:     currUser.Email,
 		FirstName: currUser.FirstName,

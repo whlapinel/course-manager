@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
-	"gh_static_portfolio/internal/core/user"
+	"gh_static_portfolio/internal/features/user"
 	"log"
 	"net/http"
 	"net/url"

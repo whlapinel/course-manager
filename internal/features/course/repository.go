@@ -1,11 +1,9 @@
 package course
 
-import "gh_static_portfolio/internal/core/course"
-
 type Repository interface {
-	ByTermID(termID int) ([]course.Course, error)
-	ByID(courseID int) (course.Course, error)
-	Save(course course.Course) (int, error)
-	Update(updated course.Course) error
+	ByTermID(termID int) ([]Course, error)
+	ByID(courseID int) (Course, error)
+	Save(course Course) (int, error)
+	Update(updated Course) error
 	Delete(courseID int) error
 }

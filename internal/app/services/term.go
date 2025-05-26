@@ -1,18 +1,20 @@
 package services
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/features/term"
+	feature "gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/features/termoccasion"
+	"time"
 )
 
 type TermService struct {
-	termService *term.Service
+	termService *feature.Service
 	occasionSvc *termoccasion.Service
 }
 
 func NewTermService(
-	termSvc *term.Service,
+	termSvc *feature.Service,
 	occasionSvc *termoccasion.Service,
 ) *TermService {
 	return &TermService{
@@ -44,7 +46,7 @@ func (svc *TermService) Delete(termID int) error {
 	return svc.termService.Delete(termID)
 }
 
-func (svc *TermService) ByUserID(userID string) ([]dto.Term, error) {
+func (svc *TermService) ByParentID(userID string) ([]dto.Term, error) {
 	var termDTOs []dto.Term
 	terms, err := svc.termService.TermsByUser(userID)
 	if err != nil {
@@ -73,4 +75,17 @@ func (svc *TermService) WithOccasions(termID int) (dto.Term, error) {
 		Term:      term,
 		Occasions: occasions,
 	}, nil
+}
+
+func (svc *TermService) RemoveInstructionalDay(date time.Time, termID int) error {
+	instance, err := svc.ByID(termID)
+	if err != nil {
+		return err
+	}
+	for _, instructDate := range instance.InstructionalDays {
+		if feature.IsSameDate(date, instructDate) {
+			return svc.termService.RemoveInstructionalDay(date, termID)
+		}
+	}
+	return fmt.Errorf("date not found")
 }

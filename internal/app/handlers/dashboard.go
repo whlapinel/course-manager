@@ -5,7 +5,6 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	dashboardviews "gh_static_portfolio/internal/app/views/dashboard"
-	"gh_static_portfolio/internal/features/sitegen"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -14,14 +13,14 @@ import (
 )
 
 type dashboardHandler struct {
-	sitegen     *sitegen.Service
+	sitegen     *services.SiteGeneratorService
 	service     *services.UserService
 	nodeService *services.NodeService
 	reverse     web.Reverse
 }
 
 func NewDashboardHandler(
-	sitegen *sitegen.Service,
+	sitegen *services.SiteGeneratorService,
 	service *services.UserService,
 	nodeService *services.NodeService,
 	reverse web.Reverse,

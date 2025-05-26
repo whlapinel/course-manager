@@ -4,8 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"gh_static_portfolio/internal/core/course"
-	courseFeature "gh_static_portfolio/internal/features/course"
+	"gh_static_portfolio/internal/features/course"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 )
 
@@ -13,7 +12,7 @@ type courseRepo struct {
 	queries *database.Queries
 }
 
-func NewCourseRepo(queries *database.Queries) courseFeature.Repository {
+func NewCourseRepo(queries *database.Queries) course.Repository {
 	return &courseRepo{
 		queries: queries,
 	}

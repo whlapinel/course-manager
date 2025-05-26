@@ -29,7 +29,7 @@ func (svc *LessonService) ByID(lessonID int) (dto.Lesson, error) {
 	}, nil
 }
 
-func (svc *LessonService) ByUnitID(unitID int) ([]dto.Lesson, error) {
+func (svc *LessonService) ByParentID(unitID int) ([]dto.Lesson, error) {
 	lessons, err := svc.lessonService.ByUnitID(unitID)
 	if err != nil {
 		return nil, err

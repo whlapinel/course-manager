@@ -3,9 +3,11 @@ package services
 import (
 	"errors"
 	"gh_static_portfolio/internal/ports"
+	"io/fs"
 	"log"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -32,7 +34,17 @@ func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
 	mdPath := s.pathing.NodeSlidesMarkdownPath(nodes...)
 	info, err := os.Stat(mdPath)
 	if err != nil {
-		return nil, err
+		// if markdown doesn't exist,
+		if errors.Is(err, fs.ErrNotExist) {
+			// create the file and return empty content
+			err = s.files.Save([]byte{}, nodeDir, filepath.Base(mdPath))
+			if err != nil {
+				return nil, err
+			}
+			return []byte{}, nil
+		} else {
+			return nil, err
+		}
 	}
 	log.Println("slidesPath:", mdPath)
 	slidesURL, err := s.dataPathToMarpURL(mdPath)

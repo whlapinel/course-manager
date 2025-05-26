@@ -1,9 +1,5 @@
 package unit
 
-import (
-	"gh_static_portfolio/internal/core/unit"
-)
-
 type Service struct {
 	repo Repository
 }
@@ -14,22 +10,22 @@ func NewService(repo Repository) *Service {
 	}
 }
 
-func (svc *Service) Save(unit unit.Unit) error {
+func (svc *Service) Save(unit Unit) error {
 	_, err := svc.repo.Save(unit)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (svc *Service) Update(unit unit.Unit) error {
+func (svc *Service) Update(unit Unit) error {
 	return svc.repo.Update(unit)
 }
 
-func (svc *Service) ByID(unitID int) (unit.Unit, error) {
+func (svc *Service) ByID(unitID int) (Unit, error) {
 	return svc.repo.ByID(unitID)
 }
 
-func (svc *Service) ByCourseID(courseID int) ([]unit.Unit, error) {
+func (svc *Service) ByCourseID(courseID int) ([]Unit, error) {
 	return svc.repo.ByCourseID(courseID)
 }
 

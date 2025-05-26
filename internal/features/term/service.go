@@ -1,7 +1,7 @@
 package term
 
 import (
-	"gh_static_portfolio/internal/core/term"
+	"time"
 )
 
 type Service struct {
@@ -13,11 +13,12 @@ func NewService(repo Repository) *Service {
 		repo: repo,
 	}
 }
-func (svc *Service) Save(term term.Term) error {
+func (svc *Service) Save(term Term) error {
+	term = New(term)
 	_, err := svc.repo.Save(term)
 	return err
 }
-func (svc *Service) Update(term term.Term) error {
+func (svc *Service) Update(term Term) error {
 	return svc.repo.Update(term)
 }
 
@@ -25,10 +26,14 @@ func (svc *Service) Delete(termID int) error {
 	return svc.repo.Delete(termID)
 }
 
-func (svc *Service) ByID(termID int) (term.Term, error) {
+func (svc *Service) ByID(termID int) (Term, error) {
 	return svc.repo.ByID(termID)
 }
 
-func (svc *Service) TermsByUser(userID string) ([]term.Term, error) {
+func (svc *Service) TermsByUser(userID string) ([]Term, error) {
 	return svc.repo.ByUserID(userID)
+}
+
+func (svc *Service) RemoveInstructionalDay(date time.Time, termID int) error {
+	return svc.repo.RemoveInstructionalDay(date, termID)
 }

@@ -5,11 +5,9 @@ import (
 	"gh_static_portfolio/internal/app/handlers"
 	"gh_static_portfolio/internal/app/services"
 	"gh_static_portfolio/internal/assets"
-	"gh_static_portfolio/internal/features/auth"
 	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
-	"gh_static_portfolio/internal/features/sitegen"
 	"gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
@@ -66,7 +64,7 @@ func New(params NewAppParams) (*App, error) {
 	marp := marpclient.New(params.MarpBaseURL)
 
 	// feature services
-	authService := auth.NewService(userRepo)
+	authService := services.NewAuthService(userRepo)
 	userService := user.NewService(userRepo)
 	termService := term.NewService(termRepo)
 	courseService := course.NewService(courseRepo)
@@ -84,7 +82,7 @@ func New(params NewAppParams) (*App, error) {
 	userAppService := services.NewUserService(userService)
 	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.WithOccasions, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
 	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
-	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByCourseID, lessonAppService.ByUnitID, termAppService.WithOccasions)
+	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByParentID, lessonAppService.ByParentID, termAppService.WithOccasions)
 	markdownService := services.NewMarkdownService(markdownRenderer, dataFilesPathingSvc, filesRepo)
 
 	// infrastructure init
@@ -97,9 +95,9 @@ func New(params NewAppParams) (*App, error) {
 		DataPathingService:       dataFilesPathingSvc,
 		GetUser:                  userAppService.ByID,
 		GetTerm:                  termAppService.ByID,
-		GetCourses:               courseAppService.ListByTerm,
-		GetUnits:                 unitAppService.ByCourseID,
-		GetLessons:               lessonAppService.ByUnitID,
+		GetCourses:               courseAppService.ByParentID,
+		GetUnits:                 unitAppService.ByParentID,
+		GetLessons:               lessonAppService.ByParentID,
 	}
 	hugoGenerator, err := hugo.New(hugoParams)
 	if err != nil {
@@ -107,7 +105,7 @@ func New(params NewAppParams) (*App, error) {
 	}
 
 	// site generator service
-	siteGenerator := sitegen.New(hugoGenerator)
+	siteGenerator := services.NewSiteGeneratorService(hugoGenerator)
 
 	// route groups
 	root := e.Group("")

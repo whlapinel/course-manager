@@ -4,8 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"gh_static_portfolio/internal/core/lesson"
-	lessonFeature "gh_static_portfolio/internal/features/lesson"
+	"gh_static_portfolio/internal/features/lesson"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 	"gh_static_portfolio/internal/shared/dates"
 	"time"
@@ -15,7 +14,7 @@ type lessonRepo struct {
 	queries *database.Queries
 }
 
-func NewLessonRepo(queries *database.Queries) lessonFeature.Repository {
+func NewLessonRepo(queries *database.Queries) lesson.Repository {
 	return &lessonRepo{
 		queries: queries,
 	}

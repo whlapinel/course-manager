@@ -11,6 +11,7 @@ import (
 )
 
 type FilesPage struct {
+	cmp.UpNav
 	Root                bool
 	ParentDirectory     FilesPageItem
 	CurrentDirectory    FilesPageItem
@@ -58,10 +59,8 @@ func AddParams(params routes.NodePath, additionalParams ...any) []any {
 func (data FilesPage) PageLayout() cmp.PageLayout {
 	return cmp.PageLayout{
 		PageTitle: "Files for " + data.Node.GetName(),
-		UpNav: cmp.UpNav{
-			Text: "Up one level",
-		},
-		Crumbs: data.BreadCrumbs().BreadCrumbs(),
+		UpNav:     data.UpNav,
+		Crumbs:    data.BreadCrumbs().BreadCrumbs(),
 	}
 }
 

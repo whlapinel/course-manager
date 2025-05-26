@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"gh_static_portfolio/internal/core/course"
+	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/ports"
 	"time"

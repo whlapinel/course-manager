@@ -25,7 +25,7 @@ func (svc *UnitService) Update(unit dto.Unit) error {
 	return svc.unitService.Update(unit.Unit)
 }
 
-func (svc *UnitService) ByCourseID(courseID int) ([]dto.Unit, error) {
+func (svc *UnitService) ByParentID(courseID int) ([]dto.Unit, error) {
 	units, err := svc.unitService.ByCourseID(courseID)
 	if err != nil {
 		return nil, err

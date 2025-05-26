@@ -8,17 +8,17 @@ import (
 	"time"
 )
 
-type termOccasionRepo struct {
+type courseOccasionRepo struct {
 	queries *database.Queries
 }
 
 // ByID implements termoccasion.Repository.
-func (t *termOccasionRepo) ByID(id int) (occasion.Occasion, error) {
+func (t *courseOccasionRepo) ByID(id int) (occasion.Occasion, error) {
 	panic("unimplemented")
 }
 
 // ByTermID implements termoccasion.Repository.
-func (t *termOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
+func (t *courseOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
 	dbOccasions, err := t.queries.GetTermOccasions(context.Background(), int64(termID))
 	if err != nil {
 		return nil, err
@@ -42,22 +42,22 @@ func (t *termOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
 }
 
 // Delete implements termoccasion.Repository.
-func (t *termOccasionRepo) Delete(id occasion.Occasion) error {
+func (t *courseOccasionRepo) Delete(id occasion.Occasion) error {
 	panic("unimplemented")
 }
 
 // Save implements termoccasion.Repository.
-func (t *termOccasionRepo) Save(occasion.Occasion) (int, error) {
+func (t *courseOccasionRepo) Save(occasion.Occasion) (int, error) {
 	panic("unimplemented")
 }
 
 // Update implements termoccasion.Repository.
-func (t *termOccasionRepo) Update(occasion.Occasion) error {
+func (t *courseOccasionRepo) Update(occasion.Occasion) error {
 	panic("unimplemented")
 }
 
-func NewTermOccasionRepo(queries *database.Queries) termoccasion.Repository {
-	return &termOccasionRepo{
+func NewCourseOccasionRepo(queries *database.Queries) termoccasion.Repository {
+	return &courseOccasionRepo{
 		queries: queries,
 	}
 }

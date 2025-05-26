@@ -4,8 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	core "gh_static_portfolio/internal/core/term"
-	termfeature "gh_static_portfolio/internal/features/term"
+	"gh_static_portfolio/internal/features/term"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 	"time"
 )
@@ -14,24 +13,24 @@ type termRepo struct {
 	queries *database.Queries
 }
 
-func NewTermRepo(queries *database.Queries) termfeature.Repository {
+func NewTermRepo(queries *database.Queries) term.Repository {
 	return &termRepo{
 		queries: queries,
 	}
 
 }
 
-func (repo *termRepo) ByID(termID int) (core.Term, error) {
-	var term core.Term
+func (repo *termRepo) ByID(termID int) (term.Term, error) {
+	var termInstance term.Term
 	dbTerm, err := repo.queries.GetTermByID(context.Background(), int64(termID))
 	if err != nil {
-		return core.Term{}, err
+		return termInstance, err
 	}
 	dates, err := parseDates([]string{dbTerm.Start, dbTerm.End})
 	if err != nil {
-		return core.Term{}, err
+		return termInstance, err
 	}
-	term = core.Term{
+	termInstance = term.Term{
 		ID:          int(dbTerm.ID),
 		Name:        dbTerm.Name,
 		Description: dbTerm.Description.String,
@@ -40,29 +39,29 @@ func (repo *termRepo) ByID(termID int) (core.Term, error) {
 	}
 	dbDates, err := repo.queries.GetTermDates(context.Background(), int64(termID))
 	if err != nil {
-		return core.Term{}, err
+		return term.Term{}, err
 	}
-	currDate := term.Start
+	currDate := termInstance.Start
 	currInstructIndex := 0
-	for !currDate.After(term.End) {
+	for !currDate.After(termInstance.End) {
 		if currDate.Weekday() != time.Saturday && currDate.Weekday() != time.Sunday &&
 			!(currInstructIndex > len(dbDates)-1) {
 			dbDate := dbDates[currInstructIndex]
 			date, err := time.Parse(time.DateOnly, dbDate.Date)
 			if err != nil {
-				return term, err
+				return termInstance, err
 			}
 			if currDate == date {
-				term.InstructionalDays = append(term.InstructionalDays, currDate)
+				termInstance.InstructionalDays = append(termInstance.InstructionalDays, currDate)
 				currInstructIndex++
 			} else {
-				term.NonInstructionalDays = append(term.NonInstructionalDays, currDate)
+				termInstance.NonInstructionalDays = append(termInstance.NonInstructionalDays, currDate)
 			}
 		}
 		currDate = currDate.AddDate(0, 0, 1)
 	}
 
-	return term, nil
+	return termInstance, nil
 }
 
 func parseDates(dateStrings []string) ([]time.Time, error) {
@@ -78,13 +77,13 @@ func parseDates(dateStrings []string) ([]time.Time, error) {
 	return dates, nil
 }
 
-func (repo *termRepo) ByUserID(userID string) ([]core.Term, error) {
+func (repo *termRepo) ByUserID(userID string) ([]term.Term, error) {
 	dbGetTermRows, err := repo.queries.GetTerms(context.Background(), userID)
 	if err != nil {
 		return nil, err
 	}
-	var terms []core.Term
-	var currTerm core.Term
+	var terms []term.Term
+	var currTerm term.Term
 	for i, dbGetTermRow := range dbGetTermRows {
 		parsedStart, err := time.Parse(time.DateOnly, dbGetTermRow.Start)
 		if err != nil {
@@ -95,7 +94,7 @@ func (repo *termRepo) ByUserID(userID string) ([]core.Term, error) {
 			return nil, err
 		}
 		if i == 0 {
-			currTerm = core.Term{
+			currTerm = term.Term{
 				ID:          int(dbGetTermRow.ID),
 				Start:       parsedStart,
 				End:         parsedEnd,
@@ -106,7 +105,7 @@ func (repo *termRepo) ByUserID(userID string) ([]core.Term, error) {
 		// if we've hit a new term, append the current term and create a new one
 		if dbGetTermRow.ID != int64(currTerm.ID) {
 			terms = append(terms, currTerm)
-			currTerm = core.Term{
+			currTerm = term.Term{
 				ID:          int(dbGetTermRow.ID),
 				Start:       parsedStart,
 				End:         parsedEnd,
@@ -129,7 +128,7 @@ func (repo *termRepo) ByUserID(userID string) ([]core.Term, error) {
 
 }
 
-func (repo *termRepo) Save(term core.Term) (int, error) {
+func (repo *termRepo) Save(term term.Term) (int, error) {
 	termParams := database.SaveTermParams{
 		UserID: term.UserID,
 		Name:   term.Name,
@@ -143,7 +142,6 @@ func (repo *termRepo) Save(term core.Term) (int, error) {
 	}
 	dbTerm, err := repo.queries.SaveTerm(context.Background(), termParams)
 	if err != nil {
-		
 		return 0, fmt.Errorf("termRepo.SaveTerm: %s", err)
 	}
 	for _, date := range term.InstructionalDays {
@@ -156,7 +154,7 @@ func (repo *termRepo) Save(term core.Term) (int, error) {
 	return int(dbTerm.ID), nil
 }
 
-func (repo *termRepo) Update(term core.Term) error {
+func (repo *termRepo) Update(term term.Term) error {
 	err := repo.queries.UpdateTerm(context.Background(), database.UpdateTermParams{
 		ID:   int64(term.ID),
 		Name: term.Name,
@@ -179,4 +177,11 @@ func (repo *termRepo) Delete(termID int) error {
 		return err
 	}
 	return nil
+}
+
+func (repo *termRepo) RemoveInstructionalDay(date time.Time, termID int) error {
+	return repo.queries.DeleteDate(context.Background(), database.DeleteDateParams{
+		Date:   date.Format(time.DateOnly),
+		TermID: int64(termID),
+	})
 }

@@ -4,8 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"gh_static_portfolio/internal/core/unit"
-	unitFeature "gh_static_portfolio/internal/features/unit"
+	"gh_static_portfolio/internal/features/unit"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 )
 
@@ -13,7 +12,7 @@ type unitRepo struct {
 	queries *database.Queries
 }
 
-func NewUnitRepo(queries *database.Queries) unitFeature.Repository {
+func NewUnitRepo(queries *database.Queries) unit.Repository {
 	return &unitRepo{
 		queries: queries,
 	}

@@ -22,7 +22,7 @@ func (svc *CourseService) Save(course dto.Course) error {
 	return svc.courseService.Save(course.Course)
 }
 
-func (svc *CourseService) ListByTerm(termID int) ([]dto.Course, error) {
+func (svc *CourseService) ByParentID(termID int) ([]dto.Course, error) {
 	courses, err := svc.courseService.ByTermID(termID)
 	if err != nil {
 		return nil, err

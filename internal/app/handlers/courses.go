@@ -1,22 +1,15 @@
 package handlers
 
 import (
-	"bytes"
-	"context"
-	"fmt"
 	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	mt "gh_static_portfolio/internal/app/views/course"
-	fileviews "gh_static_portfolio/internal/app/views/files"
-	markdownviews "gh_static_portfolio/internal/app/views/markdown"
-	"gh_static_portfolio/internal/core/course"
+	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
-	"net/http"
-	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,6 +20,7 @@ type courseHandler struct {
 	fileService *services.FileService
 	markdown    *services.MarkdownService
 	reverse     web.Reverse
+	*baseHandler[dto.Course, int, int]
 }
 
 func NewCourseHandler(
@@ -34,7 +28,6 @@ func NewCourseHandler(
 	nodeService *services.NodeService,
 	fileService *services.FileService,
 	markdown *services.MarkdownService,
-
 	reverse web.Reverse,
 ) *courseHandler {
 	return &courseHandler{
@@ -43,6 +36,20 @@ func NewCourseHandler(
 		fileService: fileService,
 		reverse:     reverse,
 		markdown:    markdown,
+		baseHandler: &baseHandler[dto.Course, int, int]{
+			service:          service,
+			files:            fileService,
+			markdown:         markdown,
+			nodes:            nodeService,
+			reverse:          reverse,
+			getNode:          routes.GetCourse,
+			viewNodeFile:     routes.ViewCourseFile,
+			getNodeFile:      routes.GetCourseFile,
+			getNodeFiles:     routes.GetCourseFiles,
+			getNodeEditFile:  routes.GetCourseEditFile,
+			postNodeFile:     routes.PostCourseFile,
+			postNodeEditFile: routes.PostCourseEditFile,
+		},
 	}
 }
 
@@ -58,158 +65,23 @@ func RegisterCourseRoutes(group *echo.Group, h *courseHandler) error {
 
 func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 	return []web.RouteHandler{
-		web.NewRouteHandler(web.GET, routes.Courses, routes.GetCourses, h.listByTerm),
-		web.NewRouteHandler(web.GET, routes.Course, routes.GetCourse, h.showDetails),
-		web.NewRouteHandler(web.GET, routes.CourseEdit, routes.GetEditCourse, h.showEdit),
+		// base handler
 		web.NewRouteHandler(web.GET, routes.CourseFiles, routes.GetCourseFiles, h.showFiles),
-		web.NewRouteHandler(web.POST, routes.CourseEdit, routes.PostEditCourse, h.postEdit),
-		web.NewRouteHandler(web.GET, routes.NewCourse, routes.GetNewCourse, h.showCreateNew),
-		web.NewRouteHandler(web.POST, routes.NewCourse, routes.PostCourse, h.postNew),
-		web.NewRouteHandler(web.DELETE, routes.Course, routes.DeleteCourse, h.delete),
 		web.NewRouteHandler(web.POST, routes.CourseFiles, routes.PostCourseFile, h.postFile),
 		web.NewRouteHandler(web.GET, routes.CourseEditFile, routes.GetCourseEditFile, h.showEditFile),
 		web.NewRouteHandler(web.POST, routes.CourseEditFile, routes.PostCourseEditFile, h.postEditFile),
 		web.NewRouteHandler(web.GET, routes.CourseViewFile, routes.ViewCourseFile, h.viewMarkdown),
+		// course handler overrides
+		web.NewRouteHandler(web.GET, routes.Courses, routes.GetCourses, h.listByTerm),
+		web.NewRouteHandler(web.GET, routes.Course, routes.GetCourse, h.showDetails),
+		web.NewRouteHandler(web.GET, routes.CourseEdit, routes.GetEditCourse, h.showEdit),
+		web.NewRouteHandler(web.POST, routes.CourseEdit, routes.PostEditCourse, h.postEdit),
+		web.NewRouteHandler(web.GET, routes.NewCourse, routes.GetNewCourse, h.showCreateNew),
+		web.NewRouteHandler(web.POST, routes.NewCourse, routes.PostCourse, h.postNew),
+		web.NewRouteHandler(web.DELETE, routes.Course, routes.DeleteCourse, h.delete),
 	}
 }
 
-func (h *courseHandler) viewMarkdown(c echo.Context) error {
-	path, err := routes.ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	filePath := c.Param("*")
-	if filePath == "" {
-		return fmt.Errorf("path param is empty")
-	}
-	nodes, err := h.nodeService.Nodes(path)
-	if err != nil {
-		return err
-	}
-	html, err := h.markdown.ViewMarkdown(filePath, nodes.ToSlice()...)
-	if err != nil {
-		return err
-	}
-	doc := markdownviews.MarkdownDocument{
-		Title:   filepath.Base(filePath),
-		Content: string(html),
-		Static:  false,
-	}
-	var buf bytes.Buffer
-	err = markdownviews.DocLayout(doc).Render(context.Background(), &buf)
-	if err != nil {
-		return err
-	}
-	doc.Content = buf.String()
-	component := markdownviews.MarkdownIFrame(doc)
-	layout := BaseLayout3(h.reverse, nodes.User.(dto.User))
-	return web.Respond(c, "", component, layout.Component2(component))
-}
-
-func (h *courseHandler) postEditFile(c echo.Context) error {
-	path, err := routes.ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	filePath := c.Param("*")
-	if filePath == "" {
-		return fmt.Errorf("path param is empty")
-	}
-	nodes, err := h.nodeService.Nodes(path)
-	if err != nil {
-		return err
-	}
-	fileInfo, err := h.fileService.FileInfo(filePath, nodes)
-	if err != nil {
-		return err
-	}
-	if fileInfo.IsDir {
-		return fmt.Errorf("%s is a directory", filePath)
-	}
-	content := c.FormValue("code-editor")
-	log.Println("content", content)
-	err = h.fileService.Update([]byte(content), filePath, nodes)
-	if err != nil {
-		return err
-	}
-	return c.Redirect(
-		303,
-		web.URLFunc(
-			routes.ViewCourseFile,
-			h.reverse,
-			path.ToSlice()...,
-		)(filePath),
-	)
-}
-func (h *courseHandler) showEditFile(c echo.Context) error {
-	path, err := routes.ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	filePath := c.Param("*")
-	if filePath == "" {
-		return fmt.Errorf("path param is empty")
-	}
-	nodes, err := h.nodeService.Nodes(path)
-	if err != nil {
-		return err
-	}
-	fileInfo, err := h.fileService.FileInfo(filePath, nodes)
-	if err != nil {
-		return err
-	}
-	if fileInfo.IsDir {
-		return fmt.Errorf("%s is a directory", filePath)
-	}
-	content, err := h.fileService.FileContent(filePath, nodes)
-	if err != nil {
-		return err
-	}
-	page := markdownviews.MarkdownEditor{
-		Contents:            string(content),
-		PostEditFileURL:     web.URLFunc(routes.PostCourseEditFile, h.reverse, path.ToSlice()...)(filePath),
-		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
-	}
-	return web.Respond(
-		c,
-		h.reverse(
-			routes.GetCourse.String(),
-			path.ToSlice()...,
-		),
-		page.Component(),
-		nil,
-	)
-}
-func (h *courseHandler) postFile(c echo.Context) error {
-	filePath := c.Param("*")
-	if filePath == "*" {
-		filePath = "."
-	}
-	params, err := routes.ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	nodes, err := h.nodeService.Nodes(params)
-	if err != nil {
-		return err
-	}
-	// Parse the form to retrieve the file
-	err = c.Request().ParseMultipartForm(10 << 20)
-	if err != nil {
-		return err
-	}
-	file, err := c.FormFile("file")
-	if err != nil {
-		return err
-	}
-	filePath = filepath.Join(filePath, file.Filename)
-	err = h.fileService.Save(file, filePath, nodes)
-	if err != nil {
-		return err
-	}
-	// Respond to the client
-	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
-}
 func (h *courseHandler) delete(c echo.Context) error {
 	nodePath, err := routes.ParseNodePath(c)
 	if err != nil {
@@ -269,7 +141,7 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 	}
 	term := nodes.Term.(dto.Term)
 
-	courses, err := h.service.ListByTerm(path.TermID)
+	courses, err := h.service.ByParentID(path.TermID)
 	if err != nil {
 		return err
 	}
@@ -361,58 +233,6 @@ func (h *courseHandler) postEdit(c echo.Context) error {
 		return err
 	}
 	return c.Redirect(303, h.reverse(routes.GetCourse.String(), nodePath.ToSlice()...))
-}
-
-func (h *courseHandler) showFiles(c echo.Context) error {
-	nodePath, err := routes.ParseNodePath(c)
-	if err != nil {
-		return err
-	}
-	filePath := c.Param("*")
-	log.Println("filePath", filePath)
-	nodes, err := h.nodeService.Nodes(nodePath)
-	if err != nil {
-		return err
-	}
-	if filePath == "" || filePath == "*" {
-		filePath = "."
-	}
-	fileInfo, err := h.fileService.FileInfo(filePath, nodes)
-	if err != nil {
-		return err
-	}
-	if !fileInfo.IsDir {
-		c.Attachment(fileInfo.AbsPath, filepath.Base(fileInfo.AbsPath))
-	}
-	parentPath := filepath.Dir(filePath)
-	files, err := h.fileService.NodeFiles(filePath, nodes.ToSlice()...)
-	if err != nil {
-		return err
-	}
-	page := fileviews.FilesPage{
-		Root: filePath == ".",
-		ParentDirectory: fileviews.FilesPageItem{
-			Name:  parentPath,
-			URL:   h.reverse(routes.GetCourseFile.String(), nodes.ToSlice(filePath)),
-			Path:  parentPath,
-			IsDir: true,
-		},
-		CurrentDirectory: fileviews.FilesPageItem{
-			Name:  filePath,
-			URL:   h.reverse(routes.GetCourseFile.String(), nodes.ToSlice(filePath)),
-			Path:  filePath,
-			IsDir: filepath.Ext(filePath) == "",
-		},
-		OpenDirURL:          web.URLFunc(routes.GetCourseFiles, h.reverse, nodePath.ToSlice()...),
-		ViewMarkdownURL:     web.URLFunc(routes.ViewCourseFile, h.reverse, nodePath.ToSlice()...),
-		EditMarkdownFileURL: web.URLFunc(routes.GetCourseEditFile, h.reverse, nodePath.ToSlice()...),
-		OpenFileURL:         web.URLFunc(routes.GetCourseFile, h.reverse, nodePath.ToSlice()...),
-		UploadFileURL:       web.URLFunc(routes.PostCourseFile, h.reverse, nodePath.ToSlice()...),
-		Node:                nodes.Course,
-		Files:               files,
-		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
-	}
-	return Respond(c, page)
 }
 
 func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {

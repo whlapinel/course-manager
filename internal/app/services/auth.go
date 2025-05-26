@@ -1,10 +1,10 @@
-package auth
+package services
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"gh_static_portfolio/internal/core/user"
+	"gh_static_portfolio/internal/features/user"
 	"log"
 	"net/http"
 	"os"
@@ -16,17 +16,21 @@ import (
 	"google.golang.org/api/idtoken"
 )
 
-type Service struct {
-	repo Repository
+type AuthRepository interface {
+	ByID(id string) (user.User, error)
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{
+type AuthService struct {
+	repo AuthRepository
+}
+
+func NewAuthService(repo AuthRepository) *AuthService {
+	return &AuthService{
 		repo: repo,
 	}
 }
 
-func (svc *Service) GetUser(id string) (user.User, error) {
+func (svc *AuthService) GetUser(id string) (user.User, error) {
 	return svc.repo.ByID(id)
 }
 
@@ -44,7 +48,7 @@ type JwtCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func (s *Service) AddCookieToHeader(next echo.HandlerFunc) echo.HandlerFunc {
+func (s *AuthService) AddCookieToHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log.Println("running AddCookieToHeader middleware")
 		cookie, err := c.Cookie("token")
@@ -57,7 +61,7 @@ func (s *Service) AddCookieToHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func (s *Service) JWTMiddlewareProtectedNew(signinRedirectURL string) echo.MiddlewareFunc {
+func (s *AuthService) JWTMiddlewareProtectedNew(signinRedirectURL string) echo.MiddlewareFunc {
 	var protectedConfig = echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(JwtCustomClaims)
@@ -94,7 +98,7 @@ func (s *Service) JWTMiddlewareProtectedNew(signinRedirectURL string) echo.Middl
 	return echojwt.WithConfig(protectedConfig)
 }
 
-func (s *Service) GetClaims(next echo.HandlerFunc) echo.HandlerFunc {
+func (s *AuthService) GetClaims(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log.Println("running GetClaims middleware")
 		user := c.Get("user").(*jwt.Token)
@@ -108,7 +112,7 @@ func (s *Service) GetClaims(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func (s *Service) GoogleAuth(c echo.Context) (*idtoken.Payload, error) {
+func (s *AuthService) GoogleAuth(c echo.Context) (*idtoken.Payload, error) {
 	token, err := c.Cookie("g_csrf_token")
 	if err != nil {
 		return nil, errors.New("token not found")
@@ -137,7 +141,7 @@ type TokenParams struct {
 	user.User
 }
 
-func (s *Service) IssueToken(params TokenParams) (string, error) {
+func (s *AuthService) IssueToken(params TokenParams) (string, error) {
 	claims := JwtCustomClaims{
 		ID:      params.ID,
 		First:   params.FirstName,
@@ -156,7 +160,7 @@ func (s *Service) IssueToken(params TokenParams) (string, error) {
 	return t, nil
 }
 
-func (s *Service) WriteToken(c echo.Context, t string) {
+func (s *AuthService) WriteToken(c echo.Context, t string) {
 	cookie := new(http.Cookie)
 	cookie.Name = "token"
 	cookie.Value = t
@@ -169,7 +173,7 @@ func (s *Service) WriteToken(c echo.Context, t string) {
 }
 
 // middleware to verify user is in database. should pass in service method to fetch user
-func (s *Service) Authorization() echo.MiddlewareFunc {
+func (s *AuthService) Authorization() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userID := c.Get("id").(string)

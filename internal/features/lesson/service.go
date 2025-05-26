@@ -1,9 +1,5 @@
 package lesson
 
-import (
-	"gh_static_portfolio/internal/core/lesson"
-)
-
 type Service struct {
 	repo Repository
 }
@@ -13,22 +9,22 @@ func NewService(repo Repository) *Service {
 		repo: repo,
 	}
 }
-func (svc *Service) Save(lesson lesson.Lesson) error {
+func (svc *Service) Save(lesson Lesson) error {
 	_, err := svc.repo.Save(lesson)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (svc *Service) Update(lesson lesson.Lesson) error {
+func (svc *Service) Update(lesson Lesson) error {
 	return svc.repo.Update(lesson)
 }
 
-func (svc *Service) ByID(lessonID int) (lesson.Lesson, error) {
+func (svc *Service) ByID(lessonID int) (Lesson, error) {
 	return svc.repo.ByID(lessonID)
 }
 
-func (svc *Service) ByUnitID(unitID int) ([]lesson.Lesson, error) {
+func (svc *Service) ByUnitID(unitID int) ([]Lesson, error) {
 	return svc.repo.ByUnitID(unitID)
 }
 

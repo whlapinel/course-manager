@@ -3,7 +3,7 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/assessment"
-	"gh_static_portfolio/internal/core/lesson"
+	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/ports"
 	"slices"

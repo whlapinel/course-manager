@@ -1,9 +1,5 @@
 package user
 
-import (
-	"gh_static_portfolio/internal/core/user"
-)
-
 type Service struct {
 	repo Repository
 }
@@ -14,6 +10,6 @@ func NewService(repo Repository) *Service {
 	}
 }
 
-func (svc *Service) ByID(id string) (user.User, error) {
+func (svc *Service) ByID(id string) (User, error) {
 	return svc.repo.ByID(id)
 }

@@ -145,9 +145,9 @@ func (l *localFileSystem) Save(contents []byte, rootDir, relPath string) error {
 	defer root.Close()
 	// Ensure the parent directories exist
 	dir := filepath.Dir(relPath)
-	if dir != "." {
+	if dir != rootDir {
 		if err := root.Mkdir(dir, 0755); err != nil && !os.IsExist(err) {
-			return fmt.Errorf("failed to create directories: %w", err)
+			return fmt.Errorf("failed to create directories: %w; dir: %s", err, dir)
 		}
 	}
 	_, err = root.Stat(relPath)
@@ -157,7 +157,7 @@ func (l *localFileSystem) Save(contents []byte, rootDir, relPath string) error {
 	// Create the newFile within the root
 	newFile, err := root.Create(relPath)
 	if err != nil {
-		return fmt.Errorf("failed to create file in %s: %w", relPath, err)
+		return fmt.Errorf("failed to create file %s in %s: %w", relPath, rootDir, err)
 	}
 	defer newFile.Close()
 	// Write the contents to the file

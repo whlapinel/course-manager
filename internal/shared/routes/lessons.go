@@ -19,7 +19,7 @@ const (
 	LessonStandard    web.RoutePath = LessonStandards + web.RoutePath(StandardID)
 )
 
-// Lesson routes
+// Lesson handler names
 var (
 	GetLessons     = web.NewHandlerName(web.GET, Lessons)
 	GetNewLesson   = web.NewHandlerName(web.GET, NewLesson)
@@ -30,7 +30,7 @@ var (
 	DeleteLesson   = web.NewHandlerName(web.DELETE, Lesson)
 )
 
-// Lesson file routes
+// Lesson file handler names
 var (
 	GetLessonFiles     = web.NewHandlerName(web.GET, LessonFiles)
 	PostLessonFile     = web.NewHandlerName(web.POST, LessonFiles)
@@ -40,14 +40,14 @@ var (
 	ViewLessonFile     = web.NewHandlerName(web.GET, LessonViewFile)
 )
 
-// Lesson slides routes
+// Lesson slides handler names
 var (
 	GetLessonSlides      = web.NewHandlerName(web.GET, LessonSlides)
 	GetEditLessonSlides  = web.NewHandlerName(web.GET, LessonEditSlides)
 	PostEditLessonSlides = web.NewHandlerName(web.POST, LessonEditSlides)
 )
 
-// Lesson assessment routes
+// Lesson assessment handler names
 var (
 	GetLessonAssessments     = web.NewHandlerName(web.GET, LessonAssessments)
 	PostLessonAssessment     = web.NewHandlerName(web.POST, LessonAssessments)
@@ -56,7 +56,7 @@ var (
 	DeleteLessonAssessment   = web.NewHandlerName(web.DELETE, LessonAssessment)
 )
 
-// Lesson standard routes
+// Lesson standard handler names
 var (
 	GetLessonStandards   = web.NewHandlerName(web.GET, LessonStandards)
 	PostLessonStandard   = web.NewHandlerName(web.POST, LessonStandards)
