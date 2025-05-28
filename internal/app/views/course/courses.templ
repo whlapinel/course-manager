@@ -9,41 +9,41 @@ templ CourseListComponent(props CoursesListPage) {
 
 templ CourseDetailsComponent(props CourseDetailsPage) {
 	@appcomponents.NodeDetailsComponent(props.NodeDetailsPage) {
-		<details>
-			if props.Course().StandardSet.ID != 0 {
-				<summary>Standard Set: { props.Course().StandardSet.CourseName }</summary>
-			} else {
-				<summary>Standard Set: None Selected</summary>
-				<form hx-post={ props.PostSelectStandardSetURL } hx-target="#page">
-					<select id="standard-set-select" name="standard-set">
-						for _, set := range props.StandardSets {
-							<option value={ strconv.Itoa(set.ID) }>{ set.CourseName }</option>
-						}
-					</select>
-					<button type="submit">Submit</button>
-				</form>
-			}
-			<ul>
-				for _, standard := range props.Course().StandardSet.Standards {
-					<li>
-						<details>
-							<summary>{ strconv.Itoa(standard.Number) }{ standard.Name }</summary>
-							<ul>
-								for _, objective := range standard.Objectives {
-									<li>{ strconv.Itoa(objective.Number) }{ objective.Name }</li>
-								}
-							</ul>
-						</details>
-					</li>
-				}
-			</ul>
-		</details>
-		<button
-			hx-get={ props.GetCopyCourseURL }
-			hx-swap="outerHTML"
-		>
-			Copy Course To Term
-		</button>
+		// <details>
+		// 	if props.Course().StandardSet.ID != 0 {
+		// 		<summary>Standard Set: { props.Course().StandardSet.CourseName }</summary>
+		// 	} else {
+		// 		<summary>Standard Set: None Selected</summary>
+		// 		<form hx-post={ props.PostSelectStandardSetURL } hx-target="#page">
+		// 			<select id="standard-set-select" name="standard-set">
+		// 				for _, set := range props.StandardSets {
+		// 					<option value={ strconv.Itoa(set.ID) }>{ set.CourseName }</option>
+		// 				}
+		// 			</select>
+		// 			<button type="submit">Submit</button>
+		// 		</form>
+		// 	}
+		// 	<ul>
+		// 		for _, standard := range props.Course().StandardSet.Standards {
+		// 			<li>
+		// 				<details>
+		// 					<summary>{ strconv.Itoa(standard.Number) }{ standard.Name }</summary>
+		// 					<ul>
+		// 						for _, objective := range standard.Objectives {
+		// 							<li>{ strconv.Itoa(objective.Number) }{ objective.Name }</li>
+		// 						}
+		// 					</ul>
+		// 				</details>
+		// 			</li>
+		// 		}
+		// 	</ul>
+		// </details>
+		// <button
+		// 	hx-get={ props.GetCopyCourseURL }
+		// 	hx-swap="outerHTML"
+		// >
+		// 	Copy Course To Term
+		// </button>
 	}
 }
 

@@ -2,19 +2,22 @@ package term
 
 import (
 	"fmt"
+	"gh_static_portfolio/internal/ports"
+	datespkg "gh_static_portfolio/internal/shared/dates"
 	"slices"
 	"time"
 )
 
 type Term struct {
-	ID                   int         `json:"id"`
-	Name                 string      `json:"name"`
-	Description          string      `json:"description"`
-	UserID               string      `json:"userID"`
 	Start                time.Time   `json:"start"`
 	End                  time.Time   `json:"end"`
 	NonInstructionalDays []time.Time `json:"nonInstructionalDays"`
 	InstructionalDays    []time.Time `json:"instructionalDays"`
+	ports.BaseNode[string, int]
+}
+
+func (t Term) Designation() string {
+	return ""
 }
 
 // this sets the instruction days field
@@ -40,22 +43,13 @@ func InstructionDays(term Term) []time.Time {
 			continue
 		}
 		if slices.ContainsFunc(term.NonInstructionalDays, func(date time.Time) bool {
-			return IsSameDate(date, currDate)
+			return datespkg.IsSameDate(date, currDate)
 		}) {
 			continue
 		}
 		instructionDays = append(instructionDays, currDate)
 	}
 	return instructionDays
-}
-
-func IsSameDate(t1 time.Time, t2 time.Time) bool {
-	y1, m1, d1 := t1.Date()
-	y2, m2, d2 := t2.Date()
-	if y1 == y2 && m1 == m2 && d1 == d2 {
-		return true
-	}
-	return false
 }
 
 func (t Term) IsInstructionDay(queryDate time.Time) bool {
@@ -66,7 +60,7 @@ func (t Term) IsInstructionDay(queryDate time.Time) bool {
 		return false
 	}
 	for _, termDate := range t.InstructionalDays {
-		if IsSameDate(queryDate, termDate) {
+		if datespkg.IsSameDate(queryDate, termDate) {
 			return true
 		}
 	}
@@ -95,7 +89,7 @@ type Dates []Date
 
 func (dates Dates) SortAscending() {
 	slices.SortFunc(dates, func(a, b Date) int {
-		if IsSameDate(time.Time(a), time.Time(b)) {
+		if datespkg.IsSameDate(time.Time(a), time.Time(b)) {
 			return 0
 		}
 		if time.Time(a).Before(time.Time(b)) {

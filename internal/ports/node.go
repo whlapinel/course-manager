@@ -6,11 +6,62 @@ type Node interface {
 	GetNumber() int
 	GetParentID() any
 	GetDescription() string
-	Children() []Node
-	TypeName() string
-	ParentTypeName() string
-	ChildTypeName() string
+	GetChildren() []Node
+	GetTypeName() string
+	GetParentTypeName() string
+	GetChildTypeName() string
 	Designation() string
+	GetSequence() int
+}
+
+type Intorstring interface {
+	~int | ~string
+}
+
+type BaseNode[ParentID Intorstring, ID Intorstring] struct {
+	ID          ID       `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Number      int      `json:"number"`
+	Sequence    int      `json:"sequence"`
+	ParentID    ParentID `json:"parentID"`
+}
+
+func (b BaseNode[ParentID, ID]) GetID() any {
+	return b.ID
+}
+
+func (b BaseNode[ParentID, ID]) GetName() string {
+	return b.Name
+}
+
+func (b BaseNode[ParentID, ID]) GetNumber() int {
+	return b.Number
+}
+
+func (b BaseNode[ParentID, ID]) GetParentID() any {
+	return b.ParentID
+}
+
+func (b BaseNode[ParentID, ID]) GetDescription() string {
+	return b.Description
+}
+
+func (b BaseNode[ParentID, ID]) Designation() string {
+	return ""
+}
+
+func (b BaseNode[ParentID, ID]) GetTypeName() string {
+	return ""
+}
+func (b BaseNode[ParentID, ID]) GetParentTypeName() string {
+	return ""
+}
+func (b BaseNode[ParentID, ID]) GetChildTypeName() string {
+	return ""
+}
+func (b BaseNode[ParentID, ID]) GetSequence() int {
+	return -1
 }
 
 type Nodes struct {

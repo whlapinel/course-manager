@@ -31,7 +31,7 @@ var (
 	GetTerm              = web.NewHandlerName(web.GET, Term)
 	GetNewTerm           = web.NewHandlerName(web.GET, NewTerm)
 	GetTermCalendar      = web.NewHandlerName(web.GET, TermCalendar)
-	PostTerm             = web.NewHandlerName(web.POST, Terms)
+	PostNewTerm          = web.NewHandlerName(web.POST, NewTerm)
 	GetEditTerm          = web.NewHandlerName(web.GET, TermEdit)
 	PostEditTerm         = web.NewHandlerName(web.POST, TermEdit)
 	DeleteTerm           = web.NewHandlerName(web.DELETE, Term)

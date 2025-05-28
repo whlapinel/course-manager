@@ -4,7 +4,7 @@ templ NodeListComponent(props NodeListPage) {
 	@PageLayoutComponent(props) {
 		<ul class="flex flex-col gap-2">
 			if len(props.Children) == 0 {
-				<h2>No { props.ParentNode.ChildTypeName() }s to display for this { props.ParentNode.TypeName() }</h2>
+				<h2>No { props.ParentNode.GetChildTypeName() }s to display for this { props.ParentNode.GetTypeName() }</h2>
 			}
 			for i, node := range props.Children {
 				if node == nil {
@@ -15,9 +15,9 @@ templ NodeListComponent(props NodeListPage) {
 						id={ props.ListItemElementID(node).String() }
 					>
 						@props.DeleteNodeButton(node)
-						if node.ChildTypeName() != "" {
-							@props.NodeChildrenButton(node)
-						}
+						// if node.ChildTypeName() != "" {
+						// 	@props.NodeChildrenButton(node)
+						// }
 						@props.NodeDetailsButton(node)
 						for _, data := range props.ChildUI {
 							@data[i].Component()

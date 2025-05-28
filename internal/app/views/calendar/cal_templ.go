@@ -99,7 +99,7 @@ func CalendarLessonContainer(data CalendarLessonContainerNew) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = data.ShiftButton(dto.Left).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = data.ShiftButton(dto.Left, data.Date.Format(time.DateOnly)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -119,7 +119,7 @@ func CalendarLessonContainer(data CalendarLessonContainerNew) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = data.ShiftButton(dto.Right).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = data.ShiftButton(dto.Right, data.Date.Format(time.DateOnly)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

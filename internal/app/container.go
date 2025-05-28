@@ -82,7 +82,12 @@ func New(params NewAppParams) (*App, error) {
 	userAppService := services.NewUserService(userService)
 	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.WithOccasions, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
 	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
-	courseCalAppService := services.NewCourseCalendarService(courseAppService.ByID, unitAppService.ByParentID, lessonAppService.ByParentID, termAppService.WithOccasions)
+	courseCalAppService := services.NewCourseCalendarService(
+		courseAppService.ByID, unitAppService.ByParentID,
+		lessonAppService.ByParentID, lessonAppService.ByID,
+		termAppService.WithOccasions,
+		lessonService,
+	)
 	markdownService := services.NewMarkdownService(markdownRenderer, dataFilesPathingSvc, filesRepo)
 
 	// infrastructure init

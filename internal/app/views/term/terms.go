@@ -64,7 +64,7 @@ func (page TermsListPage) HTMXResponse() templ.Component {
 }
 
 func (page TermsListPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component()
+	return page.CourseManagerLayout.Component2(page.Component())
 }
 
 type AddNonInstructDayPage struct {

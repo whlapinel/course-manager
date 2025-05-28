@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	_ "gh_static_portfolio/internal/data/database/migrations/schema"
+	_ "gh_static_portfolio/internal/infrastructure/sqlite/migrations/schema"
 	"log"
 	"os"
 
@@ -14,7 +14,7 @@ import (
 
 var (
 	flags = flag.NewFlagSet("goose", flag.ExitOnError)
-	dir   = flags.String("dir", ".", "directory with migration files")
+	dir   = flags.String("dir", "internal/infrastructure/sqlite/migrations/schema", "directory with migration files")
 )
 
 func main() {
@@ -35,6 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("goose: failed to open DB: %v", err)
 	}
+	log.Println("migration script: directory is ", *dir)
 	defer db.Close()
 
 	ctx := context.Background()

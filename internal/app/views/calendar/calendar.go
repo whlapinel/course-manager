@@ -3,8 +3,8 @@ package calendarviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/core/occasion"
 	cmp "gh_static_portfolio/internal/base"
+	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
@@ -87,7 +87,7 @@ type CalendarLessonContainerNew struct {
 	Lesson              dto.Lesson
 	LessonDetailsURL    string
 	RemoveLessonDateURL string
-	ShiftLessonURL      func(cd string) string
+	ShiftLessonURL      func(cd, date string) string
 }
 
 type LinkWithInfoDialog struct {
@@ -144,11 +144,11 @@ func (data ShiftButton) Component() templ.Component {
 	return ShiftButtonComponent(data)
 }
 
-func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection) templ.Component {
+func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection, date string) templ.Component {
 	button := ShiftButton{
 		Direction:      cd,
 		Params:         data.Params,
-		ShiftLessonURL: data.ShiftLessonURL(cd.String()),
+		ShiftLessonURL: data.ShiftLessonURL(cd.String(), date),
 	}
 	return button.Component()
 }

@@ -10,7 +10,8 @@ sql:
       - "internal/infrastructure/sqlite/sqlc/standards.sql"
       - "internal/infrastructure/sqlite/sqlc/standard_sets.sql"
       - "internal/infrastructure/sqlite/sqlc/assignments.sql"
-      - "internal/infrastructure/sqlite/sqlc/occasions.sql"
+      - "internal/infrastructure/sqlite/sqlc/termoccasions.sql"
+      - "internal/infrastructure/sqlite/sqlc/courseoccasions.sql"
       - "internal/infrastructure/sqlite/sqlc/users.sql"
 
     schema: "internal/infrastructure/sqlite/sqlc/schema.sql"

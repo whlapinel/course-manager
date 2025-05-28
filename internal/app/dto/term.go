@@ -13,27 +13,7 @@ type Term struct {
 	Occasions []occasion.Occasion `json:"occasions"`
 }
 
-func (t Term) GetName() string {
-	return t.Name
-}
-
-func (t Term) GetNumber() int {
-	return -1
-}
-
-func (t Term) GetDescription() string {
-	return t.Description
-}
-
-func (t Term) GetID() any {
-	return t.ID
-}
-
-func (t Term) GetParentID() any {
-	return t.UserID
-}
-
-func (t Term) Children() []ports.Node {
+func (t Term) GetChildren() []ports.Node {
 	var courses []ports.Node
 	for _, c := range t.Courses {
 		courses = append(courses, c)
@@ -41,16 +21,20 @@ func (t Term) Children() []ports.Node {
 	return courses
 }
 
-func (t Term) TypeName() string {
-	return TermTypeName.String()
-}
-
-func (t Term) ParentTypeName() string {
+func (t Term) GetParentTypeName() string {
 	return UserTypeName.String()
 }
 
-func (t Term) ChildTypeName() string {
+func (t Term) GetTypeName() string {
+	return TermTypeName.String()
+}
+
+func (t Term) GetChildTypeName() string {
 	return CourseTypeName.String()
+}
+
+func (t Term) GetNumber() int {
+	return -1
 }
 
 type NonInstructionalDays struct {
@@ -62,7 +46,3 @@ const (
 	Semester = "semester"
 	YearLong = "year_long"
 )
-
-func (t Term) Designation() string {
-	return ""
-}

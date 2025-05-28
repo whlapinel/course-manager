@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"fmt"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/ports"
 )
@@ -11,23 +10,7 @@ type Unit struct {
 	Lessons   []Lesson `json:"lessons"`
 }
 
-func (u Unit) GetName() string {
-	return u.Name
-}
-
-func (u Unit) GetDescription() string {
-	return u.Description
-}
-
-func (u Unit) GetID() any {
-	return u.ID
-}
-
-func (u Unit) GetParentID() any {
-	return u.CourseID
-}
-
-func (u Unit) Children() []ports.Node {
+func (u Unit) GetChildren() []ports.Node {
 	var nodes []ports.Node
 	for _, l := range u.Lessons {
 		nodes = append(nodes, l)
@@ -35,26 +18,14 @@ func (u Unit) Children() []ports.Node {
 	return nodes
 }
 
-func (u Unit) TypeName() string {
-	return "Unit"
-
+func (u Unit) GetParentTypeName() string {
+	return CourseTypeName.String()
 }
 
-func (u Unit) ParentTypeName() string {
-	return "Course"
+func (u Unit) GetTypeName() string {
+	return UnitTypeName.String()
 }
 
-func (u Unit) ChildTypeName() string {
-	return "Lesson"
-}
-
-func (u Unit) Designation() string {
-	if u.Number < 0 {
-		return "N/A"
-	}
-	return fmt.Sprintf("Unit %d", u.Number)
-}
-
-func (u Unit) GetNumber() int {
-	return u.Number
+func (t Unit) GetChildTypeName() string {
+	return LessonTypeName.String()
 }

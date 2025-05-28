@@ -58,18 +58,18 @@ func (data CourseCalendar) BreadCrumbs() ac.BreadCrumbs {
 
 func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.Time) templ.Component {
 	params := data.Params
-	params.UnitID = lesson.UnitID
+	params.UnitID = lesson.ParentID
 	params.LessonID = lesson.ID
 	container := CalendarLessonContainerNew{
 		Date:             date,
 		Params:           params,
 		Lesson:           lesson,
-		LessonDetailsURL: data.LessonDetailsFunc(lesson.UnitID, lesson.ID),
+		LessonDetailsURL: data.LessonDetailsFunc(lesson.ParentID, lesson.ID),
 		Course:           data.Course,
-		ShiftLessonURL: func(cd string) string {
-			return data.ShiftLessonFunc(lesson.UnitID, lesson.ID, cd)
+		ShiftLessonURL: func(cd, date string) string {
+			return data.ShiftLessonFunc(lesson.ParentID, lesson.ID, cd, date)
 		},
-		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.UnitID, lesson.ID, date.Format(time.DateOnly)),
+		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.ParentID, lesson.ID, date.Format(time.DateOnly)),
 	}
 	return container.Component()
 }

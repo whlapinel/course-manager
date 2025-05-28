@@ -7,21 +7,19 @@ import (
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/util"
 	"gh_static_portfolio/internal/shared/web"
-	"log"
 
 	"github.com/a-h/templ"
 )
 
 type NodeListPage struct {
-	ParentNode       ports.Node
-	Children         []ports.Node
-	ChildUI          [][]ComponentData
-	ChildDetailsURL  web.AddParams // details for child e.g. if listing units, this would be the route handler name to show unit details
-	ChildChildrenURL web.AddParams // children of child e.g. if listing units, this would be the route handler name to list unit lessons
-	DeleteChildURL   web.AddParams
-	ShowNewChildURL  string // e.g. if listing units, this would be the route handler name to show new unit form
-	UpNavURL         string
-	BreadCrumbsData  BreadCrumbs
+	ParentNode      ports.Node
+	Children        []ports.Node
+	ChildUI         [][]ComponentData
+	ChildDetailsURL web.AddParams // details for child e.g. if listing units, this would be the route handler name to show unit details
+	DeleteChildURL  web.AddParams
+	ShowNewChildURL string // e.g. if listing units, this would be the route handler name to show new unit form
+	UpNavURL        string
+	BreadCrumbsData BreadCrumbs
 	CourseManagerLayout
 }
 
@@ -42,24 +40,11 @@ func (page NodeListPage) BreadCrumbs() BreadCrumbs {
 
 func (page NodeListPage) DeleteNodeButton(node ports.Node) templ.Component {
 	return cmp.Button{
-		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.TypeName(), node.GetName()),
+		HxConfirm: fmt.Sprintf("Are you sure you want to delete %s '%s'", node.GetTypeName(), node.GetName()),
 		Method:    cmp.HxDelete,
 		URL:       page.DeleteChildURL(node.GetID()),
 		HxTarget:  page.ListItemElementID(node).Selector(),
 		Image:     cmp.DeleteImage(),
-	}.Component()
-}
-
-func (page NodeListPage) NodeChildrenButton(node ports.Node) templ.Component {
-	log.Println("In NodeChildrenButton: node:", node.GetID(), node.GetName())
-	log.Println("Child children URL without params:", page.ChildChildrenURL())
-	log.Println("Child children URL without params:", page.ChildChildrenURL(node.GetID()))
-	return cmp.Button{
-		Text:     node.ChildTypeName() + "s",
-		Method:   cmp.HxGet,
-		URL:      page.ChildChildrenURL(node.GetID()),
-		HxTarget: "#page",
-		PushURL:  true,
 	}.Component()
 }
 
@@ -75,7 +60,7 @@ func (page NodeListPage) NodeDetailsButton(node ports.Node) templ.Component {
 
 func (page NodeListPage) NodeCreateButton() templ.Component {
 	return cmp.Button{
-		Text:     page.ParentNode.ChildTypeName(),
+		Text:     page.ParentNode.GetChildTypeName(),
 		Method:   cmp.HxGet,
 		URL:      page.ShowNewChildURL,
 		HxTarget: "#page",
@@ -102,20 +87,20 @@ func (list NodeListPage) PageLayout() cmp.PageLayout {
 
 func (list NodeListPage) upNavText() string {
 	if list.UpNavURL != "" && list.ParentNode != nil {
-		return fmt.Sprintf(" to %s", upNavText(list.ParentNode.GetName()))
+		return fmt.Sprintf("Up to %s", upNavText(list.ParentNode.GetName()))
 	} else {
 		return ""
 	}
 }
 
 func (list NodeListPage) PageTitle() string {
-	if list.ParentNode.TypeName() != dto.RootTypeName.String() {
-		return fmt.Sprintf("%ss for %s: %s", list.ParentNode.ChildTypeName(), list.ParentNode.TypeName(), list.ParentNode.GetName())
+	if list.ParentNode.GetTypeName() != dto.RootTypeName.String() {
+		return fmt.Sprintf("%ss for %s: %s", list.ParentNode.GetChildTypeName(), list.ParentNode.GetTypeName(), list.ParentNode.GetName())
 	} else {
-		return fmt.Sprintf("%ss", list.ParentNode.ChildTypeName())
+		return fmt.Sprintf("%ss", list.ParentNode.GetChildTypeName())
 	}
 }
 
 func (list NodeListPage) ListItemElementID(node ports.Node) ElementID {
-	return ElementID(fmt.Sprintf("%s-%d", util.KebabCase(node.TypeName()), node.GetID()))
+	return ElementID(fmt.Sprintf("%s-%d", util.KebabCase(node.GetTypeName()), node.GetID()))
 }

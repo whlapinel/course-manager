@@ -24,7 +24,7 @@ const (
 // Course calendar paths
 const (
 	CourseCalendar web.RoutePath = Course + "/calendar"
-	ShiftLesson    web.RoutePath = Lesson + web.RoutePath(ShiftDirection)
+	ShiftLesson    web.RoutePath = Lesson + web.RoutePath(ShiftDirection) + web.RoutePath(Date)
 	ExtendLesson   web.RoutePath = ShiftLesson + "/extend"
 	DateUnits      web.RoutePath = CourseCalendar + web.RoutePath(Date)
 	DateLessons    web.RoutePath = DateUnits + web.RoutePath(UnitID)
@@ -41,7 +41,7 @@ var (
 	GetCourses             = web.NewHandlerName(web.GET, Courses)
 	GetNewCourse           = web.NewHandlerName(web.GET, NewCourse)
 	GetCourse              = web.NewHandlerName(web.GET, Course)
-	PostCourse             = web.NewHandlerName(web.POST, Courses)
+	PostNewCourse          = web.NewHandlerName(web.POST, NewCourse)
 	GetEditCourse          = web.NewHandlerName(web.GET, CourseEdit)
 	PostEditCourse         = web.NewHandlerName(web.POST, CourseEdit)
 	DeleteCourse           = web.NewHandlerName(web.DELETE, Course)

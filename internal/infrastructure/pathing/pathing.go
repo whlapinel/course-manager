@@ -31,14 +31,14 @@ func (n *nodePathService) NodeDirPath(nodes ...ports.Node) string {
 			break
 		}
 		if _, ok := node.(dto.User); !ok {
-			pathSegments = append(pathSegments, strings.ToLower(node.TypeName()+"s"))
+			pathSegments = append(pathSegments, strings.ToLower(node.GetTypeName()+"s"))
 		}
 		var dirName string
 		switch id := node.GetID().(type) {
 		case string:
-			dirName = fmt.Sprintf("%s_%s", strings.ToLower(node.TypeName()), id)
+			dirName = fmt.Sprintf("%s_%s", strings.ToLower(node.GetTypeName()), id)
 		case int:
-			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.TypeName()), id)
+			dirName = fmt.Sprintf("%s_%d", strings.ToLower(node.GetTypeName()), id)
 		}
 		pathSegments = append(pathSegments, dirName)
 	}
@@ -48,7 +48,7 @@ func (n *nodePathService) NodeDirPath(nodes ...ports.Node) string {
 func (n *nodePathService) NodeChildrenDirPath(nodes ...ports.Node) string {
 	path := n.NodeDirPath(nodes...)
 	lastNode := nodes[len(nodes)-1]
-	return filepath.Join(path, strings.ToLower(lastNode.ChildTypeName())+"s")
+	return filepath.Join(path, strings.ToLower(lastNode.GetChildTypeName())+"s")
 }
 
 func (n *nodePathService) NodeSlidesHTMLPath(nodes ...ports.Node) string {

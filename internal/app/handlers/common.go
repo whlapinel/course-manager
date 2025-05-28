@@ -48,7 +48,7 @@ type nodeInfo struct {
 	routes.NodePath
 }
 
-func parseNodeInfo(c echo.Context, service *services.NodeService) (nodeInfo, error) {
+func parseAndFetchNodes(c echo.Context, service *services.NodeService) (nodeInfo, error) {
 	var info nodeInfo
 	path, err := routes.ParseNodePath(c)
 	if err != nil {

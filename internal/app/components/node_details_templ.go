@@ -45,7 +45,7 @@ func NodeDetailsComponent(props NodeDetailsPage) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if props.Node.ChildTypeName() != "" {
+			if props.Node.GetChildTypeName() != "" {
 				templ_7745c5c3_Err = props.ListChildrenButton().Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

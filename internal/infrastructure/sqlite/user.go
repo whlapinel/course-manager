@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"gh_static_portfolio/internal/features/user"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"gh_static_portfolio/internal/ports"
 )
 
 type userRepo struct {
@@ -26,7 +27,9 @@ func (repo *userRepo) All() ([]user.User, error) {
 	var users []user.User
 	for _, dbUser := range dbUsers {
 		user := user.User{
-			ID:        dbUser.ID,
+			BaseNode: ports.BaseNode[int, string]{
+				ID: dbUser.ID,
+			},
 			FirstName: dbUser.FirstName,
 			LastName:  dbUser.LastName,
 			Picture:   dbUser.Picture.String,
@@ -59,7 +62,9 @@ func (repo *userRepo) ByID(id string) (user.User, error) {
 		return user.User{}, err
 	}
 	return user.User{
-		ID:        dbUser.ID,
+		BaseNode: ports.BaseNode[int, string]{
+			ID: dbUser.ID,
+		},
 		FirstName: dbUser.FirstName,
 		LastName:  dbUser.LastName,
 		Email:     dbUser.Email,

@@ -1,10 +1,9 @@
 package course
 
+import "gh_static_portfolio/internal/ports"
+
 type Course struct {
-	ID          int    `json:"id"`
-	ParentID    int    `json:"parentID"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ports.BaseNode[int, int]
 }
 
 type CourseType int

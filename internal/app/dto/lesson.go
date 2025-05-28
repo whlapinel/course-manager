@@ -3,8 +3,8 @@ package dto
 import (
 	"fmt"
 	"gh_static_portfolio/internal/core/assessment"
-	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/core/standard"
+	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/ports"
 	"slices"
 	"time"
@@ -16,36 +16,16 @@ type Lesson struct {
 	Assessments   []assessment.Assessment `json:"assessments"`
 }
 
-func (l Lesson) GetName() string {
-	return l.Name
-}
-
-func (l Lesson) GetDescription() string {
-	return l.Description
-}
-
-func (l Lesson) GetID() any {
-	return l.ID
-}
-
-func (l Lesson) GetParentID() any {
-	return l.UnitID
-}
-
-func (l Lesson) Children() []ports.Node {
+func (l Lesson) GetChildren() []ports.Node {
 	return []ports.Node{}
 }
 
-func (l Lesson) TypeName() string {
+func (l Lesson) GetTypeName() string {
 	return LessonTypeName.String()
 }
 
-func (l Lesson) ParentTypeName() string {
+func (l Lesson) GetParentTypeName() string {
 	return UnitTypeName.String()
-}
-
-func (l Lesson) ChildTypeName() string {
-	return ""
 }
 
 func LessonDesignator(lesson Lesson, unit Unit) string {
@@ -68,10 +48,6 @@ func (d CalendarDirection) String() string {
 	return dirStringList[d]
 }
 
-func (l Lesson) GetNumber() int {
-	return l.Number
-}
-
 func ParseDirection(cd string) (CalendarDirection, error) {
 	for i, word := range dirStringList {
 		if cd == word {
@@ -79,56 +55,6 @@ func ParseDirection(cd string) (CalendarDirection, error) {
 		}
 	}
 	return 0, fmt.Errorf("invalid direction value")
-}
-
-// removes all current instructional days and adds subsequent or previous instructional days from/to lesson.Dates,
-// depending on direction argument (Left/Right).
-// should work for lessons already spanning multiple dates.
-// Returns modified Lesson and new date after shifting
-// Returns an error if there is no subsequent or previous day
-func (l Lesson) Shift(direction CalendarDirection, term Term) (Lesson, time.Time, error) {
-	var shiftedDates []time.Time
-	var shifted time.Time
-	for _, date := range l.Dates {
-		index := slices.Index(term.InstructionalDays, date)
-		if direction == Right && index+1 < len(term.InstructionalDays) {
-			shifted = term.InstructionalDays[index+1]
-		} else if direction == Left && index-1 >= 0 {
-			shifted = term.InstructionalDays[index-1]
-		} else {
-			return Lesson{}, time.Time{}, fmt.Errorf("lesson already occurs on first or last day of instruction, cannot shift (%s)", direction.String())
-		}
-		shiftedDates = append(shiftedDates, shifted)
-	}
-	l.Dates = shiftedDates
-	return l, shifted, nil
-}
-
-// keeps all current instructional days and adds subsequent or previous instructional days from/to lesson.Dates,
-// depending on direction argument (Left/Right).
-// should work for lessons already spanning multiple dates.
-// Returns an error if there is no subsequent or previous day
-func (l Lesson) Extend(direction CalendarDirection, term Term) (Lesson, error) {
-	var extendedDates []time.Time
-	for _, date := range l.Dates {
-		index := slices.Index(term.InstructionalDays, date)
-		var extended time.Time
-		if direction == Right && index+1 < len(term.InstructionalDays) {
-			// append original date before extended date since the original is earlier
-			extended = term.InstructionalDays[index+1]
-			extendedDates = append(extendedDates, date)
-			extendedDates = append(extendedDates, extended)
-		} else if direction == Left && index-1 > 0 {
-			// append original date after extended date since the original is later
-			extended = term.InstructionalDays[index-1]
-			extendedDates = append(extendedDates, extended)
-			extendedDates = append(extendedDates, date)
-		} else {
-			return Lesson{}, fmt.Errorf("lesson already occurs on last day of instruction")
-		}
-	}
-	l.Dates = extendedDates
-	return l, nil
 }
 
 func (l Lesson) DedupeDates() Lesson {

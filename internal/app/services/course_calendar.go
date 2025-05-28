@@ -1,30 +1,58 @@
 package services
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
+	"gh_static_portfolio/internal/features/lesson"
+	"log"
+	"time"
 )
 
 type CourseCalendarService struct {
-	getCourse  func(courseID int) (dto.Course, error)
-	getUnits   func(courseID int) ([]dto.Unit, error)
-	getLessons func(unitID int) ([]dto.Lesson, error)
-	getTerm    func(termID int) (dto.Term, error)
+	getCourse     func(courseID int) (dto.Course, error)
+	getUnits      func(courseID int) ([]dto.Unit, error)
+	getLessons    func(unitID int) ([]dto.Lesson, error)
+	getLesson     func(lessonID int) (dto.Lesson, error)
+	getTerm       func(termID int) (dto.Term, error)
+	lessonService *lesson.Service
 }
 
 func NewCourseCalendarService(
 	getCourse func(courseID int) (dto.Course, error),
 	getUnits func(courseID int) ([]dto.Unit, error),
 	getLessons func(unitID int) ([]dto.Lesson, error),
+	getLesson func(lessonID int) (dto.Lesson, error),
 	getTerm func(termID int) (dto.Term, error),
+	lessonService *lesson.Service,
 
 ) *CourseCalendarService {
 	return &CourseCalendarService{
-		getCourse:  getCourse,
-		getUnits:   getUnits,
-		getLessons: getLessons,
-		getTerm:    getTerm,
+		getCourse:     getCourse,
+		getUnits:      getUnits,
+		getLessons:    getLessons,
+		getTerm:       getTerm,
+		getLesson:     getLesson,
+		lessonService: lessonService,
 	}
+}
+
+func (svc *CourseCalendarService) ShiftLesson(currDate time.Time, lessonID int, termID int, direction dto.CalendarDirection) error {
+	// instructional days
+	termInstance, err := svc.getTerm(int(termID))
+	if err != nil {
+		log.Println("error retrieving term")
+		return fmt.Errorf("error retrieving term instance of ID %d: %w", termID, err)
+	}
+	shiftMagnitude := 1
+	if direction == dto.Left {
+		shiftMagnitude = -1
+	}
+	err = svc.lessonService.Shift(lessonID, termID, shiftMagnitude, currDate, termInstance.InstructionalDays)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {

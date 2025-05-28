@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
@@ -77,7 +78,7 @@ func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.GET, routes.CourseEdit, routes.GetEditCourse, h.showEdit),
 		web.NewRouteHandler(web.POST, routes.CourseEdit, routes.PostEditCourse, h.postEdit),
 		web.NewRouteHandler(web.GET, routes.NewCourse, routes.GetNewCourse, h.showCreateNew),
-		web.NewRouteHandler(web.POST, routes.NewCourse, routes.PostCourse, h.postNew),
+		web.NewRouteHandler(web.POST, routes.NewCourse, routes.PostNewCourse, h.postNew),
 		web.NewRouteHandler(web.DELETE, routes.Course, routes.DeleteCourse, h.delete),
 	}
 }
@@ -101,10 +102,12 @@ func (h *courseHandler) postNew(c echo.Context) error {
 	}
 	course := dto.Course{
 		Course: course.Course{
-			ParentID: nodePath.TermID,
+			BaseNode: ports.BaseNode[int, int]{
+				ParentID: nodePath.TermID,
+			},
 		},
 	}
-	course.CourseName = c.FormValue("name")
+	course.Name = c.FormValue("name")
 	course.Description = c.FormValue("description")
 	err = h.service.Save(course)
 	if err != nil {
@@ -114,15 +117,15 @@ func (h *courseHandler) postNew(c echo.Context) error {
 }
 
 func (h *courseHandler) showCreateNew(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
 	page := appcomponents.NodeCreatePage{
-		ParentNode:          info.User,
+		ParentNode:          info.Term,
 		NodeType:            dto.CourseTypeName,
 		Params:              info.NodePath,
-		PostCreateNodeURL:   h.reverse(routes.PostCourse.String(), info.NodePath.ToSlice()...),
+		PostCreateNodeURL:   h.reverse(routes.PostNewCourse.String(), info.NodePath.ToSlice()...),
 		CancelURL:           h.reverse(routes.GetCourses.String(), info.NodePath.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(info.Nodes, info.NodePath, h.reverse),
 		CourseManagerLayout: BaseLayout3(h.reverse, info.User.(dto.User)),
@@ -147,14 +150,13 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 	}
 	term.Courses = courses
 	nodePage := appcomponents.NodeListPage{
-		ParentNode:       term,
-		Children:         term.Children(),
-		ChildDetailsURL:  web.URLFunc(routes.GetCourse, h.reverse, path.ToSlice()...),
-		ChildChildrenURL: web.URLFunc(routes.GetUnits, h.reverse, path.ToSlice()...),
-		DeleteChildURL:   web.URLFunc(routes.DeleteCourse, h.reverse, path.ToSlice()...),
-		ShowNewChildURL:  h.reverse(routes.GetNewCourse.String(), path.ToSlice()...),
-		UpNavURL:         h.reverse(routes.GetTerm.String(), path.ToSlice()...),
-		BreadCrumbsData:  BreadCrumbs(nodes, path, h.reverse),
+		ParentNode:      term,
+		Children:        term.GetChildren(),
+		ChildDetailsURL: web.URLFunc(routes.GetCourse, h.reverse, path.ToSlice()...),
+		DeleteChildURL:  web.URLFunc(routes.DeleteCourse, h.reverse, path.ToSlice()...),
+		ShowNewChildURL: h.reverse(routes.GetNewCourse.String(), path.ToSlice()...),
+		UpNavURL:        h.reverse(routes.GetTerm.String(), path.ToSlice()...),
+		BreadCrumbsData: BreadCrumbs(nodes, path, h.reverse),
 	}
 	page := mt.CoursesListPage{
 		ShowCourseCalendarURL: web.URLFunc(routes.GetCourseCalendar, h.reverse, path.ToSlice()...),
@@ -174,6 +176,9 @@ func (h *courseHandler) showDetails(c echo.Context) error {
 	nodes, err := h.nodeService.Nodes(path)
 	if err != nil {
 		return err
+	}
+	if nodes.Course == nil {
+		return fmt.Errorf("nodes.Course is nil")
 	}
 	nodePage := h.nodeDetails(path, nodes)
 	nodePage.IsEdit = false
@@ -242,7 +247,7 @@ func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) app
 		ListChildrenURL:     h.reverse(routes.GetUnits.String(), path.ToSlice()...),
 		GetEditNodeURL:      h.reverse(routes.GetEditCourse.String(), path.ToSlice()...),
 		PostEditNodeURL:     h.reverse(routes.PostEditCourse.String(), path.ToSlice()...),
-		UpNavURL:            h.reverse(routes.GetTerm.String(), path.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetCourses.String(), path.ToSlice()...),
 		CancelEditURL:       h.reverse(routes.GetCourse.String(), path.ToSlice()...),
 		BreadCrumbs:         BreadCrumbs(nodes, path, h.reverse),
 		IsEdit:              true,

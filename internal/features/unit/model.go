@@ -1,10 +1,17 @@
 package unit
 
+import (
+	"fmt"
+	"gh_static_portfolio/internal/ports"
+)
+
 type Unit struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Number      int    `json:"number"`
-	CourseID    int    `json:"courseID"`
-	SequenceNum int    `json:"sequenceNumber"`
+	ports.BaseNode[int, int]
+}
+
+func (u Unit) Designation() string {
+	if u.Number < 0 {
+		return "N/A"
+	}
+	return fmt.Sprintf("Unit %d", u.Number)
 }

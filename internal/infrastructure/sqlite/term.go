@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/features/term"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"gh_static_portfolio/internal/ports"
 	"time"
 )
 
@@ -31,11 +32,13 @@ func (repo *termRepo) ByID(termID int) (term.Term, error) {
 		return termInstance, err
 	}
 	termInstance = term.Term{
-		ID:          int(dbTerm.ID),
-		Name:        dbTerm.Name,
-		Description: dbTerm.Description.String,
-		Start:       dates[0],
-		End:         dates[1],
+		BaseNode: ports.BaseNode[string, int]{
+			ID:          int(dbTerm.ID),
+			Name:        dbTerm.Name,
+			Description: dbTerm.Description.String,
+		},
+		Start: dates[0],
+		End:   dates[1],
 	}
 	dbDates, err := repo.queries.GetTermDates(context.Background(), int64(termID))
 	if err != nil {
@@ -95,22 +98,26 @@ func (repo *termRepo) ByUserID(userID string) ([]term.Term, error) {
 		}
 		if i == 0 {
 			currTerm = term.Term{
-				ID:          int(dbGetTermRow.ID),
-				Start:       parsedStart,
-				End:         parsedEnd,
-				Name:        dbGetTermRow.Name,
-				Description: dbGetTermRow.Description.String,
+				BaseNode: ports.BaseNode[string, int]{
+					ID:          int(dbGetTermRow.ID),
+					Name:        dbGetTermRow.Name,
+					Description: dbGetTermRow.Description.String,
+				},
+				Start: parsedStart,
+				End:   parsedEnd,
 			}
 		}
 		// if we've hit a new term, append the current term and create a new one
 		if dbGetTermRow.ID != int64(currTerm.ID) {
 			terms = append(terms, currTerm)
 			currTerm = term.Term{
-				ID:          int(dbGetTermRow.ID),
-				Start:       parsedStart,
-				End:         parsedEnd,
-				Name:        dbGetTermRow.Name,
-				Description: dbGetTermRow.Description.String,
+				BaseNode: ports.BaseNode[string, int]{
+					ID:          int(dbGetTermRow.ID),
+					Name:        dbGetTermRow.Name,
+					Description: dbGetTermRow.Description.String,
+				},
+				Start: parsedStart,
+				End:   parsedEnd,
 			}
 		}
 		if dbGetTermRow.Date.Valid {
@@ -130,7 +137,7 @@ func (repo *termRepo) ByUserID(userID string) ([]term.Term, error) {
 
 func (repo *termRepo) Save(term term.Term) (int, error) {
 	termParams := database.SaveTermParams{
-		UserID: term.UserID,
+		UserID: term.ParentID,
 		Name:   term.Name,
 
 		Description: sql.NullString{

@@ -10,18 +10,11 @@ SELECT
 FROM
   dates
 WHERE
-  date = ?;
+  date = ?
+  AND term_id = ?;
 
 -- name: DeleteDate :exec
 DELETE FROM dates
 WHERE
   date = ?
   AND term_id = ?;
-
--- name: GetDateID :one
-SELECT
-  d.id
-FROM
-  dates d
-WHERE
-  d.date = ?;

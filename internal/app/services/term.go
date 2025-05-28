@@ -5,6 +5,7 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	feature "gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/features/termoccasion"
+	"gh_static_portfolio/internal/shared/dates"
 	"time"
 )
 
@@ -83,7 +84,7 @@ func (svc *TermService) RemoveInstructionalDay(date time.Time, termID int) error
 		return err
 	}
 	for _, instructDate := range instance.InstructionalDays {
-		if feature.IsSameDate(date, instructDate) {
+		if dates.IsSameDate(date, instructDate) {
 			return svc.termService.RemoveInstructionalDay(date, termID)
 		}
 	}

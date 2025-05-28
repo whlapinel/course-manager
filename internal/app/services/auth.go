@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/features/user"
+	"gh_static_portfolio/internal/ports"
 	"log"
 	"net/http"
 	"os"
@@ -78,7 +79,9 @@ func (s *AuthService) JWTMiddlewareProtectedNew(signinRedirectURL string) echo.M
 			expiration := claims.ExpiresAt.Time
 			if time.Until(expiration) <= cushionTime {
 				t, err := s.IssueToken(TokenParams{User: user.User{
-					ID:        claims.ID,
+					BaseNode: ports.BaseNode[int, string]{
+						ID: claims.ID,
+					},
 					FirstName: claims.First,
 					LastName:  claims.Last,
 					Email:     claims.Email,

@@ -73,8 +73,8 @@ func (page LessonDetailsPage) Component() templ.Component {
 func (page LessonDetailsPage) Tabs() templ.Component {
 	tabs := []cmp.TabLink{
 		{Name: "Slides", URL: page.GetSlidesURL},
-		{Name: "Assessments", URL: page.GetAssessmentsURL},
-		{Name: "Standards", URL: page.GetStandardsURL},
+		// {Name: "Assessments", URL: page.GetAssessmentsURL},
+		// {Name: "Standards", URL: page.GetStandardsURL},
 	}
 	set := cmp.TabSet{
 		Tabs: tabs,

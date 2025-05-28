@@ -77,7 +77,7 @@ func termRouteHandlers(h *termHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.GET, routes.Term, routes.GetTerm, h.showDetails),
 		web.NewRouteHandler(web.GET, routes.Terms, routes.GetTerms, h.listByUser),
 		web.NewRouteHandler(web.GET, routes.NewTerm, routes.GetNewTerm, h.showCreateNew),
-		web.NewRouteHandler(web.POST, routes.NewTerm, routes.PostTerm, h.postNew),
+		web.NewRouteHandler(web.POST, routes.NewTerm, routes.PostNewTerm, h.postNew),
 		web.NewRouteHandler(web.DELETE, routes.Term, routes.DeleteTerm, h.delete),
 		web.NewRouteHandler(web.GET, routes.TermEdit, routes.GetEditTerm, h.showEdit),
 		web.NewRouteHandler(web.POST, routes.TermEdit, routes.PostEditTerm, h.postEdit),
@@ -87,7 +87,7 @@ func termRouteHandlers(h *termHandler) []web.RouteHandler {
 }
 
 func (h *termHandler) postTermDate(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func (h *termHandler) postTermDate(c echo.Context) error {
 }
 
 func (h *termHandler) showEditTermDates(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
@@ -133,7 +133,7 @@ func (h *termHandler) showCreateNew(c echo.Context) error {
 		ParentNode:          nodes.User,
 		NodeType:            dto.TermTypeName,
 		Params:              nodePath,
-		PostCreateNodeURL:   h.reverse(routes.PostTerm.String(), nodePath.ToSlice()...),
+		PostCreateNodeURL:   h.reverse(routes.PostNewTerm.String(), nodePath.ToSlice()...),
 		CancelURL:           h.reverse(routes.GetTerms.String(), nodePath.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(nodes, nodePath, h.reverse),
 		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
@@ -152,7 +152,9 @@ func (h *termHandler) postNew(c echo.Context) error {
 	}
 	term := dto.Term{
 		Term: term.Term{
-			UserID: nodePath.UserID,
+			BaseNode: ports.BaseNode[string, int]{
+				ParentID: nodePath.UserID,
+			},
 		},
 	}
 	form := c.Request().Form
@@ -195,6 +197,7 @@ func (h *termHandler) delete(c echo.Context) error {
 }
 
 func (h *termHandler) listByUser(c echo.Context) error {
+	log.Println("termHandler.listByUser")
 	nodePath, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
@@ -202,6 +205,9 @@ func (h *termHandler) listByUser(c echo.Context) error {
 	nodes, err := h.nodeService.Nodes(nodePath)
 	if err != nil {
 		return err
+	}
+	if nodes.User == nil {
+		return fmt.Errorf("user is nil")
 	}
 	user := nodes.User.(dto.User)
 	userID := user.ID
@@ -212,9 +218,8 @@ func (h *termHandler) listByUser(c echo.Context) error {
 	user.Terms = terms
 	nodePage := appcomponents.NodeListPage{
 		ParentNode:          user,
-		Children:            user.Children(),
+		Children:            user.GetChildren(),
 		ChildDetailsURL:     web.URLFunc(routes.GetTerm, h.reverse, nodePath.ToSlice()...),
-		ChildChildrenURL:    web.URLFunc(routes.GetCourses, h.reverse, nodePath.ToSlice()...),
 		DeleteChildURL:      web.URLFunc(routes.DeleteTerm, h.reverse, nodePath.ToSlice()...),
 		ShowNewChildURL:     h.reverse(routes.GetNewTerm.String(), nodePath.ToSlice()...),
 		UpNavURL:            h.reverse(routes.GetUser.String(), nodePath.ToSlice()...),
@@ -307,7 +312,7 @@ func (h *termHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appco
 		GetEditNodeURL:  h.reverse(routes.GetEditTerm.String(), path.ToSlice()...),
 		PostEditNodeURL: h.reverse(routes.PostEditTerm.String(), path.ToSlice()...),
 		ListChildrenURL: h.reverse(routes.GetCourses.String(), path.ToSlice()...),
-		UpNavURL:        h.reverse(routes.GetUser.String(), path.ToSlice()...),
+		UpNavURL:        h.reverse(routes.GetTerms.String(), path.ToSlice()...),
 		CancelEditURL:   h.reverse(routes.GetTerm.String(), path.ToSlice()...),
 		ServerFilesURL:  h.reverse(routes.GetTermFiles.String(), path.ToSlice()...),
 		BreadCrumbs:     BreadCrumbs(nodes, path, h.reverse),

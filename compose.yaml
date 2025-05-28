@@ -41,7 +41,7 @@ services:
 
   echo:
     image: whlapinel/course-manager:0.2.0-dev
-    user: root
+    user: whlapinel
     command: ["./cmd/web_app/web_app"]
     networks:
       - app-network
@@ -55,7 +55,7 @@ services:
       - ./sites:/app/sites
       - ./hugosites:/app/hugosites
       - ./internal/staticresources:/app/internal/staticresources
-      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+      - ./course_manager.db:/app/course_manager.db
     restart: unless-stopped
 
   migrate:
@@ -63,10 +63,9 @@ services:
       - migrations
     image: whlapinel/course-manager:0.2.0-dev
 
-    command:
-      ["/app/migrate", "/app/internal/data/database/course_manager.db", "up"]
+    command: ["/app/migrate", "/app/course_manager.db", "up"]
     volumes:
-      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
+      - ./course_manager.db:/app/course_manager.db
 
 networks:
   app-network:

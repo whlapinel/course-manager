@@ -43,38 +43,38 @@ func (svc *NodeService) Nodes(path routes.NodePath) (ports.Nodes, error) {
 	var nodes ports.Nodes
 	if path.UserID != "" {
 		if svc == nil {
-			return ports.Nodes{}, fmt.Errorf("svc is nil")
+			return nodes, fmt.Errorf("svc is nil")
 		}
 		if svc.user == nil {
-			return ports.Nodes{}, fmt.Errorf("svc.user function is nil")
+			return nodes, fmt.Errorf("svc.user function is nil")
 		}
 		user, err := svc.user(path.UserID)
 		if err != nil {
-			return ports.Nodes{}, err
+			return nodes, err
 		}
 		nodes.User = user
 		if path.TermID != 0 {
 			term, err := svc.term(path.TermID)
 			if err != nil {
-				return ports.Nodes{}, err
+				return nodes, err
 			}
 			nodes.Term = term
 			if path.CourseID != 0 {
 				course, err := svc.course(path.CourseID)
 				if err != nil {
-					return ports.Nodes{}, err
+					return nodes, err
 				}
 				nodes.Course = course
 				if path.UnitID != 0 {
 					unit, err := svc.unit(path.UnitID)
 					if err != nil {
-						return ports.Nodes{}, err
+						return nodes, err
 					}
 					nodes.Unit = unit
 					if path.LessonID != 0 {
 						lesson, err := svc.lesson(path.LessonID)
 						if err != nil {
-							return ports.Nodes{}, err
+							return nodes, err
 						}
 						nodes.Lesson = lesson
 					}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/features/unit"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"gh_static_portfolio/internal/ports"
 )
 
 type unitRepo struct {
@@ -21,12 +22,15 @@ func NewUnitRepo(queries *database.Queries) unit.Repository {
 
 func (u *unitRepo) convertFromDB(dbUnit database.Unit) unit.Unit {
 	return unit.Unit{
-		ID:          int(dbUnit.ID),
-		CourseID:    int(dbUnit.CourseID),
-		Number:      int(dbUnit.Number),
-		SequenceNum: int(dbUnit.Sequence),
-		Name:        dbUnit.Name,
-		Description: dbUnit.Description.String,
+		BaseNode: ports.BaseNode[int, int]{
+
+			ID:          int(dbUnit.ID),
+			ParentID:    int(dbUnit.CourseID),
+			Number:      int(dbUnit.Number),
+			Sequence:    int(dbUnit.Sequence),
+			Name:        dbUnit.Name,
+			Description: dbUnit.Description.String,
+		},
 	}
 }
 
@@ -65,9 +69,10 @@ func (u *unitRepo) Delete(unitID int) error {
 // Save implements unit.Repository.
 func (u *unitRepo) Save(newUnit unit.Unit) (int, error) {
 	unitParams := database.SaveUnitParams{
-		CourseID: int64(newUnit.CourseID),
+		Number:   int64(newUnit.Number),
+		CourseID: int64(newUnit.ParentID),
 		Name:     newUnit.Name,
-
+		Sequence: int64(newUnit.Sequence),
 		Description: sql.NullString{
 			Valid:  newUnit.Description != "",
 			String: newUnit.Description,
@@ -84,8 +89,10 @@ func (u *unitRepo) Save(newUnit unit.Unit) (int, error) {
 // Update implements unit.Repository.
 func (u *unitRepo) Update(updated unit.Unit) error {
 	err := u.queries.UpdateUnit(context.Background(), database.UpdateUnitParams{
-		ID:   int64(updated.ID),
-		Name: updated.Name,
+		Number:   int64(updated.Number),
+		Sequence: int64(updated.Sequence),
+		ID:       int64(updated.ID),
+		Name:     updated.Name,
 		Description: sql.NullString{
 			Valid:  updated.Description != "",
 			String: updated.Description,

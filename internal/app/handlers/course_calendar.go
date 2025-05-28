@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	managertemplates "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
@@ -9,6 +10,7 @@ import (
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -40,7 +42,34 @@ func RegisterCourseCalRoutes(group *echo.Group, h *courseCalendarHandler) error 
 func courseCalRouteHandlers(h *courseCalendarHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		web.NewRouteHandler(web.GET, routes.CourseCalendar, routes.GetCourseCalendar, h.getCourseCalendar),
+		web.NewRouteHandler(web.POST, routes.ShiftLesson, routes.PostShiftLesson, h.shiftLesson),
 	}
+}
+
+func (h *courseCalendarHandler) shiftLesson(c echo.Context) error {
+	log.Println("shiftLesson running")
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return fmt.Errorf("error retrieving node info: %w", err)
+	}
+	dateString := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateString)
+	direction := c.Param("shift-direction")
+	if err != nil {
+		return err
+	}
+	switch direction {
+	case dto.Left.String():
+		err = h.service.ShiftLesson(date, info.LessonID, info.TermID, dto.Left)
+	case dto.Right.String():
+		err = h.service.ShiftLesson(date, info.LessonID, info.TermID, dto.Right)
+	default:
+		return fmt.Errorf("direction not defined or value not expected: %s", direction)
+	}
+	if err != nil {
+		return fmt.Errorf("error in handler's call to service.ShiftLesson: %w", err)
+	}
+	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
 }
 
 func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {

@@ -23,7 +23,7 @@ func (q *Queries) DeleteAssessment(ctx context.Context, id int64) error {
 
 const getAssessmentByID = `-- name: GetAssessmentByID :one
 SELECT
-    id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
+    id, course_id, unit_id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
 FROM
     assessments
 WHERE
@@ -35,6 +35,8 @@ func (q *Queries) GetAssessmentByID(ctx context.Context, id int64) (Assessment, 
 	var i Assessment
 	err := row.Scan(
 		&i.ID,
+		&i.CourseID,
+		&i.UnitID,
 		&i.LessonID,
 		&i.Name,
 		&i.Instructions,
@@ -49,7 +51,7 @@ func (q *Queries) GetAssessmentByID(ctx context.Context, id int64) (Assessment, 
 
 const getAssessmentsByCategory = `-- name: GetAssessmentsByCategory :many
 SELECT
-    a.id, a.lesson_id, a.name, a.instructions, a.file, a.category, a.date_assigned, a.date_due, a.dropped
+    a.id, a.course_id, a.unit_id, a.lesson_id, a.name, a.instructions, a.file, a.category, a.date_assigned, a.date_due, a.dropped
 FROM
     assessments a
     JOIN lessons l ON a.lesson_id = l.id
@@ -76,6 +78,8 @@ func (q *Queries) GetAssessmentsByCategory(ctx context.Context, arg GetAssessmen
 		var i Assessment
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.UnitID,
 			&i.LessonID,
 			&i.Name,
 			&i.Instructions,
@@ -100,7 +104,7 @@ func (q *Queries) GetAssessmentsByCategory(ctx context.Context, arg GetAssessmen
 
 const getAssessmentsByDueDate = `-- name: GetAssessmentsByDueDate :many
 SELECT
-    id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
+    id, course_id, unit_id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
 FROM
     assessments
 WHERE
@@ -118,6 +122,8 @@ func (q *Queries) GetAssessmentsByDueDate(ctx context.Context, dateDue string) (
 		var i Assessment
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.UnitID,
 			&i.LessonID,
 			&i.Name,
 			&i.Instructions,
@@ -142,14 +148,14 @@ func (q *Queries) GetAssessmentsByDueDate(ctx context.Context, dateDue string) (
 
 const getAssessmentsByLessonID = `-- name: GetAssessmentsByLessonID :many
 SELECT
-    id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
+    id, course_id, unit_id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
 FROM
     assessments
 WHERE
     lesson_id = ?
 `
 
-func (q *Queries) GetAssessmentsByLessonID(ctx context.Context, lessonID int64) ([]Assessment, error) {
+func (q *Queries) GetAssessmentsByLessonID(ctx context.Context, lessonID sql.NullInt64) ([]Assessment, error) {
 	rows, err := q.db.QueryContext(ctx, getAssessmentsByLessonID, lessonID)
 	if err != nil {
 		return nil, err
@@ -160,6 +166,8 @@ func (q *Queries) GetAssessmentsByLessonID(ctx context.Context, lessonID int64) 
 		var i Assessment
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.UnitID,
 			&i.LessonID,
 			&i.Name,
 			&i.Instructions,
@@ -184,7 +192,7 @@ func (q *Queries) GetAssessmentsByLessonID(ctx context.Context, lessonID int64) 
 
 const getCourseAssessments = `-- name: GetCourseAssessments :many
 SELECT
-    a.id, a.lesson_id, a.name, a.instructions, a.file, a.category, a.date_assigned, a.date_due, a.dropped
+    a.id, a.course_id, a.unit_id, a.lesson_id, a.name, a.instructions, a.file, a.category, a.date_assigned, a.date_due, a.dropped
 FROM
     assessments a
     JOIN lessons l ON a.lesson_id = l.id
@@ -205,6 +213,8 @@ func (q *Queries) GetCourseAssessments(ctx context.Context, id int64) ([]Assessm
 		var i Assessment
 		if err := rows.Scan(
 			&i.ID,
+			&i.CourseID,
+			&i.UnitID,
 			&i.LessonID,
 			&i.Name,
 			&i.Instructions,
@@ -240,11 +250,11 @@ INSERT INTO
         dropped
     )
 VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
+    (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, course_id, unit_id, lesson_id, name, instructions, file, category, date_assigned, date_due, dropped
 `
 
 type SaveAssessmentParams struct {
-	LessonID     int64
+	LessonID     sql.NullInt64
 	Name         string
 	Instructions string
 	File         sql.NullString
@@ -268,6 +278,8 @@ func (q *Queries) SaveAssessment(ctx context.Context, arg SaveAssessmentParams) 
 	var i Assessment
 	err := row.Scan(
 		&i.ID,
+		&i.CourseID,
+		&i.UnitID,
 		&i.LessonID,
 		&i.Name,
 		&i.Instructions,
@@ -296,7 +308,7 @@ WHERE
 `
 
 type UpdateAssessmentParams struct {
-	LessonID     int64
+	LessonID     sql.NullInt64
 	Name         string
 	Instructions string
 	File         sql.NullString

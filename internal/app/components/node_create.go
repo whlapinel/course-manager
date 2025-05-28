@@ -9,6 +9,7 @@ import (
 	"gh_static_portfolio/internal/shared/util"
 
 	"github.com/a-h/templ"
+	"github.com/labstack/gommon/log"
 )
 
 type NodeCreatePage struct {
@@ -34,10 +35,49 @@ func (page NodeCreatePage) Component() templ.Component {
 }
 
 func (page NodeCreatePage) FormComponent() templ.Component {
-	return CreateNodeFormComponent(page)
+	title := fmt.Sprintf("New %s", page.NodeType)
+	subtitle := fmt.Sprintf("Enter %s details here", page.NodeType)
+	form := cmp.NewForm(cmp.NewFormParams{
+		Title:     title,
+		Subtitle:  subtitle,
+		PostURL:   page.PostCreateNodeURL,
+		CancelURL: page.CancelURL,
+		HxTarget:  "#page",
+	})
+	nameInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+		Name: "Name",
+		Type: cmp.Text,
+	})
+	descTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
+		Name: "Description",
+	})
+	switch page.ParentNode.(type) {
+	case dto.Course, dto.Unit: // for create unit and create lesson page
+		numInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+			Name: "Number",
+			Type: cmp.Number,
+		})
+		form = form.AddElement(numInput)
+		form = form.AddElement(nameInput, descTextArea)
+	case dto.User: // for create term page
+		form = form.AddElement(nameInput, descTextArea)
+		startInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+			Name: "Start Date",
+			Type: cmp.Date,
+		})
+		endInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
+			Name: "End Date",
+			Type: cmp.Date,
+		})
+		form = form.AddElement(startInput, endInput)
+	}
+	return form.Component()
 }
 
 func (page NodeCreatePage) PageLayout() cmp.PageLayout {
+	if page.ParentNode == nil {
+		log.Errorf("page.ParentNode is nil! params: %v", page.Params.ToSlice()...)
+	}
 	return cmp.PageLayout{
 		PageTitle: fmt.Sprintf("New %s for %s", page.NodeType.String(), page.ParentNode.GetName()),
 		UpNav: cmp.UpNav{
@@ -55,46 +95,4 @@ func (page NodeCreatePage) BreadCrumbs() BreadCrumbs {
 
 func NodeCreateFormID(nodeType dto.NodeTypeName) string {
 	return util.KebabCase(nodeType.String()) + "-form"
-}
-
-func CreateNodeFormComponent(page NodeCreatePage) templ.Component {
-	title := fmt.Sprintf("New %s", page.NodeType)
-	subtitle := fmt.Sprintf("Enter %s details here", page.NodeType)
-	form := cmp.NewForm(cmp.NewFormParams{
-		Title:     title,
-		Subtitle:  subtitle,
-		PostURL:   page.PostCreateNodeURL,
-		CancelURL: page.CancelURL,
-		HxTarget:  "#page",
-	})
-	_, userOk := page.ParentNode.(dto.User)
-	_, courseOk := page.ParentNode.(dto.Course)
-	_, unitOk := page.ParentNode.(dto.Unit)
-	if courseOk || unitOk {
-		numInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-			Name: "Number",
-			Type: cmp.Number,
-		})
-		form = form.AddElement(numInput)
-	}
-	nameInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-		Name: "Name",
-		Type: cmp.Text,
-	})
-	descTextArea := cmp.NewTextAreaWithLabel(cmp.TextAreaWithLabelParams{
-		Name: "Description",
-	})
-	form = form.AddElement(nameInput, descTextArea)
-	if userOk {
-		startInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-			Name: "Start Date",
-			Type: cmp.Date,
-		})
-		endInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
-			Name: "End Date",
-			Type: cmp.Date,
-		})
-		form = form.AddElement(startInput, endInput)
-	}
-	return form.Component()
 }

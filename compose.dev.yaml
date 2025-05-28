@@ -1,16 +1,14 @@
 services:
   echo:
     image: whlapinel/course-manager:local-dev
-    command: ["./cmd/new_app/new_app"]
+    command: ["./cmd/app/app"]
     build:
       context: .
       dockerfile: Dockerfile.echo.dev
     volumes:
-      - ./cmd/web_app:/app/cmd/web_app
-      - ./cmd/new_app:/app/cmd/new_app
+      - ./cmd/app:/app/cmd/app
       - ./internal/data/users:/app/internal/data/users
-      - ./sites:/app/sites
-      - ./hugosites:/app/hugosites
+      # - ./sites:/app/sites # old static sites directory
+      - ./hugosites:/app/hugosites # new sites directory
       - ./internal/staticresources:/app/internal/staticresources
-      - ./internal/data/database/course_manager.db:/app/internal/data/database/course_manager.db
       - ./course_manager.db:/app/course_manager.db

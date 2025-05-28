@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
@@ -75,9 +76,9 @@ func unitRouteHandlers(h *unitHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.GET, routes.Units, routes.GetUnits, h.listByCourse),
 		web.NewRouteHandler(web.GET, routes.Unit, routes.GetUnit, h.showDetails),
 		web.NewRouteHandler(web.GET, routes.UnitEdit, routes.GetEditUnit, h.showEdit),
-		web.NewRouteHandler(web.GET, routes.UnitEdit, routes.PostEditUnit, h.postEdit),
+		web.NewRouteHandler(web.POST, routes.UnitEdit, routes.PostEditUnit, h.postEdit),
 		web.NewRouteHandler(web.GET, routes.NewUnit, routes.GetNewUnit, h.showCreateNew),
-		web.NewRouteHandler(web.POST, routes.NewUnit, routes.PostUnit, h.postNew),
+		web.NewRouteHandler(web.POST, routes.NewUnit, routes.PostNewUnit, h.postNew),
 		web.NewRouteHandler(web.DELETE, routes.Unit, routes.DeleteUnit, h.delete),
 	}
 }
@@ -101,11 +102,18 @@ func (h *unitHandler) postNew(c echo.Context) error {
 	}
 	unit := dto.Unit{
 		Unit: unit.Unit{
-			CourseID: nodePath.CourseID,
+			BaseNode: ports.BaseNode[int, int]{
+				ParentID: nodePath.CourseID,
+			},
 		},
 	}
 	unit.Name = c.FormValue("name")
 	unit.Description = c.FormValue("description")
+	numParam := c.FormValue("number")
+	unit.Number, err = strconv.Atoi(numParam)
+	if err != nil {
+		return err
+	}
 	err = h.service.Save(unit)
 	if err != nil {
 		return err
@@ -114,15 +122,22 @@ func (h *unitHandler) postNew(c echo.Context) error {
 }
 
 func (h *unitHandler) showCreateNew(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
+	log.Println("unitHandler.showCreateNew running")
+	if info.NodePath.CourseID == 0 {
+		return fmt.Errorf("course ID is 0")
+	}
+	if info.Nodes.Course == nil {
+		return fmt.Errorf("course is nil")
+	}
 	page := ac.NodeCreatePage{
-		ParentNode:          info.User,
+		ParentNode:          info.Course,
 		NodeType:            dto.UnitTypeName,
 		Params:              info.NodePath,
-		PostCreateNodeURL:   h.reverse(routes.PostUnit.String(), info.NodePath.ToSlice()...),
+		PostCreateNodeURL:   h.reverse(routes.PostNewUnit.String(), info.NodePath.ToSlice()...),
 		CancelURL:           h.reverse(routes.GetUnits.String(), info.NodePath.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(info.Nodes, info.NodePath, h.reverse),
 		CourseManagerLayout: BaseLayout3(h.reverse, info.User.(dto.User)),
@@ -147,10 +162,9 @@ func (h *unitHandler) listByCourse(c echo.Context) error {
 	course.Units = units
 	page := ac.NodeListPage{
 		ParentNode:          course,
-		Children:            course.Children(),
+		Children:            course.GetChildren(),
 		ChildDetailsURL:     web.URLFunc(routes.GetUnit, h.reverse, path.ToSlice()...),
-		ChildChildrenURL:    web.URLFunc(routes.GetLessons, h.reverse, path.ToSlice()...),
-		DeleteChildURL:      web.URLFunc(routes.DeleteCourse, h.reverse, path.ToSlice()...),
+		DeleteChildURL:      web.URLFunc(routes.DeleteUnit, h.reverse, path.ToSlice()...),
 		ShowNewChildURL:     h.reverse(routes.GetNewUnit.String(), path.ToSlice()...),
 		UpNavURL:            h.reverse(routes.GetCourse.String(), path.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(nodes, path, h.reverse),
@@ -211,7 +225,7 @@ func (h *unitHandler) postEdit(c echo.Context) error {
 			if err != nil {
 				return err
 			}
-			unit.SequenceNum = num
+			unit.Sequence = num
 		case "number":
 			num, err := strconv.Atoi(val[0])
 			if err != nil {
@@ -240,8 +254,8 @@ func (h *unitHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) ac.No
 		ParentNode:          nodes.Course,
 		GetEditNodeURL:      h.reverse(routes.GetEditUnit.String(), path.ToSlice()...),
 		PostEditNodeURL:     h.reverse(routes.PostEditUnit.String(), path.ToSlice()...),
-		ListChildrenURL:     h.reverse(routes.GetUnits.String(), path.ToSlice()...),
-		UpNavURL:            h.reverse(routes.GetCourse.String(), path.ToSlice()...),
+		ListChildrenURL:     h.reverse(routes.GetLessons.String(), path.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetUnits.String(), path.ToSlice()...),
 		CancelEditURL:       h.reverse(routes.GetUnit.String(), path.ToSlice()...),
 		CourseCalendarURL:   h.reverse(routes.GetCourseCalendar.String(), path.ToSlice()...),
 		ServerFilesURL:      h.reverse(routes.GetUnitFiles.String(), path.ToSlice()...),

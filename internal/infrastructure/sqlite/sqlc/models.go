@@ -10,7 +10,9 @@ import (
 
 type Assessment struct {
 	ID           int64
-	LessonID     int64
+	CourseID     sql.NullInt64
+	UnitID       sql.NullInt64
+	LessonID     sql.NullInt64
 	Name         string
 	Instructions string
 	File         sql.NullString
@@ -26,6 +28,13 @@ type Course struct {
 	Name        string
 	Description sql.NullString
 	StdSetID    sql.NullInt64
+}
+
+type CourseOccasion struct {
+	ID       int64
+	CourseID int64
+	Date     string
+	Name     string
 }
 
 type Date struct {
@@ -60,13 +69,6 @@ type LessonStandard struct {
 	LessonID int64
 }
 
-type Occasion struct {
-	ID     int64
-	TermID int64
-	Date   string
-	Name   string
-}
-
 type SqliteSequence struct {
 	Name interface{}
 	Seq  interface{}
@@ -93,6 +95,13 @@ type Term struct {
 	End         string
 	Description sql.NullString
 	UserID      string
+}
+
+type TermOccasion struct {
+	ID     int64
+	TermID int64
+	Date   string
+	Name   string
 }
 
 type Unit struct {

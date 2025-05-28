@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/features/course"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
+	"gh_static_portfolio/internal/ports"
 )
 
 type courseRepo struct {
@@ -21,10 +22,12 @@ func NewCourseRepo(queries *database.Queries) course.Repository {
 
 func (repo *courseRepo) convertFromDB(dbCourse database.Course) course.Course {
 	return course.Course{
-		ID:          int(dbCourse.ID),
-		ParentID:    int(dbCourse.TermID),
-		Name:        dbCourse.Name,
-		Description: dbCourse.Description.String,
+		BaseNode: ports.BaseNode[int, int]{
+			ID:          int(dbCourse.ID),
+			ParentID:    int(dbCourse.TermID),
+			Name:        dbCourse.Name,
+			Description: dbCourse.Description.String,
+		},
 	}
 }
 

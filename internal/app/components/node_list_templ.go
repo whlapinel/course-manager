@@ -51,9 +51,9 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.ChildTypeName())
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.GetChildTypeName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/components/node_list.templ`, Line: 7, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/components/node_list.templ`, Line: 7, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -64,9 +64,9 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.TypeName())
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.ParentNode.GetTypeName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/components/node_list.templ`, Line: 7, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/app/components/node_list.templ`, Line: 7, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -104,12 +104,6 @@ func NodeListComponent(props NodeListPage) templ.Component {
 					templ_7745c5c3_Err = props.DeleteNodeButton(node).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
-					}
-					if node.ChildTypeName() != "" {
-						templ_7745c5c3_Err = props.NodeChildrenButton(node).Render(ctx, templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
 					}
 					templ_7745c5c3_Err = props.NodeDetailsButton(node).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {

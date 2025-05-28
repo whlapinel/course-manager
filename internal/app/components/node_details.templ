@@ -3,7 +3,7 @@ package appcomponents
 templ NodeDetailsComponent(props NodeDetailsPage) {
 	@PageLayoutComponent(props) {
 		<div class="flex gap-2">
-			if props.Node.ChildTypeName() != "" {
+			if props.Node.GetChildTypeName() != "" {
 				@props.ListChildrenButton()
 			}
 			@props.ViewFilesButton()

@@ -8,6 +8,7 @@ import (
 	av "gh_static_portfolio/internal/app/views/authentication"
 	components "gh_static_portfolio/internal/base"
 	"gh_static_portfolio/internal/features/user"
+	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
@@ -75,7 +76,9 @@ func (h *authHandler) postSignin(c echo.Context) error {
 	}
 	log.Println("userID", currUser.ID)
 	t, err := h.service.IssueToken(services.TokenParams{User: user.User{
-		ID:        sub,
+		BaseNode: ports.BaseNode[int, string]{
+			ID: sub,
+		},
 		Email:     currUser.Email,
 		FirstName: currUser.FirstName,
 		LastName:  currUser.LastName,

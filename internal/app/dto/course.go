@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/core/standard"
+	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/ports"
 	"time"
 )
@@ -36,23 +36,7 @@ func (c Course) FitToTerm(term Term) Course {
 	return c
 }
 
-func (c Course) GetName() string {
-	return c.Name
-}
-
-func (c Course) GetDescription() string {
-	return c.Description
-}
-
-func (c Course) GetID() any {
-	return c.Course.ID
-}
-
-func (c Course) GetParentID() any {
-	return c.ParentID
-}
-
-func (c Course) Children() []ports.Node {
+func (c Course) GetChildren() []ports.Node {
 	var nodes []ports.Node
 	for _, u := range c.Units {
 		nodes = append(nodes, u)
@@ -60,24 +44,20 @@ func (c Course) Children() []ports.Node {
 	return nodes
 }
 
-func (c Course) TypeName() string {
+func (c Course) GetTypeName() string {
 	return CourseTypeName.String()
 }
 
-func (c Course) ParentTypeName() string {
+func (c Course) GetParentTypeName() string {
 	return TermTypeName.String()
 }
 
-func (c Course) ChildTypeName() string {
+func (c Course) GetChildTypeName() string {
 	return UnitTypeName.String()
 }
 
 func (c *Course) AddUnit(unit Unit) {
 	c.Units = append(c.Units, unit)
-}
-
-func (c Course) Designation() string {
-	return ""
 }
 
 func (c Course) GetNumber() int {

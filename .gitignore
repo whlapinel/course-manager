@@ -16,7 +16,7 @@ build
 internal/data/users
 internal/data/database/course_manager.db
 sites
+hugosites
 caddy_data
 caddy_config
-cmd/web_app/web_app
-cmd/new_app/new_app
+cmd/app/app

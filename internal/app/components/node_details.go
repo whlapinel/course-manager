@@ -69,8 +69,8 @@ func (page NodeDetailsPage) PageTitle() string {
 }
 
 func (page NodeDetailsPage) upNavText() string {
-	parentPageText := page.Node.TypeName()
-	if page.Node.ParentTypeName() == string(dto.RootTypeName) {
+	parentPageText := page.Node.GetTypeName()
+	if page.Node.GetParentTypeName() == string(dto.RootTypeName) {
 		parentPageText = "🏠"
 		return fmt.Sprintf("Up to %s", parentPageText)
 	}
@@ -79,7 +79,7 @@ func (page NodeDetailsPage) upNavText() string {
 
 func (page NodeDetailsPage) ListChildrenButton() templ.Component {
 	return cmp.Button{
-		Text:     fmt.Sprintf("%ss", page.Node.ChildTypeName()),
+		Text:     fmt.Sprintf("%ss", page.Node.GetChildTypeName()),
 		Method:   cmp.HxGet,
 		URL:      page.ListChildrenURL,
 		HxTarget: "#page",

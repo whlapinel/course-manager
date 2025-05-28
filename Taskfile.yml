@@ -1,4 +1,6 @@
 version: "3"
+vars:
+  DB_PATH: ./course_manager.db
 
 tasks:
   export-secrets:
@@ -6,10 +8,19 @@ tasks:
     cmds:
       - go run ./cmd/export_secret
 
+  create-migration:*:
+    vars:
+      NAME: "{{index .MATCH 0}}"
+      
+    desc: For creating a new db migration
+    cmds:
+      - cd internal/infrastructure/sqlite/migrations/schema && goose sqlite3 {{.DB_PATH}} create {{.NAME}} go
+
   migrate:
     desc: Run migrations (intended only for running on development database, as this step is included via container in deployment script)
     cmds:
-      - go run ./cmd/migrate internal/data/database/course_manager.db up
+      - go run ./cmd/migrate -dir="internal/infrastructure/sqlite/migrations/schema" course_manager.db up 
+      - sqlite3 course_manager.db ".schema" | sed 's/"//g' > "internal/infrastructure/sqlite/sqlc/schema.sql"
 
   generate:
     desc: Generate sqlc (go), tailwind (css), typescript (js), and templ (go). Run if typescript or templ files have been modified
@@ -27,14 +38,14 @@ tasks:
     desc: Build and run without generate (for when we're not changing UI)
     cmds:
       - templ generate
-      - go build -o ./cmd/new_app/new_app ./cmd/new_app
+      - go build -o ./cmd/app ./cmd/app
       - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
 
   restart-echo:
     desc: Stops, rebuilds and restarts the echo container only
     cmds:
       - templ generate
-      - go build -o ./cmd/new_app/new_app ./cmd/new_app
+      - go build -o ./cmd/app/app ./cmd/app
       - docker compose restart echo
 
   run-prod:

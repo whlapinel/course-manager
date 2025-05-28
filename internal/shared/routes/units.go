@@ -24,7 +24,7 @@ var (
 	GetUnit      = web.NewHandlerName(web.GET, Unit)
 	GetUnits     = web.NewHandlerName(web.GET, Units)
 	GetNewUnit   = web.NewHandlerName(web.GET, NewUnit)
-	PostUnit     = web.NewHandlerName(web.POST, Units)
+	PostNewUnit  = web.NewHandlerName(web.POST, NewUnit)
 	GetEditUnit  = web.NewHandlerName(web.GET, UnitEdit)
 	PostEditUnit = web.NewHandlerName(web.POST, UnitEdit)
 	DeleteUnit   = web.NewHandlerName(web.DELETE, Unit)

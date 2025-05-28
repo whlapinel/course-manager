@@ -1,12 +1,12 @@
 package calendarviews
 
 import (
+	"gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/shared/util"
 	"strconv"
 	"time"
-	"gh_static_portfolio/internal/app/components"
 )
 
 templ ShiftButtonComponent(data ShiftButton) {
@@ -22,7 +22,7 @@ templ ShiftButtonComponent(data ShiftButton) {
 templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 	<li>
 		<div class="flex">
-			@data.ShiftButton(dto.Left)
+			@data.ShiftButton(dto.Left, data.Date.Format(time.DateOnly))
 			<div>
 				<div class="flex flex-col gap-1 items-center">
 					<div class="flex">
@@ -31,7 +31,7 @@ templ CalendarLessonContainer(data CalendarLessonContainerNew) {
 					</div>
 				</div>
 			</div>
-			@data.ShiftButton(dto.Right)
+			@data.ShiftButton(dto.Right, data.Date.Format(time.DateOnly))
 		</div>
 	</li>
 }

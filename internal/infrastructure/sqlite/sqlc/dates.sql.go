@@ -33,29 +33,19 @@ FROM
   dates
 WHERE
   date = ?
+  AND term_id = ?
 `
 
-func (q *Queries) GetDate(ctx context.Context, date string) (Date, error) {
-	row := q.db.QueryRowContext(ctx, getDate, date)
+type GetDateParams struct {
+	Date   string
+	TermID int64
+}
+
+func (q *Queries) GetDate(ctx context.Context, arg GetDateParams) (Date, error) {
+	row := q.db.QueryRowContext(ctx, getDate, arg.Date, arg.TermID)
 	var i Date
 	err := row.Scan(&i.ID, &i.TermID, &i.Date)
 	return i, err
-}
-
-const getDateID = `-- name: GetDateID :one
-SELECT
-  d.id
-FROM
-  dates d
-WHERE
-  d.date = ?
-`
-
-func (q *Queries) GetDateID(ctx context.Context, date string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, getDateID, date)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
 }
 
 const saveDate = `-- name: SaveDate :one

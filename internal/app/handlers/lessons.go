@@ -90,7 +90,7 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.GET, routes.LessonEditSlides, routes.GetEditLessonSlides, h.showEditSlides),
 		web.NewRouteHandler(web.POST, routes.LessonEditSlides, routes.PostEditLessonSlides, h.postEditSlides),
 		web.NewRouteHandler(web.GET, routes.NewLesson, routes.GetNewLesson, h.showCreateNew),
-		web.NewRouteHandler(web.POST, routes.NewLesson, routes.PostLesson, h.postNew),
+		web.NewRouteHandler(web.POST, routes.NewLesson, routes.PostNewLesson, h.postNew),
 		web.NewRouteHandler(web.DELETE, routes.Lesson, routes.DeleteLesson, h.delete),
 	}
 }
@@ -100,7 +100,7 @@ func (h *lessonHandler) delete(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return h.service.Delete(nodePath.UnitID)
+	return h.service.Delete(nodePath.LessonID)
 }
 func (h *lessonHandler) postNew(c echo.Context) error {
 	nodePath, err := routes.ParseNodePath(c)
@@ -113,11 +113,18 @@ func (h *lessonHandler) postNew(c echo.Context) error {
 	}
 	lesson := dto.Lesson{
 		Lesson: lesson.Lesson{
-			UnitID: nodePath.UnitID,
+			BaseNode: ports.BaseNode[int, int]{
+				ParentID: nodePath.UnitID,
+			},
 		},
 	}
 	lesson.Name = c.FormValue("name")
 	lesson.Description = c.FormValue("description")
+	numParam := c.FormValue("number")
+	lesson.Number, err = strconv.Atoi(numParam)
+	if err != nil {
+		return err
+	}
 	err = h.service.Save(lesson)
 	if err != nil {
 		return err
@@ -125,15 +132,15 @@ func (h *lessonHandler) postNew(c echo.Context) error {
 	return c.Redirect(303, h.reverse(routes.GetLessons.String(), nodePath.ToSlice()...))
 }
 func (h *lessonHandler) showCreateNew(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
 	page := ac.NodeCreatePage{
-		ParentNode:          info.User,
+		ParentNode:          info.Unit,
 		NodeType:            dto.LessonTypeName,
 		Params:              info.NodePath,
-		PostCreateNodeURL:   h.reverse(routes.PostLesson.String(), info.NodePath.ToSlice()...),
+		PostCreateNodeURL:   h.reverse(routes.PostNewLesson.String(), info.NodePath.ToSlice()...),
 		CancelURL:           h.reverse(routes.GetLessons.String(), info.NodePath.ToSlice()...),
 		BreadCrumbsData:     BreadCrumbs(info.Nodes, info.NodePath, h.reverse),
 		CourseManagerLayout: BaseLayout3(h.reverse, info.User.(dto.User)),
@@ -142,7 +149,7 @@ func (h *lessonHandler) showCreateNew(c echo.Context) error {
 }
 
 func (h *lessonHandler) postEditSlides(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
@@ -184,7 +191,7 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 }
 
 func (h *lessonHandler) showEditSlides(c echo.Context) error {
-	info, err := parseNodeInfo(c, h.nodeService)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
@@ -227,7 +234,7 @@ func (h *lessonHandler) listByUnit(c echo.Context) error {
 	unit.Lessons = lessons
 	page := ac.NodeListPage{
 		ParentNode:          unit,
-		Children:            unit.Children(),
+		Children:            unit.GetChildren(),
 		ChildDetailsURL:     web.URLFunc(routes.GetLesson, h.reverse, path.ToSlice()...),
 		DeleteChildURL:      web.URLFunc(routes.DeleteLesson, h.reverse, path.ToSlice()...),
 		ShowNewChildURL:     h.reverse(routes.GetNewLesson.String(), path.ToSlice()...),
@@ -326,7 +333,7 @@ func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) ac.
 		ServerFilesURL:      h.reverse(routes.GetLessonFiles.String(), path.ToSlice()...),
 		GetEditNodeURL:      h.reverse(routes.GetEditLesson.String(), path.ToSlice()...),
 		PostEditNodeURL:     h.reverse(routes.PostEditLesson.String(), path.ToSlice()...),
-		UpNavURL:            h.reverse(routes.GetUnit.String(), path.ToSlice()...),
+		UpNavURL:            h.reverse(routes.GetLessons.String(), path.ToSlice()...),
 		CancelEditURL:       h.reverse(routes.GetLesson.String(), path.ToSlice()...),
 		BreadCrumbs:         BreadCrumbs(nodes, path, h.reverse),
 		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
