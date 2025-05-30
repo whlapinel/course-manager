@@ -3,7 +3,7 @@ package courseviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/features/term"
 	"gh_static_portfolio/internal/shared/web"
@@ -24,26 +24,27 @@ func (page CoursesListPage) HTMXResponse() templ.Component {
 }
 
 func (page CoursesListPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 func (page CoursesListPage) Component() templ.Component {
 	var calendarButtons []ac.ComponentData
-	var assessmentButtons []ac.ComponentData
+	// var assessmentButtons []ac.ComponentData // for future
 
 	for _, course := range page.Children {
 		button := ShowCalendarButton{
 			ShowCalendarURL: page.ShowCourseCalendarURL(course.GetID()),
 		}
 		calendarButtons = append(calendarButtons, button)
-		button2 := ShowAssessmentsButton{
-			ShowAssessmentsURL: page.ShowAssessmentsURL(course.GetID()),
-		}
-		assessmentButtons = append(assessmentButtons, button2)
+		// assessments button saved for future implementation
+		// button2 := ShowAssessmentsButton{
+		// 	ShowAssessmentsURL: page.ShowAssessmentsURL(course.GetID()),
+		// }
+		// assessmentButtons = append(assessmentButtons, button2)
 
 	}
 	page.ChildUI = append(page.ChildUI, calendarButtons)
-	page.ChildUI = append(page.ChildUI, assessmentButtons)
+	// page.ChildUI = append(page.ChildUI, assessmentButtons) // for future
 	return CourseListComponent(page)
 }
 
@@ -72,7 +73,7 @@ func (p CourseDetailsPage) HTMXResponse() templ.Component {
 }
 
 func (p CourseDetailsPage) NonHTMXResponse() templ.Component {
-	return p.CourseManagerLayout.Component2(p.Component())
+	return p.CourseManagerLayout.WithPage(p.Component())
 }
 
 func (page CourseDetailsPage) Course() dto.Course {

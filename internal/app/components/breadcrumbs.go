@@ -1,7 +1,7 @@
 package appcomponents
 
 import (
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 
 	"github.com/a-h/templ"

@@ -3,7 +3,7 @@ package sqlite
 import (
 	"context"
 	"gh_static_portfolio/internal/core/occasion"
-	"gh_static_portfolio/internal/features/termoccasion"
+	"gh_static_portfolio/internal/features/courseoccasion"
 	database "gh_static_portfolio/internal/infrastructure/sqlite/sqlc"
 	"time"
 )
@@ -12,14 +12,35 @@ type courseOccasionRepo struct {
 	queries *database.Queries
 }
 
-// ByID implements termoccasion.Repository.
-func (t *courseOccasionRepo) ByID(id int) (occasion.Occasion, error) {
-	panic("unimplemented")
+func NewCourseOccasionRepo(queries *database.Queries) courseoccasion.Repository {
+	return &courseOccasionRepo{
+		queries: queries,
+	}
 }
 
-// ByTermID implements termoccasion.Repository.
-func (t *courseOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
-	dbOccasions, err := t.queries.GetTermOccasions(context.Background(), int64(termID))
+func (t *courseOccasionRepo) Delete(id int) error {
+	return t.queries.DeleteCourseOccasion(context.Background(), int64(id))
+}
+
+func (t *courseOccasionRepo) ByID(id int) (occasion.Occasion, error) {
+	var occasion occasion.Occasion
+	dbOccasion, err := t.queries.GetCourseOccasionByID(context.Background(), int64(id))
+	if err != nil {
+		return occasion, err
+	}
+	date, err := time.Parse(time.DateOnly, dbOccasion.Date)
+	if err != nil {
+		return occasion, err
+	}
+	occasion.Name = dbOccasion.Name
+	occasion.Date = date
+	occasion.ID = int(dbOccasion.ID)
+	occasion.ParentID = int(dbOccasion.CourseID)
+	return occasion, nil
+}
+
+func (t *courseOccasionRepo) ByParentID(courseID int) ([]occasion.Occasion, error) {
+	dbOccasions, err := t.queries.GetCourseOccasions(context.Background(), int64(courseID))
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +52,7 @@ func (t *courseOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
 		}
 		occasion := occasion.Occasion{
 			ID:       int(dbOccasion.ID),
-			ParentID: int(dbOccasion.TermID),
+			ParentID: int(dbOccasion.CourseID),
 			Date:     date,
 			Name:     dbOccasion.Name,
 		}
@@ -41,23 +62,21 @@ func (t *courseOccasionRepo) ByTermID(termID int) ([]occasion.Occasion, error) {
 
 }
 
-// Delete implements termoccasion.Repository.
-func (t *courseOccasionRepo) Delete(id occasion.Occasion) error {
-	panic("unimplemented")
-}
-
-// Save implements termoccasion.Repository.
-func (t *courseOccasionRepo) Save(occasion.Occasion) (int, error) {
-	panic("unimplemented")
-}
-
-// Update implements termoccasion.Repository.
-func (t *courseOccasionRepo) Update(occasion.Occasion) error {
-	panic("unimplemented")
-}
-
-func NewCourseOccasionRepo(queries *database.Queries) termoccasion.Repository {
-	return &courseOccasionRepo{
-		queries: queries,
+func (t *courseOccasionRepo) Save(occ occasion.Occasion) (int, error) {
+	dbTO, err := t.queries.SaveCourseOccasion(context.Background(), database.SaveCourseOccasionParams{
+		CourseID: int64(occ.ParentID),
+		Date:     occ.Date.Format(time.DateOnly),
+		Name:     occ.Name,
+	})
+	if err != nil {
+		return 0, err
 	}
+	return int(dbTO.ID), nil
+}
+
+func (t *courseOccasionRepo) Update(occ occasion.Occasion) error {
+	return t.queries.UpdateCourseOccasion(context.Background(), database.UpdateCourseOccasionParams{
+		ID:   int64(occ.ID),
+		Name: occ.Name,
+	})
 }

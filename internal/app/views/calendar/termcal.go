@@ -3,7 +3,7 @@ package calendarviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
@@ -34,7 +34,7 @@ func (p TermCalendar) HTMXResponse() templ.Component {
 }
 
 func (p TermCalendar) NonHTMXResponse() templ.Component {
-	return p.CourseManagerLayout.Component2(p.Component())
+	return p.CourseManagerLayout.WithPage(p.Component())
 }
 
 func (data TermCalendar) GetCalendarDates() CalendarDates {
@@ -55,9 +55,8 @@ func (page TermCalendar) Occasions(date time.Time) []occasion.Occasion {
 	return occasions
 }
 
-func (page TermCalendar) TermOccasionEditor(occasion occasion.Occasion) templ.Component {
-	return TermOccasionEditor{
-		Params:              page.Params,
+func (page TermCalendar) OccasionEditor(occasion occasion.Occasion) templ.Component {
+	return OccasionEditor{
 		Occasion:            occasion,
 		IsEditing:           false,
 		GetEditOccasionURL:  page.GetEditOccasionURL(occasion.ID),
@@ -95,8 +94,7 @@ func (data TermCalendar) BreadCrumbs() ac.BreadCrumbs {
 	return data.BreadCrumbsData
 }
 
-type TermOccasionEditor struct {
-	Params              routes.NodePath
+type OccasionEditor struct {
 	Occasion            occasion.Occasion
 	IsEditing           bool
 	GetEditOccasionURL  string
@@ -104,7 +102,7 @@ type TermOccasionEditor struct {
 	DeleteOccasionURL   string
 }
 
-func (data TermOccasionEditor) ComponentID() string {
+func (data OccasionEditor) ComponentID() string {
 	var id string
 	id = "occasion " + strconv.Itoa(data.Occasion.ID) + " editor"
 	id = strings.ToLower(id)
@@ -112,6 +110,6 @@ func (data TermOccasionEditor) ComponentID() string {
 	return id
 }
 
-func (data TermOccasionEditor) Component() templ.Component {
-	return TermOccasionEditorComponent(data)
+func (data OccasionEditor) Component() templ.Component {
+	return OccasionEditorComponent(data)
 }

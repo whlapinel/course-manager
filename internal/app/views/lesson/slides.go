@@ -1,7 +1,7 @@
 package lessonviews
 
 import (
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 
 	"github.com/a-h/templ"
 )

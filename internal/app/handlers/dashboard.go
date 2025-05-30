@@ -8,6 +8,7 @@ import (
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,6 +16,7 @@ import (
 type dashboardHandler struct {
 	sitegen     *services.SiteGeneratorService
 	service     *services.UserService
+	terms       *services.TermService
 	nodeService *services.NodeService
 	reverse     web.Reverse
 }
@@ -22,10 +24,12 @@ type dashboardHandler struct {
 func NewDashboardHandler(
 	sitegen *services.SiteGeneratorService,
 	service *services.UserService,
+	terms *services.TermService,
 	nodeService *services.NodeService,
 	reverse web.Reverse,
 ) *dashboardHandler {
 	return &dashboardHandler{
+		terms:       terms,
 		sitegen:     sitegen,
 		service:     service,
 		nodeService: nodeService,
@@ -53,7 +57,14 @@ func dashboardRouteHandlers(h *dashboardHandler) []web.RouteHandler {
 
 func (h *dashboardHandler) generateSite(c echo.Context) error {
 	userID := c.Get("id").(string)
-	err := h.sitegen.Build(userID, 2)
+	termIDParam := c.FormValue("term")
+
+	log.Println(termIDParam)
+	termID, err := strconv.Atoi(termIDParam)
+	if err != nil {
+		return err
+	}
+	err = h.sitegen.Build(userID, termID)
 	if err != nil {
 		return err
 	}
@@ -72,24 +83,29 @@ func (h *dashboardHandler) redirectToDashboard(c echo.Context) error {
 
 func (h *dashboardHandler) showDashboard(c echo.Context) error {
 	log.Println("showDashboard running")
-	params, err := routes.ParseNodePath(c)
+	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
 	}
-	log.Println("params.UserID", params.UserID)
-	user, err := h.service.ByID(params.UserID)
+	log.Println("params.UserID", info.UserID)
+	user, err := h.service.ByID(info.UserID)
 	if err != nil {
 		return err
 	}
 	userDTO := dto.User{
 		User: user.User,
 	}
+	terms, err := h.terms.ByParentID(info.UserID)
+	if err != nil {
+		return err
+	}
 	page := dashboardviews.UserHomePage{
-		GenerateSiteURL:     h.reverse(routes.PostGenerateSite.String(), params.ToSlice()...),
-		ListTermsURL:        h.reverse(routes.GetTerms.String(), params.ToSlice()...),
+		GenerateSiteURL:     h.reverse(routes.PostGenerateSite.String(), info.NodePath.ToSlice()...),
+		ListTermsURL:        h.reverse(routes.GetTerms.String(), info.NodePath.ToSlice()...),
 		User:                userDTO,
 		CourseManagerLayout: BaseLayout3(h.reverse, user),
 		StaticSiteURL:       h.sitegen.StaticSiteURL(user.ID),
+		Terms:               terms,
 	}
 	return Respond(c, page)
 }

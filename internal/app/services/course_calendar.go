@@ -4,42 +4,51 @@ import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
+	"gh_static_portfolio/internal/features/courseoccasion"
 	"gh_static_portfolio/internal/features/lesson"
 	"log"
 	"time"
 )
 
 type CourseCalendarService struct {
-	getCourse     func(courseID int) (dto.Course, error)
-	getUnits      func(courseID int) ([]dto.Unit, error)
-	getLessons    func(unitID int) ([]dto.Lesson, error)
-	getLesson     func(lessonID int) (dto.Lesson, error)
-	getTerm       func(termID int) (dto.Term, error)
+	terms         *TermService
+	courses       *CourseService
+	units         *UnitService
+	lessons       *LessonService
+	occasions     *courseoccasion.Service
 	lessonService *lesson.Service
 }
 
 func NewCourseCalendarService(
-	getCourse func(courseID int) (dto.Course, error),
-	getUnits func(courseID int) ([]dto.Unit, error),
-	getLessons func(unitID int) ([]dto.Lesson, error),
-	getLesson func(lessonID int) (dto.Lesson, error),
-	getTerm func(termID int) (dto.Term, error),
+	terms *TermService,
+	courses *CourseService,
+	units *UnitService,
+	lessons *LessonService,
+	occasions *courseoccasion.Service,
 	lessonService *lesson.Service,
 
 ) *CourseCalendarService {
 	return &CourseCalendarService{
-		getCourse:     getCourse,
-		getUnits:      getUnits,
-		getLessons:    getLessons,
-		getTerm:       getTerm,
-		getLesson:     getLesson,
+		terms:         terms,
+		courses:       courses,
+		units:         units,
+		lessons:       lessons,
+		occasions:     occasions,
 		lessonService: lessonService,
 	}
 }
 
+func (svc *CourseCalendarService) AddLessonToDate(date time.Time, lessonID, termID int) error {
+	return svc.lessonService.AddLessonToDate(date, lessonID, termID)
+}
+
+func (svc *CourseCalendarService) DeleteLessonDate(date time.Time, lessonID, termID int) error {
+	return svc.lessonService.DeleteLessonDate(date, lessonID, termID)
+}
+
 func (svc *CourseCalendarService) ShiftLesson(currDate time.Time, lessonID int, termID int, direction dto.CalendarDirection) error {
 	// instructional days
-	termInstance, err := svc.getTerm(int(termID))
+	termInstance, err := svc.terms.ByID(int(termID))
 	if err != nil {
 		log.Println("error retrieving term")
 		return fmt.Errorf("error retrieving term instance of ID %d: %w", termID, err)
@@ -56,7 +65,7 @@ func (svc *CourseCalendarService) ShiftLesson(currDate time.Time, lessonID int, 
 }
 
 func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {
-	courseDTO, err := svc.getCourse(courseID)
+	courseDTO, err := svc.courses.ByID(courseID)
 	if err != nil {
 		return dto.Course{}, err
 	}
@@ -64,15 +73,19 @@ func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {
 }
 
 func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.CalendarDates, error) {
-	courseDTO, err := svc.getCourse(courseID)
+	courseDTO, err := svc.courses.ByID(courseID)
 	if err != nil {
 		return nil, err
 	}
-	termDTO, err := svc.getTerm(courseDTO.ParentID)
+	courseOccasions, err := svc.occasions.ByCourseID(courseID)
 	if err != nil {
 		return nil, err
 	}
-	units, err := svc.getUnits(courseID)
+	termDTO, err := svc.terms.ByID(courseDTO.ParentID)
+	if err != nil {
+		return nil, err
+	}
+	units, err := svc.units.ByParentID(courseID)
 	if err != nil {
 		return nil, err
 	}
@@ -80,11 +93,17 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.Cal
 	for _, occ := range termDTO.Occasions {
 		item := datesMap[occ.Date]
 		item.Date = occ.Date
-		item.Occasions = append(item.Occasions, occ)
+		item.TermOccasions = append(item.TermOccasions, occ)
+		datesMap[occ.Date] = item
+	}
+	for _, occ := range courseOccasions {
+		item := datesMap[occ.Date]
+		item.Date = occ.Date
+		item.CourseOccasions = append(item.CourseOccasions, occ)
 		datesMap[occ.Date] = item
 	}
 	for _, unit := range units {
-		lessons, err := svc.getLessons(unit.ID)
+		lessons, err := svc.lessons.ByParentID(unit.ID)
 		if err != nil {
 			return nil, err
 		}

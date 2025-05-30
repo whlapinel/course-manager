@@ -41,8 +41,7 @@ services:
 
   echo:
     image: whlapinel/course-manager:0.2.0-dev
-    user: whlapinel
-    command: ["./cmd/web_app/web_app"]
+    command: ["./cmd/app/app"]
     networks:
       - app-network
     env_file:
@@ -54,7 +53,7 @@ services:
       - ./internal/data/users:/app/internal/data/users
       - ./sites:/app/sites
       - ./hugosites:/app/hugosites
-      - ./internal/staticresources:/app/internal/staticresources
+      # - ./internal/staticresources:/app/internal/staticresources
       - ./course_manager.db:/app/course_manager.db
     restart: unless-stopped
 

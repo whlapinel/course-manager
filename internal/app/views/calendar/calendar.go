@@ -1,23 +1,25 @@
 package calendarviews
 
 import (
+	"fmt"
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/occasion"
-	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
+	"gh_static_portfolio/internal/shared/web"
 	"log"
 	"time"
 
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
 type CalendarPage interface {
 	GetCalendarDates() CalendarDates
 	GetTerm() dto.Term
+	OccasionEditor(occasion.Occasion) templ.Component
+	AddOccasionButton(time.Time) templ.Component
 	ac.Page
 }
 
@@ -124,7 +126,7 @@ func (data CalendarLessonContainerNew) RemoveLessonButton() templ.Component {
 		HxConfirm: "Are you sure you want to remove this lesson date? The lesson itself will not be deleted.",
 		Method:    cmp.HxDelete,
 		URL:       data.RemoveLessonDateURL,
-		HxTarget:  "#page",
+		HxTarget:  fmt.Sprintf("#lesson-id-%d-%s", data.Lesson.ID, data.Date.Format(time.DateOnly)),
 		Image:     cmp.DeleteImage(),
 		Class:     "bg-red-700 p-1 rounded",
 	}
@@ -137,7 +139,6 @@ type ShiftButton struct {
 	TermID         int
 	CourseID       int
 	ShiftLessonURL string
-	e              *echo.Echo
 }
 
 func (data ShiftButton) Component() templ.Component {
@@ -155,16 +156,22 @@ func (data CalendarLessonContainerNew) ShiftButton(cd dto.CalendarDirection, dat
 
 type AddLessonToDatePage struct {
 	Date              time.Time
-	Nodes             ports.Nodes
-	Params            routes.NodePath
 	Course            dto.Course
-	ListLessonsRHN    string
-	AddLessonDateRHN  string
-	E                 *echo.Echo
+	ListLessonsURL    web.AddParams
 	TermDetailsURL    string
 	BreadCrumbsData   ac.BreadCrumbs
 	CourseDetailsURL  string
 	CourseCalendarURL string
+	Units             []dto.Unit
+	ac.CourseManagerLayout
+}
+
+func (p AddLessonToDatePage) HTMXResponse() templ.Component {
+	return p.Component()
+}
+
+func (p AddLessonToDatePage) NonHTMXResponse() templ.Component {
+	return p.WithPage(p.Component())
 }
 
 func (page AddLessonToDatePage) Component() templ.Component {
@@ -173,9 +180,7 @@ func (page AddLessonToDatePage) Component() templ.Component {
 }
 
 func (data AddLessonToDatePage) AddLessonDateURL(unitID, lessonID int) string {
-	data.Params.UnitID = unitID
-	data.Params.LessonID = lessonID
-	return data.E.Reverse(data.AddLessonDateRHN, AddParams(data.Params, data.Date.Format(time.DateOnly))...)
+	return data.ListLessonsURL(unitID, lessonID)
 }
 
 func (data AddLessonToDatePage) PageLayout() cmp.PageLayout {
@@ -196,32 +201,24 @@ func (data AddLessonToDatePage) BreadCrumbs() ac.BreadCrumbs {
 func (data AddLessonToDatePage) UnitPicker() templ.Component {
 	return UnitPicker{
 		Date:           data.Date,
-		Params:         data.Params,
-		Units:          data.Course.Units,
-		ListLessonsRHN: data.ListLessonsRHN,
-		Echo:           data.E,
+		Units:          data.Units,
+		ListLessonsURL: data.ListLessonsURL,
 	}.Component()
 }
 
 type UnitPicker struct {
 	Date           time.Time
-	Params         routes.NodePath
 	Units          []dto.Unit
-	ListLessonsRHN string
-	Echo           *echo.Echo
+	ListLessonsURL web.AddParams
 }
 
 func (data UnitPicker) ListLessonsButton(unit dto.Unit) templ.Component {
 	return cmp.Button{
 		Text:     unit.Designation(),
 		Method:   cmp.HxGet,
-		URL:      data.SelectUnitURL(unit.ID),
+		URL:      data.ListLessonsURL(unit.ID),
 		HxTarget: "#picker",
 	}.Component()
-}
-
-func (data UnitPicker) SelectUnitURL(unitID int) string {
-	return data.Echo.Reverse(data.ListLessonsRHN, AddParams(data.Params, data.Date.Format(time.DateOnly), unitID)...)
 }
 
 func (data UnitPicker) Component() templ.Component {
@@ -230,11 +227,9 @@ func (data UnitPicker) Component() templ.Component {
 
 type LessonPicker struct {
 	Date            time.Time
-	Params          routes.NodePath
 	ListUnitsURL    string
 	Lessons         []dto.Lesson
-	SelectLessonRHN string
-	Echo            *echo.Echo
+	SelectLessonURL web.AddParams
 }
 
 func (data LessonPicker) ListUnitsButton() templ.Component {
@@ -255,18 +250,16 @@ func (data LessonPicker) SelectLessonButton(lesson dto.Lesson) templ.Component {
 		Text:     lesson.Designation(),
 		Method:   cmp.HxPost,
 		URL:      data.SelectLessonURL(lesson.ID),
-		HxTarget: "#picker",
+		PushURL:  true,
+		HxTarget: "#page",
 	}.Component()
 }
 
-func (data LessonPicker) SelectLessonURL(lessonID int) string {
-	return data.Echo.Reverse(data.SelectLessonRHN, AddParams(data.Params, lessonID, data.Date.Format(time.DateOnly))...)
-}
-
 type CalendarDate struct {
-	Date      time.Time
-	Lessons   []dto.Lesson
-	Occasions []occasion.Occasion
+	Date            time.Time
+	Lessons         []dto.Lesson
+	TermOccasions   []occasion.Occasion
+	CourseOccasions []occasion.Occasion
 }
 
 type CalendarDates map[time.Time]CalendarDate

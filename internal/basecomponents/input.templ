@@ -1,0 +1,51 @@
+package basecomponents
+
+templ InputComponent(el Input) {
+	<input
+		id={ el.ID }
+		if el.Class != "" {
+			class={ el.Class }
+		} else {
+			class="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-indigo-500 sm:text-sm/6"
+		}
+		type={ el.InputType.String() }
+		name={ el.Name }
+		if el.Value != "" {
+			value={ el.Value }
+		}
+		if el.Placeholder != "" {
+			placeholder={ el.Placeholder }
+		}
+	/>
+}
+
+templ TextAreaComponent(el TextArea) {
+	<textarea
+		name={ el.Name }
+		id={ el.ID }
+		rows="3"
+		class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+	>{ el.Value }</textarea>
+}
+
+templ InputWithLabelComponent(el InputWithLabel) {
+	<div class="sm:col-span-4">
+		@LabelComponent(el.Label)
+		<div class="mt-2">
+			<div
+				class="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
+			>
+				@InputComponent(el.Input)
+			</div>
+		</div>
+	</div>
+}
+
+templ TextAreaWithLabelComponent(el TextAreaWithLabel) {
+	<div class="col-span-full">
+		@LabelComponent(el.Label)
+		<div class="mt-2">
+			@TextAreaComponent(el.TextArea)
+		</div>
+	</div>
+}

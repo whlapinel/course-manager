@@ -2,7 +2,7 @@ package home
 
 import (
 	appcomponents "gh_static_portfolio/internal/app/components"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 
 	"github.com/a-h/templ"
 )

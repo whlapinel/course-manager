@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"gh_static_portfolio/internal/app/components"
-	"gh_static_portfolio/internal/base"
+	components "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/shared/util"
 )
 

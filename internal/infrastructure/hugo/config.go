@@ -15,7 +15,6 @@ func staticURLMaker(domain string) func(string) string {
 	}
 }
 
-
 type HugoConfig struct {
 	BaseURL      string
 	Title        string
@@ -25,6 +24,7 @@ type HugoConfig struct {
 
 type NewHugoConfigParams struct {
 	dto.User
+	TermID       int // term for which to build site
 	Domain       string
 	Title        string
 	UserDataPath string

@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	_ "embed"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -25,7 +27,13 @@ func main() {
 	}
 	log.Println("Port:", port)
 	startString := fmt.Sprintf("%s:%s", host, port)
-	app, err := app.New(app.NewAppParams{Domain: "localhost", MarpBaseURL: baseURL})
+	production := os.Getenv("PRODUCTION") == "true"
+	domain := "localhost"
+	if production {
+		domain = os.Getenv("PROD_DOMAIN")
+	}
+	log.Println("Domain: ", domain)
+	app, err := app.New(app.NewAppParams{Domain: domain, MarpBaseURL: baseURL})
 	if err != nil {
 		log.Fatal(err)
 	}

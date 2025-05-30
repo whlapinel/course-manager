@@ -2,9 +2,8 @@ package services
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/core/occasion"
+	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 	"gh_static_portfolio/internal/features/termoccasion"
-	"gh_static_portfolio/internal/app/views/calendar"
 )
 
 type TermCalendarService struct {
@@ -30,19 +29,15 @@ func (svc *TermCalendarService) Term(termID int) (dto.Term, error) {
 	return termDTO, nil
 }
 
-func (svc *TermCalendarService) Occasion(occasionID int) (occasion.Occasion, error) {
-	return svc.occasionService.ByID(occasionID)
-}
-
 func (svc *TermCalendarService) CalendarDates(termID int) (calendarviews.CalendarDates, error) {
 	dates := make(calendarviews.CalendarDates)
-	occasions, err := svc.occasionService.ByTermID(termID)
+	occasions, err := svc.occasionService.ByParentID(termID)
 	if err != nil {
 		return nil, err
 	}
 	for _, occ := range occasions {
 		dates[occ.Date] = calendarviews.CalendarDate{
-			Occasions: append(dates[occ.Date].Occasions, occ),
+			TermOccasions: append(dates[occ.Date].TermOccasions, occ),
 		}
 	}
 	return dates, err

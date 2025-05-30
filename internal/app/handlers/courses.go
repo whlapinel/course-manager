@@ -88,7 +88,7 @@ func (h *courseHandler) delete(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return h.service.Delete(nodePath.TermID)
+	return h.service.Delete(nodePath.CourseID)
 
 }
 func (h *courseHandler) postNew(c echo.Context) error {
@@ -243,6 +243,7 @@ func (h *courseHandler) postEdit(c echo.Context) error {
 func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {
 	nodeData := appcomponents.NodeDetailsPage{
 		Node:                nodes.Course,
+		CourseCalendarURL:   h.reverse(routes.GetCourseCalendar.String(), path.ToSlice()...),
 		ParentNode:          nodes.Term,
 		ListChildrenURL:     h.reverse(routes.GetUnits.String(), path.ToSlice()...),
 		GetEditNodeURL:      h.reverse(routes.GetEditCourse.String(), path.ToSlice()...),

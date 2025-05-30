@@ -3,7 +3,7 @@ package lessonviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/assessment"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/shared/routes"
@@ -40,7 +40,7 @@ func (page LessonDetailsEdit) HTMXResponse() templ.Component {
 }
 
 func (page LessonDetailsEdit) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 func (page LessonDetailsPage) HTMXResponse() templ.Component {
@@ -48,7 +48,7 @@ func (page LessonDetailsPage) HTMXResponse() templ.Component {
 }
 
 func (page LessonDetailsPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 func (page LessonDetailsPage) Lesson() dto.Lesson {

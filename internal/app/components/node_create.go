@@ -3,7 +3,7 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
@@ -27,7 +27,7 @@ func (p NodeCreatePage) HTMXResponse() templ.Component {
 }
 
 func (p NodeCreatePage) NonHTMXResponse() templ.Component {
-	return p.Component2(p.Component())
+	return p.WithPage(p.Component())
 }
 
 func (page NodeCreatePage) Component() templ.Component {
@@ -52,6 +52,8 @@ func (page NodeCreatePage) FormComponent() templ.Component {
 		Name: "Description",
 	})
 	switch page.ParentNode.(type) {
+	case dto.Term:
+		form = form.AddElement(nameInput, descTextArea)
 	case dto.Course, dto.Unit: // for create unit and create lesson page
 		numInput := cmp.NewInputWithLabel(cmp.InputWithLabelParams{
 			Name: "Number",

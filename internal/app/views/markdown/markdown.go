@@ -28,7 +28,7 @@ func (data MarkdownEditor) HTMXResponse() templ.Component {
 }
 
 func (data MarkdownEditor) NonHTMXResponse() templ.Component {
-	return data.Component2(data.Component())
+	return data.WithPage(data.Component())
 }
 
 const (

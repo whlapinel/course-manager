@@ -1,12 +1,6 @@
 FROM ubuntu:latest
 
-# Set working directory
-WORKDIR /app
-
-# Install dependencies (if needed)
-RUN apt-get update && apt-get install -y ca-certificates
-
-# Install dependencies and Hugo
+# Install dependencies and Hugo as root
 RUN apt-get update && \
     apt-get install -y ca-certificates curl && \
     curl -L -o hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v0.147.3/hugo_0.147.3_Linux-64bit.tar.gz && \
@@ -20,6 +14,12 @@ ARG GROUP_ID=1000
 # Create group and user
 RUN groupadd -g $GROUP_ID whlapinel && \
     useradd -u $USER_ID -g $GROUP_ID -m -s /bin/bash whlapinel
+
+# Create app directory with correct ownership AFTER creating user
+RUN mkdir -p /app && chown -R whlapinel:whlapinel /app
+
+# Set working directory
+WORKDIR /app
 
 # Switch to the new user
 USER whlapinel

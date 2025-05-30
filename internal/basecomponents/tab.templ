@@ -1,0 +1,20 @@
+package basecomponents
+
+// need to add script tag for tab-highlighting functionality (see tab.ts)
+templ TabSetComponent(data TabSet) {
+	<div id="tab-menu" class="p-2">
+		if data.AssetsURLFunc != nil {
+			<script src={ data.AssetsURLFunc("tab.js") }></script>
+		}
+		<ul class="flex gap-1">
+			for _, link := range data.Tabs {
+				@link.Component()
+			}
+		</ul>
+	</div>
+	<div id="tab-content"></div>
+}
+
+templ TabLinkComponent(data TabLink) {
+	<li><a class="cursor-pointer p-2 rounded-sm" hx-get={ data.URL } hx-target="#tab-content">{ data.Name }</a></li>
+}

@@ -25,12 +25,18 @@ func NewTermService(
 }
 
 func (svc *TermService) ByID(termID int) (dto.Term, error) {
+	var termDTO dto.Term
 	term, err := svc.termService.ByID(termID)
 	if err != nil {
 		return dto.Term{}, err
 	}
-	termDTO := dto.Term{
-		Term: term,
+	occasions, err := svc.occasionSvc.ByParentID(termID)
+	if err != nil {
+		return termDTO, err
+	}
+	termDTO = dto.Term{
+		Term:      term,
+		Occasions: occasions,
 	}
 	return termDTO, nil
 }
@@ -68,7 +74,7 @@ func (svc *TermService) WithOccasions(termID int) (dto.Term, error) {
 	if err != nil {
 		return dto.Term{}, err
 	}
-	occasions, err := svc.occasionSvc.ByTermID(termID)
+	occasions, err := svc.occasionSvc.ByParentID(termID)
 	if err != nil {
 		return dto.Term{}, err
 	}

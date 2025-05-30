@@ -1,7 +1,7 @@
 package appcomponents
 
 import (
-	components "gh_static_portfolio/internal/base"
+	components "gh_static_portfolio/internal/basecomponents"
 
 	"github.com/a-h/templ"
 )
@@ -18,7 +18,7 @@ type ComponentData interface {
 // later interfaces written below here and represent latest effort to provide useful abstractions
 
 type Layout interface {
-	Component2(templ.Component) templ.Component
+	WithPage(templ.Component) templ.Component
 }
 
 // terrible name but Component2 is the layout

@@ -1,6 +1,7 @@
 package calendarviews
 
 import (
+	"fmt"
 	"gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/core/occasion"
@@ -20,7 +21,7 @@ templ ShiftButtonComponent(data ShiftButton) {
 }
 
 templ CalendarLessonContainer(data CalendarLessonContainerNew) {
-	<li>
+	<li id={ fmt.Sprintf("lesson-id-%d-%s", data.Lesson.ID, data.Date.Format(time.DateOnly)) }>
 		<div class="flex">
 			@data.ShiftButton(dto.Left, data.Date.Format(time.DateOnly))
 			<div>
@@ -98,16 +99,22 @@ templ NewCalendarDateComponent(page CalendarPage, data CalendarDate) {
 								util.IsSameDate(data.Date, page.GetTerm().Start) ||
 								util.IsSameDate(data.Date, page.GetTerm().End) {
 			{ data.Date.Format("Mon 1/02/06") }
-			if termCal, ok := page.(TermCalendar); ok {
-				@termCal.AddOccasionButton(data.Date)
-				for _, occasion := range data.Occasions {
-					@termCal.TermOccasionEditor(occasion)
-				}
-			} else if courseCal, ok := page.(CourseCalendar); ok {
-				for _, occasion := range data.Occasions {
-					@OccasionComponent(occasion)
-				}
-				@NewCalendarLessonListComponent(courseCal, data)
+			@page.AddOccasionButton(data.Date)
+			switch page.(type) {
+				case CourseCalendar:
+					@NewCalendarLessonListComponent(page.(CourseCalendar), data)
+					for _, occasion := range data.TermOccasions {
+						<p>Term Occasions</p>
+						@OccasionComponent(occasion)
+					}
+					for _, occasion := range data.CourseOccasions {
+						<p>Course Occasions</p>
+						@page.OccasionEditor(occasion)
+					}
+				case TermCalendar:
+					for _, occasion := range data.TermOccasions {
+						@page.OccasionEditor(occasion)
+					}
 			}
 			<ul class="justify-items-center">
 				if !page.GetTerm().IsInstructionDay(data.Date) {

@@ -1902,6 +1902,30 @@ video {
   url: terms/term 2;
 }
 
+.\[url\:terms\/term_4\/courses\/course_6\/units\/unit_61\/lessons\] {
+  url: terms/term 4/courses/course 6/units/unit 61/lessons;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\/units\/unit_61\] {
+  url: terms/term 4/courses/course 6/units/unit 61;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\/units\] {
+  url: terms/term 4/courses/course 6/units;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\] {
+  url: terms/term 4/courses/course 6;
+}
+
+.\[url\:terms\/term_4\/courses\] {
+  url: terms/term 4/courses;
+}
+
+.\[url\:terms\/term_4\] {
+  url: terms/term 4;
+}
+
 .\[url\:terms\] {
   url: terms;
 }

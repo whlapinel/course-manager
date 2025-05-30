@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/features/course"
 	"gh_static_portfolio/internal/ports"
@@ -11,6 +12,7 @@ type Course struct {
 	course.Course        `json:"course"`
 	Units                []Unit `json:"units"`
 	standard.StandardSet `json:"standardSet"`
+	Occasions            []occasion.Occasion
 }
 
 type CourseType int

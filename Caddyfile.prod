@@ -7,10 +7,6 @@ course-manager.app {
 		dns digitalocean {env.DO_AUTH_TOKEN}
 	}
 
-	@assets path /assets/*
-	root @assets /app/sites
-	file_server
-
-	root * /app/sites/{labels.2}
+	root * /app/hugosites/{labels.2}/public
 	file_server
 }

@@ -3,14 +3,14 @@ package calendarviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
+	"gh_static_portfolio/internal/core/occasion"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"time"
 
 	"github.com/a-h/templ"
-	"github.com/labstack/echo/v4"
 )
 
 type CourseCalendar struct {
@@ -23,13 +23,32 @@ type CourseCalendar struct {
 	LessonDetailsFunc     web.AddParams
 	ShiftLessonFunc       web.AddParams
 	ListTermCoursesURL    string
-	CreateOccasionFunc    web.AddParams
 	ShowAddLessonDateFunc web.AddParams
 	RemoveLessonDateFunc  web.AddParams
-	E                     *echo.Echo
+	CreateOccasionURL     string
+	GetEditOccasionURL    web.AddParams
+	PostEditOccasionURL   web.AddParams
+	DeleteOccasionURL     web.AddParams
 	CalendarDates         CalendarDates
 	BreadCrumbsData       ac.BreadCrumbs
 	ac.CourseManagerLayout
+}
+
+func (page CourseCalendar) OccasionEditor(occasion occasion.Occasion) templ.Component {
+	return OccasionEditor{
+		Occasion:            occasion,
+		IsEditing:           false,
+		GetEditOccasionURL:  page.GetEditOccasionURL(occasion.ID),
+		PostEditOccasionURL: page.PostEditOccasionURL(occasion.ID),
+		DeleteOccasionURL:   page.DeleteOccasionURL(occasion.ID),
+	}.Component()
+}
+func (data CourseCalendar) AddOccasionButton(date time.Time) templ.Component {
+	return AddOccasionButton{
+		Date:              date,
+		CreateOccasionURL: data.CreateOccasionURL,
+		FormID:            "form-" + date.Format(time.DateOnly),
+	}.Component()
 }
 
 func (data CourseCalendar) HTMXResponse() templ.Component {
@@ -37,7 +56,7 @@ func (data CourseCalendar) HTMXResponse() templ.Component {
 }
 
 func (data CourseCalendar) NonHTMXResponse() templ.Component {
-	return data.CourseManagerLayout.Component2(data.Component())
+	return data.CourseManagerLayout.WithPage(data.Component())
 }
 
 func (data CourseCalendar) GetCalendarDates() CalendarDates {
@@ -69,7 +88,7 @@ func (data CourseCalendar) CalendarLessonContainer(lesson dto.Lesson, date time.
 		ShiftLessonURL: func(cd, date string) string {
 			return data.ShiftLessonFunc(lesson.ParentID, lesson.ID, cd, date)
 		},
-		RemoveLessonDateURL: data.RemoveLessonDateFunc(lesson.ParentID, lesson.ID, date.Format(time.DateOnly)),
+		RemoveLessonDateURL: data.RemoveLessonDateFunc(date.Format(time.DateOnly), lesson.ParentID, lesson.ID),
 	}
 	return container.Component()
 }

@@ -4,8 +4,7 @@ templ TermCalendarComponent(page TermCalendar) {
 	@NewCalendarComponent(page)
 }
 
-
-templ TermOccasionEditorComponent(data TermOccasionEditor) {
+templ OccasionEditorComponent(data OccasionEditor) {
 	<div id={ data.ComponentID() }>
 		if data.IsEditing {
 			<form id={ data.ComponentID() }>

@@ -6,9 +6,6 @@ title = 'wlapinel'
 source = 'content'
 target = 'content'
 [[module.mounts]]
-source = '/app/internal/data/users/user_101602110272674353046'
-target = 'content'
-[[module.mounts]]
 source = '/app/internal/staticresources/content'
 target = 'content'
 [[module.mounts]]

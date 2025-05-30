@@ -6,6 +6,7 @@ import (
 	"gh_static_portfolio/internal/app/services"
 	"gh_static_portfolio/internal/assets"
 	"gh_static_portfolio/internal/features/course"
+	"gh_static_portfolio/internal/features/courseoccasion"
 	"gh_static_portfolio/internal/features/home"
 	"gh_static_portfolio/internal/features/lesson"
 	"gh_static_portfolio/internal/features/term"
@@ -56,6 +57,7 @@ func New(params NewAppParams) (*App, error) {
 	unitRepo := sqlite.NewUnitRepo(queries)
 	lessonRepo := sqlite.NewLessonRepo(queries)
 	termOccasionRepo := sqlite.NewTermOccasionRepo(queries)
+	courseOccasionRepo := sqlite.NewCourseOccasionRepo(queries)
 
 	// infrastructure
 	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
@@ -64,15 +66,16 @@ func New(params NewAppParams) (*App, error) {
 	marp := marpclient.New(params.MarpBaseURL)
 
 	// feature services
-	authService := services.NewAuthService(userRepo)
 	userService := user.NewService(userRepo)
 	termService := term.NewService(termRepo)
 	courseService := course.NewService(courseRepo)
 	unitService := unit.NewService(unitRepo)
 	lessonService := lesson.NewService(lessonRepo)
 	termOccasionService := termoccasion.NewService(termOccasionRepo)
+	courseOccasionService := courseoccasion.NewService(courseOccasionRepo)
 
 	// application-level services
+	authService := services.NewAuthService(userRepo)
 	fileService := services.NewFileService(filesRepo, dataFilesPathingSvc)
 	slidesService := services.NewSlidesService(params.MarpBaseURL, marp, dataFilesPathingSvc, filesRepo)
 	lessonAppService := services.NewLessonService(lessonService)
@@ -83,9 +86,11 @@ func New(params NewAppParams) (*App, error) {
 	nodeAppService := services.NewNodeService(userAppService.ByID, termAppService.WithOccasions, courseAppService.ByID, unitAppService.ByID, lessonAppService.ByID)
 	termCalService := services.NewTermCalendarService(termAppService.WithOccasions, termOccasionService)
 	courseCalAppService := services.NewCourseCalendarService(
-		courseAppService.ByID, unitAppService.ByParentID,
-		lessonAppService.ByParentID, lessonAppService.ByID,
-		termAppService.WithOccasions,
+		termAppService,
+		courseAppService,
+		unitAppService,
+		lessonAppService,
+		courseOccasionService,
 		lessonService,
 	)
 	markdownService := services.NewMarkdownService(markdownRenderer, dataFilesPathingSvc, filesRepo)
@@ -136,10 +141,10 @@ func New(params NewAppParams) (*App, error) {
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
-	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, nodeAppService, e.Reverse)
+	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, courseOccasionService, nodeAppService, lessonAppService, unitAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
-	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, e.Reverse)
-	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, nodeAppService, e.Reverse)
+	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, termOccasionService, e.Reverse)
+	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, termAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterDashboardRoutes(protected, dashboardAppHandler)

@@ -6,7 +6,7 @@ import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/services"
 	av "gh_static_portfolio/internal/app/views/authentication"
-	components "gh_static_portfolio/internal/base"
+	components "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/features/user"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"

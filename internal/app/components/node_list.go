@@ -3,7 +3,7 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/util"
 	"gh_static_portfolio/internal/shared/web"
@@ -27,7 +27,7 @@ func (p NodeListPage) HTMXResponse() templ.Component {
 	return p.Component()
 }
 func (p NodeListPage) NonHTMXResponse() templ.Component {
-	return p.CourseManagerLayout.Component2(p.Component())
+	return p.CourseManagerLayout.WithPage(p.Component())
 }
 
 type NodeDeleteButton struct {

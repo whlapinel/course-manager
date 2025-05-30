@@ -63,3 +63,11 @@ func (svc *Service) ByUnitID(unitID int) ([]Lesson, error) {
 func (svc *Service) Delete(lessonID int) error {
 	return svc.repo.Delete(lessonID)
 }
+
+func (svc *Service) AddLessonToDate(date time.Time, lessonID, termID int) error {
+	return svc.repo.AddLessonDate(lessonID, termID, date)
+}
+
+func (svc *Service) DeleteLessonDate(date time.Time, lessonID, termID int) error {
+	return svc.repo.RemoveLessonDate(lessonID, termID, date)
+}

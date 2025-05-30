@@ -3,7 +3,7 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"strconv"
 
@@ -31,7 +31,7 @@ func (page NodeDetailsPage) HTMXResponse() templ.Component {
 }
 
 func (page NodeDetailsPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 func (page NodeDetailsPage) Component() templ.Component {
@@ -112,7 +112,7 @@ func (f NodeDetailsEdit) HTMXResponse() templ.Component {
 }
 
 func (f NodeDetailsEdit) NonHTMXResponse() templ.Component {
-	return f.CourseManagerLayout.Component2(f.Form.Component())
+	return f.CourseManagerLayout.WithPage(f.Form.Component())
 }
 
 func (f NodeDetailsNonEdit) HTMXResponse() templ.Component {
@@ -120,7 +120,7 @@ func (f NodeDetailsNonEdit) HTMXResponse() templ.Component {
 }
 
 func (f NodeDetailsNonEdit) NonHTMXResponse() templ.Component {
-	return f.CourseManagerLayout.Component2(f.EditableInfo.Component())
+	return f.CourseManagerLayout.WithPage(f.EditableInfo.Component())
 }
 
 func (page NodeDetailsPage) DetailsEdit() NodeDetailsEdit {

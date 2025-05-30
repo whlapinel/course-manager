@@ -2,7 +2,7 @@ package appcomponents
 
 import (
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 
 	"github.com/a-h/templ"
 )
@@ -17,7 +17,7 @@ type CourseManagerLayout struct {
 	Page          templ.Component
 }
 
-func (cml CourseManagerLayout) Component2(page templ.Component) templ.Component {
+func (cml CourseManagerLayout) WithPage(page templ.Component) templ.Component {
 	navItems := []cmp.NavItem{
 		cml.NewSignupButton(),
 		cml.NewSigninButton(),

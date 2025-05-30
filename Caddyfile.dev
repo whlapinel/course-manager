@@ -3,10 +3,6 @@ localhost {
 }
 
 *.localhost {
-	@assets path /assets/*
-	root @assets /app/sites
-	file_server
-
 	root * /app/hugosites/{labels.1}/public
 	file_server
 }

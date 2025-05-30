@@ -6,10 +6,12 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
+	"gh_static_portfolio/internal/features/courseoccasion"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -17,14 +19,27 @@ import (
 
 type courseCalendarHandler struct {
 	service     *services.CourseCalendarService
+	occasions   *courseoccasion.Service
 	nodeService *services.NodeService
+	lessons     *services.LessonService
+	units       *services.UnitService
 	reverse     web.Reverse
 }
 
-func NewCourseCalHandler(svc *services.CourseCalendarService, nodeService *services.NodeService, reverse web.Reverse) *courseCalendarHandler {
+func NewCourseCalHandler(
+	svc *services.CourseCalendarService,
+	occasions *courseoccasion.Service,
+	nodeService *services.NodeService,
+	lessons *services.LessonService,
+	units *services.UnitService,
+	reverse web.Reverse,
+) *courseCalendarHandler {
 	return &courseCalendarHandler{
 		service:     svc,
+		occasions:   occasions,
 		nodeService: nodeService,
+		lessons:     lessons,
+		units:       units,
 		reverse:     reverse,
 	}
 }
@@ -43,7 +58,170 @@ func courseCalRouteHandlers(h *courseCalendarHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		web.NewRouteHandler(web.GET, routes.CourseCalendar, routes.GetCourseCalendar, h.getCourseCalendar),
 		web.NewRouteHandler(web.POST, routes.ShiftLesson, routes.PostShiftLesson, h.shiftLesson),
+		web.NewRouteHandler(web.GET, routes.DateUnits, routes.GetDateUnits, h.getDateUnits),
+		web.NewRouteHandler(web.GET, routes.DateLessons, routes.GetDateLessons, h.getDateLessons),
+		web.NewRouteHandler(web.POST, routes.DateLesson, routes.PostAddLessonDate, h.postDateLesson),
+		web.NewRouteHandler(web.DELETE, routes.DateLesson, routes.DeleteLessonDate, h.deleteLessonDate),
+
+		web.NewRouteHandler(web.POST, routes.CourseOccasions, routes.CreateCourseOccasion, h.createOccasion),
+		web.NewRouteHandler(web.GET, routes.CourseOccasion, routes.ShowEditCourseOccasion, h.showEditOccasion),
+		web.NewRouteHandler(web.POST, routes.CourseOccasion, routes.PostEditCourseOccasion, h.postEditOccasion),
+		web.NewRouteHandler(web.DELETE, routes.CourseOccasion, routes.DeleteCourseOccasion, h.deleteOccasion),
 	}
+}
+
+func (h *courseCalendarHandler) createOccasion(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.FormValue("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	name := c.FormValue("name")
+	_, err = h.occasions.Create(date, name, info.CourseID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
+}
+
+func (h *courseCalendarHandler) showEditOccasion(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	occ, err := h.occasions.ByID(occasionID)
+	if err != nil {
+		return err
+	}
+	component := calendarviews.OccasionEditor{
+		Occasion:            occ,
+		IsEditing:           true,
+		PostEditOccasionURL: web.URLFunc(routes.PostEditCourseOccasion, h.reverse, info.NodePath.ToSlice(occasionID)...)(),
+	}.Component()
+	return web.Respond(c, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...), component, nil)
+}
+
+func (h *courseCalendarHandler) postEditOccasion(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	name := c.FormValue("name")
+	err = h.occasions.Update(occasionID, name)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
+}
+
+func (h *courseCalendarHandler) deleteOccasion(c echo.Context) error {
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	err = h.occasions.Delete(occasionID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(200)
+}
+
+func (h *courseCalendarHandler) deleteLessonDate(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	err = h.service.DeleteLessonDate(date, info.LessonID, info.TermID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(200)
+}
+
+func (h *courseCalendarHandler) postDateLesson(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	err = h.service.AddLessonToDate(date, info.LessonID, info.TermID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
+
+}
+
+func (h *courseCalendarHandler) getDateLessons(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	lessons, err := h.lessons.ByParentID(info.UnitID)
+	if err != nil {
+		return err
+	}
+	partial := calendarviews.LessonPicker{
+		Date:            date,
+		ListUnitsURL:    h.reverse(routes.GetDateUnits.String(), []any{info.UserID, info.TermID, info.CourseID, dateParam}...),
+		Lessons:         lessons,
+		SelectLessonURL: web.URLFunc(routes.PostAddLessonDate, h.reverse, []any{info.UserID, info.TermID, info.CourseID, dateParam, info.UnitID}...),
+	}
+	return web.Respond(c, routes.GetCourseCalendar.String(), partial.Component(), nil)
+
+}
+
+func (h *courseCalendarHandler) getDateUnits(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	units, err := h.units.ByParentID(info.CourseID)
+	if err != nil {
+		return err
+	}
+	page := calendarviews.AddLessonToDatePage{
+		Date:                date,
+		Course:              info.Course.(dto.Course),
+		ListLessonsURL:      web.URLFunc(routes.GetDateLessons, h.reverse, info.NodePath.ToSlice(dateParam)...),
+		Units:               units,
+		CourseManagerLayout: BaseLayout3(h.reverse, info.User.(dto.User)),
+	}
+	return Respond(c, page)
 }
 
 func (h *courseCalendarHandler) shiftLesson(c echo.Context) error {
@@ -94,9 +272,12 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		ListTermCoursesURL:    h.reverse(routes.GetCourses.String(), path.ToSlice()...),
 		LessonDetailsFunc:     h.URLFunc(routes.GetLesson, path.ToSlice()...),
 		ShiftLessonFunc:       h.URLFunc(routes.PostShiftLesson, path.ToSlice()...),
-		CreateOccasionFunc:    h.URLFunc(routes.CreateTermOccasion, path.ToSlice()...),
-		ShowAddLessonDateFunc: h.URLFunc(routes.GetAddLessonDate, path.ToSlice()...),
+		ShowAddLessonDateFunc: h.URLFunc(routes.GetDateUnits, path.ToSlice()...),
 		RemoveLessonDateFunc:  h.URLFunc(routes.DeleteLessonDate, path.ToSlice()...),
+		CreateOccasionURL:     h.URLFunc(routes.CreateCourseOccasion, path.ToSlice()...)(),
+		GetEditOccasionURL:    h.URLFunc(routes.ShowEditCourseOccasion, path.ToSlice()...),
+		PostEditOccasionURL:   h.URLFunc(routes.PostEditCourseOccasion, path.ToSlice()...),
+		DeleteOccasionURL:     h.URLFunc(routes.DeleteCourseOccasion, path.ToSlice()...),
 		CalendarDates:         datesMap,
 		BreadCrumbsData:       h.BreadCrumbs(nodes, path),
 		CourseManagerLayout:   BaseLayout2(h.reverse, nodes.User.(dto.User)),

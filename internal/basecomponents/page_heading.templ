@@ -1,0 +1,26 @@
+package basecomponents
+
+templ PageLayoutComponent(props PageLayout) {
+	<div>
+		<div>
+			<nav class="sm:hidden" aria-label="Back">
+				<a href="#" class="flex items-center text-sm font-medium text-gray-400 hover:text-gray-200">
+					<svg class="mr-1 -ml-1 size-5 shrink-0 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+						<path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"></path>
+					</svg>
+					Back
+				</a>
+			</nav>
+		</div>
+		@props.BreadCrumbs()
+		@props.PageHeading()
+	</div>
+}
+
+templ PageHeadingComponent(data PageHeading) {
+	<div class="md:flex md:items-center md:justify-between">
+		<div class="min-w-0 flex-1">
+			<h2 class="text-2xl/7 font-bold text-white sm:truncate sm:text-3xl sm:tracking-tight">{ data.Title }</h2>
+		</div>
+	</div>
+}

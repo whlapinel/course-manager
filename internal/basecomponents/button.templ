@@ -1,0 +1,47 @@
+package basecomponents
+
+templ HxButtonComponent(props Button) {
+	<button
+		hx-indicator="#spinner"
+		{ props.Attributes... }
+		if props.Method == HxGet {
+			hx-get={ props.URL }
+		}
+		if props.ID != "" {
+			id={ props.ID }
+		}
+		if props.Method == HxPost {
+			hx-post={ props.URL }
+		}
+		if props.Method == HxDelete {
+			hx-delete={ props.URL }
+		}
+		if props.Class == "" {
+			class="max-w-fit flex gap-1 items-center rounded-md bg-indigo-500 px-3 py-2 font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+		} else {
+			class={ props.Class }
+		}
+		if props.HxTarget != "" {
+			hx-target={ props.HxTarget }
+		}
+		if props.PushURL {
+			hx-push-url="true"
+		}
+		if props.HxSwap != "" {
+			hx-swap={ string(props.HxSwap) }
+		}
+		if props.HxConfirm !="" {
+			hx-confirm={ props.HxConfirm }
+		}
+	>
+		if props.Image != nil {
+			@props.Image
+		}
+		{ props.Text }
+		{ children... }
+		<svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<style>.spinner_P7sC{transform-origin:center;animation:spinner_svv2 .75s infinite linear}@keyframes spinner_svv2{100%{transform:rotate(360deg)}}</style>
+			<path d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z" class="spinner_P7sC"></path>
+		</svg>
+	</button>
+}

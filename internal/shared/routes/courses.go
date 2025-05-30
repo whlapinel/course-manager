@@ -26,10 +26,9 @@ const (
 	CourseCalendar web.RoutePath = Course + "/calendar"
 	ShiftLesson    web.RoutePath = Lesson + web.RoutePath(ShiftDirection) + web.RoutePath(Date)
 	ExtendLesson   web.RoutePath = ShiftLesson + "/extend"
-	DateUnits      web.RoutePath = CourseCalendar + web.RoutePath(Date)
-	DateLessons    web.RoutePath = DateUnits + web.RoutePath(UnitID)
-	LessonDates    web.RoutePath = Lesson + "/dates"
-	LessonDate     web.RoutePath = LessonDates + web.RoutePath(Date)
+	DateUnits      web.RoutePath = CourseCalendar + web.RoutePath(Date) + "/units"
+	DateLessons    web.RoutePath = DateUnits + web.RoutePath(UnitID) + "/lessons"
+	DateLesson     web.RoutePath = DateLessons + web.RoutePath(LessonID)
 )
 
 // Course handler names
@@ -52,10 +51,10 @@ var (
 	GetCourseCalendar = web.NewHandlerName(web.GET, CourseCalendar)
 	PostShiftLesson   = web.NewHandlerName(web.POST, ShiftLesson)
 	PostExtendLesson  = web.NewHandlerName(web.POST, ExtendLesson)
-	GetAddLessonDate  = web.NewHandlerName(web.GET, DateUnits)
-	GetListLessons    = web.NewHandlerName(web.GET, DateLessons)
-	DeleteLessonDate  = web.NewHandlerName(web.DELETE, LessonDate)
-	PostAddLessonDate = web.NewHandlerName(web.POST, LessonDate)
+	GetDateUnits      = web.NewHandlerName(web.GET, DateUnits)
+	GetDateLessons    = web.NewHandlerName(web.GET, DateLessons)
+	DeleteLessonDate  = web.NewHandlerName(web.DELETE, DateLesson)
+	PostAddLessonDate = web.NewHandlerName(web.POST, DateLesson)
 )
 
 // Course file handler names

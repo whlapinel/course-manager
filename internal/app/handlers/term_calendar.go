@@ -4,8 +4,11 @@ import (
 	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/app/services"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
+	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -13,13 +16,20 @@ import (
 type termCalendarHandler struct {
 	service     *services.TermCalendarService
 	nodeService *services.NodeService
+	occasions   *termoccasion.Service
 	reverse     web.Reverse
 }
 
-func NewTermCalHandler(svc *services.TermCalendarService, nodeService *services.NodeService, reverse web.Reverse) *termCalendarHandler {
+func NewTermCalHandler(
+	svc *services.TermCalendarService,
+	nodeService *services.NodeService,
+	occasions *termoccasion.Service,
+	reverse web.Reverse,
+) *termCalendarHandler {
 	return &termCalendarHandler{
 		service:     svc,
 		nodeService: nodeService,
+		occasions:   occasions,
 		reverse:     reverse,
 	}
 }
@@ -37,7 +47,7 @@ func RegisterTermCalRoutes(group *echo.Group, h *termCalendarHandler) error {
 func termCalRouteHandlers(h *termCalendarHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		web.NewRouteHandler(web.GET, routes.TermCalendar, routes.GetTermCalendar, h.showTermCalendar),
-		web.NewRouteHandler(web.GET, routes.TermOccasions, routes.CreateTermOccasion, h.createOccasion),
+		web.NewRouteHandler(web.POST, routes.TermOccasions, routes.CreateTermOccasion, h.createOccasion),
 		web.NewRouteHandler(web.GET, routes.TermOccasion, routes.ShowEditTermOccasion, h.showEditOccasion),
 		web.NewRouteHandler(web.POST, routes.TermOccasion, routes.PostEditTermOccasion, h.postEditOccasion),
 		web.NewRouteHandler(web.DELETE, routes.TermOccasion, routes.DeleteTermOccasion, h.deleteOccasion),
@@ -45,17 +55,74 @@ func termCalRouteHandlers(h *termCalendarHandler) []web.RouteHandler {
 }
 
 func (h *termCalendarHandler) deleteOccasion(c echo.Context) error {
-	panic("not implemented")
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	err = h.occasions.Delete(occasionID)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(200)
 }
 func (h *termCalendarHandler) postEditOccasion(c echo.Context) error {
-	panic("not implemented")
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	name := c.FormValue("name")
+	err = h.occasions.Update(occasionID, name)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetTermCalendar.String(), info.NodePath.ToSlice()...))
+
 }
 func (h *termCalendarHandler) showEditOccasion(c echo.Context) error {
-	panic("not implemented")
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	occasionIDParam := c.Param("occasion-id")
+	occasionID, err := strconv.Atoi(occasionIDParam)
+	if err != nil {
+		return err
+	}
+	occ, err := h.occasions.ByID(occasionID)
+	if err != nil {
+		return err
+	}
+	component := calendarviews.OccasionEditor{
+		Occasion:            occ,
+		IsEditing:           true,
+		PostEditOccasionURL: web.URLFunc(routes.PostEditTermOccasion, h.reverse, info.NodePath.ToSlice(occasionID)...)(),
+	}.Component()
+	return web.Respond(c, h.reverse(routes.GetTermCalendar.String(), info.NodePath.ToSlice()...), component, nil)
 }
 
 func (h *termCalendarHandler) createOccasion(c echo.Context) error {
-	panic("not implemented")
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.FormValue("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	name := c.FormValue("name")
+	_, err = h.occasions.Create(date, name, info.TermID)
+	if err != nil {
+		return err
+	}
+	return c.Redirect(303, h.reverse(routes.GetTermCalendar.String(), info.NodePath.ToSlice()...))
+
 }
 
 func (h *termCalendarHandler) showTermCalendar(c echo.Context) error {

@@ -8,7 +8,7 @@ import (
 	"gh_static_portfolio/internal/app/services"
 	fileviews "gh_static_portfolio/internal/app/views/files"
 	markdownviews "gh_static_portfolio/internal/app/views/markdown"
-	components "gh_static_portfolio/internal/base"
+	components "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -199,7 +199,7 @@ func (h *baseHandler[T, ID, ParentID]) viewMarkdown(c echo.Context) error {
 	doc.Content = buf.String()
 	component := markdownviews.MarkdownIFrame(doc)
 	layout := BaseLayout3(h.reverse, nodes.User.(dto.User))
-	return web.Respond(c, "", component, layout.Component2(component))
+	return web.Respond(c, "", component, layout.WithPage(component))
 }
 
 func (h *baseHandler[T, ID, ParentID]) showEditFile(c echo.Context) error {

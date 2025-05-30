@@ -2,7 +2,7 @@ package authviews
 
 import (
 	appcomponents "gh_static_portfolio/internal/app/components"
-	components "gh_static_portfolio/internal/base"
+	components "gh_static_portfolio/internal/basecomponents"
 
 	"github.com/a-h/templ"
 )
@@ -22,5 +22,5 @@ func (p UnauthorizedPage) HTMXResponse() templ.Component {
 }
 
 func (p UnauthorizedPage) NonHTMXResponse() templ.Component {
-	return p.Component2(p.Component())
+	return p.WithPage(p.Component())
 }

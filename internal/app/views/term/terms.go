@@ -3,7 +3,7 @@ package termviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 
@@ -21,7 +21,7 @@ func (page TermDetailsPage) HTMXResponse() templ.Component {
 }
 
 func (page TermDetailsPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 func (page TermDetailsPage) PageLayout() cmp.PageLayout {
@@ -64,7 +64,7 @@ func (page TermsListPage) HTMXResponse() templ.Component {
 }
 
 func (page TermsListPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.Component2(page.Component())
+	return page.CourseManagerLayout.WithPage(page.Component())
 }
 
 type AddNonInstructDayPage struct {

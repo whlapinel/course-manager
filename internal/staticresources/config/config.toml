@@ -6,9 +6,6 @@ title = '{{ .Title }}'
 source = 'content'
 target = 'content'
 [[module.mounts]]
-source = '{{ .UserDataPath }}'
-target = 'content'
-[[module.mounts]]
 source = '/app/internal/staticresources/content'
 target = 'content'
 [[module.mounts]]

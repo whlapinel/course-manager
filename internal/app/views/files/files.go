@@ -2,7 +2,7 @@ package fileviews
 
 import (
 	ac "gh_static_portfolio/internal/app/components"
-	cmp "gh_static_portfolio/internal/base"
+	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
@@ -34,7 +34,7 @@ func (p FilesPage) HTMXResponse() templ.Component {
 }
 
 func (p FilesPage) NonHTMXResponse() templ.Component {
-	return p.CourseManagerLayout.Component2(p.Component())
+	return p.CourseManagerLayout.WithPage(p.Component())
 
 }
 

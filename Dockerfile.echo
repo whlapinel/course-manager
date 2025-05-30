@@ -9,7 +9,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # ✅ Step 2: Copy the rest of the source code separately
-COPY cmd/web_app /app/cmd/app
+COPY cmd/app /app/cmd/app
 # ✅ Step 3: Build the app binary
 COPY internal /app/internal
 RUN go build -o cmd/app/app ./cmd/app
@@ -23,13 +23,32 @@ FROM ubuntu:latest
 
 # ✅ Set working directory
 WORKDIR /app
-RUN apt-get update && apt-get install -y ca-certificates
+
+# Install dependencies and Hugo as root
+RUN apt-get update && \
+    apt-get install -y ca-certificates curl && \
+    curl -L -o hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v0.147.3/hugo_0.147.3_Linux-64bit.tar.gz && \
+    tar -xzf hugo.tar.gz hugo && \
+    mv hugo /usr/local/bin/hugo && \
+    rm hugo.tar.gz
 
 # ✅ Copy only the built app binary from the builder stage
 COPY --from=builder /app/cmd/app/app /app/cmd/app/app
 COPY --from=builder /app/migrate /app/migrate
 
-COPY internal/infrastructure/sqlite/migrations/ /app/internal/infrastructure/sqlite/migrations/
+COPY --from=builder /app/internal/infrastructure/sqlite/migrations /app/internal/infrastructure/sqlite/migrations
+COPY --from=builder /app/internal/staticresources /app/internal/staticresources
+
+# Copy staticresources directly from host (not from builder)
+COPY internal/staticresources/ /app/internal/staticresources/
+
+# Debug: List what actually got copied
+RUN ls -la /app/internal/staticresources/
+# After the COPY commands, add:
+RUN echo "=== Checking staticresources ===" && \
+    ls -la /app/internal/ && \
+    echo "=== Contents of staticresources ===" && \
+    ls -la /app/internal/staticresources/ || echo "staticresources directory not found"
 
 # Expose HTTP port
 EXPOSE 1323
