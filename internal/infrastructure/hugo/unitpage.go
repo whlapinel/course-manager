@@ -1,6 +1,9 @@
 package hugo
 
-import "gh_static_portfolio/internal/app/dto"
+import (
+	"fmt"
+	"gh_static_portfolio/internal/app/dto"
+)
 
 type UnitPageData struct {
 	dto.Unit            `json:"unit"`
@@ -26,7 +29,7 @@ func (d *UnitPageData) Page() *HomogenizedPageData {
 	homoPageData.Kind = PageKind
 	homoPageData.Type = UnitType
 	homoPageData.Path = d.Path
-	homoPageData.Title = d.Name
+	homoPageData.Title = fmt.Sprintf("%s: %s", d.Designation, d.Name)
 	homoPageData.Params = struct {
 		ChildSectionPath string             `json:"childSectionPath"`
 		FilesPagePath    string             `json:"filesPagePath"`

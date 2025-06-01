@@ -5,7 +5,6 @@ import "gh_static_portfolio/internal/shared/web"
 const (
 	Users        web.RoutePath = "/users"
 	User         web.RoutePath = Users + web.RoutePath(UserID)
-	GenerateSite web.RoutePath = User + "/generate"
 	UserFiles    web.RoutePath = User + "/files"
 	UserFile     web.RoutePath = UserFiles + "/*"
 	UserViewFile web.RoutePath = User + "/view-markdown/files/*"
@@ -13,7 +12,7 @@ const (
 )
 
 var (
-	PostGenerateSite = web.NewHandlerName(web.POST, GenerateSite)
+
 	GetUsers         = web.NewHandlerName(web.GET, Users)
 	GetUser          = web.NewHandlerName(web.GET, User)
 	GetUserFiles     = web.NewHandlerName(web.GET, UserFiles)

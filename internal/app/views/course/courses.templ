@@ -9,6 +9,10 @@ templ CourseListComponent(props CoursesListPage) {
 
 templ CourseDetailsComponent(props CourseDetailsPage) {
 	@appcomponents.NodeDetailsComponent(props.NodeDetailsPage) {
+		<div class="flex gap-2">
+			@props.StaticSiteLink()
+			@props.GenerateSiteButton()
+		</div>
 		// <details>
 		// 	if props.Course().StandardSet.ID != 0 {
 		// 		<summary>Standard Set: { props.Course().StandardSet.CourseName }</summary>

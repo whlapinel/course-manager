@@ -6,9 +6,6 @@ templ UserHomePageComponent(props UserHomePage) {
 	@appcomponents.PageLayoutComponent(props) {
 		<h1 class="text-xl">Welcome to Course Manager</h1>
 		<div class="flex gap-2 p-4">
-			@props.GenerateSiteButton()
-			@props.ViewSiteLink()
-			@props.TermSelect()
 			@props.ViewTermsButton()
 		</div>
 	}

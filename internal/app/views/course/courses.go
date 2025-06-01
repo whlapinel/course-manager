@@ -3,6 +3,7 @@ package courseviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/basecomponents"
 	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/features/term"
@@ -15,6 +16,7 @@ import (
 type CoursesListPage struct {
 	ShowCourseCalendarURL web.AddParams
 	ShowAssessmentsURL    web.AddParams
+
 	ac.NodeListPage
 	ac.CourseManagerLayout
 }
@@ -62,10 +64,29 @@ func (data CopyCourseData) Component() templ.Component {
 
 type CourseDetailsPage struct {
 	ac.NodeDetailsPage
+	GenerateSiteURL          string
+	StaticSiteURL            string
 	GetCopyCourseURL         string
 	PostSelectStandardSetURL string
 	StandardSets             []standard.StandardSet
 	ac.CourseManagerLayout
+}
+
+func (p CourseDetailsPage) GenerateSiteButton() templ.Component {
+	return basecomponents.Button{
+		Name:     "Generate Site",
+		Text:     "Generate Site",
+		Method:   basecomponents.HxPost,
+		HxTarget: "#confirmation",
+		URL:      p.GenerateSiteURL,
+	}.Component()
+}
+func (p CourseDetailsPage) StaticSiteLink() templ.Component {
+	return basecomponents.Link{
+		Text:   "Static Site",
+		URL:    p.StaticSiteURL,
+		Target: basecomponents.NewTab,
+	}.Component()
 }
 
 func (p CourseDetailsPage) HTMXResponse() templ.Component {

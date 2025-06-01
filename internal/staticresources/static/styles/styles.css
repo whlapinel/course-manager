@@ -604,6 +604,10 @@ video {
   pointer-events: none;
 }
 
+.visible {
+  visibility: visible;
+}
+
 .static {
   position: static;
 }
@@ -670,6 +674,14 @@ video {
 
 .row-start-1 {
   grid-row-start: 1;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
 }
 
 .m-1 {
@@ -768,6 +780,10 @@ video {
   display: inline-block;
 }
 
+.inline {
+  display: inline;
+}
+
 .flex {
   display: flex;
 }
@@ -786,10 +802,6 @@ video {
 
 .grid {
   display: grid;
-}
-
-.contents {
-  display: contents;
 }
 
 .hidden {
@@ -890,10 +902,6 @@ video {
 
 .min-w-0 {
   min-width: 0px;
-}
-
-.min-w-52 {
-  min-width: 13rem;
 }
 
 .min-w-fit {
@@ -1216,6 +1224,11 @@ video {
   background-color: inherit;
 }
 
+.bg-purple-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(168 85 247 / var(--tw-bg-opacity));
+}
+
 .bg-purple-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(147 51 234 / var(--tw-bg-opacity));
@@ -1224,6 +1237,11 @@ video {
 .bg-purple-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(88 28 135 / var(--tw-bg-opacity));
+}
+
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .bg-slate-900 {
@@ -1616,8 +1634,18 @@ video {
   --tw-ring-color: rgb(255 255 255 / 0.1);
 }
 
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .blur-3xl {
   --tw-blur: blur(64px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.invert {
+  --tw-invert: invert(100%);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
@@ -1668,6 +1696,538 @@ video {
           mask-image: radial-gradient(100% 100% at top right,white,transparent);
 }
 
+.\[url\:courses\/course_4\/units\/unit_37\/lessons\] {
+  url: courses/course 4/units/unit 37/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_37\] {
+  url: courses/course 4/units/unit 37;
+}
+
+.\[url\:courses\/course_4\/units\/unit_38\/lessons\] {
+  url: courses/course 4/units/unit 38/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_38\] {
+  url: courses/course 4/units/unit 38;
+}
+
+.\[url\:courses\/course_4\/units\/unit_39\/lessons\] {
+  url: courses/course 4/units/unit 39/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_39\] {
+  url: courses/course 4/units/unit 39;
+}
+
+.\[url\:courses\/course_4\/units\/unit_40\/lessons\] {
+  url: courses/course 4/units/unit 40/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_40\] {
+  url: courses/course 4/units/unit 40;
+}
+
+.\[url\:courses\/course_4\/units\/unit_41\/lessons\] {
+  url: courses/course 4/units/unit 41/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_41\] {
+  url: courses/course 4/units/unit 41;
+}
+
+.\[url\:courses\/course_4\/units\/unit_42\/lessons\] {
+  url: courses/course 4/units/unit 42/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_42\] {
+  url: courses/course 4/units/unit 42;
+}
+
+.\[url\:courses\/course_4\/units\/unit_43\/lessons\] {
+  url: courses/course 4/units/unit 43/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_43\] {
+  url: courses/course 4/units/unit 43;
+}
+
+.\[url\:courses\/course_4\/units\/unit_44\/lessons\] {
+  url: courses/course 4/units/unit 44/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_44\] {
+  url: courses/course 4/units/unit 44;
+}
+
+.\[url\:courses\/course_4\/units\/unit_45\/lessons\] {
+  url: courses/course 4/units/unit 45/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_45\] {
+  url: courses/course 4/units/unit 45;
+}
+
+.\[url\:courses\/course_4\/units\/unit_46\/lessons\] {
+  url: courses/course 4/units/unit 46/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_46\] {
+  url: courses/course 4/units/unit 46;
+}
+
+.\[url\:courses\/course_4\/units\/unit_47\/lessons\] {
+  url: courses/course 4/units/unit 47/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_47\] {
+  url: courses/course 4/units/unit 47;
+}
+
+.\[url\:courses\/course_4\/units\/unit_48\/lessons\] {
+  url: courses/course 4/units/unit 48/lessons;
+}
+
+.\[url\:courses\/course_4\/units\/unit_48\] {
+  url: courses/course 4/units/unit 48;
+}
+
+.\[url\:courses\/course_4\/units\] {
+  url: courses/course 4/units;
+}
+
+.\[url\:courses\/course_4\] {
+  url: courses/course 4;
+}
+
+.\[url\:courses\] {
+  url: courses;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_1\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 1/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_10\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 10/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_10\] {
+  url: terms/term 1/courses/course 1/units/unit 10;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_11\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 11/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_11\] {
+  url: terms/term 1/courses/course 1/units/unit 11;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_12\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 12/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_12\] {
+  url: terms/term 1/courses/course 1/units/unit 12;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_1\] {
+  url: terms/term 1/courses/course 1/units/unit 1;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_2\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 2/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_2\] {
+  url: terms/term 1/courses/course 1/units/unit 2;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_3\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 3/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_3\] {
+  url: terms/term 1/courses/course 1/units/unit 3;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_4\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 4/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_4\] {
+  url: terms/term 1/courses/course 1/units/unit 4;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_5\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 5/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_5\] {
+  url: terms/term 1/courses/course 1/units/unit 5;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_6\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 6/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_6\] {
+  url: terms/term 1/courses/course 1/units/unit 6;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_7\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 7/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_7\] {
+  url: terms/term 1/courses/course 1/units/unit 7;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_8\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 8/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_8\] {
+  url: terms/term 1/courses/course 1/units/unit 8;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_9\/lessons\] {
+  url: terms/term 1/courses/course 1/units/unit 9/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\/unit_9\] {
+  url: terms/term 1/courses/course 1/units/unit 9;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\/units\] {
+  url: terms/term 1/courses/course 1/units;
+}
+
+.\[url\:terms\/term_1\/courses\/course_1\] {
+  url: terms/term 1/courses/course 1;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_25\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 25/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_25\] {
+  url: terms/term 1/courses/course 3/units/unit 25;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_26\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 26/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_26\] {
+  url: terms/term 1/courses/course 3/units/unit 26;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_27\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 27/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_27\] {
+  url: terms/term 1/courses/course 3/units/unit 27;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_28\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 28/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_28\] {
+  url: terms/term 1/courses/course 3/units/unit 28;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_29\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 29/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_29\] {
+  url: terms/term 1/courses/course 3/units/unit 29;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_30\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 30/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_30\] {
+  url: terms/term 1/courses/course 3/units/unit 30;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_31\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 31/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_31\] {
+  url: terms/term 1/courses/course 3/units/unit 31;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_32\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 32/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_32\] {
+  url: terms/term 1/courses/course 3/units/unit 32;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_33\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 33/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_33\] {
+  url: terms/term 1/courses/course 3/units/unit 33;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_34\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 34/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_34\] {
+  url: terms/term 1/courses/course 3/units/unit 34;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_35\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 35/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_35\] {
+  url: terms/term 1/courses/course 3/units/unit 35;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_36\/lessons\] {
+  url: terms/term 1/courses/course 3/units/unit 36/lessons;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\/unit_36\] {
+  url: terms/term 1/courses/course 3/units/unit 36;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\/units\] {
+  url: terms/term 1/courses/course 3/units;
+}
+
+.\[url\:terms\/term_1\/courses\/course_3\] {
+  url: terms/term 1/courses/course 3;
+}
+
+.\[url\:terms\/term_1\/courses\] {
+  url: terms/term 1/courses;
+}
+
+.\[url\:terms\/term_1\] {
+  url: terms/term 1;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_37\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 37/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_37\] {
+  url: terms/term 2/courses/course 4/units/unit 37;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_38\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 38/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_38\] {
+  url: terms/term 2/courses/course 4/units/unit 38;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_39\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 39/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_39\] {
+  url: terms/term 2/courses/course 4/units/unit 39;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_40\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 40/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_40\] {
+  url: terms/term 2/courses/course 4/units/unit 40;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_41\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 41/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_41\] {
+  url: terms/term 2/courses/course 4/units/unit 41;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_42\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 42/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_42\] {
+  url: terms/term 2/courses/course 4/units/unit 42;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_43\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 43/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_43\] {
+  url: terms/term 2/courses/course 4/units/unit 43;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_44\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 44/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_44\] {
+  url: terms/term 2/courses/course 4/units/unit 44;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_45\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 45/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_45\] {
+  url: terms/term 2/courses/course 4/units/unit 45;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_46\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 46/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_46\] {
+  url: terms/term 2/courses/course 4/units/unit 46;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_47\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 47/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_47\] {
+  url: terms/term 2/courses/course 4/units/unit 47;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_48\/lessons\] {
+  url: terms/term 2/courses/course 4/units/unit 48/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\/unit_48\] {
+  url: terms/term 2/courses/course 4/units/unit 48;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\/units\] {
+  url: terms/term 2/courses/course 4/units;
+}
+
+.\[url\:terms\/term_2\/courses\/course_4\] {
+  url: terms/term 2/courses/course 4;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_49\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 49/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_49\] {
+  url: terms/term 2/courses/course 5/units/unit 49;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_50\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 50/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_50\] {
+  url: terms/term 2/courses/course 5/units/unit 50;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_51\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 51/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_51\] {
+  url: terms/term 2/courses/course 5/units/unit 51;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_52\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 52/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_52\] {
+  url: terms/term 2/courses/course 5/units/unit 52;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_53\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 53/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_53\] {
+  url: terms/term 2/courses/course 5/units/unit 53;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_54\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 54/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_54\] {
+  url: terms/term 2/courses/course 5/units/unit 54;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_55\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 55/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_55\] {
+  url: terms/term 2/courses/course 5/units/unit 55;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_56\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 56/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_56\] {
+  url: terms/term 2/courses/course 5/units/unit 56;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_57\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 57/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_57\] {
+  url: terms/term 2/courses/course 5/units/unit 57;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_58\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 58/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_58\] {
+  url: terms/term 2/courses/course 5/units/unit 58;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_59\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 59/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_59\] {
+  url: terms/term 2/courses/course 5/units/unit 59;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_60\/lessons\] {
+  url: terms/term 2/courses/course 5/units/unit 60/lessons;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\/unit_60\] {
+  url: terms/term 2/courses/course 5/units/unit 60;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\/units\] {
+  url: terms/term 2/courses/course 5/units;
+}
+
+.\[url\:terms\/term_2\/courses\/course_5\] {
+  url: terms/term 2/courses/course 5;
+}
+
 .\[url\:terms\/term_2\/courses\] {
   url: terms/term 2/courses;
 }
@@ -1676,8 +2236,132 @@ video {
   url: terms/term 2;
 }
 
+.\[url\:terms\/term_4\/courses\/course_6\/units\/unit_61\/lessons\] {
+  url: terms/term 4/courses/course 6/units/unit 61/lessons;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\/units\/unit_61\] {
+  url: terms/term 4/courses/course 6/units/unit 61;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\/units\] {
+  url: terms/term 4/courses/course 6/units;
+}
+
+.\[url\:terms\/term_4\/courses\/course_6\] {
+  url: terms/term 4/courses/course 6;
+}
+
+.\[url\:terms\/term_4\/courses\] {
+  url: terms/term 4/courses;
+}
+
+.\[url\:terms\/term_4\] {
+  url: terms/term 4;
+}
+
 .\[url\:terms\] {
   url: terms;
+}
+
+.\[url\:units\/unit_49\/lessons\] {
+  url: units/unit 49/lessons;
+}
+
+.\[url\:units\/unit_49\] {
+  url: units/unit 49;
+}
+
+.\[url\:units\/unit_50\/lessons\] {
+  url: units/unit 50/lessons;
+}
+
+.\[url\:units\/unit_50\] {
+  url: units/unit 50;
+}
+
+.\[url\:units\/unit_51\/lessons\] {
+  url: units/unit 51/lessons;
+}
+
+.\[url\:units\/unit_51\] {
+  url: units/unit 51;
+}
+
+.\[url\:units\/unit_52\/lessons\] {
+  url: units/unit 52/lessons;
+}
+
+.\[url\:units\/unit_52\] {
+  url: units/unit 52;
+}
+
+.\[url\:units\/unit_53\/lessons\] {
+  url: units/unit 53/lessons;
+}
+
+.\[url\:units\/unit_53\] {
+  url: units/unit 53;
+}
+
+.\[url\:units\/unit_54\/lessons\] {
+  url: units/unit 54/lessons;
+}
+
+.\[url\:units\/unit_54\] {
+  url: units/unit 54;
+}
+
+.\[url\:units\/unit_55\/lessons\] {
+  url: units/unit 55/lessons;
+}
+
+.\[url\:units\/unit_55\] {
+  url: units/unit 55;
+}
+
+.\[url\:units\/unit_56\/lessons\] {
+  url: units/unit 56/lessons;
+}
+
+.\[url\:units\/unit_56\] {
+  url: units/unit 56;
+}
+
+.\[url\:units\/unit_57\/lessons\] {
+  url: units/unit 57/lessons;
+}
+
+.\[url\:units\/unit_57\] {
+  url: units/unit 57;
+}
+
+.\[url\:units\/unit_58\/lessons\] {
+  url: units/unit 58/lessons;
+}
+
+.\[url\:units\/unit_58\] {
+  url: units/unit 58;
+}
+
+.\[url\:units\/unit_59\/lessons\] {
+  url: units/unit 59/lessons;
+}
+
+.\[url\:units\/unit_59\] {
+  url: units/unit 59;
+}
+
+.\[url\:units\/unit_60\/lessons\] {
+  url: units/unit 60/lessons;
+}
+
+.\[url\:units\/unit_60\] {
+  url: units/unit 60;
+}
+
+.\[url\:units\] {
+  url: units;
 }
 
 .\*\:bg-gray-800 > * {

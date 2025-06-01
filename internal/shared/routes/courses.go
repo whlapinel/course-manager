@@ -6,6 +6,7 @@ const (
 	Courses           web.RoutePath = Term + "/courses"
 	NewCourse         web.RoutePath = Courses + "/new"
 	Course            web.RoutePath = Courses + web.RoutePath(CourseID)
+	GenerateSite      web.RoutePath = Course + "/generate"
 	CourseEdit        web.RoutePath = Course + "/edit"
 	CourseFiles       web.RoutePath = Course + "/files"
 	CourseAssessments web.RoutePath = Course + "/assessments"
@@ -40,6 +41,7 @@ var (
 	GetCourses             = web.NewHandlerName(web.GET, Courses)
 	GetNewCourse           = web.NewHandlerName(web.GET, NewCourse)
 	GetCourse              = web.NewHandlerName(web.GET, Course)
+	PostGenerateSite       = web.NewHandlerName(web.POST, GenerateSite)
 	PostNewCourse          = web.NewHandlerName(web.POST, NewCourse)
 	GetEditCourse          = web.NewHandlerName(web.GET, CourseEdit)
 	PostEditCourse         = web.NewHandlerName(web.POST, CourseEdit)

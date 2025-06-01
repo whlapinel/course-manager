@@ -8,6 +8,7 @@
       <meta name="description" content="{{ . }}" />
     {{ end }}
     <link href="/styles/styles.css" rel="stylesheet" />
+    <link href="/styles/markdown-styles.css" rel="stylesheet" />
   </head>
 
   <body class="h-full">
@@ -57,7 +58,8 @@
       </main>
       <footer class="shadow p-4 mt-8">
         <div class="container mx-auto text-center text-gray-600">
-          &copy; {{ now.Format "2006" }} {{ .Site.Title }}. All rights reserved.
+          &copy; {{ now.Format "2006" }} {{ .Site.Params.username }}. All rights
+          reserved.
         </div>
       </footer>
     </div>

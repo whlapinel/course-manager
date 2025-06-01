@@ -103,9 +103,6 @@ func New(params NewAppParams) (*App, error) {
 		DataFilesRoot:            dataFilesRoot,
 		StaticSitePathingService: staticSiteDataPathingSvc,
 		DataPathingService:       dataFilesPathingSvc,
-		GetUser:                  userAppService.ByID,
-		GetTerm:                  termAppService.ByID,
-		GetCourses:               courseAppService.ByParentID,
 		GetUnits:                 unitAppService.ByParentID,
 		GetLessons:               lessonAppService.ByParentID,
 	}
@@ -140,11 +137,11 @@ func New(params NewAppParams) (*App, error) {
 	// application-level handlers
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, e.Reverse)
-	courseAppHandler := handlers.NewCourseHandler(courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
+	courseAppHandler := handlers.NewCourseHandler(siteGenerator, courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, courseOccasionService, nodeAppService, lessonAppService, unitAppService, e.Reverse)
 	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, termOccasionService, e.Reverse)
-	dashboardAppHandler := handlers.NewDashboardHandler(siteGenerator, userAppService, termAppService, nodeAppService, e.Reverse)
+	dashboardAppHandler := handlers.NewDashboardHandler(userAppService, termAppService, nodeAppService, e.Reverse)
 
 	// register application-level routes
 	err = handlers.RegisterDashboardRoutes(protected, dashboardAppHandler)

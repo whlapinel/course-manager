@@ -6,7 +6,7 @@
 {{ if eq .Level 5 }}{{ $size = "text-lg" }}{{ end }}
 {{ if eq .Level 6 }}{{ $size = "text-base" }}{{ end }}
 
-<h{{ .Level }} id="{{ .Anchor }}" class="bg-blue-500 {{ $size }}">
+<h{{ .Level }} id="{{ .Anchor }}" class="bg-red-500 {{ $size }}">
   {{ .Text }}
   <a href="#{{ .Anchor }}">#</a>
 </h{{ .Level }}>

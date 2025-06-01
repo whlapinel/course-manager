@@ -15,5 +15,16 @@
       <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
     {{ end }}
   {{ end }}
+  {{ if eq .Type "lesson" }}
+    <ul class="flex flex-col gap-2 max-w-fit">
+      {{ range .Resources }}
+        <a href="{{ .RelPermalink }}">
+          <li class="rounded bg-blue-500 items-stretch">
+            {{ .Title }}
+          </li>
+        </a>
+      {{ end }}
+    </ul>
+  {{ end }}
   {{ partial "debugging.html" . }}
 {{ end }}

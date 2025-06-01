@@ -1,6 +1,9 @@
 baseURL = '{{ .BaseURL }}'
 languageCode = 'en-us'
 title = '{{ .Title }}'
+[params]
+subtitle = '{{.Subtitle}}'
+username = '{{.Username}}'
 [module]
 [[module.mounts]]
 source = 'content'

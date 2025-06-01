@@ -1,0 +1,5 @@
+{{ with .Get "href" }}
+  <a href="{{ . }}">
+    {{ $.Get "text" }}
+  </a>
+{{ end }}

@@ -21,9 +21,6 @@ type Params struct {
 	DataFilesRoot            string
 	DataPathingService       ports.PathingService
 	StaticSitePathingService ports.PathingService
-	GetUser                  func(userID string) (dto.User, error)
-	GetTerm                  func(termID int) (dto.Term, error)
-	GetCourses               func(termID int) ([]dto.Course, error)
 	GetUnits                 func(courseID int) ([]dto.Unit, error)
 	GetLessons               func(unitID int) ([]dto.Lesson, error)
 }
@@ -33,32 +30,46 @@ type hugoGenerator struct {
 	DataFilesSymlinkRoot string
 }
 
-func (h *hugoGenerator) StaticSiteURL(userID string) string {
-	return staticURLMaker(h.Domain)(userID)
+func (h *hugoGenerator) StaticSiteURL(lastName string, courseID int) string {
+	return staticURLMaker(h.Domain)(lastName, courseID)
 }
 
-func (h *hugoGenerator) configure(user dto.User) error {
-	userDataPath, err := filepath.Abs(h.DataPathingService.NodeDirPath(user))
+func (h *hugoGenerator) courseSitePath(lastName string, courseID int) string {
+	return filepath.Join(h.SitesRootDir, h.courseSiteDirName(lastName, courseID))
+}
+
+func (h *hugoGenerator) courseSiteDirName(lastName string, courseID int) string {
+	lastName = strings.ReplaceAll(lastName, " ", "-")
+	lastName = strings.ToLower(lastName)
+	return fmt.Sprintf("%s-%d", lastName, courseID)
+
+}
+
+func (h *hugoGenerator) configure(user dto.User, term dto.Term, course dto.Course) (*HugoConfig, error) {
+	var config HugoConfig
+	dataPath, err := filepath.Abs(h.DataPathingService.NodeDirPath(user, term, course))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	config := NewConfig(user, NewHugoConfigParams{
-		Domain:       h.Domain,
-		Title:        user.Username(),
-		UserDataPath: userDataPath,
-		ConfigPath:   filepath.Join(h.SitesRootDir, user.ID, "hugo.toml"),
+	siteRoot := h.courseSitePath(user.LastName, course.Course.ID)
+	config = NewConfig(user, NewHugoConfigParams{
+		Domain:              h.Domain,
+		Title:               course.Course.Name,
+		Subtitle:            term.Name,
+		Username:            fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+		SiteRoot:            siteRoot,
+		DestinationDataPath: filepath.Join(siteRoot, "data"),
+		SourceDataPath:      dataPath,
+		ConfigPath:          filepath.Join(siteRoot, "hugo.toml"),
+		CourseID:            course.Course.ID,
 	})
-	return config.Write()
+	return &config, nil
 }
 
 func New(params Params) (ports.SiteGenerator, error) {
 	return &hugoGenerator{
 		Params: params,
 	}, nil
-}
-
-func (h *hugoGenerator) BaseURL(userID string) func(userID string) string {
-	return staticURLMaker(userID)
 }
 
 func (h *hugoGenerator) SinglePagePath(svc ports.PathingService, nodes ...ports.Node) (string, error) {
@@ -90,21 +101,28 @@ func (h *hugoGenerator) contentPath(path string) (string, error) {
 	return new, nil
 }
 
-// this is for json data directory
-func (h *hugoGenerator) dataDir(userID string) string {
-	return filepath.Join(h.SitesRootDir, userID, "data")
-}
-
-func (h *hugoGenerator) Build(userID string, termID int) error {
-	user, err := h.GetUser(userID)
+func (h *hugoGenerator) Build(user, term, course ports.Node) error {
+	userDTO, ok := user.(dto.User)
+	if !ok {
+		return fmt.Errorf("node is not user")
+	}
+	termDTO, ok := term.(dto.Term)
+	if !ok {
+		return fmt.Errorf("node is not term")
+	}
+	courseDTO, ok := course.(dto.Course)
+	if !ok {
+		return fmt.Errorf("node is not course")
+	}
+	config, err := h.configure(userDTO, termDTO, courseDTO)
 	if err != nil {
 		return err
 	}
-	err = h.configure(user)
+	err = config.Write()
 	if err != nil {
 		return err
 	}
-	pageData, err := h.PageData(user, termID)
+	pageData, err := h.PageData(*config, userDTO, termDTO, courseDTO)
 	if err != nil {
 		return err
 	}
@@ -116,13 +134,12 @@ func (h *hugoGenerator) Build(userID string, termID int) error {
 	if err != nil {
 		return err
 	}
-	dataDir := h.dataDir(userID)
 	// write data to site data folder
-	err = os.MkdirAll(dataDir, os.ModePerm)
+	err = os.MkdirAll(config.DestinationDataPath, os.ModePerm)
 	if err != nil {
 		return err
 	}
-	path := filepath.Join(dataDir, "data.json")
+	path := filepath.Join(config.DestinationDataPath, "data.json")
 	log.Println("writing to path:", path)
 	file, err := os.Create(path)
 	if err != nil {
@@ -138,26 +155,22 @@ func (h *hugoGenerator) Build(userID string, termID int) error {
 	if err != nil {
 		return err
 	}
-
-	// check to see if site folder exists
-	siteRoot := filepath.Join(h.SitesRootDir, userID)
-	_, err = os.Stat(siteRoot)
+	_, err = os.Stat(config.SiteRoot)
 	if err != nil {
 		return err
 	}
-
-	cmd := exec.Command("hugo")
+	cmd := exec.Command("hugo", "--logLevel", "debug")
 
 	var outBuf, errBuf bytes.Buffer
 	cmd.Stdout = &outBuf
 	cmd.Stderr = &errBuf
 
-	cmd.Dir = siteRoot
+	cmd.Dir = config.SiteRoot
 	err = cmd.Run()
 	log.Println("STDOUT:", outBuf.String())
+	log.Println("STDERR:", errBuf.String())
 	if err != nil {
 		log.Println("Hugo error:", err)
-		log.Println("STDERR:", errBuf.String())
 		return err
 	}
 	return nil
@@ -182,152 +195,100 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 	return homogenized
 }
 
-func (h *hugoGenerator) PageData(user dto.User, termID int) (*PageData, error) {
-	sitePathingService := h.StaticSitePathingService.WithSegment(user.ID)
-	term, err := h.GetTerm(termID)
-	if err != nil {
-		return nil, err
-	}
-	termPagePath, err := h.SinglePagePath(sitePathingService, term)
-	if err != nil {
-		return nil, err
-	}
-	coursesListPagePath, err := h.ListPagePath(sitePathingService, term)
-	if err != nil {
-		return nil, err
-	}
-	var nodes = []ports.Node{term}
-	filesDirPath := filepath.Join(termPagePath, "files")
-	files, err := h.FilePaths(append([]ports.Node{user}, nodes...)...)
+func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term, course dto.Course) (*PageData, error) {
+	var pageData PageData
+	sitePathingService := h.StaticSitePathingService.WithSegment(h.courseSiteDirName(user.LastName, course.Course.ID))
+	var nodes = []ports.Node{user, term, course}
+	filesDirPath := "files"
+	files, err := h.FilePaths(nodes...)
 	pages, raw := FilePages(files)
-
+	pageData.Files = &FilesPageData{
+		Path:       filesDirPath,
+		ParentPath: "/",
+		Files:      raw,
+		FilePages:  pages,
+	}
 	if err != nil {
 		return nil, err
 	}
-	var pageData = &PageData{
-		TermPageData: &TermPageData{
-			Term:               term,
-			Path:               termPagePath,
-			CourseListPagePath: coursesListPagePath,
-			FilesPage: &FilesPageData{
-				Path:       filesDirPath,
-				ParentPath: termPagePath,
-				Files:      raw,
-				FilePages:  pages,
-			},
-		},
-	}
-	courses, err := h.GetCourses(termID)
+	var unitPages []*UnitPageData
+	units, err := h.GetUnits(course.Course.ID)
 	if err != nil {
 		return nil, err
 	}
-	var coursePages []*CoursePageData
-	for _, course := range courses {
-		var nodes = []ports.Node{term, course}
-		coursePagePath, err := h.SinglePagePath(sitePathingService, nodes...)
+	for _, unit := range units {
+		var nodes = []ports.Node{unit}
+		unitPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
 		if err != nil {
 			return nil, err
 		}
-
-		unitsListPagePath, err := h.ListPagePath(sitePathingService, nodes...)
+		lessonsListPagePath, err := h.ListPagePath(sitePathingService, nodes...)
 		if err != nil {
 			return nil, err
 		}
-		filesDirPath := filepath.Join(coursePagePath, "files")
-		files, err := h.FilePaths(append([]ports.Node{user}, nodes...)...)
+		files, err := h.FilePaths(append([]ports.Node{user, term, course}, nodes...)...)
 		pages, raw := FilePages(files)
-
+		filesDirPath := filepath.Join(unitPagePath, "files")
 		if err != nil {
 			return nil, err
 		}
-		coursePage := &CoursePageData{
-			Course:            course,
-			Path:              coursePagePath,
-			UnitsListPagePath: unitsListPagePath,
+		unitPage := &UnitPageData{
+			Unit:                unit,
+			Designation:         unit.Designation(),
+			Path:                unitPagePath,
+			LessonsListPagePath: lessonsListPagePath,
 			FilesPage: &FilesPageData{
 				Path:       filesDirPath,
-				ParentPath: coursePagePath,
+				ParentPath: unitPagePath,
 				Files:      raw,
 				FilePages:  pages,
 			},
 		}
-		var unitPages []*UnitPageData
-		units, err := h.GetUnits(coursePage.Course.Course.ID)
+		lessons, err := h.GetLessons(unit.ID)
 		if err != nil {
 			return nil, err
 		}
-		for _, unit := range units {
-			var nodes = []ports.Node{term, course, unit}
-			unitPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
+		var lessonPages []*LessonPageData
+		for _, lesson := range lessons {
+			var nodes = []ports.Node{unit, lesson}
+			lessonPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
 			if err != nil {
 				return nil, err
 			}
-			lessonsListPagePath, err := h.ListPagePath(sitePathingService, nodes...)
-			if err != nil {
-				return nil, err
-			}
-			files, err := h.FilePaths(append([]ports.Node{user}, nodes...)...)
+			filesDirPath := filepath.Join(lessonPagePath, "files")
+			files, err := h.FilePaths(append([]ports.Node{user, term, course}, nodes...)...)
 			pages, raw := FilePages(files)
-			filesDirPath := filepath.Join(unitPagePath, "files")
+
 			if err != nil {
 				return nil, err
 			}
-			unitPage := &UnitPageData{
-				Unit:                unit,
-				Path:                unitPagePath,
-				LessonsListPagePath: lessonsListPagePath,
-				FilesPage: &FilesPageData{
+			slidesPath := filepath.Join(h.DataPathingService.NodeDirPath(user, term, course, unit, lesson), "slides.html")
+			slidesPath = contentPath(slidesPath)
+			lessonPage := &LessonPageData{
+				Lesson:      lesson,
+				Designation: lesson.Designation(),
+				Path:        lessonPagePath,
+				FilesPage: FilesPageData{
 					Path:       filesDirPath,
-					ParentPath: unitPagePath,
+					ParentPath: lessonPagePath,
 					Files:      raw,
 					FilePages:  pages,
 				},
-			}
-			lessons, err := h.GetLessons(unit.ID)
-			if err != nil {
-				return nil, err
-			}
-			var lessonPages []*LessonPageData
-			for _, lesson := range lessons {
-				var nodes = []ports.Node{term, course, unit, lesson}
-				lessonPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
-				if err != nil {
-					return nil, err
-				}
-				filesDirPath := filepath.Join(lessonPagePath, "files")
-				files, err := h.FilePaths(append([]ports.Node{user}, nodes...)...)
-				pages, raw := FilePages(files)
-
-				if err != nil {
-					return nil, err
-				}
-
-				lessonPage := &LessonPageData{
-					Lesson: lesson,
-					Path:   lessonPagePath,
-					FilesPage: FilesPageData{
-						Path:       filesDirPath,
-						ParentPath: lessonPagePath,
-						Files:      raw,
-						FilePages:  pages,
-					},
-					Content: strings.ReplaceAll(
-						`
+				Content: strings.ReplaceAll(
+					`
 						# This is a test of the markdown system!					
 						`,
-						"\t", "",
-					),
-				}
-				lessonPages = append(lessonPages, lessonPage)
+					"\t", "",
+				),
+				SlidesPath: slidesPath,
 			}
-			unitPage.LessonPages = lessonPages
-			unitPages = append(unitPages, unitPage)
+			lessonPages = append(lessonPages, lessonPage)
 		}
-		coursePage.UnitPages = unitPages
-		coursePages = append(coursePages, coursePage)
+		unitPage.LessonPages = lessonPages
+		unitPages = append(unitPages, unitPage)
 	}
-	pageData.CoursePages = coursePages
-	return pageData, nil
+	pageData.Units = unitPages
+	return &pageData, nil
 }
 
 type Homogenizer interface {
@@ -341,44 +302,55 @@ type Homogenizer interface {
 	Children() []Homogenizer
 }
 
-func (h *hugoGenerator) FilePaths(nodes ...ports.Node) ([]string, error) {
+func (h *hugoGenerator) FilePaths(nodes ...ports.Node) ([]File, error) {
+	log.Println("Nodes")
+	for _, node := range nodes {
+		log.Println("id:", node.GetID(), "name:", node.GetName())
+	}
 	dirPath := h.DataPathingService.NodeFilesDirPath(nodes...)
+	log.Println("FilePaths: dirPath: ", dirPath)
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
+			log.Println("directory does not exist - returning nil")
 			return nil, nil
 		}
 		return nil, err
 	}
-	var paths []string
+	var files []File
 
 	for _, entry := range entries {
+		var file File
 		if entry.IsDir() {
 			continue
 		}
+		log.Println("entry: ", entry.Name())
 		path := filepath.Join(dirPath, entry.Name())
-		path = contentPath(path)
-		paths = append(paths, path)
+		file.Path = contentPath(path)
+		files = append(files, file)
 	}
-	return paths, nil
+	return files, nil
 }
 
 // splits the paths into pages and raw files, where pages have the .md extension
 // since these should be rendered by hugo as pages with a path stripped of the extension
-func FilePages(paths []string) (pages []string, raw []string) {
-	for _, path := range paths {
-		if filepath.Ext(path) == ".md" {
-			pages = append(pages, path[:len(path)-3])
+func FilePages(files []File) (pages []FilePage, raw []File) {
+	for _, file := range files {
+		if filepath.Ext(file.Path) == ".md" {
+			var page FilePage
+			page.ContentPath = file.Path[:len(file.Path)-3]
+			page.Path = file.Path
+			pages = append(pages, page)
 		} else {
-			raw = append(raw, path)
+			raw = append(raw, file)
 		}
 	}
 	return pages, raw
 }
 
-// strips the first 4 segments off the root
-// internal/data/users/user_123/terms/term_2 becomes terms/term_2
+// strips the first 8 segments off the root
+// internal/data/users/user_123/terms/term_2/courses/course_5/units/unit_1 units/unit_1
 func contentPath(path string) string {
 	segments := strings.Split(path, "/")
-	return filepath.Join(segments[4:]...)
+	return filepath.Join(segments[8:]...)
 }

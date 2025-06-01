@@ -3,6 +3,7 @@ module.exports = {
     content: [
         "./internal/**/*.{html,js,templ}",
         "./hugosites/**/*.{html,js,gotmpl}",
+        "./internal/staticresources/layouts/**/*.{html,js,gotmpl}",
     ],
     theme: {
         extend: {},

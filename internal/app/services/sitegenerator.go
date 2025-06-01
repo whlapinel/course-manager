@@ -12,6 +12,6 @@ func NewSiteGeneratorService(generator ports.SiteGenerator) *SiteGeneratorServic
 	}
 }
 
-func (s *SiteGeneratorService) Build(userID string, termID int) error {
-	return s.SiteGenerator.Build(userID, termID)
+func (s *SiteGeneratorService) Build(user, term, course ports.Node) error {
+	return s.SiteGenerator.Build(user, term, course)
 }

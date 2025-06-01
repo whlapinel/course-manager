@@ -1,12 +1,20 @@
 {{ define "main" }}
   {{ partial "breadcrumbs.html" . }}
-  <h1 class="bg-blue-500">{{ .Title }}</h1>
+  <h1 class="bg-blue-500 text-4xl">{{ .Title }}</h1>
   <p>{{ .Content }}</p>
   {{ with .GetPage .Params.parentpath }}
-    <h2><a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a></h2>
+    <h2 class="text-3xl">
+      <a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a>
+    </h2>
   {{ end }}
-  {{ range where .Pages "Type" .Type }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-  {{ end }}
+  <ul class="flex flex-col gap-2 max-w-fit">
+    {{ range where .Pages "Type" .Type }}
+      <a href="{{ .RelPermalink }}"
+        ><li class="bg-purple-500 p-2 rounded items-stretch">
+          {{ .LinkTitle }}
+        </li>
+      </a>
+    {{ end }}
+  </ul>
   {{ partial "debugging.html" . }}
 {{ end }}

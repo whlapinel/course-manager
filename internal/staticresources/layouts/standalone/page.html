@@ -1,5 +1,17 @@
-{{define "main"}}
-<!--  -->
-{{partial "debugging.html" .}}
-<!--  -->
-{{end}}
+{{ define "main" }}
+  <div>
+    <p>Debug Info:</p>
+    <p>Type: {{ .Type }}</p>
+    <p>Kind: {{ .Kind }}</p>
+    <p>Title: {{ .Title }}</p>
+    <p>Content length: {{ len .Content }}</p>
+    <p>Resources count: {{ len .Resources }}</p>
+
+    <hr />
+    <div class="markdown-body">
+      {{ .Content }}
+    </div>
+
+    <hr />
+  </div>
+{{ end }}

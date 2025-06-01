@@ -20,11 +20,13 @@ type courseHandler struct {
 	nodeService *services.NodeService
 	fileService *services.FileService
 	markdown    *services.MarkdownService
+	sitegen     *services.SiteGeneratorService
 	reverse     web.Reverse
 	*baseHandler[dto.Course, int, int]
 }
 
 func NewCourseHandler(
+	sitegen *services.SiteGeneratorService,
 	service *services.CourseService,
 	nodeService *services.NodeService,
 	fileService *services.FileService,
@@ -32,6 +34,7 @@ func NewCourseHandler(
 	reverse web.Reverse,
 ) *courseHandler {
 	return &courseHandler{
+		sitegen:     sitegen,
 		service:     service,
 		nodeService: nodeService,
 		fileService: fileService,
@@ -73,6 +76,7 @@ func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.POST, routes.CourseEditFile, routes.PostCourseEditFile, h.postEditFile),
 		web.NewRouteHandler(web.GET, routes.CourseViewFile, routes.ViewCourseFile, h.viewMarkdown),
 		// course handler overrides
+		web.NewRouteHandler(web.POST, routes.GenerateSite, routes.PostGenerateSite, h.generateSite),
 		web.NewRouteHandler(web.GET, routes.Courses, routes.GetCourses, h.listByTerm),
 		web.NewRouteHandler(web.GET, routes.Course, routes.GetCourse, h.showDetails),
 		web.NewRouteHandler(web.GET, routes.CourseEdit, routes.GetEditCourse, h.showEdit),
@@ -81,6 +85,18 @@ func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.POST, routes.NewCourse, routes.PostNewCourse, h.postNew),
 		web.NewRouteHandler(web.DELETE, routes.Course, routes.DeleteCourse, h.delete),
 	}
+}
+
+func (h *courseHandler) generateSite(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	err = h.sitegen.Build(info.User, info.Term, info.Course)
+	if err != nil {
+		return err
+	}
+	return c.String(200, "Site generated!")
 }
 
 func (h *courseHandler) delete(c echo.Context) error {
@@ -150,8 +166,9 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 	}
 	term.Courses = courses
 	nodePage := appcomponents.NodeListPage{
-		ParentNode:      term,
-		Children:        term.GetChildren(),
+		ParentNode: term,
+		Children:   term.GetChildren(),
+
 		ChildDetailsURL: web.URLFunc(routes.GetCourse, h.reverse, path.ToSlice()...),
 		DeleteChildURL:  web.URLFunc(routes.DeleteCourse, h.reverse, path.ToSlice()...),
 		ShowNewChildURL: h.reverse(routes.GetNewCourse.String(), path.ToSlice()...),
@@ -183,6 +200,8 @@ func (h *courseHandler) showDetails(c echo.Context) error {
 	nodePage := h.nodeDetails(path, nodes)
 	nodePage.IsEdit = false
 	page := mt.CourseDetailsPage{
+		StaticSiteURL:            h.sitegen.StaticSiteURL(nodes.User.(dto.User).LastName, nodes.Course.GetID().(int)),
+		GenerateSiteURL:          web.URLFunc(routes.PostGenerateSite, h.reverse, path.ToSlice()...)(),
 		NodeDetailsPage:          nodePage,
 		GetCopyCourseURL:         "please-create-me",
 		PostSelectStandardSetURL: "please-create-me",

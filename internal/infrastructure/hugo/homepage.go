@@ -1,13 +1,18 @@
 package hugo
 
 type PageData struct {
-	*TermPageData `json:"termPageData"`
+	Units []*UnitPageData `json:"unitPages"`
+	Files *FilesPageData  `json:"filesPage"`
 }
 
 func (d *PageData) Children() []Homogenizer {
-	return []Homogenizer{
-		d.TermPageData,
+	var homos []Homogenizer
+	homos = append(homos, d.Files)
+	for _, unitPage := range d.Units {
+		homos = append(homos, unitPage)
 	}
+	return homos
+
 }
 
 func (d *PageData) Page() *HomogenizedPageData {
@@ -17,15 +22,15 @@ func (d *PageData) Page() *HomogenizedPageData {
 func (d *PageData) Section() *HomogenizedPageData {
 	var homoPageData HomogenizedPageData
 	homoPageData.Kind = SectionKind
-	homoPageData.Type = TermType
-	homoPageData.Path = "terms"
-	homoPageData.Title = "Terms"
+	homoPageData.Type = UnitType
+	homoPageData.Path = "units"
+	homoPageData.Title = "Units"
 	homoPageData.Params = struct {
 		ParentPath  string             `json:"parentPath"`
 		BreadCrumbs BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
-		ParentPath:  "",
-		BreadCrumbs: BreadCrumbs(d.Path),
+		ParentPath:  "/",
+		BreadCrumbs: BreadCrumbs("/units"),
 	}
 	return &homoPageData
 }
