@@ -1,17 +1,13 @@
 {
   "include": [
-    "sites/assets/ts/**/*.ts"
-  ],
-  "exclude": [
-    "internal/assets/**/*",
-    "internal/templates/**/*" /* don't want to generate js for components; instead these scripts should be copy-pasted to assets as needed*/
+    "internal/staticresources/ts/**/*.ts"
   ],
   "compilerOptions": {
     "composite": true,
     "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "ESNext", /* Specify what module code is generated. */
-    "rootDir": "sites/assets/ts", /* Specify the root folder within your source files. */
-    "outDir": "sites/assets/js", /* Specify an output folder for all emitted files. */
+    "rootDir": "internal/staticresources/ts/", /* Specify the root folder within your source files. */
+    "outDir": "internal/staticresources/static/js", /* Specify an output folder for all emitted files. */
     "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
     "strict": true, /* Enable all strict type-checking options. */

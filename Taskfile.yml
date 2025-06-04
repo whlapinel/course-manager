@@ -3,6 +3,32 @@ vars:
   DB_PATH: ./course_manager.db
 
 tasks:
+  generate:
+    desc: generates all
+    deps: [sqlc, templ, tailwind-app, tailwind-static, typescript]
+  
+  sqlc:
+    cmds:
+      - sqlc generate
+
+  typescript:
+    cmds:
+      - npx tsc --build
+
+  templ:
+    desc: generates go template files for app
+    cmds:
+      - templ generate
+
+  tailwind-static:
+    desc: generates tailwindcss for app and static site resources
+    cmds:
+      - npx tailwindcss -i ./static-input.css -o ./internal/staticresources/static/styles/styles.css
+
+  tailwind-app:
+    cmds:
+      - npx tailwindcss -i ./manager-input.css -o ./internal/assets/dist/styles.css
+
   export-secrets:
     desc: Export all secret files in a separate folder for publishing elsewhere
     cmds:
@@ -22,10 +48,6 @@ tasks:
       - go run ./cmd/migrate -dir="internal/infrastructure/sqlite/migrations/schema" course_manager.db up 
       - sqlite3 course_manager.db ".schema" | sed 's/"//g' > "internal/infrastructure/sqlite/sqlc/schema.sql"
 
-  generate:
-    desc: Generate sqlc (go), tailwind (css), typescript (js), and templ (go). Run if typescript or templ files have been modified
-    cmds:
-      - go generate generate.go
 
   # sync-site:
   #   desc: (For old GitHub pages site generator) push generated site code to GitHub to make publicly available
@@ -36,13 +58,16 @@ tasks:
 
   run-dev:
     desc: Build and run without generate (for when we're not changing UI)
+    deps:
+      - generate
     cmds:
-      - templ generate
       - go build -o ./cmd/app ./cmd/app
       - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
 
   restart-echo:
     desc: Stops, rebuilds and restarts the echo container only
+    deps:
+      - generate
     cmds:
       - templ generate
       - go build -o ./cmd/app/app ./cmd/app

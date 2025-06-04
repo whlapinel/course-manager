@@ -26,7 +26,13 @@ func (svc *Service) ByID(unitID int) (Unit, error) {
 }
 
 func (svc *Service) ByCourseID(courseID int) ([]Unit, error) {
-	return svc.repo.ByCourseID(courseID)
+	units, err := svc.repo.ByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+	var unitSlice Units = units
+	unitSlice.Sort()
+	return unitSlice, nil
 }
 
 func (svc *Service) Delete(unitID int) error {

@@ -1,6 +1,7 @@
 package hugo
 
 import (
+	"log"
 	"path/filepath"
 	"strings"
 )
@@ -16,9 +17,16 @@ type BreadCrumbsItem struct {
 func BreadCrumbs(url string) BreadCrumbsPartial {
 	var bc BreadCrumbsPartial
 	var items []BreadCrumbsItem
-	segments := strings.Split(url, "/")
+	// remove trailing slash
+	url = "/" + url
+	segments := strings.SplitAfter(url, "/")
+	log.Println("segments:", segments)
+	for _, segment := range segments {
+		log.Println(segment)
+	}
+	log.Println(len(segments))
 	for i := range segments {
-		url := filepath.Join(segments[:i]...)
+		url := filepath.Join(segments[:i+1]...)
 		items = append(items, BreadCrumbsItem{URL: url})
 	}
 	bc.Items = items

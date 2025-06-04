@@ -1,5 +1,7 @@
 package hugo
 
+import "strings"
+
 type FilesPageData struct {
 	Path       string     `json:"path"`
 	ParentPath string     `json:"parentPath"`
@@ -30,6 +32,7 @@ func (d *FilesPageData) Page() *HomogenizedPageData {
 	homoPageData.Kind = PageKind
 	homoPageData.Type = FilesType
 	homoPageData.Path = d.Path
+	homoPageData.URL = strings.ReplaceAll(d.Path, "_", "-")
 	homoPageData.Title = "Files"
 	homoPageData.Params = struct {
 		Files      []File     `json:"files"`

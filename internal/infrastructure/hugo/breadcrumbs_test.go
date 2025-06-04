@@ -6,7 +6,7 @@ import (
 )
 
 func TestBreadCrumbs(t *testing.T) {
-	testURL := "/terms/term_2/courses/course_4/units/unit_37/lessons/lesson_268"
+	testURL := "units"
 	bc := BreadCrumbs(testURL)
 	log.Println(bc)
 }

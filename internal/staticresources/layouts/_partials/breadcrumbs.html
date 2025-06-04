@@ -1,8 +1,14 @@
 {{ with .Params.breadcrumbs }}
-  <nav class="flex gap-2">
-    {{ range .items }}
+  <nav class="flex gap-2 p-2">
+    {{ $total := len .items }}
+    {{ range $index, $value := .items }}
       {{ with $.GetPage .url }}
-        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        <a href="{{ .RelPermalink }}" class="bg-purple-500 rounded p-1"
+          >{{ .LinkTitle }}</a
+        >
+        {{ if ne $index (sub $total 1) }}
+          >>
+        {{ end }}
       {{ end }}
     {{ end }}
   </nav>

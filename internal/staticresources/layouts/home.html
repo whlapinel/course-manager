@@ -1,12 +1,4 @@
 {{ define "main" }}
   <h1 class="text-4xl font-bold">{{ .Site.Title }}</h1>
   <h2>{{ .Site.Params.subtitle }}</h2>
-
-  {{ range .Sections }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-  {{ end }}
-
-  {{ with .GetPage "files" }}
-    <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-  {{ end }}
 {{ end }}

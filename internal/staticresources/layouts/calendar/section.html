@@ -1,12 +1,13 @@
 {{ define "main" }}
   {{ partial "breadcrumbs.html" . }}
-  <h1 class="text-4xl p-2">{{ .Title }}</h1>
+  <h1 class="bg-blue-500 text-4xl">{{ .Title }}</h1>
+  <p>{{ .Content }}</p>
   {{ with .GetPage .Params.parentpath }}
-    <h2 class="text-3xl p-2">
+    <h2 class="text-3xl">
       <a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a>
     </h2>
   {{ end }}
-  <ul class="flex flex-col gap-2 max-w-fit p-2">
+  <ul class="flex flex-col gap-2 max-w-fit">
     {{ range (where .Pages "Type" .Type).ByWeight }}
       <a href="{{ .RelPermalink }}"
         ><li class="bg-purple-500 p-2 rounded items-stretch">

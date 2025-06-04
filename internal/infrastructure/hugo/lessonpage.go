@@ -3,6 +3,7 @@ package hugo
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	"strings"
 )
 
 type LessonPageData struct {
@@ -23,6 +24,8 @@ func (d *LessonPageData) Page() *HomogenizedPageData {
 	homoPageData.Kind = PageKind
 	homoPageData.Type = LessonType
 	homoPageData.Path = d.Path
+	homoPageData.URL = strings.ReplaceAll(d.Path, "_", "-")
+	homoPageData.Weight = d.Number
 	homoPageData.Title = fmt.Sprintf("%s: %s", d.Designation, d.Name)
 	homoPageData.Params = struct {
 		FilesPagePath string             `json:"filesPagePath"`

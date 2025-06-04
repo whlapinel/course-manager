@@ -1,18 +1,18 @@
 {{ range site.Data.data }}
-  {{ warnf "testing the warning in _content.gotmpl" }}
   {{ $page := dict
     "path" .path
+    "url" .url
     "kind" .kind
     "type" .type
     "title" .title
     "params" .params
+    "weight" .weight
   }}
+  {{ warnf "path: %s kind: %s title: %s weight: %.1f" .path .kind .title .weight }}
   {{ $.AddPage $page }}
   <!-- Add slides.html as resources -->
   {{ if eq .type "lesson" }}
     {{ with resources.Get .params.slidesPath }}
-      {{ warnf .Content }}
-      {{ warnf ".MediaType.String: %s" .MediaType.String }}
       {{ $contentValue := .Content | safeHTML }}
       {{ $content := dict
         "mediaType" .MediaType.String
@@ -20,6 +20,7 @@
       }}
 
       {{ $resource := dict
+        "title" "Slides"
         "path" $page.params.slidesPath
         "content" $content
       }}
@@ -27,7 +28,6 @@
     {{ end }}
   {{ end }}
   {{ if eq .type "files" }}
-    {{ warnf "file type condition true" }}
     <!-- Add raw files as resources -->
     {{ range .params.files }}
       {{ $file := . }}
@@ -42,13 +42,13 @@
           "mediaType" .MediaType.String
           "value" .Content
         }}
-
+        {{ $fileTitle := path.Base $file.path }}
         {{ $resource := dict
+          "title" $fileTitle
           "path" $file.path
           "content" $content
         }}
         {{ $.AddResource $resource }}
-        {{ warnf "Added resource %s with content length %d, MediaType: %s" $file.path (len $contentValue) .MediaType.String }}
       {{ else }}
         {{ warnf "Could not find resource: %s" $file.path }}
       {{ end }}
@@ -59,10 +59,6 @@
     {{ range .params.filePages }}
       {{ $file := . }}
       {{ with resources.Get .path }}
-        {{ warnf "Content is: %s" .Content }}
-
-        {{ warnf "Processing file page: %s with content length %d; content path: %s" $file.path (len .Content) $file.contentPath }}
-
         {{ $content := dict
           "mediaType" "text/markdown"
           "value" .Content

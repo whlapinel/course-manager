@@ -688,14 +688,38 @@ video {
   margin: 0.25rem;
 }
 
+.m-2 {
+  margin: 0.5rem;
+}
+
+.-mx-0\.5 {
+  margin-left: -0.125rem;
+  margin-right: -0.125rem;
+}
+
+.-mx-2 {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
 .-mx-4 {
   margin-left: -1rem;
   margin-right: -1rem;
 }
 
+.-mx-px {
+  margin-left: -1px;
+  margin-right: -1px;
+}
+
 .-my-2 {
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
+}
+
+.mx-0\.5 {
+  margin-left: 0.125rem;
+  margin-right: 0.125rem;
 }
 
 .mx-2 {
@@ -712,12 +736,20 @@ video {
   margin-left: -0.25rem;
 }
 
+.-mr-1 {
+  margin-right: -0.25rem;
+}
+
 .-mr-2 {
   margin-right: -0.5rem;
 }
 
 .-mt-32 {
   margin-top: -8rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
 }
 
 .ml-10 {
@@ -730,6 +762,10 @@ video {
 
 .ml-4 {
   margin-left: 1rem;
+}
+
+.ml-6 {
+  margin-left: 1.5rem;
 }
 
 .ml-auto {
@@ -772,6 +808,10 @@ video {
   margin-top: 2rem;
 }
 
+.mt-auto {
+  margin-top: auto;
+}
+
 .block {
   display: block;
 }
@@ -808,6 +848,11 @@ video {
   display: none;
 }
 
+.size-1\.5 {
+  width: 0.375rem;
+  height: 0.375rem;
+}
+
 .size-10 {
   width: 2.5rem;
   height: 2.5rem;
@@ -837,8 +882,28 @@ video {
   height: 0px;
 }
 
+.h-14 {
+  height: 3.5rem;
+}
+
 .h-16 {
   height: 4rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.h-6 {
+  height: 1.5rem;
+}
+
+.h-9 {
+  height: 2.25rem;
+}
+
+.h-\[400px\] {
+  height: 400px;
 }
 
 .h-\[40rem\] {
@@ -879,12 +944,24 @@ video {
   width: 0px;
 }
 
+.w-12 {
+  width: 3rem;
+}
+
+.w-36 {
+  width: 9rem;
+}
+
 .w-48 {
   width: 12rem;
 }
 
 .w-\[69\.25rem\] {
   width: 69.25rem;
+}
+
+.w-\[712px\] {
+  width: 712px;
 }
 
 .w-\[76rem\] {
@@ -898,6 +975,10 @@ video {
 .w-min {
   width: -moz-min-content;
   width: min-content;
+}
+
+.w-px {
+  width: 1px;
 }
 
 .min-w-0 {
@@ -941,6 +1022,10 @@ video {
 
 .flex-1 {
   flex: 1 1 0%;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
 }
 
 .flex-none {
@@ -1006,8 +1091,20 @@ video {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
+.grid-cols-7 {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.grid-rows-6 {
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+}
+
 .flex-col {
   flex-direction: column;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
 }
 
 .items-center {
@@ -1050,6 +1147,15 @@ video {
   gap: 1rem;
 }
 
+.gap-px {
+  gap: 1px;
+}
+
+.gap-x-1\.5 {
+  -moz-column-gap: 0.375rem;
+       column-gap: 0.375rem;
+}
+
 .gap-x-6 {
   -moz-column-gap: 1.5rem;
        column-gap: 1.5rem;
@@ -1077,6 +1183,11 @@ video {
   --tw-divide-y-reverse: 0;
   border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
   border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+
+.divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(243 244 246 / var(--tw-divide-opacity));
 }
 
 .divide-gray-700 > :not([hidden]) ~ :not([hidden]) {
@@ -1113,6 +1224,12 @@ video {
   overflow-x: auto;
 }
 
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .whitespace-nowrap {
   white-space: nowrap;
 }
@@ -1141,12 +1258,35 @@ video {
   border-radius: 0.125rem;
 }
 
+.rounded-l-md {
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
+}
+
+.rounded-r-md {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
 .border {
   border-width: 1px;
 }
 
+.border-y {
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
 .border-b {
   border-bottom-width: 1px;
+}
+
+.border-l {
+  border-left-width: 1px;
+}
+
+.border-r {
+  border-right-width: 1px;
 }
 
 .border-t {
@@ -1155,6 +1295,16 @@ video {
 
 .border-solid {
   border-style: solid;
+}
+
+.border-gray-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(229 231 235 / var(--tw-border-opacity));
+}
+
+.border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
 .border-gray-700 {
@@ -1170,6 +1320,10 @@ video {
 .border-orange-500 {
   --tw-border-opacity: 1;
   border-color: rgb(249 115 22 / var(--tw-border-opacity));
+}
+
+.border-transparent {
+  border-color: transparent;
 }
 
 .border-white\/10 {
@@ -1195,6 +1349,26 @@ video {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
+.bg-gray-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
+
+.bg-gray-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
+}
+
+.bg-gray-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity));
+}
+
+.bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
 .bg-gray-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
@@ -1218,6 +1392,11 @@ video {
 .bg-indigo-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+}
+
+.bg-indigo-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
 }
 
 .bg-inherit {
@@ -1304,6 +1483,11 @@ video {
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
+}
+
+.px-3\.5 {
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
 }
 
 .px-4 {
@@ -1394,6 +1578,10 @@ video {
   padding-left: 1rem;
 }
 
+.pr-1 {
+  padding-right: 0.25rem;
+}
+
 .pr-2 {
   padding-right: 0.5rem;
 }
@@ -1404,6 +1592,10 @@ video {
 
 .pr-5 {
   padding-right: 1.25rem;
+}
+
+.pr-6 {
+  padding-right: 1.5rem;
 }
 
 .pr-8 {
@@ -1498,6 +1690,11 @@ video {
   line-height: 1.75rem;
 }
 
+.text-xs\/6 {
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1563,6 +1760,11 @@ video {
   color: rgb(129 140 248 / var(--tw-text-opacity));
 }
 
+.text-indigo-600 {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+}
+
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
@@ -1626,8 +1828,17 @@ video {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
+.ring-inset {
+  --tw-ring-inset: inset;
+}
+
 .ring-black\/5 {
   --tw-ring-color: rgb(0 0 0 / 0.05);
+}
+
+.ring-gray-300 {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity));
 }
 
 .ring-white\/10 {
@@ -1657,6 +1868,12 @@ video {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -1694,6 +1911,478 @@ video {
 .\[mask-image\:radial-gradient\(100\%_100\%_at_top_right\2c white\2c transparent\)\] {
   -webkit-mask-image: radial-gradient(100% 100% at top right,white,transparent);
           mask-image: radial-gradient(100% 100% at top right,white,transparent);
+}
+
+.\[url\:\/\] {
+  url: /;
+}
+
+.\[url\:\/units\/unit_49\/lessons\/lesson_357\] {
+  url: /units/unit 49/lessons/lesson 357;
+}
+
+.\[url\:\/units\/unit_49\/lessons\/lesson_358\] {
+  url: /units/unit 49/lessons/lesson 358;
+}
+
+.\[url\:\/units\/unit_49\/lessons\/lesson_359\] {
+  url: /units/unit 49/lessons/lesson 359;
+}
+
+.\[url\:\/units\/unit_49\/lessons\] {
+  url: /units/unit 49/lessons;
+}
+
+.\[url\:\/units\/unit_49\] {
+  url: /units/unit 49;
+}
+
+.\[url\:\/units\/unit_50\/lessons\/lesson_360\] {
+  url: /units/unit 50/lessons/lesson 360;
+}
+
+.\[url\:\/units\/unit_50\/lessons\/lesson_361\] {
+  url: /units/unit 50/lessons/lesson 361;
+}
+
+.\[url\:\/units\/unit_50\/lessons\/lesson_362\] {
+  url: /units/unit 50/lessons/lesson 362;
+}
+
+.\[url\:\/units\/unit_50\/lessons\/lesson_363\] {
+  url: /units/unit 50/lessons/lesson 363;
+}
+
+.\[url\:\/units\/unit_50\/lessons\/lesson_364\] {
+  url: /units/unit 50/lessons/lesson 364;
+}
+
+.\[url\:\/units\/unit_50\/lessons\] {
+  url: /units/unit 50/lessons;
+}
+
+.\[url\:\/units\/unit_50\] {
+  url: /units/unit 50;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_365\] {
+  url: /units/unit 51/lessons/lesson 365;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_366\] {
+  url: /units/unit 51/lessons/lesson 366;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_367\] {
+  url: /units/unit 51/lessons/lesson 367;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_368\] {
+  url: /units/unit 51/lessons/lesson 368;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_369\] {
+  url: /units/unit 51/lessons/lesson 369;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_370\] {
+  url: /units/unit 51/lessons/lesson 370;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_371\] {
+  url: /units/unit 51/lessons/lesson 371;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_372\] {
+  url: /units/unit 51/lessons/lesson 372;
+}
+
+.\[url\:\/units\/unit_51\/lessons\/lesson_449\] {
+  url: /units/unit 51/lessons/lesson 449;
+}
+
+.\[url\:\/units\/unit_51\/lessons\] {
+  url: /units/unit 51/lessons;
+}
+
+.\[url\:\/units\/unit_51\] {
+  url: /units/unit 51;
+}
+
+.\[url\:\/units\/unit_52\/lessons\/lesson_373\] {
+  url: /units/unit 52/lessons/lesson 373;
+}
+
+.\[url\:\/units\/unit_52\/lessons\/lesson_374\] {
+  url: /units/unit 52/lessons/lesson 374;
+}
+
+.\[url\:\/units\/unit_52\/lessons\/lesson_375\] {
+  url: /units/unit 52/lessons/lesson 375;
+}
+
+.\[url\:\/units\/unit_52\/lessons\/lesson_376\] {
+  url: /units/unit 52/lessons/lesson 376;
+}
+
+.\[url\:\/units\/unit_52\/lessons\] {
+  url: /units/unit 52/lessons;
+}
+
+.\[url\:\/units\/unit_52\] {
+  url: /units/unit 52;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_377\] {
+  url: /units/unit 53/lessons/lesson 377;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_378\] {
+  url: /units/unit 53/lessons/lesson 378;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_379\] {
+  url: /units/unit 53/lessons/lesson 379;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_380\] {
+  url: /units/unit 53/lessons/lesson 380;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_381\] {
+  url: /units/unit 53/lessons/lesson 381;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_382\] {
+  url: /units/unit 53/lessons/lesson 382;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_383\] {
+  url: /units/unit 53/lessons/lesson 383;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_384\] {
+  url: /units/unit 53/lessons/lesson 384;
+}
+
+.\[url\:\/units\/unit_53\/lessons\/lesson_385\] {
+  url: /units/unit 53/lessons/lesson 385;
+}
+
+.\[url\:\/units\/unit_53\/lessons\] {
+  url: /units/unit 53/lessons;
+}
+
+.\[url\:\/units\/unit_53\] {
+  url: /units/unit 53;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_387\] {
+  url: /units/unit 54/lessons/lesson 387;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_388\] {
+  url: /units/unit 54/lessons/lesson 388;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_389\] {
+  url: /units/unit 54/lessons/lesson 389;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_390\] {
+  url: /units/unit 54/lessons/lesson 390;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_391\] {
+  url: /units/unit 54/lessons/lesson 391;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_392\] {
+  url: /units/unit 54/lessons/lesson 392;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_393\] {
+  url: /units/unit 54/lessons/lesson 393;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_394\] {
+  url: /units/unit 54/lessons/lesson 394;
+}
+
+.\[url\:\/units\/unit_54\/lessons\/lesson_455\] {
+  url: /units/unit 54/lessons/lesson 455;
+}
+
+.\[url\:\/units\/unit_54\/lessons\] {
+  url: /units/unit 54/lessons;
+}
+
+.\[url\:\/units\/unit_54\] {
+  url: /units/unit 54;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_396\] {
+  url: /units/unit 55/lessons/lesson 396;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_397\] {
+  url: /units/unit 55/lessons/lesson 397;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_398\] {
+  url: /units/unit 55/lessons/lesson 398;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_399\] {
+  url: /units/unit 55/lessons/lesson 399;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_400\] {
+  url: /units/unit 55/lessons/lesson 400;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_401\] {
+  url: /units/unit 55/lessons/lesson 401;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_402\] {
+  url: /units/unit 55/lessons/lesson 402;
+}
+
+.\[url\:\/units\/unit_55\/lessons\/lesson_403\] {
+  url: /units/unit 55/lessons/lesson 403;
+}
+
+.\[url\:\/units\/unit_55\/lessons\] {
+  url: /units/unit 55/lessons;
+}
+
+.\[url\:\/units\/unit_55\] {
+  url: /units/unit 55;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_404\] {
+  url: /units/unit 56/lessons/lesson 404;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_405\] {
+  url: /units/unit 56/lessons/lesson 405;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_406\] {
+  url: /units/unit 56/lessons/lesson 406;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_407\] {
+  url: /units/unit 56/lessons/lesson 407;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_408\] {
+  url: /units/unit 56/lessons/lesson 408;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_409\] {
+  url: /units/unit 56/lessons/lesson 409;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_410\] {
+  url: /units/unit 56/lessons/lesson 410;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_411\] {
+  url: /units/unit 56/lessons/lesson 411;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_412\] {
+  url: /units/unit 56/lessons/lesson 412;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_413\] {
+  url: /units/unit 56/lessons/lesson 413;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_414\] {
+  url: /units/unit 56/lessons/lesson 414;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_415\] {
+  url: /units/unit 56/lessons/lesson 415;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_446\] {
+  url: /units/unit 56/lessons/lesson 446;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_447\] {
+  url: /units/unit 56/lessons/lesson 447;
+}
+
+.\[url\:\/units\/unit_56\/lessons\/lesson_448\] {
+  url: /units/unit 56/lessons/lesson 448;
+}
+
+.\[url\:\/units\/unit_56\/lessons\] {
+  url: /units/unit 56/lessons;
+}
+
+.\[url\:\/units\/unit_56\] {
+  url: /units/unit 56;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_416\] {
+  url: /units/unit 57/lessons/lesson 416;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_417\] {
+  url: /units/unit 57/lessons/lesson 417;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_418\] {
+  url: /units/unit 57/lessons/lesson 418;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_419\] {
+  url: /units/unit 57/lessons/lesson 419;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_420\] {
+  url: /units/unit 57/lessons/lesson 420;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_421\] {
+  url: /units/unit 57/lessons/lesson 421;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_422\] {
+  url: /units/unit 57/lessons/lesson 422;
+}
+
+.\[url\:\/units\/unit_57\/lessons\/lesson_423\] {
+  url: /units/unit 57/lessons/lesson 423;
+}
+
+.\[url\:\/units\/unit_57\/lessons\] {
+  url: /units/unit 57/lessons;
+}
+
+.\[url\:\/units\/unit_57\] {
+  url: /units/unit 57;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_424\] {
+  url: /units/unit 58/lessons/lesson 424;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_425\] {
+  url: /units/unit 58/lessons/lesson 425;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_426\] {
+  url: /units/unit 58/lessons/lesson 426;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_427\] {
+  url: /units/unit 58/lessons/lesson 427;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_428\] {
+  url: /units/unit 58/lessons/lesson 428;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_429\] {
+  url: /units/unit 58/lessons/lesson 429;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_430\] {
+  url: /units/unit 58/lessons/lesson 430;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_431\] {
+  url: /units/unit 58/lessons/lesson 431;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_432\] {
+  url: /units/unit 58/lessons/lesson 432;
+}
+
+.\[url\:\/units\/unit_58\/lessons\/lesson_433\] {
+  url: /units/unit 58/lessons/lesson 433;
+}
+
+.\[url\:\/units\/unit_58\/lessons\] {
+  url: /units/unit 58/lessons;
+}
+
+.\[url\:\/units\/unit_58\] {
+  url: /units/unit 58;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_434\] {
+  url: /units/unit 59/lessons/lesson 434;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_435\] {
+  url: /units/unit 59/lessons/lesson 435;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_436\] {
+  url: /units/unit 59/lessons/lesson 436;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_437\] {
+  url: /units/unit 59/lessons/lesson 437;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_438\] {
+  url: /units/unit 59/lessons/lesson 438;
+}
+
+.\[url\:\/units\/unit_59\/lessons\/lesson_439\] {
+  url: /units/unit 59/lessons/lesson 439;
+}
+
+.\[url\:\/units\/unit_59\/lessons\] {
+  url: /units/unit 59/lessons;
+}
+
+.\[url\:\/units\/unit_59\] {
+  url: /units/unit 59;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_440\] {
+  url: /units/unit 60/lessons/lesson 440;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_441\] {
+  url: /units/unit 60/lessons/lesson 441;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_442\] {
+  url: /units/unit 60/lessons/lesson 442;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_443\] {
+  url: /units/unit 60/lessons/lesson 443;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_444\] {
+  url: /units/unit 60/lessons/lesson 444;
+}
+
+.\[url\:\/units\/unit_60\/lessons\/lesson_445\] {
+  url: /units/unit 60/lessons/lesson 445;
+}
+
+.\[url\:\/units\/unit_60\/lessons\] {
+  url: /units/unit 60/lessons;
+}
+
+.\[url\:\/units\/unit_60\] {
+  url: /units/unit 60;
+}
+
+.\[url\:\/units\] {
+  url: /units;
 }
 
 .\[url\:courses\/course_4\/units\/unit_37\/lessons\] {
@@ -2379,6 +3068,11 @@ video {
   color: rgb(107 114 128 / var(--tw-text-opacity));
 }
 
+.focus-within\:bg-gray-50:focus-within {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
 .focus-within\:outline-2:focus-within {
   outline-width: 2px;
 }
@@ -2391,6 +3085,21 @@ video {
   outline-color: #6366f1;
 }
 
+.hover\:bg-blue-300:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(147 197 253 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-gray-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-gray-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
@@ -2399,6 +3108,11 @@ video {
 .hover\:bg-indigo-400:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(129 140 248 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-indigo-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-purple-500:hover {
@@ -2416,6 +3130,11 @@ video {
   color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
+.hover\:text-gray-500:hover {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
 .hover\:text-gray-900:hover {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
@@ -2429,6 +3148,23 @@ video {
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:ring-gray-400:hover {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(156 163 175 / var(--tw-ring-opacity));
+}
+
+.focus\:relative:focus {
+  position: relative;
+}
+
+.focus\:z-10:focus {
+  z-index: 10;
+}
+
+.focus\:opacity-100:focus {
+  opacity: 1;
 }
 
 .focus\:outline-2:focus {
@@ -2474,11 +3210,27 @@ video {
   outline-color: #6366f1;
 }
 
+.group:hover .group-hover\:text-indigo-600 {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+}
+
 .group:hover .group-hover\:opacity-100 {
   opacity: 1;
 }
 
 @media (min-width: 640px) {
+  .sm\:not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
   .sm\:left-\[calc\(50\%-18rem\)\] {
     left: calc(50% - 18rem);
   }
@@ -2612,6 +3364,10 @@ video {
     order: 2;
   }
 
+  .md\:ml-4 {
+    margin-left: 1rem;
+  }
+
   .md\:ml-6 {
     margin-left: 1.5rem;
   }
@@ -2632,12 +3388,33 @@ video {
     display: none;
   }
 
+  .md\:w-9 {
+    width: 2.25rem;
+  }
+
   .md\:items-center {
     align-items: center;
   }
 
+  .md\:items-stretch {
+    align-items: stretch;
+  }
+
   .md\:justify-between {
     justify-content: space-between;
+  }
+
+  .md\:pl-0 {
+    padding-left: 0px;
+  }
+
+  .md\:pr-0 {
+    padding-right: 0px;
+  }
+
+  .md\:hover\:bg-gray-50:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(249 250 251 / var(--tw-bg-opacity));
   }
 }
 
@@ -2676,12 +3453,44 @@ video {
     display: flex;
   }
 
+  .lg\:grid {
+    display: grid;
+  }
+
+  .lg\:hidden {
+    display: none;
+  }
+
+  .lg\:h-full {
+    height: 100%;
+  }
+
   .lg\:max-w-none {
     max-width: none;
   }
 
+  .lg\:flex-auto {
+    flex: 1 1 auto;
+  }
+
   .lg\:flex-none {
     flex: none;
+  }
+
+  .lg\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .lg\:grid-rows-6 {
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+  }
+
+  .lg\:flex-col {
+    flex-direction: column;
+  }
+
+  .lg\:gap-px {
+    gap: 1px;
   }
 
   .lg\:px-8 {
@@ -2706,5 +3515,9 @@ video {
 
   .xl\:ml-32 {
     margin-left: 8rem;
+  }
+
+  .xl\:block {
+    display: block;
   }
 }

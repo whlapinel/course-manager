@@ -1,16 +1,27 @@
 {{ define "main" }}
-  <h1 class="bg-blue-500">{{ .Title }}</h1>
+  <h1 class="text-4xl">{{ .Title }}</h1>
   <p>{{ .Content }}</p>
   {{ with .GetPage .Params.parentPath }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+    <h2 class="text-3xl">
+      <a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a>
+    </h2>
   {{ end }}
-  {{ range .Params.filePages }}
-    {{ with $.GetPage .path }}
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+  <ul class="flex flex-col gap-2">
+    {{ range .Params.filePages }}
+      <li class="bg-purple-500 items-stretch rounded p-2">
+        {{ with $.GetPage .path }}
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ end }}
+      </li>
     {{ end }}
-  {{ end }}
-  {{ range .Resources }}
-    <a href="{{ .RelPermalink }}">Resources: {{ .Title }}</a>
-  {{ end }}
+  </ul>
+  <hr class="m-2" />
+  <ul class="flex flex-col gap-2">
+    {{ range .Resources }}
+      <li class="bg-purple-500 items-stretch rounded p-2">
+        <a href="{{ .RelPermalink }}">Resources: {{ .Title }}</a>
+      </li>
+    {{ end }}
+  </ul>
   {{ partial "debugging.html" . }}
 {{ end }}

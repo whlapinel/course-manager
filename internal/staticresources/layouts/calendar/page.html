@@ -1,0 +1,159 @@
+{{ define "main" }}
+  <div class="lg:flex lg:h-full lg:flex-col">
+    <header
+      class="flex items-center justify-between border-b border-gray-200 px-6 py-4 lg:flex-none"
+    >
+      <h1 class="text-base font-semibold text-white">
+        <time datetime="{{ .Params.yearMonth }}">{{ .Title }}</time>
+      </h1>
+      <div class="flex items-center">
+        <div
+          class="relative flex items-center rounded-md bg-white shadow-xs md:items-stretch"
+        >
+          {{ with .GetPage .Params.prevMonthPath }}
+            <a
+              type="button"
+              href="{{ .RelPermalink }}"
+              class="flex h-9 w-12 items-center justify-center rounded-l-md border-y border-l border-gray-300 pr-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pr-0 md:hover:bg-gray-50"
+            >
+              <span class="sr-only">{{ .LinkTitle }}</span>
+              <svg
+                class="size-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+                data-slot="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </a>
+          {{ end }}
+          <button
+            type="button"
+            class="hidden border-y border-gray-300 px-3.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:relative md:block"
+          >
+            Today
+          </button>
+          <span class="relative -mx-px h-5 w-px bg-gray-300 md:hidden"></span>
+          {{ with .GetPage .Params.nextMonthPath }}
+            <a
+              type="button"
+              href="{{ .RelPermalink }}"
+              class="flex h-9 w-12 items-center justify-center rounded-r-md border-y border-r border-gray-300 pl-1 text-gray-400 hover:text-gray-500 focus:relative md:w-9 md:pl-0 md:hover:bg-gray-50"
+            >
+              <span class="sr-only">{{ .LinkTitle }}</span>
+              <svg
+                class="size-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+                data-slot="icon"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </a>
+          {{ end }}
+
+        </div>
+      </div>
+    </header>
+    <div class="shadow-sm ring-1 ring-black/5 lg:flex lg:flex-auto lg:flex-col">
+      <div
+        class="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs/6 font-semibold text-gray-700 lg:flex-none"
+      >
+        <div class="flex justify-center bg-white py-2">
+          <span>M</span>
+          <span class="sr-only sm:not-sr-only">on</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>T</span>
+          <span class="sr-only sm:not-sr-only">ue</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>W</span>
+          <span class="sr-only sm:not-sr-only">ed</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>T</span>
+          <span class="sr-only sm:not-sr-only">hu</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>F</span>
+          <span class="sr-only sm:not-sr-only">ri</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>S</span>
+          <span class="sr-only sm:not-sr-only">at</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
+          <span>S</span>
+          <span class="sr-only sm:not-sr-only">un</span>
+        </div>
+      </div>
+      <div class="flex bg-gray-200 text-xs/6 text-gray-700 lg:flex-auto">
+        <div
+          class="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px"
+        >
+          {{ range .Params.weeks }}
+            <!--
+          Always include: "relative py-2 px-3"
+          Is current month, include: "bg-white"
+          Is not current month, include: "bg-gray-50 text-gray-500"
+        -->
+            {{ range .dates }}
+              <div class="relative bg-gray-50 px-3 py-2 text-gray-500">
+                <!--
+              Is today, include: "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white"
+            -->
+                <time datetime="{{ .date }}">{{ .date }}</time>
+              </div>
+            {{ end }}
+          {{ end }}
+
+        </div>
+        <div
+          class="isolate grid w-full grid-cols-7 grid-rows-6 gap-px lg:hidden"
+        >
+          <!--
+          Always include: "flex h-14 flex-col py-2 px-3 hover:bg-gray-100 focus:z-10"
+          Is current month, include: "bg-white"
+          Is not current month, include: "bg-gray-50"
+          Is selected or is today, include: "font-semibold"
+          Is selected, include: "text-white"
+          Is not selected and is today, include: "text-indigo-600"
+          Is not selected and is current month, and is not today, include: "text-gray-900"
+          Is not selected, is not current month, and is not today: "text-gray-500"
+        -->
+          {{ range .Params.weeks }}
+            {{ range .dates }}
+              <button
+                type="button"
+                class="flex h-14 flex-col bg-gray-50 px-3 py-2 text-gray-500 hover:bg-gray-100 focus:z-10"
+              >
+                <!--
+            Always include: "ml-auto"
+            Is selected, include: "flex size-6 items-center justify-center rounded-full"
+            Is selected and is today, include: "bg-indigo-600"
+            Is selected and is not today, include: "bg-gray-900"
+          -->
+                <time datetime="{{ .date }}" class="ml-auto"
+                  >{{ .shortDate }}</time
+                >
+                <span class="sr-only">0 events</span>
+              </button>
+            {{ end }}
+          {{ end }}
+
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

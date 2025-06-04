@@ -1,30 +1,53 @@
 {{ define "main" }}
   {{ partial "breadcrumbs.html" . }}
-  <h1>{{ .Title }}</h1>
+  <h1 class="text-4xl p-2">{{ .Title }}</h1>
   {{ .Content }}
   {{ with .Parent }}
-    <a href="{{ .RelPermalink }}">Up to {{ .Title }}</a>
+    <h2 class="text-3xl p-2">
+      <a href="{{ .RelPermalink }}">Up to {{ .Title }}</a>
+    </h2>
   {{ end }}
-  {{ with .Params.filesPagePath }}
-    {{ with $.GetPage . }}
-      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    {{ end }}
-  {{ end }}
-  {{ with .Params.childsectionpath }}
-    {{ with $.GetPage . }}
-      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-    {{ end }}
-  {{ end }}
-  {{ if eq .Type "lesson" }}
-    <ul class="flex flex-col gap-2 max-w-fit">
-      {{ range .Resources }}
-        <a href="{{ .RelPermalink }}">
-          <li class="rounded bg-blue-500 items-stretch">
-            {{ .Title }}
-          </li>
-        </a>
+  <div class="flex gap-2 p-2">
+    {{ with .Params.filesPagePath }}
+      {{ with $.GetPage . }}
+        <h2 class="text-3xl p-2 bg-blue-500 rounded">
+          <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        </h2>
       {{ end }}
-    </ul>
+    {{ end }}
+    {{ with .Params.childsectionpath }}
+      {{ with $.GetPage . }}
+        <h2 class="text-3xl p-2">
+          <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        </h2>
+      {{ end }}
+    {{ end }}
+    {{/* </div> */}}
+    {{ if eq .Type "lesson" }}
+      {{ with resources.Get .Params.slidesPath }}
+        <button
+          id="view-slides-btn"
+          class="bg-blue-500 p-2 rounded hover:bg-blue-300"
+        >
+          View Slides
+          <!-- for tailwind purposes: class="h-full" -->
+        </button>
+      {{ end }}
+    {{ end }}
+  </div>
+  {{ if eq .Type "lesson" }}
+    {{ with resources.Get .Params.slidesPath }}
+      <div
+        id="slides-container"
+        class="flex justify-center overflow-hidden h-0 w-full opacity-0 transition-all p-2"
+      >
+        <iframe
+          id="slides"
+          src="{{ .RelPermalink }}"
+          class="h-[400px] w-[712px]"
+        ></iframe>
+      </div>
+    {{ end }}
   {{ end }}
   {{ partial "debugging.html" . }}
 {{ end }}

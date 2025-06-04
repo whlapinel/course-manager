@@ -3,6 +3,7 @@ package hugo
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	"strings"
 )
 
 type UnitPageData struct {
@@ -29,6 +30,8 @@ func (d *UnitPageData) Page() *HomogenizedPageData {
 	homoPageData.Kind = PageKind
 	homoPageData.Type = UnitType
 	homoPageData.Path = d.Path
+	homoPageData.URL = strings.ReplaceAll(d.Path, "_", "-")
+	homoPageData.Weight = d.Sequence
 	homoPageData.Title = fmt.Sprintf("%s: %s", d.Designation, d.Name)
 	homoPageData.Params = struct {
 		ChildSectionPath string             `json:"childSectionPath"`
@@ -47,13 +50,14 @@ func (d *UnitPageData) Section() *HomogenizedPageData {
 	homoPageData.Kind = SectionKind
 	homoPageData.Type = LessonType
 	homoPageData.Path = d.LessonsListPagePath
+	homoPageData.URL = strings.ReplaceAll(d.LessonsListPagePath, "_", "-")
 	homoPageData.Title = "Lessons"
 	homoPageData.Params = struct {
 		ParentPath  string             `json:"parentPath"`
 		BreadCrumbs BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
 		ParentPath:  d.Path,
-		BreadCrumbs: BreadCrumbs(d.Path),
+		BreadCrumbs: BreadCrumbs(d.LessonsListPagePath),
 	}
 	return &homoPageData
 }

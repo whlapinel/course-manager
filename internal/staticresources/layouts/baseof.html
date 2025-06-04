@@ -8,6 +8,7 @@
       <meta name="description" content="{{ . }}" />
     {{ end }}
     <link href="/styles/styles.css" rel="stylesheet" />
+    <script src="/js/index.js" defer async></script>
     <link href="/styles/markdown-styles.css" rel="stylesheet" />
   </head>
 
@@ -24,19 +25,17 @@
                     <div class="ml-10 flex items-baseline space-x-4">
                       <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                       <div id="confirmation"></div>
-                      <a href="/" class="text-gray-700 hover:text-gray-900 mx-2"
-                        >Home</a
-                      >
-                      <a
-                        href="/about/"
-                        class="text-gray-700 hover:text-gray-900 mx-2"
-                        >About</a
-                      >
-                      <a
-                        href="/contact/"
-                        class="text-gray-700 hover:text-gray-900 mx-2"
-                        >Contact</a
-                      >
+                      {{ with .Site.Menus.main }}
+                        <nav>
+                          {{ range . }}
+                            <a
+                              class="text-gray-700 hover:text-gray-900 mx-2"
+                              href="{{ .URL }}"
+                              >{{ .Name }}</a
+                            >
+                          {{ end }}
+                        </nav>
+                      {{ end }}
                     </div>
                   </div>
                 </div>

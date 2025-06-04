@@ -42,7 +42,6 @@ func (h *hugoGenerator) courseSiteDirName(lastName string, courseID int) string 
 	lastName = strings.ReplaceAll(lastName, " ", "-")
 	lastName = strings.ToLower(lastName)
 	return fmt.Sprintf("%s-%d", lastName, courseID)
-
 }
 
 func (h *hugoGenerator) configure(user dto.User, term dto.Term, course dto.Course) (*HugoConfig, error) {
@@ -197,6 +196,9 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 
 func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term, course dto.Course) (*PageData, error) {
 	var pageData PageData
+	calendar := NewCalendar(term)
+	pageData.Calendar = calendar
+
 	sitePathingService := h.StaticSitePathingService.WithSegment(h.courseSiteDirName(user.LastName, course.Course.ID))
 	var nodes = []ports.Node{user, term, course}
 	filesDirPath := "files"

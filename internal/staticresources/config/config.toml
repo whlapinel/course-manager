@@ -29,3 +29,16 @@ target = 'layouts'
 [[module.mounts]]
 source = '/app/internal/staticresources/layouts'
 target = 'layouts'
+[menus]
+  [[menus.main]]
+    name = 'Home'
+    pageRef = '/'
+    weight = 10
+  [[menus.main]]
+    name = 'Units'
+    pageRef = '/units'
+    weight = 20
+  [[menus.main]]
+    name = 'Calendar'
+    pageRef = '/calendar'
+    weight = 30
