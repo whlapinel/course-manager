@@ -70,6 +70,10 @@
         class="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs/6 font-semibold text-gray-700 lg:flex-none"
       >
         <div class="flex justify-center bg-white py-2">
+          <span>S</span>
+          <span class="sr-only sm:not-sr-only">un</span>
+        </div>
+        <div class="flex justify-center bg-white py-2">
           <span>M</span>
           <span class="sr-only sm:not-sr-only">on</span>
         </div>
@@ -93,11 +97,8 @@
           <span>S</span>
           <span class="sr-only sm:not-sr-only">at</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
-          <span>S</span>
-          <span class="sr-only sm:not-sr-only">un</span>
-        </div>
       </div>
+
       <div class="flex bg-gray-200 text-xs/6 text-gray-700 lg:flex-auto">
         <div
           class="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px"
@@ -109,11 +110,23 @@
           Is not current month, include: "bg-gray-50 text-gray-500"
         -->
             {{ range .dates }}
-              <div class="relative bg-gray-50 px-3 py-2 text-gray-500">
+              <div
+                class="relative bg-gray-50 px-3 py-2 text-gray-500 flex flex-col gap-1"
+              >
                 <!--
-              Is today, include: "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white"
-            -->
+                  Is today, include: "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white"
+                -->
                 <time datetime="{{ .date }}">{{ .date }}</time>
+                {{ range .occasions }}
+                  <span>{{ .name }}</span>
+                {{ end }}
+                {{ range .lessons }}
+                  {{ with $.GetPage .path }}
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                  {{ else }}
+                    {{ warnf "unable to get page at %s" .path }}
+                  {{ end }}
+                {{ end }}
               </div>
             {{ end }}
           {{ end }}
@@ -139,7 +152,7 @@
                 class="flex h-14 flex-col bg-gray-50 px-3 py-2 text-gray-500 hover:bg-gray-100 focus:z-10"
               >
                 <!--
-            Always include: "ml-auto"
+                    Always include: "ml-auto"
             Is selected, include: "flex size-6 items-center justify-center rounded-full"
             Is selected and is today, include: "bg-indigo-600"
             Is selected and is not today, include: "bg-gray-900"

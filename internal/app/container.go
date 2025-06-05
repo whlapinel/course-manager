@@ -103,6 +103,7 @@ func New(params NewAppParams) (*App, error) {
 		DataFilesRoot:            dataFilesRoot,
 		StaticSitePathingService: staticSiteDataPathingSvc,
 		DataPathingService:       dataFilesPathingSvc,
+		CalendarService:          courseCalAppService,
 		GetUnits:                 unitAppService.ByParentID,
 		GetLessons:               lessonAppService.ByParentID,
 	}

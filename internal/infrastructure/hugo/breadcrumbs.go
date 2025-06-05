@@ -1,7 +1,6 @@
 package hugo
 
 import (
-	"log"
 	"path/filepath"
 	"strings"
 )
@@ -20,11 +19,6 @@ func BreadCrumbs(url string) BreadCrumbsPartial {
 	// remove trailing slash
 	url = "/" + url
 	segments := strings.SplitAfter(url, "/")
-	log.Println("segments:", segments)
-	for _, segment := range segments {
-		log.Println(segment)
-	}
-	log.Println(len(segments))
 	for i := range segments {
 		url := filepath.Join(segments[:i+1]...)
 		items = append(items, BreadCrumbsItem{URL: url})

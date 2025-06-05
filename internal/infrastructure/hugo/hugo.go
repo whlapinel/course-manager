@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 	"gh_static_portfolio/internal/ports"
 	"log"
 	"os"
@@ -14,10 +15,15 @@ import (
 	"strings"
 )
 
+type CalendarService interface {
+	CalendarDates(courseID int) (calendarviews.CalendarDates, error)
+}
+
 type Params struct {
-	Domain                   string
-	HugoURL                  string
-	SitesRootDir             string
+	Domain       string
+	HugoURL      string
+	SitesRootDir string
+	CalendarService
 	DataFilesRoot            string
 	DataPathingService       ports.PathingService
 	StaticSitePathingService ports.PathingService
@@ -196,10 +202,24 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 
 func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term, course dto.Course) (*PageData, error) {
 	var pageData PageData
-	calendar := NewCalendar(term)
-	pageData.Calendar = calendar
+	calDates, err := h.CalendarService.CalendarDates(course.Course.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	sitePathingService := h.StaticSitePathingService.WithSegment(h.courseSiteDirName(user.LastName, course.Course.ID))
+	singlePagePath := func(unit, lesson ports.Node) (string, error) {
+		path, err := h.SinglePagePath(sitePathingService, unit, lesson)
+		if err != nil {
+			return "", err
+		}
+		return path, nil
+	}
+	calendar, err := NewCalendar(term, calDates, singlePagePath)
+	if err != nil {
+		return nil, err
+	}
+	pageData.Calendar = calendar
 	var nodes = []ports.Node{user, term, course}
 	filesDirPath := "files"
 	files, err := h.FilePaths(nodes...)
@@ -306,11 +326,7 @@ type Homogenizer interface {
 
 func (h *hugoGenerator) FilePaths(nodes ...ports.Node) ([]File, error) {
 	log.Println("Nodes")
-	for _, node := range nodes {
-		log.Println("id:", node.GetID(), "name:", node.GetName())
-	}
 	dirPath := h.DataPathingService.NodeFilesDirPath(nodes...)
-	log.Println("FilePaths: dirPath: ", dirPath)
 	entries, err := os.ReadDir(dirPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -326,7 +342,6 @@ func (h *hugoGenerator) FilePaths(nodes ...ports.Node) ([]File, error) {
 		if entry.IsDir() {
 			continue
 		}
-		log.Println("entry: ", entry.Name())
 		path := filepath.Join(dirPath, entry.Name())
 		file.Path = contentPath(path)
 		files = append(files, file)
