@@ -1,14 +1,26 @@
 {{ define "main" }}
   <div>
-    <p>Debug Info:</p>
-    <p>Type: {{ .Type }}</p>
-    <p>Kind: {{ .Kind }}</p>
-    <p>Title: {{ .Title }}</p>
-    <p>Content length: {{ len .Content }}</p>
-    <p>Resources count: {{ len .Resources }}</p>
+    {{ partial "debugging.html" . }}
+    {{ range .Resources }}
+      <p>{{ . }}</p>
+    {{ end }}
+
 
     <hr />
     <div class="markdown-body">
+      <p>Supporting Resources</p>
+      {{ range .Params.files }}
+        {{ $file := . }}
+        {{ with $.Parent }}
+          {{ with .Resources.Get $file }}
+            <a href="{{ .RelPermalink }}">{{ $file }}</a>
+          {{ else }}
+            <p>Boo hoo, resource not found: {{ $file }}</p>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      <p>Using shortcode:</p>
+
       {{ .Content }}
     </div>
 

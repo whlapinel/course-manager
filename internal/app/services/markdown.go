@@ -106,6 +106,12 @@ func (svc *MarkdownService) Update(data []byte, relPath string, nodes ports.Node
 	return nil
 }
 
+func (svc *MarkdownService)helperComments()string{
+	return `
+	# hi
+	`
+}
+
 func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (ports.MarkdownFile, error) {
 	file, err := svc.frontmatter.ParseFrontMatter(data)
 	if err != nil {
@@ -122,10 +128,10 @@ func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (p
 	file.FrontMatter.URL = strings.TrimSuffix(url, ".md")
 	rootDirSegments := strings.Split(root, "/")
 	parentPath := filepath.Join(rootDirSegments[8:]...)
+	file.FrontMatter.Type = "standalone"
 	if file.FrontMatter.Params == nil {
 		file.FrontMatter.Params = make(map[string]any)
 	}
 	file.FrontMatter.Params["parentPath"] = parentPath
 	return file, nil
-
 }

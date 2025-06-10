@@ -6,6 +6,9 @@
       <a href="{{ .RelPermalink }}">Up to {{ .LinkTitle }}</a>
     </h2>
   {{ end }}
+  {{ range .Resources }}
+    <p>Resource: {{ . }}</p>
+  {{ end }}
   <ul class="flex flex-col gap-2 max-w-fit p-2">
     {{ range .RegularPages }}
       <a href="{{ .RelPermalink }}"

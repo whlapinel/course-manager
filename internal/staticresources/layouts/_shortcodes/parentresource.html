@@ -1,0 +1,13 @@
+{{/* layouts/shortcodes/parent-resource.html */}}
+{{- $filename := .Get 0 -}}
+{{- $resource := false -}}
+
+{{- with .Page.Parent -}}
+  {{- $resource = .Resources.GetMatch $filename -}}
+{{- end -}}
+
+{{- if $resource -}}
+  {{- $resource.Permalink -}}
+{{- else -}}
+  {{- errorf "Resource '%s' not found in parent page %s" $filename .Page.Parent.RelPermalink -}}
+{{- end -}}

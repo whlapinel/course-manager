@@ -13,7 +13,7 @@ import (
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/features/user"
-	"gh_static_portfolio/internal/infrastructure/frontmatter"
+	frontmatter "gh_static_portfolio/internal/infrastructure/frontmatterv2"
 	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
 	"gh_static_portfolio/internal/infrastructure/markdown"
