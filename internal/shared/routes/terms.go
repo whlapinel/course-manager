@@ -1,22 +1,26 @@
 package routes
 
-import "gh_static_portfolio/internal/shared/web"
+import (
+	"gh_static_portfolio/internal/shared/web"
+)
 
 const (
-	Terms           web.RoutePath = User + "/terms"
-	NewTerm         web.RoutePath = Terms + "/new"
-	Term            web.RoutePath = Terms + web.RoutePath(TermID)
-	TermEdit        web.RoutePath = Term + "/edit"
-	TermFiles       web.RoutePath = Term + "/files/*"
-	TermViewFile    web.RoutePath = Term + "/view-markdown/*"
-	TermDates       web.RoutePath = Term + "/dates"
-	TermDate        web.RoutePath = TermDates + web.RoutePath(Date)
-	TermCalendar    web.RoutePath = Term + "/calendar"
-	TermOccasions   web.RoutePath = Term + "/occasions"
-	TermOccasion    web.RoutePath = TermOccasions + web.RoutePath(OccasionID)
-	TermEditFile    web.RoutePath = Term + "/edit-file/*"
-	TermAssessments web.RoutePath = Term + "/assessments"
-	TermAssessment  web.RoutePath = TermAssessments + web.RoutePath(AssessmentID)
+	Terms              web.RoutePath = User + "/terms"
+	NewTerm            web.RoutePath = Terms + "/new"
+	Term               web.RoutePath = Terms + web.RoutePath(TermID)
+	TermEdit           web.RoutePath = Term + "/edit"
+	TermFiles          web.RoutePath = Term + "/files"
+	TermFile           web.RoutePath = TermFiles + "/*"
+	TermViewFile       web.RoutePath = Term + "/view-markdown/*"
+	TermCreateMarkdown web.RoutePath = Term + "/create-markdown"
+	TermDates          web.RoutePath = Term + "/dates"
+	TermDate           web.RoutePath = TermDates + web.RoutePath(Date)
+	TermCalendar       web.RoutePath = Term + "/calendar"
+	TermOccasions      web.RoutePath = Term + "/occasions"
+	TermOccasion       web.RoutePath = TermOccasions + web.RoutePath(OccasionID)
+	TermEditFile       web.RoutePath = Term + "/edit-file/*"
+	TermAssessments    web.RoutePath = Term + "/assessments"
+	TermAssessment     web.RoutePath = TermAssessments + web.RoutePath(AssessmentID)
 )
 
 // Term handler names
@@ -46,10 +50,12 @@ var (
 
 // Term file handler names
 var (
-	GetTermFile      = web.NewHandlerName(web.GET, TermFiles)
-	PostTermFile     = web.NewHandlerName(web.POST, TermFiles)
-	GetTermFiles     = web.NewHandlerName(web.GET, TermFiles)
-	GetTermEditFile  = web.NewHandlerName(web.GET, TermEditFile)
-	PostTermEditFile = web.NewHandlerName(web.POST, TermEditFile)
-	ViewTermFile     = web.NewHandlerName(web.GET, TermViewFile)
+	GetTermFile            = web.NewHandlerName(web.GET, TermFile)
+	PostTermFile           = web.NewHandlerName(web.POST, TermFiles)
+	GetTermFiles           = web.NewHandlerName(web.GET, TermFiles)
+	GetTermEditFile        = web.NewHandlerName(web.GET, TermEditFile)
+	PostTermEditFile       = web.NewHandlerName(web.POST, TermEditFile)
+	ViewTermFile           = web.NewHandlerName(web.GET, TermViewFile)
+	PostTermCreateMarkdown = web.NewHandlerName(web.POST, TermCreateMarkdown)
+	DeleteTermFile         = web.NewHandlerName(web.DELETE, TermFile)
 )

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	fileviews "gh_static_portfolio/internal/app/views/files"
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/util"
@@ -26,38 +25,14 @@ func NewFileService(
 	}
 }
 
-func (svc *FileService) WriteMarkdown(relPath string, content []byte, nodes ports.Nodes) error {
-	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
-	err := svc.fileRepo.Update(content, root, relPath)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (svc *FileService) UpdateSlides(nodes ports.Nodes, content []byte) error {
-	root := svc.pathService.NodeDirPath(nodes.ToSlice()...)
-	slidesPath := svc.pathService.NodeSlidesMarkdownPath(nodes.ToSlice()...)
-	return svc.fileRepo.Update(content, root, filepath.Base(slidesPath))
-}
-
-// for slides editor
-func (svc *FileService) SlidesContent(nodes ports.Nodes) ([]byte, error) {
-	if svc == nil {
-		return nil, fmt.Errorf("service is nil")
-	}
-	if svc.pathService == nil {
-		return nil, fmt.Errorf("path service is nil")
-	}
-
-	root := svc.pathService.NodeDirPath(nodes.ToSlice()...)
-	slidesPath := svc.pathService.NodeSlidesMarkdownPath(nodes.ToSlice()...)
-	content, err := svc.fileRepo.Read(root, filepath.Base(slidesPath))
-	if err != nil {
-		return nil, err
-	}
-	return content, nil
-}
+// func (svc *FileService) WriteMarkdown(relPath string, content []byte, nodes ports.Nodes) error {
+// 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
+// 	err := svc.fileRepo.Update(content, root, relPath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 func (svc *FileService) FileContent(relPath string, nodes ports.Nodes) ([]byte, error) {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)

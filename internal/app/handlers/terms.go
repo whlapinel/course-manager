@@ -51,6 +51,7 @@ func NewTermHandler(
 			getNodeEditFile:  routes.GetTermEditFile,
 			postNodeFile:     routes.PostTermFile,
 			postNodeEditFile: routes.PostTermEditFile,
+			deleteNodeFile:   routes.DeleteTermFile,
 		},
 	}
 }
@@ -69,11 +70,13 @@ func termRouteHandlers(h *termHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler methods
 		web.NewRouteHandler(web.GET, routes.TermFiles, routes.GetTermFiles, h.showFiles),
-		web.NewRouteHandler(web.POST, routes.TermFiles, routes.PostTermFile, h.postFile),
+		web.NewRouteHandler(web.POST, routes.TermFiles, routes.PostTermFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.TermEditFile, routes.GetTermEditFile, h.showEditFile),
-		web.NewRouteHandler(web.POST, routes.TermEditFile, routes.PostTermEditFile, h.postEditFile),
+		web.NewRouteHandler(web.POST, routes.TermEditFile, routes.PostTermEditFile, h.postEditMarkdown),
 		web.NewRouteHandler(web.GET, routes.TermViewFile, routes.ViewTermFile, h.viewMarkdown),
+		web.NewRouteHandler(web.DELETE, routes.TermFile, routes.DeleteTermFile, h.deleteFile),
 
+		// term handler methods
 		web.NewRouteHandler(web.GET, routes.Term, routes.GetTerm, h.showDetails),
 		web.NewRouteHandler(web.GET, routes.Terms, routes.GetTerms, h.listByUser),
 		web.NewRouteHandler(web.GET, routes.NewTerm, routes.GetNewTerm, h.showCreateNew),

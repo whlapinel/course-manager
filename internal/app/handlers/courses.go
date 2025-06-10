@@ -48,6 +48,7 @@ func NewCourseHandler(
 			reverse:          reverse,
 			getNode:          routes.GetCourse,
 			viewNodeFile:     routes.ViewCourseFile,
+			deleteNodeFile:   routes.DeleteCourseFile,
 			getNodeFile:      routes.GetCourseFile,
 			getNodeFiles:     routes.GetCourseFiles,
 			getNodeEditFile:  routes.GetCourseEditFile,
@@ -71,10 +72,11 @@ func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.CourseFiles, routes.GetCourseFiles, h.showFiles),
-		web.NewRouteHandler(web.POST, routes.CourseFiles, routes.PostCourseFile, h.postFile),
+		web.NewRouteHandler(web.POST, routes.CourseFiles, routes.PostCourseFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.CourseEditFile, routes.GetCourseEditFile, h.showEditFile),
-		web.NewRouteHandler(web.POST, routes.CourseEditFile, routes.PostCourseEditFile, h.postEditFile),
+		web.NewRouteHandler(web.POST, routes.CourseEditFile, routes.PostCourseEditFile, h.postEditMarkdown),
 		web.NewRouteHandler(web.GET, routes.CourseViewFile, routes.ViewCourseFile, h.viewMarkdown),
+		web.NewRouteHandler(web.DELETE, routes.CourseFile, routes.DeleteCourseFile, h.deleteFile),
 		// course handler overrides
 		web.NewRouteHandler(web.POST, routes.GenerateSite, routes.PostGenerateSite, h.generateSite),
 		web.NewRouteHandler(web.GET, routes.Courses, routes.GetCourses, h.listByTerm),

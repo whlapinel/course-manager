@@ -44,9 +44,28 @@ type baseHandler[T ports.Node, ID intorstring, ParentID intorstring] struct {
 	getNodeEditFile  web.HandlerName
 	postNodeFile     web.HandlerName
 	postNodeEditFile web.HandlerName
+	deleteNodeFile   web.HandlerName
 }
 
-func (h *baseHandler[T, ID, ParentID]) postFile(c echo.Context) error {
+func (h *baseHandler[T, ID, ParentID]) postCreateMarkdownFile(c echo.Context) error {
+	params, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	nodes, err := h.nodes.Nodes(params)
+	if err != nil {
+		return err
+	}
+	data := c.FormValue("content")
+	err = h.markdown.Create([]byte(data), ".", nodes)
+	if err != nil {
+		return err
+	}
+	// Respond to the client
+	return c.Redirect(200, h.reverse(h.getNodeFiles.String(), params.ToSlice()...))
+}
+
+func (h *baseHandler[T, ID, ParentID]) postUploadedFile(c echo.Context) error {
 	filePath := c.Param("*")
 	if filePath == "*" {
 		filePath = "."
@@ -72,6 +91,18 @@ func (h *baseHandler[T, ID, ParentID]) postFile(c echo.Context) error {
 	err = h.files.Save(file, filePath, nodes)
 	if err != nil {
 		return err
+	}
+	if filepath.Ext(filePath) == ".md" {
+		err = h.markdown.Save(file, filePath, nodes)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = h.files.Save(file, filePath, nodes)
+		if err != nil {
+			return err
+		}
+
 	}
 	// Respond to the client
 	return c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully!", file.Filename))
@@ -123,6 +154,7 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 		},
 		OpenDirURL:          web.URLFunc(h.getNodeFiles, h.reverse, nodePath.ToSlice()...),
 		ViewMarkdownURL:     web.URLFunc(h.viewNodeFile, h.reverse, nodePath.ToSlice()...),
+		DeleteFileURL:       web.URLFunc(h.deleteNodeFile, h.reverse, nodePath.ToSlice()...),
 		EditMarkdownFileURL: web.URLFunc(h.getNodeEditFile, h.reverse, nodePath.ToSlice()...),
 		OpenFileURL:         web.URLFunc(h.getNodeFile, h.reverse, nodePath.ToSlice()...),
 		UploadFileURL:       web.URLFunc(h.postNodeFile, h.reverse, nodePath.ToSlice()...),
@@ -133,7 +165,7 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 	return Respond(c, page)
 }
 
-func (b *baseHandler[T, ID, ParentID]) postEditFile(c echo.Context) error {
+func (b *baseHandler[T, ID, ParentID]) postEditMarkdown(c echo.Context) error {
 	path, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
@@ -155,7 +187,7 @@ func (b *baseHandler[T, ID, ParentID]) postEditFile(c echo.Context) error {
 	}
 	content := c.FormValue("code-editor")
 	log.Println("content", content)
-	err = b.files.Update([]byte(content), filePath, nodes)
+	err = b.markdown.Update([]byte(content), filePath, nodes)
 	if err != nil {
 		return err
 	}
@@ -240,4 +272,31 @@ func (h *baseHandler[T, ID, ParentID]) showEditFile(c echo.Context) error {
 		page.Component(),
 		nil,
 	)
+}
+
+func (b *baseHandler[T, ID, ParentID]) deleteFile(c echo.Context) error {
+	path, err := routes.ParseNodePath(c)
+	if err != nil {
+		return err
+	}
+	filePath := c.Param("*")
+	if filePath == "" {
+		return fmt.Errorf("path param is empty")
+	}
+	nodes, err := b.nodes.Nodes(path)
+	if err != nil {
+		return err
+	}
+	fileInfo, err := b.files.FileInfo(filePath, nodes)
+	if err != nil {
+		return err
+	}
+	if fileInfo.IsDir {
+		return fmt.Errorf("%s is a directory", filePath)
+	}
+	err = b.files.DeleteFile(filePath, nodes.ToSlice()...)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(200)
 }

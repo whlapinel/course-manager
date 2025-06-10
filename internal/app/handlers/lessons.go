@@ -53,6 +53,7 @@ func NewLessonHandler(
 			reverse:          reverse,
 			getNode:          routes.GetLesson,
 			viewNodeFile:     routes.ViewLessonFile,
+			deleteNodeFile:   routes.DeleteLessonFile,
 			getNodeFile:      routes.GetLessonFile,
 			getNodeFiles:     routes.GetLessonFiles,
 			getNodeEditFile:  routes.GetLessonEditFile,
@@ -76,10 +77,11 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.LessonFiles, routes.GetLessonFiles, h.showFiles),
-		web.NewRouteHandler(web.POST, routes.LessonFiles, routes.PostLessonFile, h.postFile),
+		web.NewRouteHandler(web.POST, routes.LessonFiles, routes.PostLessonFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.LessonEditFile, routes.GetLessonEditFile, h.showEditFile),
-		web.NewRouteHandler(web.POST, routes.LessonEditFile, routes.PostLessonEditFile, h.postEditFile),
-		web.NewRouteHandler(web.GET, routes.LessonViewFile, routes.ViewUnitFile, h.viewMarkdown),
+		web.NewRouteHandler(web.POST, routes.LessonEditFile, routes.PostLessonEditFile, h.postEditMarkdown),
+		web.NewRouteHandler(web.GET, routes.LessonViewFile, routes.ViewLessonFile, h.viewMarkdown),
+		web.NewRouteHandler(web.DELETE, routes.LessonFile, routes.DeleteLessonFile, h.deleteFile),
 
 		// overrides
 		web.NewRouteHandler(web.GET, routes.Lessons, routes.GetLessons, h.listByUnit),
@@ -155,7 +157,7 @@ func (h *lessonHandler) postEditSlides(c echo.Context) error {
 	}
 	content := c.FormValue("code-editor")
 	log.Println(content)
-	err = h.files.UpdateSlides(info.Nodes, []byte(content))
+	err = h.slides.UpdateSlides(info.Nodes, []byte(content))
 	if err != nil {
 		return err
 	}
@@ -178,6 +180,18 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	var newTab bool
+	newTabQueryParam := c.QueryParam("new-tab")
+	log.Println("newTabQueryParam", newTabQueryParam)
+	if newTabQueryParam != "" {
+		newTab, err = strconv.ParseBool(newTabQueryParam)
+		if err != nil {
+			return err
+		}
+	}
+	if newTab {
+		return c.File(h.paths.NodeSlidesHTMLPath(nodes.ToSlice()...))
+	}
 	html, err := h.slides.GetSlides(nodes.ToSlice()...)
 	if err != nil {
 		return err
@@ -185,6 +199,9 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 	slides := lessonviews.Slides{
 		HTML:          string(html),
 		EditSlidesURL: h.reverse(routes.GetEditLessonSlides.String(), path.ToSlice()...),
+		LessonDetailsPage: lessonviews.LessonDetailsPage{
+			GetSlidesURL: h.reverse(routes.GetLessonSlides.String(), path.ToSlice()...) + "?new-tab=true",
+		},
 	}
 	return web.Respond(c, routes.GetLesson.String(), slides.Component(), nil)
 
@@ -195,7 +212,7 @@ func (h *lessonHandler) showEditSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	content, err := h.files.SlidesContent(info.Nodes)
+	content, err := h.slides.SlidesContent(info.Nodes)
 	if err != nil {
 		return err
 	}

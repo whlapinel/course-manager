@@ -64,7 +64,7 @@ tasks:
       - go build -o ./cmd/app ./cmd/app
       - docker compose -f compose.yaml -f compose.dev.yaml up --build --remove-orphans
 
-  restart-echo:
+  restart:
     desc: Stops, rebuilds and restarts the echo container only
     deps:
       - generate

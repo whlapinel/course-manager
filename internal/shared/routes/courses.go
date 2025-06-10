@@ -3,23 +3,24 @@ package routes
 import "gh_static_portfolio/internal/shared/web"
 
 const (
-	Courses           web.RoutePath = Term + "/courses"
-	NewCourse         web.RoutePath = Courses + "/new"
-	Course            web.RoutePath = Courses + web.RoutePath(CourseID)
-	GenerateSite      web.RoutePath = Course + "/generate"
-	CourseEdit        web.RoutePath = Course + "/edit"
-	CourseFiles       web.RoutePath = Course + "/files"
-	CourseAssessments web.RoutePath = Course + "/assessments"
-	CourseFile        web.RoutePath = CourseFiles + "/*"
-	CourseViewFile    web.RoutePath = Course + "/view-markdown/files/*"
-	CourseEditFile    web.RoutePath = CourseFiles + "/edit/*"
-	CourseAssessment  web.RoutePath = CourseAssessments + web.RoutePath(AssessmentID)
-	CourseSlides      web.RoutePath = Course + "/slides"
-	CourseEditSlides  web.RoutePath = CourseSlides + "/edit"
-	CourseStandards   web.RoutePath = Course + "/standards"
-	CourseStandard    web.RoutePath = CourseStandards + web.RoutePath(StandardID)
-	CourseOccasions   web.RoutePath = Course + "/occasions"
-	CourseOccasion    web.RoutePath = CourseOccasions + web.RoutePath(OccasionID)
+	Courses              web.RoutePath = Term + "/courses"
+	NewCourse            web.RoutePath = Courses + "/new"
+	Course               web.RoutePath = Courses + web.RoutePath(CourseID)
+	GenerateSite         web.RoutePath = Course + "/generate"
+	CourseEdit           web.RoutePath = Course + "/edit"
+	CourseFiles          web.RoutePath = Course + "/files"
+	CourseAssessments    web.RoutePath = Course + "/assessments"
+	CourseFile           web.RoutePath = CourseFiles + "/*"
+	CourseViewFile       web.RoutePath = Course + "/view-markdown/files/*"
+	CourseCreateMarkdown web.RoutePath = Course + "/create-markdown"
+	CourseEditFile       web.RoutePath = CourseFiles + "/edit/*"
+	CourseAssessment     web.RoutePath = CourseAssessments + web.RoutePath(AssessmentID)
+	CourseSlides         web.RoutePath = Course + "/slides"
+	CourseEditSlides     web.RoutePath = CourseSlides + "/edit"
+	CourseStandards      web.RoutePath = Course + "/standards"
+	CourseStandard       web.RoutePath = CourseStandards + web.RoutePath(StandardID)
+	CourseOccasions      web.RoutePath = Course + "/occasions"
+	CourseOccasion       web.RoutePath = CourseOccasions + web.RoutePath(OccasionID)
 )
 
 // Course calendar paths
@@ -61,12 +62,14 @@ var (
 
 // Course file handler names
 var (
-	GetCourseFiles     = web.NewHandlerName(web.GET, CourseFiles)
-	PostCourseFile     = web.NewHandlerName(web.POST, CourseFiles)
-	GetCourseFile      = web.NewHandlerName(web.GET, CourseFile)
-	GetCourseEditFile  = web.NewHandlerName(web.GET, CourseFile)
-	PostCourseEditFile = web.NewHandlerName(web.POST, CourseEditFile)
-	ViewCourseFile     = web.NewHandlerName(web.GET, CourseViewFile)
+	GetCourseFiles           = web.NewHandlerName(web.GET, CourseFiles)
+	PostCourseFile           = web.NewHandlerName(web.POST, CourseFiles)
+	GetCourseFile            = web.NewHandlerName(web.GET, CourseFile)
+	GetCourseEditFile        = web.NewHandlerName(web.GET, CourseFile)
+	PostCourseEditFile       = web.NewHandlerName(web.POST, CourseEditFile)
+	ViewCourseFile           = web.NewHandlerName(web.GET, CourseViewFile)
+	PostCourseCreateMarkdown = web.NewHandlerName(web.POST, CourseCreateMarkdown)
+	DeleteCourseFile = web.NewHandlerName(web.DELETE, CourseFile)
 )
 
 // Course assessment handler names

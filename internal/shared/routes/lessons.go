@@ -3,20 +3,21 @@ package routes
 import "gh_static_portfolio/internal/shared/web"
 
 const (
-	Lessons           web.RoutePath = Unit + "/lessons"
-	NewLesson         web.RoutePath = Lessons + "/new"
-	Lesson            web.RoutePath = Lessons + web.RoutePath(LessonID)
-	LessonEdit        web.RoutePath = Lesson + "/edit"
-	LessonFiles       web.RoutePath = Lesson + "/files"
-	LessonFile        web.RoutePath = LessonFiles + "/*"
-	LessonViewFile    web.RoutePath = Lesson + "/view-markdown/files/*"
-	LessonEditFile    web.RoutePath = LessonFiles + "/edit/*"
-	LessonAssessments web.RoutePath = Lesson + "/assessments"
-	LessonAssessment  web.RoutePath = LessonAssessments + web.RoutePath(AssessmentID)
-	LessonSlides      web.RoutePath = Lesson + "/slides"
-	LessonEditSlides  web.RoutePath = LessonSlides + "/edit"
-	LessonStandards   web.RoutePath = Lesson + "/standards"
-	LessonStandard    web.RoutePath = LessonStandards + web.RoutePath(StandardID)
+	Lessons              web.RoutePath = Unit + "/lessons"
+	NewLesson            web.RoutePath = Lessons + "/new"
+	Lesson               web.RoutePath = Lessons + web.RoutePath(LessonID)
+	LessonEdit           web.RoutePath = Lesson + "/edit"
+	LessonFiles          web.RoutePath = Lesson + "/files"
+	LessonFile           web.RoutePath = LessonFiles + "/*"
+	LessonViewFile       web.RoutePath = Lesson + "/view-markdown/files/*"
+	LessonCreateMarkdown web.RoutePath = Lesson + "/create-markdown"
+	LessonEditFile       web.RoutePath = LessonFiles + "/edit/*"
+	LessonAssessments    web.RoutePath = Lesson + "/assessments"
+	LessonAssessment     web.RoutePath = LessonAssessments + web.RoutePath(AssessmentID)
+	LessonSlides         web.RoutePath = Lesson + "/slides"
+	LessonEditSlides     web.RoutePath = LessonSlides + "/edit"
+	LessonStandards      web.RoutePath = Lesson + "/standards"
+	LessonStandard       web.RoutePath = LessonStandards + web.RoutePath(StandardID)
 )
 
 // Lesson handler names
@@ -32,12 +33,14 @@ var (
 
 // Lesson file handler names
 var (
-	GetLessonFiles     = web.NewHandlerName(web.GET, LessonFiles)
-	PostLessonFile     = web.NewHandlerName(web.POST, LessonFiles)
-	GetLessonFile      = web.NewHandlerName(web.GET, LessonFile)
-	GetLessonEditFile  = web.NewHandlerName(web.GET, LessonFile)
-	PostLessonEditFile = web.NewHandlerName(web.POST, LessonEditFile)
-	ViewLessonFile     = web.NewHandlerName(web.GET, LessonViewFile)
+	GetLessonFiles           = web.NewHandlerName(web.GET, LessonFiles)
+	PostLessonFile           = web.NewHandlerName(web.POST, LessonFiles)
+	GetLessonFile            = web.NewHandlerName(web.GET, LessonFile)
+	GetLessonEditFile        = web.NewHandlerName(web.GET, LessonFile)
+	PostLessonEditFile       = web.NewHandlerName(web.POST, LessonEditFile)
+	ViewLessonFile           = web.NewHandlerName(web.GET, LessonViewFile)
+	PostLessonCreateMarkdown = web.NewHandlerName(web.POST, LessonCreateMarkdown)
+	DeleteLessonFile = web.NewHandlerName(web.DELETE, LessonFile)
 )
 
 // Lesson slides handler names

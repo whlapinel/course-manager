@@ -13,6 +13,7 @@ import (
 	"gh_static_portfolio/internal/features/termoccasion"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/features/user"
+	"gh_static_portfolio/internal/infrastructure/frontmatter"
 	"gh_static_portfolio/internal/infrastructure/hugo"
 	"gh_static_portfolio/internal/infrastructure/localfilesystem"
 	"gh_static_portfolio/internal/infrastructure/markdown"
@@ -60,6 +61,7 @@ func New(params NewAppParams) (*App, error) {
 	courseOccasionRepo := sqlite.NewCourseOccasionRepo(queries)
 
 	// infrastructure
+	frontmatter := frontmatter.New()
 	dataFilesPathingSvc := pathing.NewNodePathService(dataFilesRoot)
 	staticSiteDataPathingSvc := pathing.NewNodePathService(staticSitesRoot)
 	markdownRenderer := markdown.New()
@@ -93,7 +95,7 @@ func New(params NewAppParams) (*App, error) {
 		courseOccasionService,
 		lessonService,
 	)
-	markdownService := services.NewMarkdownService(markdownRenderer, dataFilesPathingSvc, filesRepo)
+	markdownService := services.NewMarkdownService(frontmatter, markdownRenderer, dataFilesPathingSvc, filesRepo)
 
 	// infrastructure init
 	hugoParams := hugo.Params{

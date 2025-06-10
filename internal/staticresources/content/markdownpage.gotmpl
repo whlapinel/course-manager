@@ -1,0 +1,21 @@
+<!-- Add markdown files as standalone pages -->
+{{ range .params.filePages }}
+  {{ $file := . }}
+  {{ with resources.Get .path }}
+    {{ $content := dict
+      "mediaType" "text/markdown"
+      "value" .Content
+    }}
+
+    {{ $childPage := dict
+      "type" "standalone"
+      "title" (path.Base $file.path)
+      "path" $file.contentPath
+      "kind" "page"
+      "content" $content
+    }}
+    /* {{ $.AddPage $childPage }} */
+  {{ else }}
+    {{ warnf "Could not find file page resource: %s" $file.path }}
+  {{ end }}
+{{ end }}

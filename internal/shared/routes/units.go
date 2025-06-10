@@ -3,20 +3,21 @@ package routes
 import "gh_static_portfolio/internal/shared/web"
 
 const (
-	Units           web.RoutePath = Course + "/units"
-	NewUnit         web.RoutePath = Units + "/new"
-	Unit            web.RoutePath = Units + web.RoutePath(UnitID)
-	UnitEdit        web.RoutePath = Unit + "/edit"
-	UnitFiles       web.RoutePath = Unit + "/files"
-	UnitFile        web.RoutePath = UnitFiles + "/*"
-	UnitViewFile    web.RoutePath = Unit + "/view-markdown/files/*"
-	UnitEditFile    web.RoutePath = UnitFiles + "/edit/*"
-	UnitAssessments web.RoutePath = Unit + "/assessments"
-	UnitAssessment  web.RoutePath = UnitAssessments + web.RoutePath(AssessmentID)
-	UnitSlides      web.RoutePath = Unit + "/slides"
-	UnitEditSlides  web.RoutePath = UnitSlides + "/edit"
-	UnitStandards   web.RoutePath = Unit + "/standards"
-	UnitStandard    web.RoutePath = UnitStandards + web.RoutePath(StandardID)
+	Units              web.RoutePath = Course + "/units"
+	NewUnit            web.RoutePath = Units + "/new"
+	Unit               web.RoutePath = Units + web.RoutePath(UnitID)
+	UnitEdit           web.RoutePath = Unit + "/edit"
+	UnitFiles          web.RoutePath = Unit + "/files"
+	UnitFile           web.RoutePath = UnitFiles + "/*"
+	UnitViewFile       web.RoutePath = Unit + "/view-markdown/files/*"
+	UnitCreateMarkdown web.RoutePath = Unit + "/create-markdown"
+	UnitEditFile       web.RoutePath = UnitFiles + "/edit/*"
+	UnitAssessments    web.RoutePath = Unit + "/assessments"
+	UnitAssessment     web.RoutePath = UnitAssessments + web.RoutePath(AssessmentID)
+	UnitSlides         web.RoutePath = Unit + "/slides"
+	UnitEditSlides     web.RoutePath = UnitSlides + "/edit"
+	UnitStandards      web.RoutePath = Unit + "/standards"
+	UnitStandard       web.RoutePath = UnitStandards + web.RoutePath(StandardID)
 )
 
 // Unit handler names
@@ -32,12 +33,14 @@ var (
 
 // Unit file handler names
 var (
-	GetUnitFiles     = web.NewHandlerName(web.GET, UnitFiles)
-	PostUnitFile     = web.NewHandlerName(web.POST, UnitFiles)
-	GetUnitFile      = web.NewHandlerName(web.GET, UnitFile)
-	GetUnitEditFile  = web.NewHandlerName(web.GET, UnitFile)
-	PostUnitEditFile = web.NewHandlerName(web.POST, UnitEditFile)
-	ViewUnitFile     = web.NewHandlerName(web.GET, UnitViewFile)
+	GetUnitFiles           = web.NewHandlerName(web.GET, UnitFiles)
+	PostUnitFile           = web.NewHandlerName(web.POST, UnitFiles)
+	GetUnitFile            = web.NewHandlerName(web.GET, UnitFile)
+	GetUnitEditFile        = web.NewHandlerName(web.GET, UnitFile)
+	PostUnitEditFile       = web.NewHandlerName(web.POST, UnitEditFile)
+	ViewUnitFile           = web.NewHandlerName(web.GET, UnitViewFile)
+	PostUnitCreateMarkdown = web.NewHandlerName(web.POST, UnitCreateMarkdown)
+	DeleteUnitFile         = web.NewHandlerName(web.DELETE, UnitFile)
 )
 
 // Unit assessment handler names

@@ -6,38 +6,6 @@ import (
 	"gh_static_portfolio/internal/shared/util"
 )
 
-templ FilesComponent(page FilesPage) {
-	@appcomponents.PageLayoutComponent(page)
-	<div class="grid grid-cols-2">
-		<form hx-post={ page.UploadFileURL(page.CurrentPath) } enctype="multipart/form-data">
-			<label for="file">Choose a file:</label>
-			<input type="file" name="file" id="file"/>
-			<button type="submit">Upload</button>
-		</form>
-		<ul class="flex">
-			for _, item := range page.Files {
-				<li>
-					if !item.IsDir {
-						<a href={ templ.SafeURL(page.OpenFileURL(page.CurrentPath)) }>{ item.Path }</a>
-					} else {
-						<button
-							hx-get={ page.OpenFileURL(page.CurrentPath) }
-							hx-target="#page"
-							hx-push-url="true"
-						>
-							{ item.Path }
-						</button>
-					}
-					if util.IsMarkdown(item.Path) {
-						@page.ViewMarkdownButton(item)
-					}
-				</li>
-			}
-		</ul>
-	</div>
-	<div id="markdown"></div>
-}
-
 templ NewFilesComponent(data FilesPage) {
 	@appcomponents.PageLayoutComponent(data)
 	<div
@@ -80,7 +48,10 @@ templ NewFilesComponent(data FilesPage) {
 						</div>
 					</li>
 				} else {
-					<li class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6">
+					<li
+						id={ data.FileListItemElementID(file) }
+						class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6"
+					>
 						<div class="flex w-0 flex-1 items-center">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
@@ -95,6 +66,7 @@ templ NewFilesComponent(data FilesPage) {
 								@data.ViewMarkdownButton(file)
 								@data.EditMarkdownButton(file)
 							}
+							@data.DeleteFileButton(file)
 						</div>
 					</li>
 				}

@@ -77,7 +77,10 @@ templ ObjectiveSelectComponent(props ObjectiveSelect) {
 
 templ SlidesComponent(data Slides) {
 	<div id="slides">
-		@data.EditSlidesButton()
+		<div class="flex gap-1">
+			@data.EditSlidesButton()
+			@data.NewTabLink()
+		</div>
 		<iframe
 			srcdoc={ data.HTML }
 			class="h-[40rem] w-full border-solid border-orange-500"

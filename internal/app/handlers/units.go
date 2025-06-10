@@ -45,6 +45,7 @@ func NewUnitHandler(
 			reverse:          reverse,
 			getNode:          routes.GetUnit,
 			viewNodeFile:     routes.ViewUnitFile,
+			deleteNodeFile:   routes.DeleteUnitFile,
 			getNodeFile:      routes.GetUnitFile,
 			getNodeFiles:     routes.GetUnitFiles,
 			getNodeEditFile:  routes.GetUnitEditFile,
@@ -68,10 +69,12 @@ func unitRouteHandlers(h *unitHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.UnitFiles, routes.GetUnitFiles, h.showFiles),
-		web.NewRouteHandler(web.POST, routes.UnitFiles, routes.PostUnitFile, h.postFile),
+		web.NewRouteHandler(web.POST, routes.UnitFiles, routes.PostUnitFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.UnitEditFile, routes.GetUnitEditFile, h.showEditFile),
-		web.NewRouteHandler(web.POST, routes.UnitEditFile, routes.PostUnitEditFile, h.postEditFile),
+		web.NewRouteHandler(web.POST, routes.UnitEditFile, routes.PostUnitEditFile, h.postEditMarkdown),
 		web.NewRouteHandler(web.GET, routes.UnitViewFile, routes.ViewUnitFile, h.viewMarkdown),
+		web.NewRouteHandler(web.DELETE, routes.UnitFile, routes.DeleteUnitFile, h.deleteFile),
+
 		// overrides
 		web.NewRouteHandler(web.GET, routes.Units, routes.GetUnits, h.listByCourse),
 		web.NewRouteHandler(web.GET, routes.Unit, routes.GetUnit, h.showDetails),

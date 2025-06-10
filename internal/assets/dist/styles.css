@@ -2829,6 +2829,14 @@ video {
   url: /units/unit 60;
 }
 
+.\[url\:\/units\/unit_62\/lessons\] {
+  url: /units/unit 62/lessons;
+}
+
+.\[url\:\/units\/unit_62\] {
+  url: /units/unit 62;
+}
+
 .\[url\:\/units\] {
   url: /units;
 }

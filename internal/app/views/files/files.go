@@ -6,6 +6,7 @@ import (
 	"gh_static_portfolio/internal/ports"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"strings"
 
 	"github.com/a-h/templ"
 )
@@ -26,6 +27,7 @@ type FilesPage struct {
 	BreadCrumbsData     ac.BreadCrumbs
 	ViewMarkdownURL     web.AddParams
 	EditMarkdownFileURL web.AddParams
+	DeleteFileURL       web.AddParams
 	ac.CourseManagerLayout
 }
 
@@ -64,6 +66,17 @@ func (data FilesPage) PageLayout() cmp.PageLayout {
 	}
 }
 
+func (data FilesPage) DeleteFileButton(file FilesPageItem) templ.Component {
+	return cmp.Button{
+		Text:      "Delete",
+		Method:    cmp.HxDelete,
+		URL:       data.DeleteFileURL(file.Path),
+		Image:     cmp.DeleteImage(),
+		HxConfirm: "Are you sure you want to delete this file? " + file.Name,
+		HxTarget:  "closest li",
+	}.Component()
+}
+
 func (data FilesPage) EditMarkdownButton(file FilesPageItem) templ.Component {
 	return cmp.Button{
 		Text:     "Edit",
@@ -84,8 +97,12 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 		URL:      data.ViewMarkdownURL(file.Name),
 		PushURL:  true,
 	}.Component()
-
 }
+
+func (data FilesPage) FileListItemElementID(file FilesPageItem) string {
+	return strings.ReplaceAll(strings.ToLower(file.Name), " ", "-")
+}
+
 func (data FilesPage) Component() templ.Component {
 	return NewFilesComponent(data)
 }

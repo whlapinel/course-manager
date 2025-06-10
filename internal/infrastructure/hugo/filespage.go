@@ -29,7 +29,7 @@ func (d *FilesPageData) Children() []Homogenizer {
 
 func (d *FilesPageData) Page() *HomogenizedPageData {
 	var homoPageData HomogenizedPageData
-	homoPageData.Kind = PageKind
+	homoPageData.Kind = SectionKind
 	homoPageData.Type = FilesType
 	homoPageData.Path = d.Path
 	homoPageData.URL = strings.ReplaceAll(d.Path, "_", "-")

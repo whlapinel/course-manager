@@ -27,11 +27,19 @@ func (data Slides) EditSlidesButton() templ.Component {
 
 }
 
+func (data Slides) NewTabLink() templ.Component {
+	return cmp.Link{
+		Text:   "View in New Tab",
+		URL:    data.GetSlidesURL,
+		Target: cmp.NewTab,
+	}.Component()
+}
+
 type SlidesEditor struct {
 	Content           string
 	PostEditSlidesURL string
 }
 
-func (e SlidesEditor)Component()templ.Component{
+func (e SlidesEditor) Component() templ.Component {
 	return EditSlidesTemplate(e)
 }

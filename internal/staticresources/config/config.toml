@@ -9,6 +9,9 @@ username = '{{.Username}}'
 source = 'content'
 target = 'content'
 [[module.mounts]]
+source = '{{ .UserDataPath }}'
+target = 'content'
+[[module.mounts]]
 source = '/app/internal/staticresources/content'
 target = 'content'
 [[module.mounts]]
@@ -42,3 +45,7 @@ target = 'layouts'
     name = 'Calendar'
     pageRef = '/calendar'
     weight = 30
+  [[menus.main]]
+    name = 'Course Files'
+    pageRef = '/files'
+    weight = 40

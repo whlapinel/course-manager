@@ -12,13 +12,13 @@ const (
 )
 
 var (
-
 	GetUsers         = web.NewHandlerName(web.GET, Users)
 	GetUser          = web.NewHandlerName(web.GET, User)
 	GetUserFiles     = web.NewHandlerName(web.GET, UserFiles)
 	PostUserFile     = web.NewHandlerName(web.POST, UserFiles)
 	GetUserFile      = web.NewHandlerName(web.GET, UserFile)
-	GetViewUserFile  = web.NewHandlerName(web.GET, UserViewFile)
 	GetUserEditFile  = web.NewHandlerName(web.GET, UserEditFile)
 	PostUserEditFile = web.NewHandlerName(web.POST, UserEditFile)
+	GetViewUserFile  = web.NewHandlerName(web.GET, UserViewFile)
+	DeleteUserFile   = web.NewHandlerName(web.DELETE, UserFile)
 )
