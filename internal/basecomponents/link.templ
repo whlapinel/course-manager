@@ -2,6 +2,7 @@ package basecomponents
 
 templ LinkComponent(data Link) {
 	<a
+		id={ data.ID }
 		hx-indicator="#spinner"
 		{ data.Attributes... }
 		if !data.HTMX {

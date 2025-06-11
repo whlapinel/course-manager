@@ -8,9 +8,7 @@
                 mode: "markdown",
             });
             cm.on('change', (e) => {
-                console.log("I'm updating the textarea!")
                 editor.value = cm.getValue();
-                console.log(editor.value)
             });
         }
     });

@@ -29,6 +29,7 @@ func NewUnitHandler(
 	nodeService *services.NodeService,
 	files *services.FileService,
 	markdown *services.MarkdownService,
+	previewer ports.SiteGenerator,
 	reverse web.Reverse,
 ) *unitHandler {
 	return &unitHandler{
@@ -43,6 +44,7 @@ func NewUnitHandler(
 			markdown:         markdown,
 			nodes:            nodeService,
 			reverse:          reverse,
+			previewer:        previewer,
 			getNode:          routes.GetUnit,
 			viewNodeFile:     routes.ViewUnitFile,
 			deleteNodeFile:   routes.DeleteUnitFile,

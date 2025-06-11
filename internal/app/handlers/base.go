@@ -14,6 +14,7 @@ import (
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 
 	"github.com/labstack/echo/v4"
@@ -36,6 +37,7 @@ type baseHandler[T ports.Node, ID intorstring, ParentID intorstring] struct {
 	files            *services.FileService
 	markdown         *services.MarkdownService
 	nodes            *services.NodeService
+	previewer        ports.SiteGenerator
 	reverse          web.Reverse
 	getNode          web.HandlerName
 	viewNodeFile     web.HandlerName
@@ -70,6 +72,11 @@ func (h *baseHandler[T, ID, ParentID]) postUploadedFile(c echo.Context) error {
 	if filePath == "*" {
 		filePath = "."
 	}
+	filePath, err := url.PathUnescape(filePath)
+	if err != nil {
+		return err
+	}
+	log.Println(filePath)
 	params, err := routes.ParseNodePath(c)
 	if err != nil {
 		return err
@@ -88,10 +95,6 @@ func (h *baseHandler[T, ID, ParentID]) postUploadedFile(c echo.Context) error {
 		return err
 	}
 	filePath = filepath.Join(filePath, file.Filename)
-	err = h.files.Save(file, filePath, nodes)
-	if err != nil {
-		return err
-	}
 	if filepath.Ext(filePath) == ".md" {
 		err = h.markdown.Save(file, filePath, nodes)
 		if err != nil {
@@ -151,6 +154,10 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 			URL:   h.reverse(h.getNodeFile.String(), nodes.ToSlice(filePath)),
 			Path:  filePath,
 			IsDir: filepath.Ext(filePath) == "",
+		},
+		PreviewURL: func(params ...any) string {
+			return h.markdown.PreviewFileURL(nodes.User.(dto.User).LastName, params[0].(string), nodes)
+
 		},
 		OpenDirURL:          web.URLFunc(h.getNodeFiles, h.reverse, nodePath.ToSlice()...),
 		ViewMarkdownURL:     web.URLFunc(h.viewNodeFile, h.reverse, nodePath.ToSlice()...),
@@ -283,6 +290,11 @@ func (b *baseHandler[T, ID, ParentID]) deleteFile(c echo.Context) error {
 	if filePath == "" {
 		return fmt.Errorf("path param is empty")
 	}
+	filePath, err = url.PathUnescape(filePath)
+	if err != nil {
+		return err
+	}
+	log.Println(filePath)
 	nodes, err := b.nodes.Nodes(path)
 	if err != nil {
 		return err

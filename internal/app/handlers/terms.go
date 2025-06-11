@@ -21,7 +21,8 @@ type termHandler struct {
 	service     *services.TermService
 	fileService *services.FileService
 	markdown    *services.MarkdownService
-	reverse     web.Reverse
+	previewer   ports.SiteGenerator
+	reverse web.Reverse
 	*baseHandler[dto.Term, int, string]
 }
 
@@ -30,6 +31,7 @@ func NewTermHandler(
 	nodeService *services.NodeService,
 	fileService *services.FileService,
 	markdownService *services.MarkdownService,
+	previewer ports.SiteGenerator,
 	reverse web.Reverse,
 ) *termHandler {
 	return &termHandler{
@@ -38,12 +40,14 @@ func NewTermHandler(
 		reverse:     reverse,
 		fileService: fileService,
 		markdown:    markdownService,
+		previewer:   previewer,
 		baseHandler: &baseHandler[dto.Term, int, string]{
 			service:          service,
 			files:            fileService,
 			markdown:         markdownService,
 			nodes:            nodeService,
 			reverse:          reverse,
+			previewer:        previewer,
 			getNode:          routes.GetTerm,
 			viewNodeFile:     routes.ViewTermFile,
 			getNodeFile:      routes.GetTermFile,

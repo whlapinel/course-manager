@@ -95,8 +95,6 @@ func New(params NewAppParams) (*App, error) {
 		courseOccasionService,
 		lessonService,
 	)
-	markdownService := services.NewMarkdownService(frontmatter, markdownRenderer, dataFilesPathingSvc, filesRepo)
-
 	// infrastructure init
 	hugoParams := hugo.Params{
 		Domain:                   params.Domain,
@@ -113,6 +111,7 @@ func New(params NewAppParams) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	markdownService := services.NewMarkdownService(frontmatter, markdownRenderer, dataFilesPathingSvc, filesRepo, hugoGenerator)
 
 	// site generator service
 	siteGenerator := services.NewSiteGeneratorService(hugoGenerator)
@@ -139,10 +138,10 @@ func New(params NewAppParams) (*App, error) {
 
 	// application-level handlers
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService)
-	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, e.Reverse)
+	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, hugoGenerator, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(siteGenerator, courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, courseOccasionService, nodeAppService, lessonAppService, unitAppService, e.Reverse)
-	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, e.Reverse)
+	termAppHandler := handlers.NewTermHandler(termAppService, nodeAppService, fileService, markdownService, siteGenerator, e.Reverse)
 	termCalHandler := handlers.NewTermCalHandler(termCalService, nodeAppService, termOccasionService, e.Reverse)
 	dashboardAppHandler := handlers.NewDashboardHandler(userAppService, termAppService, nodeAppService, e.Reverse)
 

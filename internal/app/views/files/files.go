@@ -18,6 +18,7 @@ type FilesPage struct {
 	CurrentDirectory    FilesPageItem
 	Params              routes.NodePath
 	CurrentPath         string
+	PreviewURL          web.AddParams
 	OpenDirURL          web.AddParams
 	OpenFileURL         web.AddParams
 	UploadFileURL       web.AddParams
@@ -88,7 +89,7 @@ func (data FilesPage) EditMarkdownButton(file FilesPageItem) templ.Component {
 	}.Component()
 }
 
-// view as HTML
+// view as HTML, rendered
 func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 	return cmp.Button{
 		Text:     "View As HTML",
@@ -96,6 +97,18 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 		HxTarget: "#markdown",
 		URL:      data.ViewMarkdownURL(file.Name),
 		PushURL:  true,
+	}.Component()
+}
+
+// view as HTML
+func (data FilesPage) PreviewPage(file FilesPageItem) templ.Component {
+	return cmp.Link{
+		Element: cmp.Element{
+			ID: "preview-button",
+		},
+		Text:   "Preview Static Site Page",
+		Target: "preview",
+		URL:    data.PreviewURL(file.Name),
 	}.Component()
 }
 

@@ -10,7 +10,7 @@ templ NewFilesComponent(data FilesPage) {
 	@appcomponents.PageLayoutComponent(data)
 	<div
 		id="files"
-		class="p-4"
+		class="p-4 h-screen"
 	>
 		<form hx-post={ data.UploadFileURL(data.CurrentPath) } enctype="multipart/form-data">
 			<label for="file">Choose a file:</label>
@@ -63,8 +63,9 @@ templ NewFilesComponent(data FilesPage) {
 								</div>
 							</a>
 							if util.IsMarkdown(file.Name) {
-								@data.ViewMarkdownButton(file)
+								// @data.ViewMarkdownButton(file)
 								@data.EditMarkdownButton(file)
+								@data.PreviewPage(file)
 							}
 							@data.DeleteFileButton(file)
 						</div>
@@ -72,6 +73,10 @@ templ NewFilesComponent(data FilesPage) {
 				}
 			}
 		</ul>
+		// see preview.ts for code to control dialog
 		<div id="markdown"></div>
+		<dialog class="h-3/4 w-3/4 p-2 rounded bg-gray-400">
+			<iframe name="preview" class="h-full w-full"></iframe>
+		</dialog>
 	</div>
 }

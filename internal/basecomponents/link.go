@@ -3,6 +3,7 @@ package basecomponents
 import "github.com/a-h/templ"
 
 type Link struct {
+	Element
 	Text   string
 	URL    string
 	Target LinkTarget

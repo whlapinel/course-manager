@@ -4,6 +4,7 @@ import (
 	"gh_static_portfolio/internal/ports"
 	"io"
 	"mime/multipart"
+	"net/url"
 	"path/filepath"
 	"strings"
 )
@@ -13,6 +14,7 @@ type MarkdownService struct {
 	paths       ports.PathingService
 	files       ports.FileRepository
 	frontmatter ports.FrontMatterReadWriter
+	baseURL     SiteBaseURL
 }
 
 func NewMarkdownService(
@@ -20,6 +22,7 @@ func NewMarkdownService(
 	renderer ports.MarkdownRenderer,
 	paths ports.PathingService,
 	files ports.FileRepository,
+	baseURL SiteBaseURL,
 
 ) *MarkdownService {
 	return &MarkdownService{
@@ -27,6 +30,7 @@ func NewMarkdownService(
 		renderer:    renderer,
 		paths:       paths,
 		files:       files,
+		baseURL:     baseURL,
 	}
 }
 
@@ -106,12 +110,6 @@ func (svc *MarkdownService) Update(data []byte, relPath string, nodes ports.Node
 	return nil
 }
 
-func (svc *MarkdownService)helperComments()string{
-	return `
-	# hi
-	`
-}
-
 func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (ports.MarkdownFile, error) {
 	file, err := svc.frontmatter.ParseFrontMatter(data)
 	if err != nil {
@@ -122,10 +120,7 @@ func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (p
 	if file.FrontMatter == nil {
 		file.FrontMatter = &ports.FrontMatter{}
 	}
-	segments := strings.Split(path, "/")
-	url := filepath.Join(segments[8:]...)
-	url = strings.ReplaceAll(url, "_", "-")
-	file.FrontMatter.URL = strings.TrimSuffix(url, ".md")
+	file.FrontMatter.URL = svc.fileURL(root, relPath)
 	rootDirSegments := strings.Split(root, "/")
 	parentPath := filepath.Join(rootDirSegments[8:]...)
 	file.FrontMatter.Type = "standalone"
@@ -134,4 +129,26 @@ func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (p
 	}
 	file.FrontMatter.Params["parentPath"] = parentPath
 	return file, nil
+}
+
+type SiteBaseURL interface {
+	StaticSiteURL(lastName string, courseID int) string
+}
+
+func (svc *MarkdownService) PreviewFileURL(lastName, relPath string, nodes ports.Nodes) string {
+	baseURL := svc.baseURL.StaticSiteURL(lastName, nodes.Course.GetID().(int))
+	root := svc.paths.NodeFilesDirPath(nodes.ToSlice()...)
+	path := svc.fileURL(root, relPath)
+	final, _ := url.JoinPath(baseURL, path)
+	return final
+}
+
+func (svc *MarkdownService) fileURL(root, relPath string) string {
+	relPath = strings.ToLower(relPath)
+	relPath = strings.TrimSuffix(relPath, ".md")
+	relPath = strings.ReplaceAll(relPath, " ", "-")
+	path := filepath.Join(root, relPath)
+	segments := strings.Split(path, "/")
+	path = filepath.Join(segments[8:]...)
+	return strings.ReplaceAll(path, "_", "-")
 }
