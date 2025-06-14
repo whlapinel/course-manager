@@ -3,6 +3,19 @@ course-manager.app {
 }
 
 *.course-manager.app {
+	@options method OPTIONS
+	handle @options {
+		header Access-Control-Allow-Origin "https://course-manager.app"
+		header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+		header Access-Control-Allow-Headers "hx-trigger, hx-current-url, hx-target, hx-request, hx-boosted, hx-history-restore-request, hx-prompt, hx-request, hx-trigger-name"
+		respond 200
+	}
+
+	@get method GET
+	handle @get {
+		header Access-Control-Allow-Origin "https://course-manager.app"
+	}
+
 	tls {
 		dns digitalocean {env.DO_AUTH_TOKEN}
 	}

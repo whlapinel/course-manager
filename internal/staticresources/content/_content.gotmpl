@@ -8,7 +8,6 @@
     "params" .params
     "weight" .weight
   }}
-  {{ warnf "path: %s kind: %s title: %s weight: %.1f" .path .kind .title .weight }}
   {{ $.AddPage $page }}
   <!-- Add slides.html as resources -->
   {{ if eq .type "lesson" }}
@@ -27,32 +26,5 @@
       {{ $.AddResource $resource }}
     {{ end }}
   {{ end }}
-  {{ if eq .type "files" }}
-    <!-- Add raw files as resources -->
-    {{ range .params.files }}
-      {{ $file := . }}
-      {{ with resources.Get $file.path }}
-        {{ $contentValue := "" }}
-        {{ if .Content }}
-          {{ $contentValue = .Content }}
-        {{ else }}
-          {{ $contentValue = . | string }}
-        {{ end }}
-        {{ $content := dict
-          "mediaType" .MediaType.String
-          "value" .Content
-        }}
-        {{ $fileTitle := path.Base $file.path }}
-        {{ $resource := dict
-          "title" $fileTitle
-          "path" $file.path
-          "content" $content
-        }}
-        {{ $.AddResource $resource }}
-      {{ else }}
-        {{ warnf "Could not find resource: %s" $file.path }}
-      {{ end }}
-    {{ end }}
-    <!-- Add markdown pages here -->
-  {{ end }}
+
 {{ end }}

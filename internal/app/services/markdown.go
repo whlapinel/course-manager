@@ -1,6 +1,7 @@
 package services
 
 import (
+	"gh_static_portfolio/internal/app/dto"
 	"gh_static_portfolio/internal/ports"
 	"io"
 	"mime/multipart"
@@ -10,14 +11,16 @@ import (
 )
 
 type MarkdownService struct {
-	renderer    ports.MarkdownRenderer
-	paths       ports.PathingService
-	files       ports.FileRepository
-	frontmatter ports.FrontMatterReadWriter
-	baseURL     SiteBaseURL
+	renderer      ports.MarkdownRenderer
+	paths         ports.PathingService
+	files         ports.FileRepository
+	frontmatter   ports.FrontMatterReadWriter
+	siteGenerator ports.SiteGenerator
+	baseURL       SiteBaseURL
 }
 
 func NewMarkdownService(
+	siteGenerator ports.SiteGenerator,
 	frontmatter ports.FrontMatterReadWriter,
 	renderer ports.MarkdownRenderer,
 	paths ports.PathingService,
@@ -26,11 +29,12 @@ func NewMarkdownService(
 
 ) *MarkdownService {
 	return &MarkdownService{
-		frontmatter: frontmatter,
-		renderer:    renderer,
-		paths:       paths,
-		files:       files,
-		baseURL:     baseURL,
+		siteGenerator: siteGenerator,
+		frontmatter:   frontmatter,
+		renderer:      renderer,
+		paths:         paths,
+		files:         files,
+		baseURL:       baseURL,
 	}
 }
 
@@ -62,6 +66,10 @@ func (svc *MarkdownService) Create(data []byte, relPath string, nodes ports.Node
 	if err != nil {
 		return err
 	}
+	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+	if err != nil {
+		return err
+	}
 	return nil
 
 }
@@ -90,6 +98,11 @@ func (svc *MarkdownService) Save(header *multipart.FileHeader, relPath string, n
 	if err != nil {
 		return err
 	}
+	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -107,6 +120,11 @@ func (svc *MarkdownService) Update(data []byte, relPath string, nodes ports.Node
 	if err != nil {
 		return err
 	}
+	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

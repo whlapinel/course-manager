@@ -1,9 +1,20 @@
 (()=>{
     console.log("hello from preview.js!")
-    const previewButton = document.querySelector("#preview-button")
-    const previewDialog = document.querySelector("dialog")
-    previewButton?.addEventListener("click", ()=>{
-        console.log("preview button clicked!")
-        previewDialog?.showModal()
+    document.body?.addEventListener("click", (e)=>{
+        const previewDialog = document.querySelector("#dialog-preview") as HTMLDialogElement
+        const clickedElement = e.target as HTMLElement
+        console.log(clickedElement)
+        if (clickedElement?.id === "preview-button") {
+            console.log("preview button clicked!")
+            previewDialog?.showModal()
+        }
+    })
+    document.body?.addEventListener("click", (e)=>{
+        const clickedElement = e.target as HTMLElement
+        const previewDialog = document.querySelector("#dialog-preview") as HTMLDialogElement
+        if (clickedElement?.id === "dialog-close-button") {
+            console.log("preview button clicked!")
+            previewDialog?.close()
+        }
     })
 })()

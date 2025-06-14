@@ -11,6 +11,7 @@ import (
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
 	"log"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -41,6 +42,7 @@ func NewCourseHandler(
 		reverse:     reverse,
 		markdown:    markdown,
 		baseHandler: &baseHandler[dto.Course, int, int]{
+			previewer:        sitegen,
 			service:          service,
 			files:            fileService,
 			markdown:         markdown,
@@ -262,7 +264,12 @@ func (h *courseHandler) postEdit(c echo.Context) error {
 }
 
 func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {
+	lastName := strings.ToLower(nodes.User.(dto.User).LastName)
+
 	nodeData := appcomponents.NodeDetailsPage{
+		GenerateSiteURL: h.reverse(routes.PostGenerateSite.String(), path.ToSlice()...),
+		StaticSiteURL:   h.previewer.StaticSiteURL(lastName, path.CourseID),
+
 		Node:                nodes.Course,
 		CourseCalendarURL:   h.reverse(routes.GetCourseCalendar.String(), path.ToSlice()...),
 		ParentNode:          nodes.Term,

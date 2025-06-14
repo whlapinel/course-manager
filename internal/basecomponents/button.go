@@ -14,7 +14,6 @@ type Button struct {
 	HxTarget  string
 	PushURL   bool
 	HxSwap    HxSwap
-	HxSelect  string
 	Class     string
 }
 

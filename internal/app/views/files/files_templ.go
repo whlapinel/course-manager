@@ -223,7 +223,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = data.PreviewPage(file).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = data.PreviewButton(file).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -238,7 +238,7 @@ func NewFilesComponent(data FilesPage) templ.Component {
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</ul><div id=\"markdown\"></div><dialog class=\"h-3/4 w-3/4 p-2 rounded bg-gray-400\"><iframe name=\"preview\" class=\"h-full w-full\"></iframe></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</ul><div id=\"markdown\"></div><dialog id=\"dialog-preview\" class=\"h-3/4 w-3/4 p-2 rounded bg-gray-400\"><div name=\"preview\" id=\"preview\" class=\"h-full w-full\"></div><button id=\"dialog-close-button\">Close</button></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

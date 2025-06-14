@@ -3,7 +3,6 @@ package hugo
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
@@ -206,7 +205,6 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 	if err != nil {
 		return nil, err
 	}
-
 	sitePathingService := h.StaticSitePathingService.WithSegment(h.courseSiteDirName(user.LastName, course.Course.ID))
 	singlePagePath := func(unit, lesson ports.Node) (string, error) {
 		path, err := h.SinglePagePath(sitePathingService, unit, lesson)
@@ -220,18 +218,10 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 		return nil, err
 	}
 	pageData.Calendar = calendar
-	var nodes = []ports.Node{user, term, course}
 	filesDirPath := "files"
-	files, err := h.FilePaths(nodes...)
-	pages, raw := FilePages(files)
 	pageData.Files = &FilesPageData{
 		Path:       filesDirPath,
 		ParentPath: "/",
-		Files:      raw,
-		FilePages:  pages,
-	}
-	if err != nil {
-		return nil, err
 	}
 	var unitPages []*UnitPageData
 	units, err := h.GetUnits(course.Course.ID)
@@ -248,12 +238,7 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 		if err != nil {
 			return nil, err
 		}
-		files, err := h.FilePaths(append([]ports.Node{user, term, course}, nodes...)...)
-		pages, raw := FilePages(files)
 		filesDirPath := filepath.Join(unitPagePath, "files")
-		if err != nil {
-			return nil, err
-		}
 		unitPage := &UnitPageData{
 			Unit:                unit,
 			Designation:         unit.Designation(),
@@ -262,8 +247,6 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 			FilesPage: &FilesPageData{
 				Path:       filesDirPath,
 				ParentPath: unitPagePath,
-				Files:      raw,
-				FilePages:  pages,
 			},
 		}
 		lessons, err := h.GetLessons(unit.ID)
@@ -278,12 +261,6 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 				return nil, err
 			}
 			filesDirPath := filepath.Join(lessonPagePath, "files")
-			files, err := h.FilePaths(append([]ports.Node{user, term, course}, nodes...)...)
-			pages, raw := FilePages(files)
-
-			if err != nil {
-				return nil, err
-			}
 			slidesPath := filepath.Join(h.DataPathingService.NodeDirPath(user, term, course, unit, lesson), "slides.html")
 			slidesPath = contentPath(slidesPath)
 			lessonPage := &LessonPageData{
@@ -293,8 +270,6 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 				FilesPage: FilesPageData{
 					Path:       filesDirPath,
 					ParentPath: lessonPagePath,
-					Files:      raw,
-					FilePages:  pages,
 				},
 				Content: strings.ReplaceAll(
 					`
@@ -322,47 +297,6 @@ type Homogenizer interface {
 	Section() *HomogenizedPageData
 	// e.g. term page has course children
 	Children() []Homogenizer
-}
-
-func (h *hugoGenerator) FilePaths(nodes ...ports.Node) ([]File, error) {
-	log.Println("Nodes")
-	dirPath := h.DataPathingService.NodeFilesDirPath(nodes...)
-	entries, err := os.ReadDir(dirPath)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Println("directory does not exist - returning nil")
-			return nil, nil
-		}
-		return nil, err
-	}
-	var files []File
-
-	for _, entry := range entries {
-		var file File
-		if entry.IsDir() {
-			continue
-		}
-		path := filepath.Join(dirPath, entry.Name())
-		file.Path = contentPath(path)
-		files = append(files, file)
-	}
-	return files, nil
-}
-
-// splits the paths into pages and raw files, where pages have the .md extension
-// since these should be rendered by hugo as pages with a path stripped of the extension
-func FilePages(files []File) (pages []FilePage, raw []File) {
-	for _, file := range files {
-		if filepath.Ext(file.Path) == ".md" {
-			var page FilePage
-			page.ContentPath = file.Path[:len(file.Path)-3]
-			page.Path = file.Path
-			pages = append(pages, page)
-		} else {
-			raw = append(raw, file)
-		}
-	}
-	return pages, raw
 }
 
 // strips the first 8 segments off the root

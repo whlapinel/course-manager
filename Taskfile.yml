@@ -27,7 +27,7 @@ tasks:
 
   tailwind-app:
     cmds:
-      - npx tailwindcss -i ./manager-input.css -o ./internal/assets/dist/styles.css
+      - npx tailwindcss -i ./manager-input.css -o ./internal/assets/dist/styles/styles.css
 
   export-secrets:
     desc: Export all secret files in a separate folder for publishing elsewhere

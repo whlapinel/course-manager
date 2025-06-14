@@ -111,10 +111,10 @@ func New(params NewAppParams) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	markdownService := services.NewMarkdownService(frontmatter, markdownRenderer, dataFilesPathingSvc, filesRepo, hugoGenerator)
-
 	// site generator service
 	siteGenerator := services.NewSiteGeneratorService(hugoGenerator)
+
+	markdownService := services.NewMarkdownService(siteGenerator, frontmatter, markdownRenderer, dataFilesPathingSvc, filesRepo, hugoGenerator)
 
 	// route groups
 	root := e.Group("")
@@ -137,7 +137,7 @@ func New(params NewAppParams) (*App, error) {
 	)
 
 	// application-level handlers
-	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService)
+	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService, siteGenerator)
 	unitAppHandler := handlers.NewUnitHandler(unitAppService, nodeAppService, fileService, markdownService, hugoGenerator, e.Reverse)
 	courseAppHandler := handlers.NewCourseHandler(siteGenerator, courseAppService, nodeAppService, fileService, markdownService, e.Reverse)
 	courseCalAppHandler := handlers.NewCourseCalHandler(courseCalAppService, courseOccasionService, nodeAppService, lessonAppService, unitAppService, e.Reverse)

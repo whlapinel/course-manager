@@ -3,6 +3,7 @@ package appcomponents
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/basecomponents"
 	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"strconv"
@@ -11,6 +12,8 @@ import (
 )
 
 type NodeDetailsPage struct {
+	GenerateSiteURL string
+	StaticSiteURL   string
 	Node            ports.Node
 	ParentNode      ports.Node
 	GetEditNodeURL  string
@@ -47,6 +50,24 @@ func (page NodeDetailsPage) PageLayout() cmp.PageLayout {
 		},
 		Crumbs: page.BreadCrumbs.BreadCrumbs(),
 	}
+}
+
+func (p NodeDetailsPage) GenerateSiteButton() templ.Component {
+	return cmp.Button{
+		Name:     "Generate Course Site",
+		Text:     "Generate Course Site",
+		Method:   cmp.HxPost,
+		HxTarget: "#confirmation",
+		URL:      p.GenerateSiteURL,
+	}.Component()
+}
+
+func (p NodeDetailsPage) StaticSiteLink() templ.Component {
+	return cmp.Link{
+		Text:   "Static Site",
+		URL:    p.StaticSiteURL,
+		Target: basecomponents.NewTab,
+	}.Component()
 }
 
 func (page NodeDetailsPage) CalendarButton() templ.Component {

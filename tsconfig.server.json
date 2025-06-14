@@ -16,7 +16,7 @@
     "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "ESNext", /* Specify what module code is generated. */
     "rootDir": "internal/assets/ts", /* Specify the root folder within your source files. */
-    "outDir": "internal/assets/dist", /* Specify an output folder for all emitted files. */
+    "outDir": "internal/assets/dist/js", /* Specify an output folder for all emitted files. */
     "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
     "strict": true, /* Enable all strict type-checking options. */

@@ -65,7 +65,7 @@ templ NewFilesComponent(data FilesPage) {
 							if util.IsMarkdown(file.Name) {
 								// @data.ViewMarkdownButton(file)
 								@data.EditMarkdownButton(file)
-								@data.PreviewPage(file)
+								@data.PreviewButton(file)
 							}
 							@data.DeleteFileButton(file)
 						</div>
@@ -75,8 +75,9 @@ templ NewFilesComponent(data FilesPage) {
 		</ul>
 		// see preview.ts for code to control dialog
 		<div id="markdown"></div>
-		<dialog class="h-3/4 w-3/4 p-2 rounded bg-gray-400">
-			<iframe name="preview" class="h-full w-full"></iframe>
+		<dialog id="dialog-preview" class="h-3/4 w-3/4 p-2 rounded bg-gray-400">
+			<div name="preview" id="preview" class="h-full w-full"></div>
+			<button id="dialog-close-button">Close</button>
 		</dialog>
 	</div>
 }

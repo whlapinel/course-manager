@@ -1,26 +1,20 @@
 {{ define "main" }}
   <div>
     {{ partial "debugging.html" . }}
-    {{ range .Resources }}
-      <p>{{ . }}</p>
-    {{ end }}
-
-
     <hr />
-    <div class="markdown-body">
+    <div class="markdown-body p-2">
+      <!-- .Params.files is parsed from front matter -->
       <p>Supporting Resources</p>
       {{ range .Params.files }}
         {{ $file := . }}
         {{ with $.Parent }}
           {{ with .Resources.Get $file }}
-            <a href="{{ .RelPermalink }}">{{ $file }}</a>
+            <a href="{{ .RelPermalink | absURL }}">{{ $file }}</a>
           {{ else }}
             <p>Boo hoo, resource not found: {{ $file }}</p>
           {{ end }}
         {{ end }}
       {{ end }}
-      <p>Using shortcode:</p>
-
       {{ .Content }}
     </div>
 

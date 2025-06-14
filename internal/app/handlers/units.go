@@ -11,6 +11,7 @@ import (
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -254,7 +255,10 @@ func (h *unitHandler) postEdit(c echo.Context) error {
 }
 
 func (h *unitHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) ac.NodeDetailsPage {
+	lastName := strings.ToLower(nodes.User.(dto.User).LastName)
 	nodePage := ac.NodeDetailsPage{
+		GenerateSiteURL:     h.reverse(routes.PostGenerateSite.String(), path.ToSlice()...),
+		StaticSiteURL:       h.previewer.StaticSiteURL(lastName, path.CourseID),
 		Node:                nodes.Unit,
 		ParentNode:          nodes.Course,
 		GetEditNodeURL:      h.reverse(routes.GetEditUnit.String(), path.ToSlice()...),

@@ -10,6 +10,10 @@ templ NodeDetailsComponent(props NodeDetailsPage) {
 			if props.CourseCalendarURL != "" {
 				@props.CalendarButton()
 			}
+			if props.GenerateSiteURL != "" {
+				@props.GenerateSiteButton()
+				@props.StaticSiteLink()
+			}
 		</div>
 		<div class="flex flex-col gap-2">
 			@props.DetailsFormComponent(props.IsEdit)

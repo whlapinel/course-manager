@@ -12,6 +12,7 @@ import (
 	"gh_static_portfolio/internal/shared/web"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,6 +36,7 @@ func NewLessonHandler(
 	slides *services.SlidesService,
 	files *services.FileService,
 	markdown *services.MarkdownService,
+	previewer ports.SiteGenerator,
 
 ) *lessonHandler {
 	return &lessonHandler{
@@ -46,6 +48,7 @@ func NewLessonHandler(
 		files:       files,
 		markdown:    markdown,
 		baseHandler: &baseHandler[dto.Lesson, int, int]{
+			previewer:        previewer,
 			service:          service,
 			files:            files,
 			markdown:         markdown,
@@ -344,7 +347,11 @@ func (h *lessonHandler) postEdit(c echo.Context) error {
 }
 
 func (h *lessonHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) ac.NodeDetailsPage {
+	lastName := strings.ToLower(nodes.User.(dto.User).LastName)
+
 	nodePage := ac.NodeDetailsPage{
+		GenerateSiteURL:     h.reverse(routes.PostGenerateSite.String(), path.ToSlice()...),
+		StaticSiteURL:       h.previewer.StaticSiteURL(lastName, path.CourseID),
 		Node:                nodes.Lesson,
 		ParentNode:          nodes.Unit,
 		ServerFilesURL:      h.reverse(routes.GetLessonFiles.String(), path.ToSlice()...),

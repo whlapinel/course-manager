@@ -101,14 +101,18 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 }
 
 // view as HTML
-func (data FilesPage) PreviewPage(file FilesPageItem) templ.Component {
-	return cmp.Link{
+func (data FilesPage) PreviewButton(file FilesPageItem) templ.Component {
+	return cmp.Button{
 		Element: cmp.Element{
 			ID: "preview-button",
 		},
-		Text:   "Preview Static Site Page",
-		Target: "preview",
-		URL:    data.PreviewURL(file.Name),
+		Method:   cmp.HxGet,
+		HxTarget: "#preview",
+		Text:     "Preview Static Site Page",
+		URL:      data.PreviewURL(file.Name),
+		Attributes: templ.Attributes{
+			"hx-select": "#page",
+		},
 	}.Component()
 }
 
