@@ -9,11 +9,7 @@ templ DocLayout(data MarkdownDocument) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>{ data.Title }</title>
-			if data.Static {
-				<link rel="stylesheet" href="/python/styles/markdown-styles.css"/>
-			} else {
-				<link rel="stylesheet" href="/dist/markdown-styles.css"/>
-			}
+			<link rel="stylesheet" href="/dist/styles/markdown-styles.css"/>
 		</head>
 		<body class="markdown-body" id="markdown">
 			@templ.Raw(data.Content)
@@ -28,17 +24,22 @@ templ MarkdownIFrame(data MarkdownDocument) {
 templ MarkdownEditorComponent(props MarkdownEditor) {
 	<div id="markdown">
 		<!-- CodeMirror Editor -->
+		<input
+			class="bg-black markdown-form"
+			id="name-input"
+			name="name"
+			value={ props.Name }
+		/>
 		<textarea
 			id="code-editor"
+			class="markdown-form"
 			name="code-editor"
 		>
 			{ props.Contents }
 		</textarea>
 		@appcomponents.ButtonContainer() {
-			@appcomponents.CancelEditButton()
-			<button hx-post={ props.PostEditFileURL } hx-target="#markdown" hx-include={ "#code-editor" }>
-				Submit
-			</button>
+			@props.CancelButton()
+			@props.SubmitButton()
 		}
 	</div>
 }

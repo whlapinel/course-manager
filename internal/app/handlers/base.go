@@ -33,20 +33,37 @@ type Service[T ports.Node, ID intorstring, ParentID intorstring] interface {
 }
 
 type baseHandler[T ports.Node, ID intorstring, ParentID intorstring] struct {
-	service          Service[T, ID, ParentID]
-	files            *services.FileService
-	markdown         *services.MarkdownService
-	nodes            *services.NodeService
-	previewer        ports.SiteGenerator
-	reverse          web.Reverse
-	getNode          web.HandlerName
-	viewNodeFile     web.HandlerName
-	getNodeFile      web.HandlerName
-	getNodeFiles     web.HandlerName
-	getNodeEditFile  web.HandlerName
-	postNodeFile     web.HandlerName
-	postNodeEditFile web.HandlerName
-	deleteNodeFile   web.HandlerName
+	service            Service[T, ID, ParentID]
+	files              *services.FileService
+	markdown           *services.MarkdownService
+	nodes              *services.NodeService
+	hasStatic          bool
+	previewer          ports.SiteGenerator
+	reverse            web.Reverse
+	getCreateMarkdown  web.HandlerName
+	postCreateMarkdown web.HandlerName
+	getNode            web.HandlerName
+	viewNodeFile       web.HandlerName
+	getNodeFile        web.HandlerName
+	getNodeFiles       web.HandlerName
+	getNodeEditFile    web.HandlerName
+	postNodeFile       web.HandlerName
+	postNodeEditFile   web.HandlerName
+	deleteNodeFile     web.HandlerName
+}
+
+func (h *baseHandler[T, ID, ParentID]) getCreateMarkdownFile(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodes)
+	if err != nil {
+		return err
+	}
+	editor := markdownviews.MarkdownEditor{
+		Name:      "New Markdown File",
+		SubmitURL: h.reverse(h.getCreateMarkdown.String(), info.NodePath.ToSlice()...),
+		CancelURL: h.reverse(h.getNodeFiles.String(), info.NodePath.ToSlice()...),
+	}
+	return web.Respond(c, h.reverse(h.getNode.String(), info.NodePath.ToSlice()...), editor.Component(), nil)
+
 }
 
 func (h *baseHandler[T, ID, ParentID]) postCreateMarkdownFile(c echo.Context) error {
@@ -58,13 +75,14 @@ func (h *baseHandler[T, ID, ParentID]) postCreateMarkdownFile(c echo.Context) er
 	if err != nil {
 		return err
 	}
-	data := c.FormValue("content")
-	err = h.markdown.Create([]byte(data), ".", nodes)
+	name := c.FormValue("name")
+	data := c.FormValue("code-editor")
+	err = h.markdown.Create([]byte(data), name, nodes)
 	if err != nil {
 		return err
 	}
 	// Respond to the client
-	return c.Redirect(200, h.reverse(h.getNodeFiles.String(), params.ToSlice()...))
+	return c.Redirect(303, h.reverse(h.viewNodeFile.String(), params.ToSlice(name)...))
 }
 
 func (h *baseHandler[T, ID, ParentID]) postUploadedFile(c echo.Context) error {
@@ -130,7 +148,7 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 		return err
 	}
 	if !fileInfo.IsDir {
-		c.Attachment(fileInfo.AbsPath, filepath.Base(fileInfo.AbsPath))
+		c.File(fileInfo.AbsPath)
 	}
 	parentPath := filepath.Dir(filePath)
 	files, err := h.files.NodeFiles(filePath, nodes.ToSlice()...)
@@ -138,6 +156,7 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 		return err
 	}
 	page := fileviews.FilesPage{
+		CreateMarkdownURL: h.reverse(h.getCreateMarkdown.String(), nodePath.ToSlice()...),
 		UpNav: components.UpNav{
 			Text: "Up",
 			URL:  h.reverse(h.getNode.String(), nodePath.ToSlice()...),
@@ -156,6 +175,9 @@ func (h *baseHandler[T, ID, ParentID]) showFiles(c echo.Context) error {
 			IsDir: filepath.Ext(filePath) == "",
 		},
 		PreviewURL: func(params ...any) string {
+			if !h.hasStatic {
+				return ""
+			}
 			return h.markdown.PreviewFileURL(nodes.User.(dto.User).LastName, params[0].(string), nodes)
 
 		},
@@ -192,9 +214,10 @@ func (b *baseHandler[T, ID, ParentID]) postEditMarkdown(c echo.Context) error {
 	if fileInfo.IsDir {
 		return fmt.Errorf("%s is a directory", filePath)
 	}
+	name := c.FormValue("name")
 	content := c.FormValue("code-editor")
 	log.Println("content", content)
-	err = b.markdown.Update([]byte(content), filePath, nodes)
+	err = b.markdown.Update([]byte(content), name, filePath, nodes)
 	if err != nil {
 		return err
 	}
@@ -204,7 +227,7 @@ func (b *baseHandler[T, ID, ParentID]) postEditMarkdown(c echo.Context) error {
 			b.viewNodeFile,
 			b.reverse,
 			path.ToSlice()...,
-		)(filePath),
+		)(name),
 	)
 }
 
@@ -266,8 +289,10 @@ func (h *baseHandler[T, ID, ParentID]) showEditFile(c echo.Context) error {
 		return err
 	}
 	page := markdownviews.MarkdownEditor{
+		Name:                filePath,
 		Contents:            string(content),
-		PostEditFileURL:     web.URLFunc(h.postNodeEditFile, h.reverse, path.ToSlice()...)(filePath),
+		SubmitURL:           web.URLFunc(h.postNodeEditFile, h.reverse, path.ToSlice()...)(filePath),
+		CancelURL:           h.reverse(h.getNodeFiles.String(), path.ToSlice()...),
 		CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 	}
 	return web.Respond(

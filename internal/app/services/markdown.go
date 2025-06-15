@@ -54,21 +54,29 @@ func (s *MarkdownService) ViewMarkdown(relpath string, nodes ...ports.Node) (str
 // for create markdown file interface sent via post request
 func (svc *MarkdownService) Create(data []byte, relPath string, nodes ports.Nodes) error {
 	root := svc.paths.NodeFilesDirPath(nodes.ToSlice()...)
-	file, err := svc.setFrontMatter(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	data, err = svc.frontmatter.ToBytes(file)
-	if err != nil {
-		return err
-	}
-	err = svc.files.Save(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
-	if err != nil {
-		return err
+	switch nodes.CurrentNode().(type) {
+	case dto.User, dto.Term:
+		err := svc.files.Save(data, root, relPath)
+		if err != nil {
+			return err
+		}
+	default:
+		mdFile, err := svc.setFrontMatter(data, root, relPath)
+		if err != nil {
+			return err
+		}
+		data, err = svc.frontmatter.ToBytes(mdFile)
+		if err != nil {
+			return err
+		}
+		err = svc.files.Save(data, root, relPath)
+		if err != nil {
+			return err
+		}
+		err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 
@@ -86,43 +94,59 @@ func (svc *MarkdownService) Save(header *multipart.FileHeader, relPath string, n
 		return err
 	}
 	root := svc.paths.NodeFilesDirPath(nodes.ToSlice()...)
-	mdFile, err := svc.setFrontMatter(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	data, err = svc.frontmatter.ToBytes(mdFile)
-	if err != nil {
-		return err
-	}
-	err = svc.files.Save(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
-	if err != nil {
-		return err
+	switch nodes.CurrentNode().(type) {
+	case dto.User, dto.Term:
+		err = svc.files.Save(data, root, relPath)
+		if err != nil {
+			return err
+		}
+	default:
+		mdFile, err := svc.setFrontMatter(data, root, relPath)
+		if err != nil {
+			return err
+		}
+		data, err = svc.frontmatter.ToBytes(mdFile)
+		if err != nil {
+			return err
+		}
+		err = svc.files.Save(data, root, relPath)
+		if err != nil {
+			return err
+		}
+		err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (svc *MarkdownService) Update(data []byte, relPath string, nodes ports.Nodes) error {
+func (svc *MarkdownService) Update(data []byte, newName, oldName string, nodes ports.Nodes) error {
 	root := svc.paths.NodeFilesDirPath(nodes.ToSlice()...)
-	file, err := svc.setFrontMatter(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	data, err = svc.frontmatter.ToBytes(file)
-	if err != nil {
-		return err
-	}
-	err = svc.files.Update(data, root, relPath)
-	if err != nil {
-		return err
-	}
-	err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
-	if err != nil {
-		return err
+	switch nodes.CurrentNode().(type) {
+	case dto.User, dto.Term:
+		err := svc.files.Update(data, root, oldName, newName)
+		if err != nil {
+			return err
+		}
+	default:
+		mdFile, err := svc.setFrontMatter(data, root, newName)
+		if err != nil {
+			return err
+		}
+		data, err = svc.frontmatter.ToBytes(mdFile)
+		if err != nil {
+			return err
+		}
+		err = svc.files.Update(data, root, oldName, newName)
+		if err != nil {
+			return err
+		}
+		err = svc.siteGenerator.Build(nodes.User.(dto.User), nodes.Term.(dto.Term), nodes.Course.(dto.Course))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

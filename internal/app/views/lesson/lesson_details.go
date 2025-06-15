@@ -8,6 +8,7 @@ import (
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/web"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -79,7 +80,7 @@ func (page LessonDetailsPage) Tabs() templ.Component {
 	set := cmp.TabSet{
 		Tabs: tabs,
 		AssetsURLFunc: func(s string) string {
-			return page.AssetsURLFunc(s)
+			return page.AssetsURLFunc(filepath.Join("js", s))
 		},
 	}.Component()
 	return set

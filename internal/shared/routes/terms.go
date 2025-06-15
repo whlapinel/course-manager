@@ -57,5 +57,6 @@ var (
 	PostTermEditFile       = web.NewHandlerName(web.POST, TermEditFile)
 	ViewTermFile           = web.NewHandlerName(web.GET, TermViewFile)
 	PostTermCreateMarkdown = web.NewHandlerName(web.POST, TermCreateMarkdown)
+	GetTermCreateMarkdown  = web.NewHandlerName(web.GET, TermCreateMarkdown)
 	DeleteTermFile         = web.NewHandlerName(web.DELETE, TermFile)
 )

@@ -21,8 +21,7 @@ type termHandler struct {
 	service     *services.TermService
 	fileService *services.FileService
 	markdown    *services.MarkdownService
-	previewer   ports.SiteGenerator
-	reverse web.Reverse
+	reverse     web.Reverse
 	*baseHandler[dto.Term, int, string]
 }
 
@@ -31,7 +30,6 @@ func NewTermHandler(
 	nodeService *services.NodeService,
 	fileService *services.FileService,
 	markdownService *services.MarkdownService,
-	previewer ports.SiteGenerator,
 	reverse web.Reverse,
 ) *termHandler {
 	return &termHandler{
@@ -40,22 +38,22 @@ func NewTermHandler(
 		reverse:     reverse,
 		fileService: fileService,
 		markdown:    markdownService,
-		previewer:   previewer,
 		baseHandler: &baseHandler[dto.Term, int, string]{
-			service:          service,
-			files:            fileService,
-			markdown:         markdownService,
-			nodes:            nodeService,
-			reverse:          reverse,
-			previewer:        previewer,
-			getNode:          routes.GetTerm,
-			viewNodeFile:     routes.ViewTermFile,
-			getNodeFile:      routes.GetTermFile,
-			getNodeFiles:     routes.GetTermFiles,
-			getNodeEditFile:  routes.GetTermEditFile,
-			postNodeFile:     routes.PostTermFile,
-			postNodeEditFile: routes.PostTermEditFile,
-			deleteNodeFile:   routes.DeleteTermFile,
+			service:            service,
+			files:              fileService,
+			markdown:           markdownService,
+			nodes:              nodeService,
+			reverse:            reverse,
+			getNode:            routes.GetTerm,
+			viewNodeFile:       routes.ViewTermFile,
+			getNodeFile:        routes.GetTermFile,
+			getNodeFiles:       routes.GetTermFiles,
+			getNodeEditFile:    routes.GetTermEditFile,
+			postNodeFile:       routes.PostTermFile,
+			postNodeEditFile:   routes.PostTermEditFile,
+			getCreateMarkdown:  routes.GetTermCreateMarkdown,
+			postCreateMarkdown: routes.PostTermCreateMarkdown,
+			deleteNodeFile:     routes.DeleteTermFile,
 		},
 	}
 }
@@ -74,9 +72,12 @@ func termRouteHandlers(h *termHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler methods
 		web.NewRouteHandler(web.GET, routes.TermFiles, routes.GetTermFiles, h.showFiles),
+		web.NewRouteHandler(web.GET, routes.TermFile, routes.GetTermFile, h.showFiles),
 		web.NewRouteHandler(web.POST, routes.TermFiles, routes.PostTermFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.TermEditFile, routes.GetTermEditFile, h.showEditFile),
 		web.NewRouteHandler(web.POST, routes.TermEditFile, routes.PostTermEditFile, h.postEditMarkdown),
+		web.NewRouteHandler(web.GET, routes.TermCreateMarkdown, routes.GetTermCreateMarkdown, h.getCreateMarkdownFile),
+		web.NewRouteHandler(web.POST, routes.TermCreateMarkdown, routes.PostTermCreateMarkdown, h.postCreateMarkdownFile),
 		web.NewRouteHandler(web.GET, routes.TermViewFile, routes.ViewTermFile, h.viewMarkdown),
 		web.NewRouteHandler(web.DELETE, routes.TermFile, routes.DeleteTermFile, h.deleteFile),
 

@@ -68,8 +68,9 @@ var (
 	GetCourseEditFile        = web.NewHandlerName(web.GET, CourseFile)
 	PostCourseEditFile       = web.NewHandlerName(web.POST, CourseEditFile)
 	ViewCourseFile           = web.NewHandlerName(web.GET, CourseViewFile)
+	GetCourseCreateMarkdown  = web.NewHandlerName(web.GET, CourseCreateMarkdown)
 	PostCourseCreateMarkdown = web.NewHandlerName(web.POST, CourseCreateMarkdown)
-	DeleteCourseFile = web.NewHandlerName(web.DELETE, CourseFile)
+	DeleteCourseFile         = web.NewHandlerName(web.DELETE, CourseFile)
 )
 
 // Course assessment handler names

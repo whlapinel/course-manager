@@ -48,20 +48,23 @@ func NewLessonHandler(
 		files:       files,
 		markdown:    markdown,
 		baseHandler: &baseHandler[dto.Lesson, int, int]{
-			previewer:        previewer,
-			service:          service,
-			files:            files,
-			markdown:         markdown,
-			nodes:            nodeService,
-			reverse:          reverse,
-			getNode:          routes.GetLesson,
-			viewNodeFile:     routes.ViewLessonFile,
-			deleteNodeFile:   routes.DeleteLessonFile,
-			getNodeFile:      routes.GetLessonFile,
-			getNodeFiles:     routes.GetLessonFiles,
-			getNodeEditFile:  routes.GetLessonEditFile,
-			postNodeFile:     routes.PostLessonFile,
-			postNodeEditFile: routes.PostLessonEditFile,
+			hasStatic:          true,
+			previewer:          previewer,
+			service:            service,
+			files:              files,
+			markdown:           markdown,
+			nodes:              nodeService,
+			reverse:            reverse,
+			getNode:            routes.GetLesson,
+			getCreateMarkdown:  routes.GetLessonCreateMarkdown,
+			postCreateMarkdown: routes.PostLessonCreateMarkdown,
+			viewNodeFile:       routes.ViewLessonFile,
+			deleteNodeFile:     routes.DeleteLessonFile,
+			getNodeFile:        routes.GetLessonFile,
+			getNodeFiles:       routes.GetLessonFiles,
+			getNodeEditFile:    routes.GetLessonEditFile,
+			postNodeFile:       routes.PostLessonFile,
+			postNodeEditFile:   routes.PostLessonEditFile,
 		},
 	}
 }
@@ -85,6 +88,8 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.POST, routes.LessonEditFile, routes.PostLessonEditFile, h.postEditMarkdown),
 		web.NewRouteHandler(web.GET, routes.LessonViewFile, routes.ViewLessonFile, h.viewMarkdown),
 		web.NewRouteHandler(web.DELETE, routes.LessonFile, routes.DeleteLessonFile, h.deleteFile),
+		web.NewRouteHandler(web.GET, routes.LessonCreateMarkdown, routes.GetLessonCreateMarkdown, h.getCreateMarkdownFile),
+		web.NewRouteHandler(web.POST, routes.LessonCreateMarkdown, routes.PostLessonCreateMarkdown, h.postCreateMarkdownFile),
 
 		// overrides
 		web.NewRouteHandler(web.GET, routes.Lessons, routes.GetLessons, h.listByUnit),
@@ -220,9 +225,10 @@ func (h *lessonHandler) showEditSlides(c echo.Context) error {
 		return err
 	}
 	editor := markdownviews.MarkdownEditor{
-		Name:            "Slides",
-		Contents:        string(content),
-		PostEditFileURL: h.reverse(routes.PostEditLessonSlides.String(), info.NodePath.ToSlice()...),
+		Name:      "Slides",
+		Contents:  string(content),
+		SubmitURL: h.reverse(routes.PostEditLessonSlides.String(), info.NodePath.ToSlice()...),
+		CancelURL: h.reverse(routes.GetLesson.String(), info.NodePath.ToSlice()...),
 	}
 	return web.Respond(
 		c,

@@ -10,7 +10,8 @@ type FileRepository interface {
 	FileInfo(relPath, root string) (FileInfo, error) // for sending files
 	Save(file []byte, root, relPath string) error
 	Read(root, relPath string) ([]byte, error)
-	Update(contents []byte, rootDir, relPath string) error
+	Update(contents []byte, rootDir, relPath, name string) error
+	Rename(rootDir, relPath, newName string) error
 	Delete(rootDir, relPath string) error
 	List(rootDir, relPath string) ([]fs.DirEntry, error)
 }

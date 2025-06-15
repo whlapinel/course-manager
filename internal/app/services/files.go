@@ -53,9 +53,9 @@ func (svc *FileService) FileInfo(relPath string, nodes ports.Nodes) (ports.FileI
 	return fileInfo, nil
 }
 
-func (svc *FileService) Update(content []byte, relPath string, nodes ports.Nodes) error {
+func (svc *FileService) Update(content []byte, relPath, name string, nodes ports.Nodes) error {
 	root := svc.pathService.NodeFilesDirPath(nodes.ToSlice()...)
-	err := svc.fileRepo.Update(content, root, relPath)
+	err := svc.fileRepo.Update(content, root, relPath, name)
 	if err != nil {
 		return err
 	}

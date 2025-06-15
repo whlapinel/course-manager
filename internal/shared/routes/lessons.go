@@ -40,7 +40,8 @@ var (
 	PostLessonEditFile       = web.NewHandlerName(web.POST, LessonEditFile)
 	ViewLessonFile           = web.NewHandlerName(web.GET, LessonViewFile)
 	PostLessonCreateMarkdown = web.NewHandlerName(web.POST, LessonCreateMarkdown)
-	DeleteLessonFile = web.NewHandlerName(web.DELETE, LessonFile)
+	GetLessonCreateMarkdown  = web.NewHandlerName(web.GET, LessonCreateMarkdown)
+	DeleteLessonFile         = web.NewHandlerName(web.DELETE, LessonFile)
 )
 
 // Lesson slides handler names

@@ -40,6 +40,7 @@ var (
 	PostUnitEditFile       = web.NewHandlerName(web.POST, UnitEditFile)
 	ViewUnitFile           = web.NewHandlerName(web.GET, UnitViewFile)
 	PostUnitCreateMarkdown = web.NewHandlerName(web.POST, UnitCreateMarkdown)
+	GetUnitCreateMarkdown  = web.NewHandlerName(web.GET, UnitCreateMarkdown)
 	DeleteUnitFile         = web.NewHandlerName(web.DELETE, UnitFile)
 )
 

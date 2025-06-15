@@ -95,7 +95,7 @@ func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
 		}
 
 		// write to disk, and
-		err = s.files.Update(content, nodeDir, "slides.html")
+		err = s.files.Update(content, nodeDir, "slides.html", "slides.html")
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +136,7 @@ func (svc *SlidesService) SlidesContent(nodes ports.Nodes) ([]byte, error) {
 func (svc *SlidesService) UpdateSlides(nodes ports.Nodes, content []byte) error {
 	root := svc.pathing.NodeDirPath(nodes.ToSlice()...)
 	slidesPath := svc.pathing.NodeSlidesMarkdownPath(nodes.ToSlice()...)
-	return svc.files.Update(content, root, filepath.Base(slidesPath))
+	return svc.files.Update(content, root, filepath.Base(slidesPath), filepath.Base(slidesPath))
 }
 
 func (s *SlidesService) dataPathToMarpURL(path string) (string, error) {

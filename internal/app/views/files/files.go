@@ -28,6 +28,7 @@ type FilesPage struct {
 	BreadCrumbsData     ac.BreadCrumbs
 	ViewMarkdownURL     web.AddParams
 	EditMarkdownFileURL web.AddParams
+	CreateMarkdownURL   string
 	DeleteFileURL       web.AddParams
 	ac.CourseManagerLayout
 }
@@ -97,6 +98,16 @@ func (data FilesPage) ViewMarkdownButton(file FilesPageItem) templ.Component {
 		HxTarget: "#markdown",
 		URL:      data.ViewMarkdownURL(file.Name),
 		PushURL:  true,
+	}.Component()
+}
+
+// view as HTML, rendered
+func (data FilesPage) GetCreateMarkdownButton() templ.Component {
+	return cmp.Button{
+		Text:     "Create Markdown",
+		Method:   cmp.HxGet,
+		HxTarget: "#markdown",
+		URL:      data.CreateMarkdownURL,
 	}.Component()
 }
 

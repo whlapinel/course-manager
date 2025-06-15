@@ -13,6 +13,13 @@ import (
 type localFileSystem struct {
 }
 
+// Rename implements ports.FileRepository.
+func (l *localFileSystem) Rename(rootDir string, relPath string, newName string) error {
+	path := filepath.Join(rootDir, relPath)
+	newPath := filepath.Join(rootDir, newName)
+	return os.Rename(path, newPath)
+}
+
 func New() ports.FileRepository {
 	return &localFileSystem{}
 }
@@ -47,15 +54,18 @@ func (l *localFileSystem) FileInfo(relPath string, rootDir string) (ports.FileIn
 }
 
 // same as Save but without check to make sure the file doesn't already exist
-func (l *localFileSystem) Update(contents []byte, rootDir, relPath string) error {
+func (l *localFileSystem) Update(contents []byte, rootDir, old, name string) error {
 	// Open the root directory as an os.Root
+	if old != name {
+		l.Rename(rootDir, old, name)
+	}
 	root, err := os.OpenRoot(rootDir)
 	if err != nil {
 		return fmt.Errorf("failed to open root directory: %w", err)
 	}
 	defer root.Close()
 	// Ensure the parent directories exist
-	dir := filepath.Dir(relPath)
+	dir := filepath.Dir(name)
 	log.Println("dir", dir)
 	if dir != "." {
 		if err := root.Mkdir(dir, os.ModePerm); err != nil && !os.IsExist(err) {
@@ -63,7 +73,7 @@ func (l *localFileSystem) Update(contents []byte, rootDir, relPath string) error
 		}
 	}
 	// Create the newFile within the root
-	newFile, err := root.Create(relPath)
+	newFile, err := root.Create(name)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}

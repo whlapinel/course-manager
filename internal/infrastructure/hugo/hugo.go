@@ -106,6 +106,12 @@ func (h *hugoGenerator) contentPath(path string) (string, error) {
 }
 
 func (h *hugoGenerator) Build(user, term, course ports.Node) error {
+	courseSiteDir := h.courseSitePath(user.(dto.User).LastName, course.GetID().(int))
+	publicDir := filepath.Join(courseSiteDir, "public")
+	err := os.RemoveAll(publicDir)
+	if err != nil {
+		return err
+	}
 	userDTO, ok := user.(dto.User)
 	if !ok {
 		return fmt.Errorf("node is not user")

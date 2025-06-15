@@ -49,3 +49,9 @@ target = 'layouts'
     name = 'Course Files'
     pageRef = '/files'
     weight = 40
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.parser]
+      [markup.goldmark.parser.attribute]
+        block = true
+        title = true
