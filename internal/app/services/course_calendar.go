@@ -72,7 +72,7 @@ func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {
 	return courseDTO, nil
 }
 
-func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.CalendarDates, error) {
+func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.DatesMap, error) {
 	courseDTO, err := svc.courses.ByID(courseID)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.Cal
 	if err != nil {
 		return nil, err
 	}
-	var datesMap = make(calendarviews.CalendarDates)
+	var datesMap = make(calendarviews.DatesMap)
 	for _, occ := range termDTO.Occasions {
 		item := datesMap[occ.Date]
 		item.Date = occ.Date
@@ -117,5 +117,53 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.Cal
 		}
 	}
 	return datesMap, nil
+}
 
+func (svc *CourseCalendarService) MonthWeeks(month, year, courseID int) ([][]calendarviews.CalendarDate, error) {
+	datesMap, err := svc.CalendarDates(courseID)
+	if err != nil {
+		return nil, err
+	}
+	monthWeeks := svc.calendarWeeks(month, year, datesMap)
+	for i, week := range monthWeeks {
+		log.Println("Week: ", i, week)
+		for j, date := range week {
+			log.Println("Date: ", j, date)
+			log.Println("Date: ", j, date.Date)
+		}
+	}
+	return monthWeeks, nil
+}
+
+func (svc *CourseCalendarService) calendarWeeks(month, year int, datesMap calendarviews.DatesMap) [][]calendarviews.CalendarDate {
+	weeks := svc.weeks(month, year)
+	calWeeks := make([][]calendarviews.CalendarDate, 0)
+	for _, week := range weeks {
+		calWeek := make([]calendarviews.CalendarDate, 0)
+		for _, date := range week {
+			var calDate calendarviews.CalendarDate
+			calDate.Date = date
+			if data, ok := datesMap[date]; ok {
+				calDate = data
+			}
+			calWeek = append(calWeek, calDate)
+		}
+		calWeeks = append(calWeeks, calWeek)
+	}
+	return calWeeks
+}
+
+func (svc *CourseCalendarService) weeks(month, year int) [][]time.Time {
+	firstOfMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	var sun = firstOfMonth.AddDate(0, 0, -int(firstOfMonth.Weekday()))
+	var weeks [][]time.Time
+	for currWeek := sun; !currWeek.After(firstOfMonth.AddDate(0, 1, 0)); currWeek = currWeek.AddDate(0, 0, 7) {
+		var week []time.Time
+		for i := range 7 {
+			currDate := currWeek.AddDate(0, 0, i)
+			week = append(week, currDate)
+		}
+		weeks = append(weeks, week)
+	}
+	return weeks
 }

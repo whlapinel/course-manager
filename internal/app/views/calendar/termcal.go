@@ -24,7 +24,7 @@ type TermCalendar struct {
 	GetEditOccasionURL  web.AddParams
 	PostEditOccasionURL web.AddParams
 	DeleteOccasionURL   web.AddParams
-	CalendarDates       CalendarDates
+	CalendarDates       DatesMap
 	BreadCrumbsData     ac.BreadCrumbs
 	ac.CourseManagerLayout
 }
@@ -37,7 +37,7 @@ func (p TermCalendar) NonHTMXResponse() templ.Component {
 	return p.CourseManagerLayout.WithPage(p.Component())
 }
 
-func (data TermCalendar) GetCalendarDates() CalendarDates {
+func (data TermCalendar) GetCalendarDates() DatesMap {
 	return data.CalendarDates
 }
 

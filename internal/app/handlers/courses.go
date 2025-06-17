@@ -77,6 +77,7 @@ func courseRouteHandlers(h *courseHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.CourseFiles, routes.GetCourseFiles, h.showFiles),
+		web.NewRouteHandler(web.GET, routes.CourseFile, routes.GetCourseFile, h.showFiles),
 		web.NewRouteHandler(web.POST, routes.CourseFiles, routes.PostCourseFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.CourseEditFile, routes.GetCourseEditFile, h.showEditFile),
 		web.NewRouteHandler(web.POST, routes.CourseEditFile, routes.PostCourseEditFile, h.postEditMarkdown),

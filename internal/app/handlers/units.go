@@ -75,6 +75,7 @@ func unitRouteHandlers(h *unitHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.UnitFiles, routes.GetUnitFiles, h.showFiles),
+		web.NewRouteHandler(web.GET, routes.UnitFile, routes.GetUnitFile, h.showFiles),
 		web.NewRouteHandler(web.POST, routes.UnitFiles, routes.PostUnitFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.UnitEditFile, routes.GetUnitEditFile, h.showEditFile),
 		web.NewRouteHandler(web.POST, routes.UnitEditFile, routes.PostUnitEditFile, h.postEditMarkdown),

@@ -48,7 +48,7 @@ type CalendarOccasion struct {
 	Name string `json:"name"`
 }
 
-func NewCalendar(term dto.Term, calDates calendarviews.CalendarDates, singlePagePath func(unit, lesson ports.Node) (string, error)) (*CalendarPageData, error) {
+func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (*CalendarPageData, error) {
 	log.Println("len calDates: ", len(calDates))
 	for k, v := range calDates {
 		log.Println(k, v)
@@ -86,7 +86,7 @@ func NewCalendar(term dto.Term, calDates calendarviews.CalendarDates, singlePage
 				for _, lesson := range converted.Lessons {
 					log.Println(lesson.Designation, lesson.Name)
 				}
-				dates = append(dates, converted)
+
 			}
 			week.Dates = dates
 			weeks = append(weeks, week)
@@ -155,7 +155,7 @@ func (p *CalendarMonth) Page() *HomogenizedPageData {
 
 }
 
-func CalDateConverter(date time.Time, calDates calendarviews.CalendarDates, singlePagePath func(unit, lesson ports.Node) (string, error)) (CalendarDate, error) {
+func CalDateConverter(date time.Time, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (CalendarDate, error) {
 	var converted CalendarDate
 	converted.Date = date.Format("Jan 02")
 	converted.ShortDate = date.Format("02")

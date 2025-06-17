@@ -15,7 +15,7 @@ import (
 )
 
 type CalendarService interface {
-	CalendarDates(courseID int) (calendarviews.CalendarDates, error)
+	CalendarDates(courseID int) (calendarviews.DatesMap, error)
 }
 
 type Params struct {

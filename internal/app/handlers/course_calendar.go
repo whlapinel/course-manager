@@ -57,6 +57,7 @@ func RegisterCourseCalRoutes(group *echo.Group, h *courseCalendarHandler) error 
 func courseCalRouteHandlers(h *courseCalendarHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		web.NewRouteHandler(web.GET, routes.CourseCalendar, routes.GetCourseCalendar, h.getCourseCalendar),
+		web.NewRouteHandler(web.GET, routes.CourseMonthCalendar, routes.GetCourseMonthCalendar, h.getCourseCalendar),
 		web.NewRouteHandler(web.POST, routes.ShiftLesson, routes.PostShiftLesson, h.shiftLesson),
 		web.NewRouteHandler(web.GET, routes.DateUnits, routes.GetDateUnits, h.getDateUnits),
 		web.NewRouteHandler(web.GET, routes.DateLessons, routes.GetDateLessons, h.getDateLessons),
@@ -259,11 +260,54 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	monthParam := c.Param("month")
+	yearParam := c.Param("year")
+	if monthParam != "" && yearParam != "" {
+		month, err := strconv.Atoi(monthParam)
+		if err != nil {
+			return err
+		}
+		year, err := strconv.Atoi(yearParam)
+		if err != nil {
+			return err
+		}
+		calWeeks, err := h.service.MonthWeeks(month, year, path.CourseID)
+		if err != nil {
+			return err
+		}
+		var nextMonthURL string
+		var prevMonthURL string
+		lastDay := nodes.Term.(dto.Term).End
+		firstOfNextMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, 0)
+		nextMonth := firstOfNextMonth.Month()
+		nextMonthYear := firstOfNextMonth.Year()
+		if !firstOfNextMonth.After(lastDay) {
+			nextMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(nextMonth), nextMonthYear)...)
+		}
+		firstDay := nodes.Term.(dto.Term).Start
+		firstOfPrevMonth := time.Date(year, time.Month(month), 0, 0, 0, 0, 0, time.UTC).AddDate(0, -1, 0)
+		prevMonth := firstOfPrevMonth.Month()
+		prevMonthYear := firstOfPrevMonth.Year()
+		if !firstOfPrevMonth.Before(firstDay) {
+			prevMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(prevMonth), prevMonthYear)...)
+		}
+		newPage := calendarviews.MonthCalendar{
+			Term:                nodes.Term.(dto.Term),
+			Month:               time.Month(month),
+			Year:                year,
+			Weeks:               calWeeks,
+			NextMonthURL:        nextMonthURL,
+			PrevMonthURL:        prevMonthURL,
+			CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
+		}
+		return Respond(c, newPage)
+	}
 	datesMap, err := h.service.CalendarDates(path.CourseID)
 	if err != nil {
 		return err
 	}
 	log.Println("len(datesMap):", len(datesMap))
+
 	page := calendarviews.CourseCalendar{
 		Course:                nodes.Course.(dto.Course),
 		Term:                  nodes.Term.(dto.Term),

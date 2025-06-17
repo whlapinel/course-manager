@@ -16,6 +16,10 @@ type PageLayout struct {
 	UpNav     UpNav
 }
 
+func (data PageLayout) Component() templ.Component {
+	return PageLayoutComponent(data)
+}
+
 type UpNav struct {
 	URL  string
 	Text string

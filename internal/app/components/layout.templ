@@ -6,7 +6,7 @@ import components "gh_static_portfolio/internal/basecomponents"
 templ PageLayoutComponent(props Page) {
 	// @props.BreadCrumbs().Component()
 	// @PageHeadingComponent(props.PageLayout().PageTitle)
-	@components.PageLayoutComponent(props.PageLayout())
+	@props.PageLayout().Component()
 	@UpNavComponent(props.PageLayout().UpNav)
 	<div class="p-4">
 		{ children... }

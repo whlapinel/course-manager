@@ -29,8 +29,8 @@ func (svc *TermCalendarService) Term(termID int) (dto.Term, error) {
 	return termDTO, nil
 }
 
-func (svc *TermCalendarService) CalendarDates(termID int) (calendarviews.CalendarDates, error) {
-	dates := make(calendarviews.CalendarDates)
+func (svc *TermCalendarService) CalendarDates(termID int) (calendarviews.DatesMap, error) {
+	dates := make(calendarviews.DatesMap)
 	occasions, err := svc.occasionService.ByParentID(termID)
 	if err != nil {
 		return nil, err

@@ -83,6 +83,7 @@ func lessonRouteHandlers(h *lessonHandler) []web.RouteHandler {
 	return []web.RouteHandler{
 		// base handler
 		web.NewRouteHandler(web.GET, routes.LessonFiles, routes.GetLessonFiles, h.showFiles),
+		web.NewRouteHandler(web.GET, routes.LessonFile, routes.GetLessonFile, h.showFiles),
 		web.NewRouteHandler(web.POST, routes.LessonFiles, routes.PostLessonFile, h.postUploadedFile),
 		web.NewRouteHandler(web.GET, routes.LessonEditFile, routes.GetLessonEditFile, h.showEditFile),
 		web.NewRouteHandler(web.POST, routes.LessonEditFile, routes.PostLessonEditFile, h.postEditMarkdown),

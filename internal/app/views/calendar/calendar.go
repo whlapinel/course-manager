@@ -9,14 +9,13 @@ import (
 	"gh_static_portfolio/internal/shared/routes"
 	"gh_static_portfolio/internal/shared/util"
 	"gh_static_portfolio/internal/shared/web"
-	"log"
 	"time"
 
 	"github.com/a-h/templ"
 )
 
 type CalendarPage interface {
-	GetCalendarDates() CalendarDates
+	GetCalendarDates() DatesMap
 	GetTerm() dto.Term
 	OccasionEditor(occasion.Occasion) templ.Component
 	AddOccasionButton(time.Time) templ.Component
@@ -34,7 +33,6 @@ func DateData(date time.Time, page CalendarPage) CalendarDate {
 	data := dataMap[date]
 	// even if the data was zero, we still want the data.Date
 	data.Date = date
-	log.Println("DateData():", "date:", date, "data:", data)
 	return data
 }
 
@@ -262,7 +260,7 @@ type CalendarDate struct {
 	CourseOccasions []occasion.Occasion
 }
 
-type CalendarDates map[time.Time]CalendarDate
+type DatesMap map[time.Time]CalendarDate
 
 func AddParams(params routes.NodePath, additionalParams ...any) []any {
 	pathSlice := params.ToSlice()

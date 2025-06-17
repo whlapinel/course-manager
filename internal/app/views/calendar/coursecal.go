@@ -29,7 +29,7 @@ type CourseCalendar struct {
 	GetEditOccasionURL    web.AddParams
 	PostEditOccasionURL   web.AddParams
 	DeleteOccasionURL     web.AddParams
-	CalendarDates         CalendarDates
+	CalendarDates         DatesMap
 	BreadCrumbsData       ac.BreadCrumbs
 	ac.CourseManagerLayout
 }
@@ -59,7 +59,7 @@ func (data CourseCalendar) NonHTMXResponse() templ.Component {
 	return data.CourseManagerLayout.WithPage(data.Component())
 }
 
-func (data CourseCalendar) GetCalendarDates() CalendarDates {
+func (data CourseCalendar) GetCalendarDates() DatesMap {
 	return data.CalendarDates
 }
 

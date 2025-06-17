@@ -36,7 +36,7 @@ var (
 	GetUnitFiles           = web.NewHandlerName(web.GET, UnitFiles)
 	PostUnitFile           = web.NewHandlerName(web.POST, UnitFiles)
 	GetUnitFile            = web.NewHandlerName(web.GET, UnitFile)
-	GetUnitEditFile        = web.NewHandlerName(web.GET, UnitFile)
+	GetUnitEditFile        = web.NewHandlerName(web.GET, UnitEditFile)
 	PostUnitEditFile       = web.NewHandlerName(web.POST, UnitEditFile)
 	ViewUnitFile           = web.NewHandlerName(web.GET, UnitViewFile)
 	PostUnitCreateMarkdown = web.NewHandlerName(web.POST, UnitCreateMarkdown)

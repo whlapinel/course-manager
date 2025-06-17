@@ -67,42 +67,40 @@
     </header>
     <div class="shadow-sm ring-1 ring-black/5 lg:flex lg:flex-auto lg:flex-col">
       <div
-        class="grid grid-cols-7 gap-px border-b border-gray-300 bg-gray-200 text-center text-xs/6 font-semibold text-gray-700 lg:flex-none"
+        class="grid grid-cols-7 gap-px border-b border-gray-300  text-center text-xs/6 font-semibold  lg:flex-none  bg-black text-white"
       >
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>S</span>
           <span class="sr-only sm:not-sr-only">un</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>M</span>
           <span class="sr-only sm:not-sr-only">on</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>T</span>
           <span class="sr-only sm:not-sr-only">ue</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>W</span>
           <span class="sr-only sm:not-sr-only">ed</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>T</span>
           <span class="sr-only sm:not-sr-only">hu</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>F</span>
           <span class="sr-only sm:not-sr-only">ri</span>
         </div>
-        <div class="flex justify-center bg-white py-2">
+        <div class="flex justify-center py-2">
           <span>S</span>
           <span class="sr-only sm:not-sr-only">at</span>
         </div>
       </div>
 
-      <div class="flex bg-slate-800 text-xs/6 text-slate-100 lg:flex-auto">
-        <div
-          class="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px"
-        >
+      <div class="flex text-xs/6 text-slate-100 lg:flex-auto">
+        <div class="hidden w-full lg:grid lg:grid-cols-7 lg:gap-px bg-white">
           {{ range .Params.weeks }}
             <!--
           Always include: "relative py-2 px-3"
@@ -111,7 +109,7 @@
         -->
             {{ range .dates }}
               <div
-                class="relative bg-gray-50 px-3 py-2 text-gray-500 flex flex-col gap-1"
+                class="relative bg-slate-900 px-3 py-2 flex flex-col gap-1 border-slate-300"
               >
                 <!--
                   Is today, include: "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white"

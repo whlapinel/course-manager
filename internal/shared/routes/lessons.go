@@ -36,7 +36,7 @@ var (
 	GetLessonFiles           = web.NewHandlerName(web.GET, LessonFiles)
 	PostLessonFile           = web.NewHandlerName(web.POST, LessonFiles)
 	GetLessonFile            = web.NewHandlerName(web.GET, LessonFile)
-	GetLessonEditFile        = web.NewHandlerName(web.GET, LessonFile)
+	GetLessonEditFile        = web.NewHandlerName(web.GET, LessonEditFile)
 	PostLessonEditFile       = web.NewHandlerName(web.POST, LessonEditFile)
 	ViewLessonFile           = web.NewHandlerName(web.GET, LessonViewFile)
 	PostLessonCreateMarkdown = web.NewHandlerName(web.POST, LessonCreateMarkdown)

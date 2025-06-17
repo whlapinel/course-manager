@@ -19,6 +19,8 @@ const (
 	AssessmentID   web.RouteParam = "/:assessment-id"
 	ShiftDirection web.RouteParam = "/:shift-direction" // string param
 	Date           web.RouteParam = "/:date"
+	Month          web.RouteParam = "/:month"
+	Year           web.RouteParam = "/:year"
 )
 
 func ParseNodePath(c echo.Context) (NodePath, error) {
@@ -79,7 +81,6 @@ type Param interface {
 func (path NodePath) ToSlice(additionalParams ...any) []any {
 	var pathSlice []any
 	params := []any{path.UserID, path.TermID, path.CourseID, path.UnitID, path.LessonID}
-	params = append(params, additionalParams...)
 	for _, param := range params {
 		switch v := param.(type) {
 		case int:
@@ -93,5 +94,6 @@ func (path NodePath) ToSlice(additionalParams ...any) []any {
 			}
 		}
 	}
+	pathSlice = append(pathSlice, additionalParams...)
 	return pathSlice
 }
