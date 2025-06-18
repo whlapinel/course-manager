@@ -272,13 +272,16 @@ func (h *courseHandler) postEdit(c echo.Context) error {
 
 func (h *courseHandler) nodeDetails(path routes.NodePath, nodes ports.Nodes) appcomponents.NodeDetailsPage {
 	lastName := strings.ToLower(nodes.User.(dto.User).LastName)
+	firstDay := nodes.Term.(dto.Term).Start
+	month := firstDay.Month()
+	year := firstDay.Year()
 
 	nodeData := appcomponents.NodeDetailsPage{
 		GenerateSiteURL: h.reverse(routes.PostGenerateSite.String(), path.ToSlice()...),
 		StaticSiteURL:   h.previewer.StaticSiteURL(lastName, path.CourseID),
 
 		Node:                nodes.Course,
-		CourseCalendarURL:   h.reverse(routes.GetCourseCalendar.String(), path.ToSlice()...),
+		CourseCalendarURL:   h.reverse(routes.GetCourseMonthCalendar.String(), path.UserID, path.TermID, path.CourseID, int(month), year),
 		ParentNode:          nodes.Term,
 		ListChildrenURL:     h.reverse(routes.GetUnits.String(), path.ToSlice()...),
 		GetEditNodeURL:      h.reverse(routes.GetEditCourse.String(), path.ToSlice()...),

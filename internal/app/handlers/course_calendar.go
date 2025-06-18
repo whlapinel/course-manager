@@ -237,6 +237,8 @@ func (h *courseCalendarHandler) shiftLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	currMonth := date.Month()
+	currYear := date.Year()
 	switch direction {
 	case dto.Left.String():
 		err = h.service.ShiftLesson(date, info.LessonID, info.TermID, dto.Left)
@@ -248,7 +250,7 @@ func (h *courseCalendarHandler) shiftLesson(c echo.Context) error {
 	if err != nil {
 		return fmt.Errorf("error in handler's call to service.ShiftLesson: %w", err)
 	}
-	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
+	return c.Redirect(303, h.reverse(routes.GetCourseMonthCalendar.String(), info.UserID, info.TermID, info.CourseID, int(currMonth), currYear))
 }
 
 func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
@@ -275,29 +277,38 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		if err != nil {
 			return err
 		}
+		var presentMonthURL string
 		var nextMonthURL string
 		var prevMonthURL string
+		firstOfCurrentMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
 		lastDay := nodes.Term.(dto.Term).End
-		firstOfNextMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, 0)
+		firstOfNextMonth := firstOfCurrentMonth.AddDate(0, 1, 0)
 		nextMonth := firstOfNextMonth.Month()
 		nextMonthYear := firstOfNextMonth.Year()
 		if !firstOfNextMonth.After(lastDay) {
 			nextMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(nextMonth), nextMonthYear)...)
 		}
 		firstDay := nodes.Term.(dto.Term).Start
-		firstOfPrevMonth := time.Date(year, time.Month(month), 0, 0, 0, 0, 0, time.UTC).AddDate(0, -1, 0)
-		prevMonth := firstOfPrevMonth.Month()
-		prevMonthYear := firstOfPrevMonth.Year()
-		if !firstOfPrevMonth.Before(firstDay) {
+		lastOfPrevMonth := firstOfCurrentMonth.AddDate(0, 0, -1)
+		prevMonth := lastOfPrevMonth.Month()
+		prevMonthYear := lastOfPrevMonth.Year()
+		if !lastOfPrevMonth.Before(firstDay) {
 			prevMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(prevMonth), prevMonthYear)...)
 		}
-		newPage := calendarviews.MonthCalendar{
+		presentYear, presentMonth, presentDate := time.Now().Date()
+		today := time.Date(presentYear, presentMonth, presentDate, 0, 0, 0, 0, time.UTC)
+		presentMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(presentMonth), presentYear)...)
+		newPage := calendarviews.CourseMonthCalendar{
+			Today:               today,
 			Term:                nodes.Term.(dto.Term),
 			Month:               time.Month(month),
 			Year:                year,
 			Weeks:               calWeeks,
+			PresentMonthURL:     presentMonthURL,
 			NextMonthURL:        nextMonthURL,
 			PrevMonthURL:        prevMonthURL,
+			RemoveLessonDateURL: web.URLFunc(routes.DeleteLessonDate, h.reverse, path.ToSlice()...),
+			ShiftLessonURL:      web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
 			CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
 		}
 		return Respond(c, newPage)
