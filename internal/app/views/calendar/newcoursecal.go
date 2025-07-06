@@ -37,7 +37,7 @@ func (data CourseMonthCalendar) LessonContainerID(lessonID int, date time.Time) 
 
 func (data CourseMonthCalendar) AddOccasionButton(date time.Time) templ.Component {
 	button := cmp.Button{
-		Text:     "Add Occasion",
+		Text:     "+O",
 		HxTarget: "#dialog-container",
 		Method:   cmp.HxGet,
 		URL:      data.GetCreateOccasionURL(date.Format(time.DateOnly)),
@@ -47,7 +47,7 @@ func (data CourseMonthCalendar) AddOccasionButton(date time.Time) templ.Componen
 
 func (data CourseMonthCalendar) AddLessonButton(date time.Time) templ.Component {
 	button := cmp.Button{
-		Text:     "Add Lesson",
+		Text:     "+L",
 		HxTarget: "#page",
 		Method:   cmp.HxGet,
 		URL:      data.ShowAddLessonDatePageURL(date.Format(time.DateOnly)),

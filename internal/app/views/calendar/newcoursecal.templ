@@ -102,6 +102,48 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
 								// add link to lesson details
 								<div>
 									for _, occasion := range date.TermOccasions {
+										<p>Term: { occasion.Name }</p>
+									}
+								</div>
+								<div>
+									for _, occasion := range date.CourseOccasions {
+										<p>Course: { occasion.Name }</p>
+									}
+								</div>
+								<div class="flex flex-col gap-1">
+									<div class="flex gap-1">
+										@data.AddLessonButton(date.Date)
+										@data.AddOccasionButton(date.Date)
+									</div>
+									for _, lesson := range date.Lessons {
+										<div
+											id={ data.LessonContainerID(lesson.ID, date.Date) }
+											class="flex gap-1 items-center"
+										>
+											@data.RemoveLessonButton(lesson, date.Date)
+											@data.ShiftButton(lesson.ParentID, lesson.ID, dto.Left, date.Date)
+											<p>{ lesson.Designation() }</p>
+											@data.ShiftButton(lesson.ParentID, lesson.ID, dto.Right, date.Date)
+										</div>
+									}
+								</div>
+							}
+						}
+					}
+				</div>
+				<div class="lg:hidden w-full grid grid-cols-5 gap-px">
+					for _, week := range data.Weeks {
+						for _, date := range week {
+							<!--
+          Always include: "relative py-2 px-3"
+          Is current month, include: "bg-white"
+          Is not current month, include: "bg-gray-50 text-gray-500"
+        -->
+							@DateContainer(date.Date) {
+								// TODO: add the add occasion button
+								// add link to lesson details
+								<div>
+									for _, occasion := range date.TermOccasions {
 										<p>Term Occasion: { occasion.Name }</p>
 									}
 								</div>
@@ -111,17 +153,12 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
 									}
 								</div>
 								<div>
-									@data.AddLessonButton(date.Date)
-									@data.AddOccasionButton(date.Date)
 									for _, lesson := range date.Lessons {
 										<div
 											id={ data.LessonContainerID(lesson.ID, date.Date) }
 											class="flex gap-1 items-center"
 										>
-											@data.RemoveLessonButton(lesson, date.Date)
-											@data.ShiftButton(lesson.ParentID, lesson.ID, dto.Left, date.Date)
-											<p>{ lesson.Name }</p>
-											@data.ShiftButton(lesson.ParentID, lesson.ID, dto.Right, date.Date)
+											<p>{ lesson.Designation() }</p>
 										</div>
 									}
 								</div>

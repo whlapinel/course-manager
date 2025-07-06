@@ -5,6 +5,7 @@ import "github.com/a-h/templ"
 type Button struct {
 	Element
 	templ.Attributes
+	Indicator bool // whether to include hx-request spinner
 	Name      string
 	Text      string
 	Image     templ.Component

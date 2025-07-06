@@ -28,13 +28,6 @@ func (l Lesson) GetParentTypeName() string {
 	return UnitTypeName.String()
 }
 
-func LessonDesignator(lesson Lesson, unit Unit) string {
-	if unit.Number < 0 {
-		return fmt.Sprintf("%s %d", unit.Name, lesson.Number)
-	}
-	return fmt.Sprintf("Lesson %d.%d", unit.Number, lesson.Number)
-}
-
 type CalendarDirection int
 
 const (
@@ -83,7 +76,7 @@ func (l Lesson) SortDates() Lesson {
 // returns designation e.g. Lesson 1.2
 func (l Lesson) Designation() string {
 	if l.UnitNumber >= 0 {
-		return fmt.Sprintf("Lesson %d.%d", l.UnitNumber, l.Number)
+		return fmt.Sprintf("%d.%d", l.UnitNumber, l.Number)
 	}
 	return fmt.Sprintf("%s: Day %d", l.UnitName, l.Number)
 }
