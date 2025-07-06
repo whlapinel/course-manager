@@ -25,7 +25,8 @@ type CourseCalendar struct {
 	ListTermCoursesURL    string
 	ShowAddLessonDateFunc web.AddParams
 	RemoveLessonDateFunc  web.AddParams
-	CreateOccasionURL     string
+	GetCreateOccasionURL  web.AddParams
+	PostCreateOccasionURL string
 	GetEditOccasionURL    web.AddParams
 	PostEditOccasionURL   web.AddParams
 	DeleteOccasionURL     web.AddParams
@@ -46,7 +47,7 @@ func (page CourseCalendar) OccasionEditor(occasion occasion.Occasion) templ.Comp
 func (data CourseCalendar) AddOccasionButton(date time.Time) templ.Component {
 	return AddOccasionButton{
 		Date:              date,
-		CreateOccasionURL: data.CreateOccasionURL,
+		CreateOccasionURL: data.PostCreateOccasionURL,
 		FormID:            "form-" + date.Format(time.DateOnly),
 	}.Component()
 }

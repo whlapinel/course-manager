@@ -8,6 +8,7 @@ import (
 
 templ NewNewCalendarComponent(data CourseMonthCalendar) {
 	<div class="lg:flex lg:h-full lg:flex-col">
+		<div id="dialog-container"></div>
 		<header class="flex items-center justify-between border-b border-gray-200 px-6 py-4 lg:flex-none">
 			<h1 class="text-base font-semibold text-gray-900">
 				<time datetime={ fmt.Sprintf("%d-%s", data.Year, fmt.Sprintf("%02d", data.Month)) }>{ fmt.Sprintf("%s %d", data.Month.String(), data.Year) }</time>
@@ -110,6 +111,8 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
 									}
 								</div>
 								<div>
+									@data.AddLessonButton(date.Date)
+									@data.AddOccasionButton(date.Date)
 									for _, lesson := range date.Lessons {
 										<div
 											id={ data.LessonContainerID(lesson.ID, date.Date) }

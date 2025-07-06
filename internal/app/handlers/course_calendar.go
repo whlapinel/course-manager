@@ -64,14 +64,33 @@ func courseCalRouteHandlers(h *courseCalendarHandler) []web.RouteHandler {
 		web.NewRouteHandler(web.POST, routes.DateLesson, routes.PostAddLessonDate, h.postDateLesson),
 		web.NewRouteHandler(web.DELETE, routes.DateLesson, routes.DeleteLessonDate, h.deleteLessonDate),
 
-		web.NewRouteHandler(web.POST, routes.CourseOccasions, routes.CreateCourseOccasion, h.createOccasion),
-		web.NewRouteHandler(web.GET, routes.CourseOccasion, routes.ShowEditCourseOccasion, h.showEditOccasion),
+		web.NewRouteHandler(web.GET, routes.CourseOccasionsDate, routes.GetCreateCourseOccasion, h.getCreateOccasion),
+		web.NewRouteHandler(web.POST, routes.CourseOccasions, routes.PostCreateCourseOccasion, h.postCreateOccasion),
+		web.NewRouteHandler(web.GET, routes.CourseOccasion, routes.GetEditCourseOccasion, h.showEditOccasion),
 		web.NewRouteHandler(web.POST, routes.CourseOccasion, routes.PostEditCourseOccasion, h.postEditOccasion),
 		web.NewRouteHandler(web.DELETE, routes.CourseOccasion, routes.DeleteCourseOccasion, h.deleteOccasion),
 	}
 }
 
-func (h *courseCalendarHandler) createOccasion(c echo.Context) error {
+func (h *courseCalendarHandler) getCreateOccasion(c echo.Context) error {
+	info, err := parseAndFetchNodes(c, h.nodeService)
+	if err != nil {
+		return err
+	}
+	dateParam := c.Param("date")
+	date, err := time.Parse(time.DateOnly, dateParam)
+	if err != nil {
+		return err
+	}
+	component := calendarviews.AddOccasionDialog{
+		Date:    date,
+		PostURL: h.reverse(routes.PostCreateCourseOccasion.String(), info.NodePath.ToSlice()...),
+	}.Component()
+	return web.Respond(c, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...), component, nil)
+
+}
+
+func (h *courseCalendarHandler) postCreateOccasion(c echo.Context) error {
 	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
 		return err
@@ -299,17 +318,19 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		today := time.Date(presentYear, presentMonth, presentDate, 0, 0, 0, 0, time.UTC)
 		presentMonthURL = h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(int(presentMonth), presentYear)...)
 		newPage := calendarviews.CourseMonthCalendar{
-			Today:               today,
-			Term:                nodes.Term.(dto.Term),
-			Month:               time.Month(month),
-			Year:                year,
-			Weeks:               calWeeks,
-			PresentMonthURL:     presentMonthURL,
-			NextMonthURL:        nextMonthURL,
-			PrevMonthURL:        prevMonthURL,
-			RemoveLessonDateURL: web.URLFunc(routes.DeleteLessonDate, h.reverse, path.ToSlice()...),
-			ShiftLessonURL:      web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
-			CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
+			Today:                    today,
+			Term:                     nodes.Term.(dto.Term),
+			Month:                    time.Month(month),
+			Year:                     year,
+			Weeks:                    calWeeks,
+			PresentMonthURL:          presentMonthURL,
+			NextMonthURL:             nextMonthURL,
+			PrevMonthURL:             prevMonthURL,
+			GetCreateOccasionURL:     web.URLFunc(routes.GetCreateCourseOccasion, h.reverse, path.ToSlice()...),
+			ShowAddLessonDatePageURL: web.URLFunc(routes.GetDateUnits, h.reverse, path.ToSlice()...),
+			RemoveLessonDateURL:      web.URLFunc(routes.DeleteLessonDate, h.reverse, path.ToSlice()...),
+			ShiftLessonURL:           web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
+			CourseManagerLayout:      BaseLayout3(h.reverse, nodes.User.(dto.User)),
 		}
 		return Respond(c, newPage)
 	}
@@ -329,8 +350,9 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 		ShiftLessonFunc:       h.URLFunc(routes.PostShiftLesson, path.ToSlice()...),
 		ShowAddLessonDateFunc: h.URLFunc(routes.GetDateUnits, path.ToSlice()...),
 		RemoveLessonDateFunc:  h.URLFunc(routes.DeleteLessonDate, path.ToSlice()...),
-		CreateOccasionURL:     h.URLFunc(routes.CreateCourseOccasion, path.ToSlice()...)(),
-		GetEditOccasionURL:    h.URLFunc(routes.ShowEditCourseOccasion, path.ToSlice()...),
+		GetCreateOccasionURL:  h.URLFunc(routes.GetCreateCourseOccasion, path.ToSlice()...),
+		PostCreateOccasionURL: h.URLFunc(routes.PostCreateCourseOccasion, path.ToSlice()...)(),
+		GetEditOccasionURL:    h.URLFunc(routes.GetEditCourseOccasion, path.ToSlice()...),
 		PostEditOccasionURL:   h.URLFunc(routes.PostEditCourseOccasion, path.ToSlice()...),
 		DeleteOccasionURL:     h.URLFunc(routes.DeleteCourseOccasion, path.ToSlice()...),
 		CalendarDates:         datesMap,

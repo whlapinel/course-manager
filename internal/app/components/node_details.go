@@ -7,6 +7,7 @@ import (
 	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/ports"
 	"strconv"
+	"time"
 
 	"github.com/a-h/templ"
 )
@@ -197,6 +198,22 @@ func (page NodeDetailsPage) DetailsNonEdit() NodeDetailsNonEdit {
 		Value:   page.Node.GetDescription(),
 	}
 	components = append(components, descriptionItem)
+	switch page.Node.(type) {
+	case dto.Term:
+		term := page.Node.(dto.Term)
+		startItem := cmp.EditableInfoItem{
+			Element: cmp.Element{ID: cmp.Kebab(("Start"))},
+			Field:   "Start",
+			Value:   term.Start.Format(time.DateOnly),
+		}
+		endItem := cmp.EditableInfoItem{
+			Element: cmp.Element{ID: cmp.Kebab("End")},
+			Field:   "End",
+			Value:   term.End.Format(time.DateOnly),
+		}
+		components = append(components, startItem, endItem)
+	}
+
 	info := cmp.EditableInfo{
 		Element: cmp.Element{
 			ID: cmp.Kebab("lesson-form"),
@@ -261,6 +278,22 @@ func (page NodeDetailsPage) DetailsFormComponent(editing bool) templ.Component {
 			Value:   page.Node.GetDescription(),
 		}
 		components = append(components, descriptionItem)
+		switch page.Node.(type) {
+		case dto.Term:
+			term := page.Node.(dto.Term)
+			startItem := cmp.EditableInfoItem{
+				Element: cmp.Element{ID: cmp.Kebab(("Start"))},
+				Field:   "Start",
+				Value:   term.Start.Format(time.DateOnly),
+			}
+			endItem := cmp.EditableInfoItem{
+				Element: cmp.Element{ID: cmp.Kebab("End")},
+				Field:   "End",
+				Value:   term.End.Format(time.DateOnly),
+			}
+			components = append(components, startItem, endItem)
+		}
+
 		info := cmp.EditableInfo{
 			Element: cmp.Element{
 				ID: cmp.Kebab("lesson-form"),

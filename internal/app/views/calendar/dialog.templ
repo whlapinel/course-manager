@@ -1,0 +1,27 @@
+package calendarviews
+
+import "time"
+
+templ DialogComponent(data AddOccasionDialog) {
+	<dialog id="dialog-form" class="h-3/4 w-3/4 p-2 rounded bg-gray-400 z-10" open>
+		<div class="flex flex-col gap-1">
+			<h2>Add Occasion</h2>
+			<form id="add-occasion-form">
+				<div class="flex gap-1">
+					<label for="name">Name</label>
+					<input name="name" id="name" type="text"/>
+				</div>
+				<input type="hidden" name="date" value={ data.Date.Format(time.DateOnly) }/>
+			</form>
+			<div class="flex gap-1">
+				<button id="close-dialog">Close</button>
+				<button
+					hx-target="#page"
+					id="dialog-form-submit"
+					hx-include="#add-occasion-form"
+					hx-post={ data.PostURL }
+				>Submit</button>
+			</div>
+		</div>
+	</dialog>
+}

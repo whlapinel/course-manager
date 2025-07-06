@@ -20,6 +20,7 @@ const (
 	CourseStandards      web.RoutePath = Course + "/standards"
 	CourseStandard       web.RoutePath = CourseStandards + web.RoutePath(StandardID)
 	CourseOccasions      web.RoutePath = Course + "/occasions"
+	CourseOccasionsDate  web.RoutePath = CourseOccasions + "/date" + web.RoutePath(Date)
 	CourseOccasion       web.RoutePath = CourseOccasions + web.RoutePath(OccasionID)
 )
 
@@ -36,18 +37,19 @@ const (
 
 // Course handler names
 var (
-	CreateCourseOccasion   = web.HandlerName(web.POST + CourseOccasions)
-	DeleteCourseOccasion   = web.HandlerName(web.DELETE + CourseOccasion)
-	ShowEditCourseOccasion = web.HandlerName(web.GET + CourseOccasion)
-	PostEditCourseOccasion = web.HandlerName(web.POST + CourseOccasion)
-	GetCourses             = web.NewHandlerName(web.GET, Courses)
-	GetNewCourse           = web.NewHandlerName(web.GET, NewCourse)
-	GetCourse              = web.NewHandlerName(web.GET, Course)
-	PostGenerateSite       = web.NewHandlerName(web.POST, GenerateSite)
-	PostNewCourse          = web.NewHandlerName(web.POST, NewCourse)
-	GetEditCourse          = web.NewHandlerName(web.GET, CourseEdit)
-	PostEditCourse         = web.NewHandlerName(web.POST, CourseEdit)
-	DeleteCourse           = web.NewHandlerName(web.DELETE, Course)
+	GetCreateCourseOccasion  = web.NewHandlerName(web.GET, CourseOccasionsDate)
+	PostCreateCourseOccasion = web.NewHandlerName(web.POST, CourseOccasions)
+	DeleteCourseOccasion     = web.NewHandlerName(web.DELETE, CourseOccasion)
+	GetEditCourseOccasion    = web.NewHandlerName(web.GET, CourseOccasion)
+	PostEditCourseOccasion   = web.NewHandlerName(web.POST, CourseOccasion)
+	GetCourses               = web.NewHandlerName(web.GET, Courses)
+	GetNewCourse             = web.NewHandlerName(web.GET, NewCourse)
+	GetCourse                = web.NewHandlerName(web.GET, Course)
+	PostGenerateSite         = web.NewHandlerName(web.POST, GenerateSite)
+	PostNewCourse            = web.NewHandlerName(web.POST, NewCourse)
+	GetEditCourse            = web.NewHandlerName(web.GET, CourseEdit)
+	PostEditCourse           = web.NewHandlerName(web.POST, CourseEdit)
+	DeleteCourse             = web.NewHandlerName(web.DELETE, Course)
 )
 
 // Course calendar handler names

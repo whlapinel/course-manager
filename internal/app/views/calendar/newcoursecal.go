@@ -22,6 +22,7 @@ type CourseMonthCalendar struct {
 	PrevMonthURL             string
 	NextMonthURL             string
 	CurrentMonthURL          string
+	GetCreateOccasionURL     web.AddParams
 	RemoveLessonDateURL      web.AddParams
 	ShowAddLessonDatePageURL web.AddParams
 	LessonDetailURL          web.AddParams
@@ -32,6 +33,26 @@ type CourseMonthCalendar struct {
 
 func (data CourseMonthCalendar) LessonContainerID(lessonID int, date time.Time) string {
 	return fmt.Sprintf("lesson-id-%d-%s", lessonID, date.Format(time.DateOnly))
+}
+
+func (data CourseMonthCalendar) AddOccasionButton(date time.Time) templ.Component {
+	button := cmp.Button{
+		Text:     "Add Occasion",
+		HxTarget: "#dialog-container",
+		Method:   cmp.HxGet,
+		URL:      data.GetCreateOccasionURL(date.Format(time.DateOnly)),
+	}
+	return button.Component()
+}
+
+func (data CourseMonthCalendar) AddLessonButton(date time.Time) templ.Component {
+	button := cmp.Button{
+		Text:     "Add Lesson",
+		HxTarget: "#page",
+		Method:   cmp.HxGet,
+		URL:      data.ShowAddLessonDatePageURL(date.Format(time.DateOnly)),
+	}
+	return button.Component()
 }
 func (data CourseMonthCalendar) RemoveLessonButton(lesson dto.Lesson, date time.Time) templ.Component {
 	button := cmp.Button{
