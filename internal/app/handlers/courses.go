@@ -175,6 +175,9 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	startMonth := int(term.Start.Month())
+	startYear := term.Start.Year()
+
 	term.Courses = courses
 	nodePage := appcomponents.NodeListPage{
 		ParentNode: term,
@@ -187,10 +190,12 @@ func (h *courseHandler) listByTerm(c echo.Context) error {
 		BreadCrumbsData: BreadCrumbs(nodes, path, h.reverse),
 	}
 	page := mt.CoursesListPage{
-		ShowCourseCalendarURL: web.URLFunc(routes.GetCourseCalendar, h.reverse, path.ToSlice()...),
-		ShowAssessmentsURL:    web.URLFunc(routes.GetCourseAssessments, h.reverse, path.ToSlice()...),
-		NodeListPage:          nodePage,
-		CourseManagerLayout:   BaseLayout2(h.reverse, nodes.User.(dto.User)),
+		ShowCourseCalendarURL: func(courseID int) string {
+			return h.reverse(routes.GetCourseMonthCalendar.String(), path.ToSlice(courseID, startMonth, startYear)...)
+		},
+		ShowAssessmentsURL:  web.URLFunc(routes.GetCourseAssessments, h.reverse, path.ToSlice()...),
+		NodeListPage:        nodePage,
+		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
 	}
 	return Respond(c, page)
 

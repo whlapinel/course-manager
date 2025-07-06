@@ -14,7 +14,7 @@ import (
 )
 
 type CoursesListPage struct {
-	ShowCourseCalendarURL web.AddParams
+	ShowCourseCalendarURL func(int) string
 	ShowAssessmentsURL    web.AddParams
 
 	ac.NodeListPage
@@ -35,7 +35,7 @@ func (page CoursesListPage) Component() templ.Component {
 
 	for _, course := range page.Children {
 		button := ShowCalendarButton{
-			ShowCalendarURL: page.ShowCourseCalendarURL(course.GetID()),
+			ShowCalendarURL: page.ShowCourseCalendarURL(course.GetID().(int)),
 		}
 		calendarButtons = append(calendarButtons, button)
 		// assessments button saved for future implementation
