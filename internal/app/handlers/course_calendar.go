@@ -188,12 +188,13 @@ func (h *courseCalendarHandler) postDateLesson(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	month := date.Month()
+	year := date.Year()
 	err = h.service.AddLessonToDate(date, info.LessonID, info.TermID)
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
-
+	return c.Redirect(303, h.reverse(routes.GetCourseMonthCalendar.String(), info.UserID, info.TermID, info.CourseID, int(month), year))
 }
 
 func (h *courseCalendarHandler) getDateLessons(c echo.Context) error {
