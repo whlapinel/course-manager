@@ -330,6 +330,7 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 			GetCreateOccasionURL:     web.URLFunc(routes.GetCreateCourseOccasion, h.reverse, path.ToSlice()...),
 			ShowAddLessonDatePageURL: web.URLFunc(routes.GetDateUnits, h.reverse, path.ToSlice()...),
 			RemoveLessonDateURL:      web.URLFunc(routes.DeleteLessonDate, h.reverse, path.ToSlice()...),
+			LessonDetailURL:          h.URLFunc(routes.GetLesson, path.UserID, path.TermID, path.CourseID),
 			ShiftLessonURL:           web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
 			CourseManagerLayout:      BaseLayout3(h.reverse, nodes.User.(dto.User)),
 		}

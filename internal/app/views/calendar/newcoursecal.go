@@ -35,6 +35,17 @@ func (data CourseMonthCalendar) LessonContainerID(lessonID int, date time.Time) 
 	return fmt.Sprintf("lesson-id-%d-%s", lessonID, date.Format(time.DateOnly))
 }
 
+func (data CourseMonthCalendar) LessonDetailsButton(lessonID int, unitID int, text string) templ.Component {
+	button := cmp.Button{
+		Text:     text,
+		Method:   cmp.HxGet,
+		URL:      data.LessonDetailURL(lessonID, unitID),
+		HxTarget: "#page",
+		PushURL:  true,
+	}
+	return button.Component()
+}
+
 func (data CourseMonthCalendar) AddOccasionButton(date time.Time) templ.Component {
 	button := cmp.Button{
 		Text:     "+O",
