@@ -24,7 +24,7 @@
     {{ end }}
     {{/* </div> */}}
     {{ if eq .Type "lesson" }}
-      {{ with resources.Get .Params.slidesPath }}
+      {{ with .Params.slidesPath }}
         <button
           id="view-slides-btn"
           class="bg-blue-500 p-2 rounded hover:bg-blue-300"
@@ -36,14 +36,15 @@
     {{ end }}
   </div>
   {{ if eq .Type "lesson" }}
-    {{ with resources.Get .Params.slidesPath }}
+    {{ with .Params.slidesPath }}
+      <p>"slides.html"</p>
       <div
         id="slides-container"
         class="flex justify-center overflow-hidden h-0 w-full opacity-0 transition-all p-2"
       >
         <iframe
           id="slides"
-          src="{{ .RelPermalink | absURL }}"
+          src="slides.html"
           class="h-[400px] w-[712px]"
         ></iframe>
       </div>

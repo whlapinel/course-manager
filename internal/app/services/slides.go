@@ -72,7 +72,7 @@ func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
 			}
 
 			// write to disk, and
-			err = s.files.Save(content, nodeDir, "slides.html")
+			err = s.files.Save(content, nodeDir, ".slides.html")
 			if err != nil {
 				return nil, err
 			}
@@ -95,7 +95,7 @@ func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
 		}
 
 		// write to disk, and
-		err = s.files.Update(content, nodeDir, "slides.html", "slides.html")
+		err = s.files.Update(content, nodeDir, ".slides.html", ".slides.html")
 		if err != nil {
 			return nil, err
 		}
@@ -107,7 +107,7 @@ func (s *SlidesService) GetSlides(nodes ...ports.Node) ([]byte, error) {
 	// if the html file mod time is newer than the markdown file mod time,
 
 	// just return content as string
-	content, err := s.files.Read(nodeDir, "slides.html")
+	content, err := s.files.Read(nodeDir, ".slides.html")
 	if err != nil {
 		return nil, err
 	}

@@ -267,8 +267,11 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 				return nil, err
 			}
 			filesDirPath := filepath.Join(lessonPagePath, "files")
-			slidesPath := filepath.Join(h.DataPathingService.NodeDirPath(user, term, course, unit, lesson), "slides.html")
-			slidesPath = contentPath(slidesPath)
+			slidesDataPath := h.DataPathingService.NodeSlidesHTMLPath(user, term, course, unit, lesson)
+			slidesDataPath = contentPath(slidesDataPath)
+			log.Println("slidesDataPath:", slidesDataPath)
+			slidesPath := strings.ReplaceAll(slidesDataPath, ".slides.html", "slides.html")
+			slidesPath = strings.ReplaceAll(slidesPath, "_", "-")
 			lessonPage := &LessonPageData{
 				Lesson:      lesson,
 				Designation: lesson.Designation(),
@@ -283,7 +286,8 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 						`,
 					"\t", "",
 				),
-				SlidesPath: slidesPath,
+				SlidesPath:     slidesPath,
+				SlidesDataPath: slidesDataPath,
 			}
 			lessonPages = append(lessonPages, lessonPage)
 		}

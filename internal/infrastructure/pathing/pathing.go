@@ -52,11 +52,11 @@ func (n *nodePathService) NodeChildrenDirPath(nodes ...ports.Node) string {
 }
 
 func (n *nodePathService) NodeSlidesHTMLPath(nodes ...ports.Node) string {
-	return filepath.Join(n.NodeDirPath(nodes...), "slides.html")
+	return filepath.Join(n.NodeDirPath(nodes...), ".slides.html")
 }
 
 func (n *nodePathService) NodeSlidesMarkdownPath(nodes ...ports.Node) string {
-	return filepath.Join(n.NodeDirPath(nodes...), "slides.md")
+	return filepath.Join(n.NodeDirPath(nodes...), ".slides.md")
 }
 
 func (n *nodePathService) NodeFilesDirPath(nodes ...ports.Node) string {

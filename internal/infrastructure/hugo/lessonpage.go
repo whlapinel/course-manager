@@ -7,12 +7,13 @@ import (
 )
 
 type LessonPageData struct {
-	dto.Lesson  `json:"lesson"`
-	Designation string        `json:"designation"`
-	Path        string        `json:"path"`
-	Content     string        `json:"content"`
-	FilesPage   FilesPageData `json:"filesPage"`
-	SlidesPath  string        `json:"slidesPath"`
+	dto.Lesson     `json:"lesson"`
+	Designation    string        `json:"designation"`
+	Path           string        `json:"path"`
+	Content        string        `json:"content"`
+	FilesPage      FilesPageData `json:"filesPage"`
+	SlidesPath     string        `json:"slidesPath"`
+	SlidesDataPath string        `json:"slidesDataPath"`
 }
 
 func (d *LessonPageData) Children() []Homogenizer {
@@ -28,13 +29,15 @@ func (d *LessonPageData) Page() *HomogenizedPageData {
 	homoPageData.Weight = d.Number
 	homoPageData.Title = fmt.Sprintf("%s: %s", d.Designation, d.Name)
 	homoPageData.Params = struct {
-		FilesPagePath string             `json:"filesPagePath"`
-		SlidesPath    string             `json:"slidesPath"`
-		BreadCrumbs   BreadCrumbsPartial `json:"breadCrumbs"`
+		FilesPagePath  string             `json:"filesPagePath"`
+		SlidesPath     string             `json:"slidesPath"`
+		SlidesDataPath string             `json:"slidesDataPath"`
+		BreadCrumbs    BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
-		SlidesPath:    d.SlidesPath,
-		FilesPagePath: d.FilesPage.Path,
-		BreadCrumbs:   BreadCrumbs(d.Path),
+		SlidesPath:     d.SlidesPath,
+		SlidesDataPath: d.SlidesDataPath,
+		FilesPagePath:  d.FilesPage.Path,
+		BreadCrumbs:    BreadCrumbs(d.Path),
 	}
 	return &homoPageData
 }

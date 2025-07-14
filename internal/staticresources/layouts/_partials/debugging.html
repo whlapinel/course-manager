@@ -10,4 +10,8 @@
   {{ end }}
   <p>Kind: {{ .Kind }}</p>
   <p>Type: {{ .Type }}</p>
+  <p>Resources:</p>
+  {{ range .Resources }}
+    {{ .Name }}
+  {{ end }}
 </details>

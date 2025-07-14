@@ -11,7 +11,7 @@
   {{ $.AddPage $page }}
   <!-- Add slides.html as resources -->
   {{ if eq .type "lesson" }}
-    {{ with resources.Get .params.slidesPath }}
+    {{ with resources.Get .params.slidesDataPath }}
       {{ $contentValue := .Content | safeHTML }}
       {{ $content := dict
         "mediaType" .MediaType.String
@@ -23,7 +23,10 @@
         "path" $page.params.slidesPath
         "content" $content
       }}
+      {{ warnf "resource found: %s, %s" . $page.params.slidesPath }}
       {{ $.AddResource $resource }}
+    {{ else }}
+      {{ warnf "resource not found: %s" .params.slidesDataPath }}
     {{ end }}
   {{ end }}
 
