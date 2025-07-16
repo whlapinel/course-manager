@@ -49,10 +49,6 @@ type CalendarOccasion struct {
 }
 
 func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (*CalendarPageData, error) {
-	log.Println("len calDates: ", len(calDates))
-	for k, v := range calDates {
-		log.Println(k, v)
-	}
 	var data = CalendarPageData{
 		Path: "calendar",
 		Term: term,
@@ -83,10 +79,6 @@ func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath 
 				if err != nil {
 					return nil, err
 				}
-				for _, lesson := range converted.Lessons {
-					log.Println(lesson.Designation, lesson.Name)
-				}
-				log.Printf("NewCalendar: Date: %s", currDate.Format(time.DateOnly))
 				dates = append(dates, converted)
 			}
 			week.Dates = dates
