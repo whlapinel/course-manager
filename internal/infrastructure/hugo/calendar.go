@@ -86,7 +86,8 @@ func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath 
 				for _, lesson := range converted.Lessons {
 					log.Println(lesson.Designation, lesson.Name)
 				}
-
+				log.Printf("NewCalendar: Date: %s", currDate.Format(time.DateOnly))
+				dates = append(dates, converted)
 			}
 			week.Dates = dates
 			weeks = append(weeks, week)
