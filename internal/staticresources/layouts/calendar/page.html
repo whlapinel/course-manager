@@ -111,6 +111,11 @@
               <div
                 class="relative bg-slate-900 px-3 py-2 flex flex-col gap-1 border-slate-300"
               >
+          {{if not .instructionalDay}}
+                    <p>No School</p>
+                  
+          {{end}}
+
                 <!--
                   Is today, include: "flex size-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white"
                 -->

@@ -33,6 +33,7 @@ type CalendarWeek struct {
 
 type CalendarDate struct {
 	Date      string             `json:"date"`
+  InstructionalDay bool `json:"instructionalDay"`
 	ShortDate string             `json:"shortDate"`
 	Occasions []CalendarOccasion `json:"occasions"`
 	Lessons   []CalendarLesson   `json:"lessons"`
@@ -75,7 +76,7 @@ func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath 
 			var dates []CalendarDate
 			for i := range 7 {
 				currDate := currWeek.AddDate(0, 0, i)
-				converted, err := CalDateConverter(currDate, calDates, singlePagePath)
+				converted, err := CalDateConverter(term, currDate, calDates, singlePagePath)
 				if err != nil {
 					return nil, err
 				}
@@ -148,10 +149,11 @@ func (p *CalendarMonth) Page() *HomogenizedPageData {
 
 }
 
-func CalDateConverter(date time.Time, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (CalendarDate, error) {
+func CalDateConverter(term dto.Term, date time.Time, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (CalendarDate, error) {
 	var converted CalendarDate
 	converted.Date = date.Format("Jan 02")
 	converted.ShortDate = date.Format("02")
+  converted.InstructionalDay = term.InstructionalDay(date)
 	var calDate = calDates[date]
 	var lessons []CalendarLesson
 	for _, lesson := range calDate.Lessons {
