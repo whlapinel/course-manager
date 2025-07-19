@@ -26,7 +26,6 @@ func NewCourseCalendarService(
 	lessons *LessonService,
 	occasions *courseoccasion.Service,
 	lessonService *lesson.Service,
-
 ) *CourseCalendarService {
 	return &CourseCalendarService{
 		terms:         terms,
@@ -72,16 +71,8 @@ func (svc *CourseCalendarService) Course(courseID int) (dto.Course, error) {
 	return courseDTO, nil
 }
 
-func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.DatesMap, error) {
-	courseDTO, err := svc.courses.ByID(courseID)
-	if err != nil {
-		return nil, err
-	}
+func (svc *CourseCalendarService) CalendarDates(courseID int, termDTO dto.Term) (calendarviews.DatesMap, error) {
 	courseOccasions, err := svc.occasions.ByCourseID(courseID)
-	if err != nil {
-		return nil, err
-	}
-	termDTO, err := svc.terms.ByID(courseDTO.ParentID)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +80,7 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.Dat
 	if err != nil {
 		return nil, err
 	}
-	var datesMap = make(calendarviews.DatesMap)
+	datesMap := make(calendarviews.DatesMap)
 	for _, occ := range termDTO.Occasions {
 		item := datesMap[occ.Date]
 		item.Date = occ.Date
@@ -120,18 +111,19 @@ func (svc *CourseCalendarService) CalendarDates(courseID int) (calendarviews.Dat
 }
 
 func (svc *CourseCalendarService) MonthWeeks(month, year, courseID int) ([][]calendarviews.CalendarDate, error) {
-	datesMap, err := svc.CalendarDates(courseID)
+	courseDTO, err := svc.courses.ByID(courseID)
+	if err != nil {
+		return nil, err
+	}
+	termDTO, err := svc.terms.ByID(courseDTO.ParentID)
+	if err != nil {
+		return nil, err
+	}
+	datesMap, err := svc.CalendarDates(courseID, termDTO)
 	if err != nil {
 		return nil, err
 	}
 	monthWeeks := svc.calendarWeeks(month, year, datesMap)
-	for i, week := range monthWeeks {
-		log.Println("Week: ", i, week)
-		for j, date := range week {
-			log.Println("Date: ", j, date)
-			log.Println("Date: ", j, date.Date)
-		}
-	}
 	return monthWeeks, nil
 }
 
@@ -155,7 +147,7 @@ func (svc *CourseCalendarService) calendarWeeks(month, year int, datesMap calend
 
 func (svc *CourseCalendarService) weeks(month, year int) [][]time.Time {
 	firstOfMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
-	var sun = firstOfMonth.AddDate(0, 0, -int(firstOfMonth.Weekday()))
+	sun := firstOfMonth.AddDate(0, 0, -int(firstOfMonth.Weekday()))
 	var weeks [][]time.Time
 	for currWeek := sun; !currWeek.After(firstOfMonth.AddDate(0, 1, 0)); currWeek = currWeek.AddDate(0, 0, 7) {
 		var week []time.Time

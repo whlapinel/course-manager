@@ -6,7 +6,6 @@ import (
 	calendarviews "gh_static_portfolio/internal/app/views/calendar"
 	"gh_static_portfolio/internal/features/unit"
 	"gh_static_portfolio/internal/ports"
-	"log"
 	"path/filepath"
 	"strings"
 	"time"
@@ -14,7 +13,7 @@ import (
 
 type CalendarPageData struct {
 	dto.Term `json:"term"`
-	Path     string
+	Path     string           `json:"path"`
 	Months   []*CalendarMonth `json:"months"`
 }
 
@@ -32,11 +31,11 @@ type CalendarWeek struct {
 }
 
 type CalendarDate struct {
-	Date      string             `json:"date"`
-  InstructionalDay bool `json:"instructionalDay"`
-	ShortDate string             `json:"shortDate"`
-	Occasions []CalendarOccasion `json:"occasions"`
-	Lessons   []CalendarLesson   `json:"lessons"`
+	Date             string             `json:"date"`
+	InstructionalDay bool               `json:"instructionalDay"`
+	ShortDate        string             `json:"shortDate"`
+	Occasions        []CalendarOccasion `json:"occasions"`
+	Lessons          []CalendarLesson   `json:"lessons"`
 }
 
 type CalendarLesson struct {
@@ -153,7 +152,7 @@ func CalDateConverter(term dto.Term, date time.Time, calDates calendarviews.Date
 	var converted CalendarDate
 	converted.Date = date.Format("Jan 02")
 	converted.ShortDate = date.Format("02")
-  converted.InstructionalDay = term.InstructionalDay(date)
+	converted.InstructionalDay = term.IsInstructionDay(date)
 	var calDate = calDates[date]
 	var lessons []CalendarLesson
 	for _, lesson := range calDate.Lessons {

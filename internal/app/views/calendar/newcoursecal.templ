@@ -141,9 +141,9 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
           Is not current month, include: "bg-gray-50 text-gray-500"
         -->
 							@DateContainer(date.Date) {
-                if !date.InstructionalDay {
-                    <p>No School</p>
-                  }
+								if !date.InstructionDay {
+									<p>No School</p>
+								}
 								// TODO: add the add occasion button
 								// add link to lesson details
 								<div>

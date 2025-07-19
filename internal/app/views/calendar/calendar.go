@@ -254,6 +254,7 @@ func (data LessonPicker) SelectLessonButton(lesson dto.Lesson) templ.Component {
 }
 
 type CalendarDate struct {
+	InstructionDay  bool
 	Date            time.Time
 	Lessons         []dto.Lesson
 	TermOccasions   []occasion.Occasion

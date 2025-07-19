@@ -15,7 +15,7 @@ import (
 )
 
 type CalendarService interface {
-	CalendarDates(courseID int) (calendarviews.DatesMap, error)
+	CalendarDates(courseID int, term dto.Term) (calendarviews.DatesMap, error)
 }
 
 type Params struct {
@@ -207,7 +207,7 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 
 func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term, course dto.Course) (*PageData, error) {
 	var pageData PageData
-	calDates, err := h.CalendarService.CalendarDates(course.Course.ID)
+	calDates, err := h.CalendarService.CalendarDates(course.Course.ID, term)
 	if err != nil {
 		return nil, err
 	}
