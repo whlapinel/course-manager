@@ -29,7 +29,7 @@
                         <nav>
                           {{ range . }}
                             <a
-                              class="text-gray-700 hover:text-gray-900 mx-2"
+                              class="text-gray-200 hover:text-white mx-2"
                               href="{{ .URL }}"
                               >{{ .Name }}</a
                             >
@@ -56,7 +56,7 @@
         </div>
       </main>
       <footer class="shadow p-4 mt-8">
-        <div class="container mx-auto text-center text-gray-600">
+        <div class="container mx-auto text-center text-gray-300">
           &copy; {{ now.Format "2006" }} {{ .Site.Params.username }}. All rights
           reserved.
         </div>

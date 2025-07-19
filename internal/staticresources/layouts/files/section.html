@@ -9,11 +9,11 @@
   <p>Pages:</p>
   <ul class="flex flex-col gap-2 max-w-fit p-2">
     {{ range .RegularPages }}
-      <li class="bg-purple-500 p-2 rounded items-stretch">
-        <a href="{{ .RelPermalink }}"
-          >{{ .Title | default .File.BaseFileName }}
-        </a>
-      </li>
+      <a href="{{ .RelPermalink }}">
+        <li class="bg-purple-500 p-2 rounded items-stretch">
+          {{ .Title | default .File.BaseFileName }}
+        </li>
+      </a>
     {{ end }}
   </ul>
   <p>Resources:</p>

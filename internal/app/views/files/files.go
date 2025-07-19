@@ -39,7 +39,6 @@ func (p FilesPage) HTMXResponse() templ.Component {
 
 func (p FilesPage) NonHTMXResponse() templ.Component {
 	return p.CourseManagerLayout.WithPage(p.Component())
-
 }
 
 type FilesPageItem struct {
@@ -115,7 +114,7 @@ func (data FilesPage) GetCreateMarkdownButton() templ.Component {
 func (data FilesPage) PreviewButton(file FilesPageItem) templ.Component {
 	return cmp.Button{
 		Element: cmp.Element{
-			ID: "preview-button",
+			ID: "open-dialog",
 		},
 		Method:   cmp.HxGet,
 		HxTarget: "#preview",

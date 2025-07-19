@@ -79,8 +79,9 @@ templ NewFilesComponent(data FilesPage) {
 		// see preview.ts for code to control dialog
 		<div id="markdown"></div>
 		<dialog id="dialog-preview" class="h-3/4 w-3/4 p-2 rounded bg-gray-400">
+			<p>Hit Esc to close</p>
 			<div name="preview" id="preview" class="h-full w-full"></div>
-			<button id="dialog-close-button">Close</button>
+			<button id="close-dialog">Close</button>
 		</dialog>
 	</div>
 }
