@@ -3,7 +3,6 @@ package courseviews
 import (
 	ac "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
-	"gh_static_portfolio/internal/basecomponents"
 	cmp "gh_static_portfolio/internal/basecomponents"
 	"gh_static_portfolio/internal/core/standard"
 	"gh_static_portfolio/internal/features/term"
@@ -26,7 +25,7 @@ func (page CoursesListPage) HTMXResponse() templ.Component {
 }
 
 func (page CoursesListPage) NonHTMXResponse() templ.Component {
-	return page.CourseManagerLayout.WithPage(page.Component())
+	return page.WithPage(page.Component())
 }
 
 func (page CoursesListPage) Component() templ.Component {
@@ -73,19 +72,20 @@ type CourseDetailsPage struct {
 }
 
 func (p CourseDetailsPage) GenerateSiteButton() templ.Component {
-	return basecomponents.Button{
+	return cmp.Button{
 		Name:     "Generate Site",
 		Text:     "Generate Site",
-		Method:   basecomponents.HxPost,
+		Method:   cmp.HxPost,
 		HxTarget: "#confirmation",
 		URL:      p.GenerateSiteURL,
 	}.Component()
 }
+
 func (p CourseDetailsPage) StaticSiteLink() templ.Component {
-	return basecomponents.Link{
+	return cmp.Link{
 		Text:   "Static Site",
 		URL:    p.StaticSiteURL,
-		Target: basecomponents.NewTab,
+		Target: cmp.NewTab,
 	}.Component()
 }
 
@@ -94,15 +94,15 @@ func (p CourseDetailsPage) HTMXResponse() templ.Component {
 }
 
 func (p CourseDetailsPage) NonHTMXResponse() templ.Component {
-	return p.CourseManagerLayout.WithPage(p.Component())
+	return p.WithPage(p.Component())
 }
 
-func (page CourseDetailsPage) Course() dto.Course {
-	return page.Node.(dto.Course)
+func (p CourseDetailsPage) Course() dto.Course {
+	return p.Node.(dto.Course)
 }
 
-func (page CourseDetailsPage) Component() templ.Component {
-	return CourseDetailsComponent(page)
+func (p CourseDetailsPage) Component() templ.Component {
+	return CourseDetailsComponent(p)
 }
 
 type ShowCalendarButton struct {

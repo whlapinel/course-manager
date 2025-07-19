@@ -113,7 +113,9 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
 								</div>
 								<div class="flex flex-col gap-1">
 									<div class="flex gap-1">
-										@data.AddLessonButton(date.Date)
+										if data.Term.IsInstructionDay(date.Date) {
+											@data.AddLessonButton(date.Date)
+										}
 										@data.AddOccasionButton(date.Date)
 									</div>
 									for _, lesson := range date.Lessons {
@@ -141,7 +143,7 @@ templ NewNewCalendarComponent(data CourseMonthCalendar) {
           Is not current month, include: "bg-gray-50 text-gray-500"
         -->
 							@DateContainer(date.Date) {
-								if !date.InstructionDay {
+								if !data.Term.IsInstructionDay(date.Date) {
 									<p>No School</p>
 								}
 								// TODO: add the add occasion button
