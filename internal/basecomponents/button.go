@@ -21,7 +21,8 @@ type Button struct {
 type HxSwap string
 
 const (
-	AfterEnd HxSwap = "afterend"
+	AfterEnd  HxSwap = "afterend"
+	OuterHTML HxSwap = "outerHTML"
 )
 
 func (button Button) Component() templ.Component {

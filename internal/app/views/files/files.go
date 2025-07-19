@@ -83,6 +83,7 @@ func (data FilesPage) EditMarkdownButton(file FilesPageItem) templ.Component {
 		Text:     "Edit",
 		Method:   cmp.HxGet,
 		HxTarget: "#markdown",
+		HxSwap:   cmp.OuterHTML,
 		PushURL:  true,
 		URL:      data.EditMarkdownFileURL(file.Path),
 		Image:    cmp.EditImage(),

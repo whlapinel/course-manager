@@ -87,7 +87,6 @@ func (h *courseCalendarHandler) getCreateOccasion(c echo.Context) error {
 		PostURL: h.reverse(routes.PostCreateCourseOccasion.String(), info.NodePath.ToSlice()...),
 	}.Component()
 	return web.Respond(c, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...), component, nil)
-
 }
 
 func (h *courseCalendarHandler) postCreateOccasion(c echo.Context) error {
@@ -105,7 +104,9 @@ func (h *courseCalendarHandler) postCreateOccasion(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Redirect(303, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...))
+	month := int(date.Month())
+	year := date.Year()
+	return c.Redirect(303, h.reverse(routes.GetCourseMonthCalendar.String(), info.NodePath.ToSlice(month, year)...))
 }
 
 func (h *courseCalendarHandler) showEditOccasion(c echo.Context) error {
@@ -127,7 +128,7 @@ func (h *courseCalendarHandler) showEditOccasion(c echo.Context) error {
 		IsEditing:           true,
 		PostEditOccasionURL: web.URLFunc(routes.PostEditCourseOccasion, h.reverse, info.NodePath.ToSlice(occasionID)...)(),
 	}.Component()
-	return web.Respond(c, h.reverse(routes.GetCourseCalendar.String(), info.NodePath.ToSlice()...), component, nil)
+	return web.Respond(c, h.reverse(routes.GetCourseMonthCalendar.String(), info.NodePath.ToSlice()...), component, nil)
 }
 
 func (h *courseCalendarHandler) postEditOccasion(c echo.Context) error {
@@ -218,7 +219,6 @@ func (h *courseCalendarHandler) getDateLessons(c echo.Context) error {
 		SelectLessonURL: web.URLFunc(routes.PostAddLessonDate, h.reverse, []any{info.UserID, info.TermID, info.CourseID, dateParam, info.UnitID}...),
 	}
 	return web.Respond(c, routes.GetCourseCalendar.String(), partial.Component(), nil)
-
 }
 
 func (h *courseCalendarHandler) getDateUnits(c echo.Context) error {
@@ -330,9 +330,9 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 			GetCreateOccasionURL:     web.URLFunc(routes.GetCreateCourseOccasion, h.reverse, path.ToSlice()...),
 			ShowAddLessonDatePageURL: web.URLFunc(routes.GetDateUnits, h.reverse, path.ToSlice()...),
 			RemoveLessonDateURL:      web.URLFunc(routes.DeleteLessonDate, h.reverse, path.ToSlice()...),
-			LessonDetailURL:     h.URLFunc(routes.GetLesson, path.ToSlice()...),
-			ShiftLessonURL:      web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
-			CourseManagerLayout: BaseLayout3(h.reverse, nodes.User.(dto.User)),
+			LessonDetailURL:          h.URLFunc(routes.GetLesson, path.ToSlice()...),
+			ShiftLessonURL:           web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
+			CourseManagerLayout:      BaseLayout3(h.reverse, nodes.User.(dto.User)),
 		}
 		return Respond(c, newPage)
 	}

@@ -123,7 +123,7 @@ func MarkdownEditorComponent(props MarkdownEditor) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"markdown\"><!-- CodeMirror Editor --><input class=\"bg-black markdown-form\" id=\"name-input\" name=\"name\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"markdown\" class=\"h-screen\"><!-- CodeMirror Editor --><input class=\"bg-black markdown-form\" id=\"name-input\" name=\"name\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
