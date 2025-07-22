@@ -26,9 +26,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const dbPath = "./course_manager.db"
-const dataFilesRoot = "./internal/data/users"
-const staticSitesRoot = "./hugosites"
+const (
+	dbPath          = "./course_manager.db"
+	dataFilesRoot   = "./internal/data/users"
+	staticSitesRoot = "./hugosites"
+)
 
 type App struct {
 	Echo *echo.Echo
@@ -36,8 +38,9 @@ type App struct {
 }
 
 type NewAppParams struct {
-	Domain      string
-	MarpBaseURL string
+	Domain        string
+	MarpBaseURL   string
+	DevModeNoAuth bool
 }
 
 func New(params NewAppParams) (*App, error) {
@@ -128,13 +131,17 @@ func New(params NewAppParams) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	protected := root.Group(
-		"",
-		authService.AddCookieToHeader,
-		authService.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())),
-		authService.GetClaims,
-	)
+	var protected *echo.Group
+	if params.DevModeNoAuth {
+		protected = root.Group("")
+	} else {
+		protected = root.Group(
+			"",
+			authService.AddCookieToHeader,
+			authService.JWTMiddlewareProtectedNew(e.Reverse(routes.GetSignin.String())),
+			authService.GetClaims,
+		)
+	}
 
 	// application-level handlers
 	lessonAppHandler := handlers.NewLessonHandler(lessonAppService, nodeAppService, e.Reverse, dataFilesPathingSvc, slidesService, fileService, markdownService, siteGenerator)
@@ -178,7 +185,6 @@ func New(params NewAppParams) (*App, error) {
 		Echo: e,
 		db:   db,
 	}, nil
-
 }
 
 func (app *App) Start(url string) error {
