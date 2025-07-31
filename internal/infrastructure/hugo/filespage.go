@@ -1,10 +1,14 @@
 package hugo
 
-import "strings"
+import (
+	"gh_static_portfolio/internal/ports"
+	"strings"
+)
 
 type FilesPageData struct {
 	Path       string `json:"path"`
 	ParentPath string `json:"parentPath"`
+	ports.BreadCrumbsMaker
 }
 
 // files page has no child sections
@@ -24,9 +28,11 @@ func (d *FilesPageData) Page() *HomogenizedPageData {
 	homoPageData.URL = strings.ReplaceAll(d.Path, "_", "-")
 	homoPageData.Title = "Files"
 	homoPageData.Params = struct {
-		ParentPath string `json:"parentPath"`
+		ParentPath  string                   `json:"parentPath"`
+		BreadCrumbs ports.BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
-		ParentPath: d.ParentPath,
+		BreadCrumbs: d.BreadCrumbs(d.Path),
+		ParentPath:  d.ParentPath,
 	}
 	return &homoPageData
 }

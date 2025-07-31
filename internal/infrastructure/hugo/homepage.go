@@ -1,9 +1,12 @@
 package hugo
 
+import "gh_static_portfolio/internal/ports"
+
 type PageData struct {
 	Units    []*UnitPageData `json:"unitPages"`
 	Calendar *CalendarPageData
 	Files    *FilesPageData `json:"filesPage"`
+	ports.BreadCrumbsMaker
 }
 
 func (d *PageData) Children() []Homogenizer {
@@ -14,7 +17,6 @@ func (d *PageData) Children() []Homogenizer {
 		homos = append(homos, unitPage)
 	}
 	return homos
-
 }
 
 func (d *PageData) Page() *HomogenizedPageData {
@@ -28,11 +30,11 @@ func (d *PageData) Section() *HomogenizedPageData {
 	homoPageData.Path = "units"
 	homoPageData.Title = "Units"
 	homoPageData.Params = struct {
-		ParentPath  string             `json:"parentPath"`
-		BreadCrumbs BreadCrumbsPartial `json:"breadCrumbs"`
+		ParentPath  string                   `json:"parentPath"`
+		BreadCrumbs ports.BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
 		ParentPath:  "/",
-		BreadCrumbs: BreadCrumbs("units"),
+		BreadCrumbs: d.BreadCrumbsMaker.BreadCrumbs("units"),
 	}
 	return &homoPageData
 }

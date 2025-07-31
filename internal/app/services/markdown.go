@@ -26,7 +26,6 @@ func NewMarkdownService(
 	paths ports.PathingService,
 	files ports.FileRepository,
 	baseURL SiteBaseURL,
-
 ) *MarkdownService {
 	return &MarkdownService{
 		siteGenerator: siteGenerator,
@@ -79,7 +78,6 @@ func (svc *MarkdownService) Create(data []byte, relPath string, nodes ports.Node
 		}
 	}
 	return nil
-
 }
 
 // for upload markdown file
@@ -162,14 +160,15 @@ func (svc *MarkdownService) setFrontMatter(data []byte, root, relPath string) (p
 	if file.FrontMatter == nil {
 		file.FrontMatter = &ports.FrontMatter{}
 	}
-	file.FrontMatter.URL = svc.fileURL(root, relPath)
+	file.URL = svc.fileURL(root, relPath)
 	rootDirSegments := strings.Split(root, "/")
 	parentPath := filepath.Join(rootDirSegments[8:]...)
-	file.FrontMatter.Type = "standalone"
+	file.Type = "standalone"
 	if file.FrontMatter.Params == nil {
 		file.FrontMatter.Params = make(map[string]any)
 	}
 	file.FrontMatter.Params["parentPath"] = parentPath
+	file.Params["breadCrumbs"] = svc.siteGenerator.BreadCrumbs(file.URL)
 	return file, nil
 }
 

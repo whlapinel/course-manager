@@ -195,7 +195,7 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 		homogenized = append(homogenized, pageData.Section())
 	}
 	for _, page := range pageData.Children() {
-		//recursive case
+		// recursive case
 		pages := h.HomogenizedData(page)
 		if pages != nil {
 			homogenized = append(homogenized, pages...)
@@ -206,8 +206,10 @@ func (h *hugoGenerator) HomogenizedData(pageData Homogenizer) []*HomogenizedPage
 }
 
 func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term, course dto.Course) (*PageData, error) {
-	var pageData PageData
-	calDates, err := h.CalendarService.CalendarDates(course.Course.ID, term)
+	pageData := PageData{
+		BreadCrumbsMaker: h,
+	}
+	calDates, err := h.CalendarDates(course.Course.ID, term)
 	if err != nil {
 		return nil, err
 	}
@@ -219,15 +221,16 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 		}
 		return path, nil
 	}
-	calendar, err := NewCalendar(term, calDates, singlePagePath)
+	calendar, err := NewCalendar(h, term, calDates, singlePagePath)
 	if err != nil {
 		return nil, err
 	}
 	pageData.Calendar = calendar
 	filesDirPath := "files"
 	pageData.Files = &FilesPageData{
-		Path:       filesDirPath,
-		ParentPath: "/",
+		Path:             filesDirPath,
+		ParentPath:       "/",
+		BreadCrumbsMaker: h,
 	}
 	var unitPages []*UnitPageData
 	units, err := h.GetUnits(course.Course.ID)
@@ -235,7 +238,7 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 		return nil, err
 	}
 	for _, unit := range units {
-		var nodes = []ports.Node{unit}
+		nodes := []ports.Node{unit}
 		unitPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
 		if err != nil {
 			return nil, err
@@ -251,9 +254,11 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 			Path:                unitPagePath,
 			LessonsListPagePath: lessonsListPagePath,
 			FilesPage: &FilesPageData{
-				Path:       filesDirPath,
-				ParentPath: unitPagePath,
+				Path:             filesDirPath,
+				ParentPath:       unitPagePath,
+				BreadCrumbsMaker: h,
 			},
+			BreadCrumbsMaker: h,
 		}
 		lessons, err := h.GetLessons(unit.ID)
 		if err != nil {
@@ -261,7 +266,7 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 		}
 		var lessonPages []*LessonPageData
 		for _, lesson := range lessons {
-			var nodes = []ports.Node{unit, lesson}
+			nodes := []ports.Node{unit, lesson}
 			lessonPagePath, err := h.SinglePagePath(sitePathingService, nodes...)
 			if err != nil {
 				return nil, err
@@ -277,8 +282,9 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 				Designation: lesson.Designation(),
 				Path:        lessonPagePath,
 				FilesPage: FilesPageData{
-					Path:       filesDirPath,
-					ParentPath: lessonPagePath,
+					Path:             filesDirPath,
+					ParentPath:       lessonPagePath,
+					BreadCrumbsMaker: h,
 				},
 				Content: strings.ReplaceAll(
 					`
@@ -286,8 +292,9 @@ func (h *hugoGenerator) PageData(config HugoConfig, user dto.User, term dto.Term
 						`,
 					"\t", "",
 				),
-				SlidesPath:     slidesPath,
-				SlidesDataPath: slidesDataPath,
+				SlidesPath:       slidesPath,
+				SlidesDataPath:   slidesDataPath,
+				BreadCrumbsMaker: h,
 			}
 			lessonPages = append(lessonPages, lessonPage)
 		}

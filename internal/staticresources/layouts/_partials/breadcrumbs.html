@@ -3,9 +3,7 @@
     {{ $total := len .items }}
     {{ range $index, $value := .items }}
       {{ with $.GetPage .url }}
-        <a href="{{ .RelPermalink }}" class="bg-purple-500 rounded p-1"
-          >{{ .LinkTitle }}</a
-        >
+        <a href="{{ .RelPermalink }}" class="p-1">{{ .Title }}</a>
         {{ if ne $index (sub $total 1) }}
           >>
         {{ end }}

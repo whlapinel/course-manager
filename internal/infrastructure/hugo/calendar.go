@@ -13,8 +13,9 @@ import (
 
 type CalendarPageData struct {
 	dto.Term `json:"term"`
-	Path     string           `json:"path"`
-	Months   []*CalendarMonth `json:"months"`
+	ports.BreadCrumbsMaker
+	Path   string           `json:"path"`
+	Months []*CalendarMonth `json:"months"`
 }
 
 type CalendarMonth struct {
@@ -24,6 +25,7 @@ type CalendarMonth struct {
 	Path      string         `json:"path"`
 	Year      int            `json:"year"`
 	Weeks     []CalendarWeek `json:"weeks"`
+	ports.BreadCrumbsMaker
 }
 
 type CalendarWeek struct {
@@ -48,10 +50,11 @@ type CalendarOccasion struct {
 	Name string `json:"name"`
 }
 
-func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (*CalendarPageData, error) {
-	var data = CalendarPageData{
-		Path: "calendar",
-		Term: term,
+func NewCalendar(bcm ports.BreadCrumbsMaker, term dto.Term, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (*CalendarPageData, error) {
+	data := CalendarPageData{
+		Path:             "calendar",
+		Term:             term,
+		BreadCrumbsMaker: bcm,
 	}
 	var months []*CalendarMonth
 	start := term.Start
@@ -60,15 +63,16 @@ func NewCalendar(term dto.Term, calDates calendarviews.DatesMap, singlePagePath 
 		path := func(month time.Month) string {
 			return filepath.Join("calendar", strings.ToLower(month.String()))
 		}
-		var month = CalendarMonth{
-			Path:      path(currMonth.Month()),
-			Month:     currMonth.Month(),
-			Year:      currMonth.Year(),
-			NextMonth: path(currMonth.AddDate(0, 1, 0).Month()),
-			PrevMonth: path(currMonth.AddDate(0, -1, 0).Month()),
+		month := CalendarMonth{
+			Path:             path(currMonth.Month()),
+			Month:            currMonth.Month(),
+			Year:             currMonth.Year(),
+			NextMonth:        path(currMonth.AddDate(0, 1, 0).Month()),
+			PrevMonth:        path(currMonth.AddDate(0, -1, 0).Month()),
+			BreadCrumbsMaker: bcm,
 		}
 		firstOfMonth := time.Date(currMonth.Year(), currMonth.Month(), 1, 0, 0, 0, 0, time.UTC)
-		var sun = firstOfMonth.AddDate(0, 0, -int(firstOfMonth.Weekday()))
+		sun := firstOfMonth.AddDate(0, 0, -int(firstOfMonth.Weekday()))
 		var weeks []CalendarWeek
 		for currWeek := sun; !currWeek.After(firstOfMonth.AddDate(0, 1, 0)); currWeek = currWeek.AddDate(0, 0, 7) {
 			var week CalendarWeek
@@ -108,6 +112,7 @@ func (p *CalendarPageData) Section() *HomogenizedPageData {
 	homoPageData.Kind = SectionKind
 	homoPageData.Type = CalendarType
 	homoPageData.Path = p.Path
+	homoPageData.Title = p.Name
 	homoPageData.Params = struct {
 		ParentPath string `json:"parentPath"`
 	}{
@@ -132,20 +137,19 @@ func (p *CalendarMonth) Page() *HomogenizedPageData {
 	homoPageData.Weight = int(p.Month)
 	homoPageData.Title = fmt.Sprintf("%s %d", p.Month.String(), p.Year)
 	homoPageData.Params = struct {
-		Weeks         []CalendarWeek     `json:"weeks"`
-		BreadCrumbs   BreadCrumbsPartial `json:"breadCrumbs"`
-		YearMonth     string             `json:"yearMonth"`
-		PrevMonthPath string             `json:"prevMonthPath"`
-		NextMonthPath string             `json:"nextMonthPath"`
+		Weeks         []CalendarWeek           `json:"weeks"`
+		BreadCrumbs   ports.BreadCrumbsPartial `json:"breadCrumbs"`
+		YearMonth     string                   `json:"yearMonth"`
+		PrevMonthPath string                   `json:"prevMonthPath"`
+		NextMonthPath string                   `json:"nextMonthPath"`
 	}{
 		YearMonth:     time.Date(p.Year, p.Month, 1, 0, 0, 0, 0, time.Local).Format("2006-01"),
 		NextMonthPath: p.NextMonth,
 		PrevMonthPath: p.PrevMonth,
 		Weeks:         p.Weeks,
-		BreadCrumbs:   BreadCrumbs(p.Path),
+		BreadCrumbs:   p.BreadCrumbsMaker.BreadCrumbs(p.Path),
 	}
 	return &homoPageData
-
 }
 
 func CalDateConverter(term dto.Term, date time.Time, calDates calendarviews.DatesMap, singlePagePath func(unit, lesson ports.Node) (string, error)) (CalendarDate, error) {
@@ -153,7 +157,7 @@ func CalDateConverter(term dto.Term, date time.Time, calDates calendarviews.Date
 	converted.Date = date.Format("Jan 02")
 	converted.ShortDate = date.Format("02")
 	converted.InstructionalDay = term.IsInstructionDay(date)
-	var calDate = calDates[date]
+	calDate := calDates[date]
 	var lessons []CalendarLesson
 	for _, lesson := range calDate.Lessons {
 		unit := dto.Unit{

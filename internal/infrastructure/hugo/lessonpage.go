@@ -3,6 +3,7 @@ package hugo
 import (
 	"fmt"
 	"gh_static_portfolio/internal/app/dto"
+	"gh_static_portfolio/internal/ports"
 	"strings"
 )
 
@@ -14,6 +15,7 @@ type LessonPageData struct {
 	FilesPage      FilesPageData `json:"filesPage"`
 	SlidesPath     string        `json:"slidesPath"`
 	SlidesDataPath string        `json:"slidesDataPath"`
+	ports.BreadCrumbsMaker
 }
 
 func (d *LessonPageData) Children() []Homogenizer {
@@ -29,15 +31,15 @@ func (d *LessonPageData) Page() *HomogenizedPageData {
 	homoPageData.Weight = d.Number
 	homoPageData.Title = fmt.Sprintf("%s: %s", d.Designation, d.Name)
 	homoPageData.Params = struct {
-		FilesPagePath  string             `json:"filesPagePath"`
-		SlidesPath     string             `json:"slidesPath"`
-		SlidesDataPath string             `json:"slidesDataPath"`
-		BreadCrumbs    BreadCrumbsPartial `json:"breadCrumbs"`
+		FilesPagePath  string                   `json:"filesPagePath"`
+		SlidesPath     string                   `json:"slidesPath"`
+		SlidesDataPath string                   `json:"slidesDataPath"`
+		BreadCrumbs    ports.BreadCrumbsPartial `json:"breadCrumbs"`
 	}{
 		SlidesPath:     d.SlidesPath,
 		SlidesDataPath: d.SlidesDataPath,
 		FilesPagePath:  d.FilesPage.Path,
-		BreadCrumbs:    BreadCrumbs(d.Path),
+		BreadCrumbs:    d.BreadCrumbsMaker.BreadCrumbs(d.Path),
 	}
 	return &homoPageData
 }
