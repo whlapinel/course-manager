@@ -37,7 +37,6 @@
   </div>
   {{ if eq .Type "lesson" }}
     {{ with .Params.slidesPath }}
-      <p>"slides.html"</p>
       <div
         id="slides-container"
         class="flex justify-center overflow-hidden h-0 w-full opacity-0 transition-all p-2"
@@ -50,5 +49,7 @@
       </div>
     {{ end }}
   {{ end }}
-  {{ partial "debugging.html" . }}
+  {{ if hugo.IsServer }}
+    {{ partial "debugging.html" . }}
+  {{ end }}
 {{ end }}

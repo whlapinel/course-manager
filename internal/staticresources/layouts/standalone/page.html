@@ -5,6 +5,7 @@
     <hr />
     <div class="markdown-body p-2">
       <!-- .Params.files is parsed from front matter -->
+      <h1>{{ .Title }}</h1>
       <p>Supporting Resources</p>
       {{ range .Params.files }}
         {{ $file := . }}
