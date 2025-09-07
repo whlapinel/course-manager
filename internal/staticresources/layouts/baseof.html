@@ -30,7 +30,7 @@
                           {{ range . }}
                             <a
                               class="text-gray-200 hover:text-white mx-2"
-                              href="{{ .URL }}"
+                              href="{{ .URL | relURL }}"
                               >{{ .Name }}</a
                             >
                           {{ end }}

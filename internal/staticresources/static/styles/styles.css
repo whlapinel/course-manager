@@ -1742,11 +1742,6 @@ video {
   color: rgb(147 197 253 / var(--tw-text-opacity));
 }
 
-.text-blue-500 {
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
 .text-gray-200 {
   --tw-text-opacity: 1;
   color: rgb(229 231 235 / var(--tw-text-opacity));
@@ -1950,8 +1945,48 @@ video {
           mask-image: radial-gradient(100% 100% at top right,white,transparent);
 }
 
+.\[url\:\/files\/another\] {
+  url: /files/another;
+}
+
+.\[url\:\/files\/hello\] {
+  url: /files/hello;
+}
+
+.\[url\:\/files\/python-4\] {
+  url: /files/python-4;
+}
+
+.\[url\:\/files\/test\] {
+  url: /files/test;
+}
+
 .\[url\:\/files\] {
   url: /files;
+}
+
+.\[url\:\/units\/unit-62\/lessons\/lesson-457\/files\/test\] {
+  url: /units/unit-62/lessons/lesson-457/files/test;
+}
+
+.\[url\:\/units\/unit-62\/lessons\/lesson-457\/files\/yo\] {
+  url: /units/unit-62/lessons/lesson-457/files/yo;
+}
+
+.\[url\:\/units\/unit-62\/lessons\/lesson-457\/files\] {
+  url: /units/unit-62/lessons/lesson-457/files;
+}
+
+.\[url\:\/units\/unit-62\/lessons\/lesson-457\] {
+  url: /units/unit-62/lessons/lesson-457;
+}
+
+.\[url\:\/units\/unit-62\/lessons\] {
+  url: /units/unit-62/lessons;
+}
+
+.\[url\:\/units\/unit-62\] {
+  url: /units/unit-62;
 }
 
 .\[url\:\/units\/unit_25\/lessons\/lesson_179\] {
@@ -3668,6 +3703,14 @@ video {
 
 .\[url\:\/units\/unit_60\] {
   url: /units/unit 60;
+}
+
+.\[url\:\/units\/unit_62\/files\] {
+  url: /units/unit 62/files;
+}
+
+.\[url\:\/units\/unit_62\/lessons\/lesson_457\/files\] {
+  url: /units/unit 62/lessons/lesson 457/files;
 }
 
 .\[url\:\/units\/unit_62\/lessons\/lesson_457\] {

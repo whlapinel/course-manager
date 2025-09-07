@@ -81,6 +81,12 @@ tasks:
       - docker compose run --rm migrate
       - docker compose -f compose.yaml -f compose.prod.yaml up --remove-orphans
 
+  
+  push-site:
+    desc: Run from production server. This is a hacky temporary workaround to push a particular static site to github pages.
+    cmds:
+      - chmod +x ./scripts/temp.sh
+      - ./scripts/temp.sh
   # copy-data:
   #   desc: Copy data to remote server
   #   cmds:

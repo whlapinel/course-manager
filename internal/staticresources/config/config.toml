@@ -39,15 +39,15 @@ target = 'layouts'
     weight = 10
   [[menus.main]]
     name = 'Units'
-    pageRef = '/units'
+    pageRef = 'units'
     weight = 20
   [[menus.main]]
     name = 'Calendar'
-    pageRef = '/calendar'
+    pageRef = 'calendar'
     weight = 30
   [[menus.main]]
     name = 'Course Files'
-    pageRef = '/files'
+    pageRef = 'files'
     weight = 40
 [markup]
   [markup.goldmark]
