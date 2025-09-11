@@ -2,10 +2,41 @@
   {{ partial "breadcrumbs.html" . }}
   <div>
     {{ partial "debugging.html" . }}
+
+
+    <!-- begin the new code -->
+    {{ $doc := printf `<!doctype html>
+      <html>
+      <head>
+      <meta charset="utf-8">
+      <base target="_blank">
+
+
+      <!-- need to use links for both app stylesheet as well as static so that preview will work from app side -->
+
+      <!-- I know this is not ideal, I don't like sending 404 for anything but it's a temporary solution -->
+
+      <link href="/styles/markdown-styles.css" rel="stylesheet" />
+      <link href="/dist/styles/markdown-styles.css" rel="stylesheet" />
+      </head>
+      <body class="markdown-body">
+      <h1>
+      %s
+      </h1>
+      %s
+      </body>
+      </html>` .Title (.Content | safeHTML)
+    }}
+    <iframe
+      srcdoc="{{ $doc }}"
+      style="width:100%; border:0; min-height:60vh;"
+      loading="lazy"
+    ></iframe>
+
+    <!-- end new code -->
     <hr />
     <div class="markdown-body p-2">
       <!-- .Params.files is parsed from front matter -->
-      <h1>{{ .Title }}</h1>
       <p>Supporting Resources</p>
       {{ range .Params.files }}
         {{ $file := . }}
@@ -17,7 +48,7 @@
           {{ end }}
         {{ end }}
       {{ end }}
-      {{ .Content }}
+      <!-- {{ .Content }} -->
     </div>
 
     <hr />
