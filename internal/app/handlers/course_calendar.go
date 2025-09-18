@@ -333,6 +333,7 @@ func (h *courseCalendarHandler) getCourseCalendar(c echo.Context) error {
 			LessonDetailURL:          h.URLFunc(routes.GetLesson, path.ToSlice()...),
 			ShiftLessonURL:           web.URLFunc(routes.PostShiftLesson, h.reverse, path.ToSlice()...),
 			CourseManagerLayout:      BaseLayout3(h.reverse, nodes.User.(dto.User)),
+			BreadCrumbs:              h.BreadCrumbs(nodes, path),
 		}
 		return Respond(c, newPage)
 	}

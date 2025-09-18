@@ -37,7 +37,6 @@ func NewLessonHandler(
 	files *services.FileService,
 	markdown *services.MarkdownService,
 	previewer ports.SiteGenerator,
-
 ) *lessonHandler {
 	return &lessonHandler{
 		service:     service,
@@ -113,6 +112,7 @@ func (h *lessonHandler) delete(c echo.Context) error {
 	}
 	return h.service.Delete(nodePath.LessonID)
 }
+
 func (h *lessonHandler) postNew(c echo.Context) error {
 	nodePath, err := routes.ParseNodePath(c)
 	if err != nil {
@@ -142,6 +142,7 @@ func (h *lessonHandler) postNew(c echo.Context) error {
 	}
 	return c.Redirect(303, h.reverse(routes.GetLessons.String(), nodePath.ToSlice()...))
 }
+
 func (h *lessonHandler) showCreateNew(c echo.Context) error {
 	info, err := parseAndFetchNodes(c, h.nodeService)
 	if err != nil {
@@ -177,7 +178,6 @@ func (h *lessonHandler) postEditSlides(c echo.Context) error {
 			info.NodePath.ToSlice()...,
 		),
 	)
-
 }
 
 func (h *lessonHandler) showSlides(c echo.Context) error {
@@ -189,6 +189,17 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	// TODO: this is for future use with private slides feature
+	// var private bool
+	// privateQueryParam := c.QueryParam("private")
+	// log.Println("privateQueryParam", privateQueryParam)
+	// if privateQueryParam != "" {
+	// 	private, err = strconv.ParseBool(privateQueryParam)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
+
 	var newTab bool
 	newTabQueryParam := c.QueryParam("new-tab")
 	log.Println("newTabQueryParam", newTabQueryParam)
@@ -213,7 +224,6 @@ func (h *lessonHandler) showSlides(c echo.Context) error {
 		},
 	}
 	return web.Respond(c, routes.GetLesson.String(), slides.Component(), nil)
-
 }
 
 func (h *lessonHandler) showEditSlides(c echo.Context) error {
@@ -240,7 +250,6 @@ func (h *lessonHandler) showEditSlides(c echo.Context) error {
 		editor.Component(),
 		nil,
 	)
-
 }
 
 func (h *lessonHandler) listByUnit(c echo.Context) error {
@@ -270,7 +279,6 @@ func (h *lessonHandler) listByUnit(c echo.Context) error {
 		CourseManagerLayout: BaseLayout2(h.reverse, nodes.User.(dto.User)),
 	}
 	return Respond(c, page)
-
 }
 
 func (h *lessonHandler) showDetails(c echo.Context) error {

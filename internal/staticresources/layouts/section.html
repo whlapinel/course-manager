@@ -15,5 +15,7 @@
       </a>
     {{ end }}
   </ul>
-  {{ partial "debugging.html" . }}
+  {{ if hugo.IsServer }}
+    {{ partial "debugging.html" . }}
+  {{ end }}
 {{ end }}

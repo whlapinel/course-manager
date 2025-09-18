@@ -25,7 +25,7 @@ func (n *nodePathService) WithSegment(segment string) ports.PathingService {
 }
 
 func (n *nodePathService) NodeDirPath(nodes ...ports.Node) string {
-	var pathSegments = n.segments
+	pathSegments := n.segments
 	for _, node := range nodes {
 		if node == nil {
 			break
@@ -55,8 +55,16 @@ func (n *nodePathService) NodeSlidesHTMLPath(nodes ...ports.Node) string {
 	return filepath.Join(n.NodeDirPath(nodes...), ".slides.html")
 }
 
+func (n *nodePathService) NodeSlidesPrivateHTMLPath(nodes ...ports.Node) string {
+	return filepath.Join(n.NodeDirPath(nodes...), ".private_slides.html")
+}
+
 func (n *nodePathService) NodeSlidesMarkdownPath(nodes ...ports.Node) string {
 	return filepath.Join(n.NodeDirPath(nodes...), ".slides.md")
+}
+
+func (n *nodePathService) NodeSlidesPrivateMarkdownPath(nodes ...ports.Node) string {
+	return filepath.Join(n.NodeDirPath(nodes...), ".private_slides.md")
 }
 
 func (n *nodePathService) NodeFilesDirPath(nodes ...ports.Node) string {

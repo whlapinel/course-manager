@@ -29,6 +29,18 @@ type CourseMonthCalendar struct {
 	ShiftLessonURL           web.AddParams
 	Weeks                    [][]CalendarDate
 	appcomponents.CourseManagerLayout
+	appcomponents.BreadCrumbs
+}
+
+func (data CourseMonthCalendar) PageLayout() cmp.PageLayout {
+	return cmp.PageLayout{
+		PageTitle: fmt.Sprintf("%s %d", data.Month.String(), data.Year),
+		UpNav: cmp.UpNav{
+			URL:  data.CourseDetailsURL,
+			Text: "Up to course",
+		},
+		Crumbs: data.BreadCrumbs.BreadCrumbs(),
+	}
 }
 
 func (data CourseMonthCalendar) LessonContainerID(lessonID int, date time.Time) string {
@@ -65,6 +77,7 @@ func (data CourseMonthCalendar) AddLessonButton(date time.Time) templ.Component 
 	}
 	return button.Component()
 }
+
 func (data CourseMonthCalendar) RemoveLessonButton(lesson dto.Lesson, date time.Time) templ.Component {
 	button := cmp.Button{
 		HxConfirm: "Are you sure you want to remove this lesson date? The lesson itself will not be deleted.",
@@ -91,7 +104,6 @@ func (data CourseMonthCalendar) ShiftButton(unitID, lessonID int, cd dto.Calenda
 		URL:      data.ShiftLessonURL(unitID, lessonID, cd, date.Format(time.DateOnly)),
 		Image:    image,
 	}.Component()
-
 }
 
 func (data CourseMonthCalendar) Component() templ.Component {

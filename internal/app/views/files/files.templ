@@ -51,9 +51,9 @@ templ NewFilesComponent(data FilesPage) {
 				} else {
 					<li
 						id={ data.FileListItemElementID(file) }
-						class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6"
+						class="flex items-center justify-between py-4 pr-5 pl-4 text-sm/6 "
 					>
-						<div class="flex w-0 flex-1 items-center">
+						<div class="flex w-0 flex-1 items-center gap-2">
 							<a
 								class="font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer flex gap-1"
 								href={ templ.SafeURL(data.OpenFileURL(file.Path)) }
@@ -69,8 +69,13 @@ templ NewFilesComponent(data FilesPage) {
 								if data.PreviewURL(file.Name) != "" {
 									@data.PreviewButton(file)
 								}
+								@data.ViewMarkdownButton(file)
 							}
 							@data.DeleteFileButton(file)
+							<button onclick="navigator.clipboard.writeText(this.querySelector('.copy-text').innerText)">
+								<pre class="hidden copy-text">{ data.PreviewURL(file.Name) }</pre>
+								Copy
+							</button>
 						</div>
 					</li>
 				}

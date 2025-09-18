@@ -134,3 +134,14 @@ func (data FilesPage) FileListItemElementID(file FilesPageItem) string {
 func (data FilesPage) Component() templ.Component {
 	return NewFilesComponent(data)
 }
+
+func (data FilesPage) CopyStaticURLButton(file FilesPageItem) templ.Component {
+	return cmp.Button{
+		Element: cmp.Element{
+			ID: "copy-link",
+		},
+		Method: cmp.HxGet,
+		Text:   "Copy Static URL",
+		URL:    data.PreviewURL(file.Name),
+	}.Component()
+}

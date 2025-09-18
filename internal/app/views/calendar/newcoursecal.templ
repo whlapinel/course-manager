@@ -3,11 +3,14 @@ package calendarviews
 
 import (
 	"fmt"
+
+	appcomponents "gh_static_portfolio/internal/app/components"
 	"gh_static_portfolio/internal/app/dto"
 	"time"
 )
 
 templ NewNewCalendarComponent(data CourseMonthCalendar) {
+	@appcomponents.PageLayoutComponent(data)
 	<div class="lg:flex lg:h-full lg:flex-col">
 		<div id="dialog-container"></div>
 		<header class="flex items-center justify-between border-b border-gray-200 px-6 py-4 lg:flex-none">
